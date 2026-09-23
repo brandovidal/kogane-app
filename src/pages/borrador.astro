@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { DraftsPage } from "@/features/drafts/components/DraftsPage";
+---
+
+<DashboardLayout title="Borrador">
+  <DraftsPage client:load />
+</DashboardLayout>

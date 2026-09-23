@@ -1,22 +1,26 @@
 import { useState } from "react";
-import { useAppStore } from "@/mocks/store";
+import { useCategories, useDeleteCategory } from "@/shared/api/hooks/catalogs";
+import { EXPENSE_RESOURCES, type Category } from "@/shared/api/types";
+import { useExpenses } from "@/shared/api/hooks/expenses";
+import { withQuery } from "@/shared/api/query";
+import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Badge } from "@/ui/badge";
-import { Input } from "@/ui/input";
 import { Progress } from "@/ui/progress";
 import { Plus, Trash2, Pencil, AlertTriangle } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CategoryDialog } from "./CategoryDialog";
-import type { Category } from "../category.validator";
 
-export function CategoryManager() {
-  const categories = useAppStore((s) => s.categories);
-  const budgets = useAppStore((s) => s.budgets);
-  const fixedCosts = useAppStore((s) => s.fixedCosts);
-  const deleteCategory = useAppStore((s) => s.deleteCategory);
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
+// Category budgets with alerts arrive with P19; until then every category shows what was spent
+const budgets: { categoryId: string; monthlyLimit: number; alertThreshold: number }[] = [];
+
+function CategoryManagerView() {
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const categories = useCategories().data ?? [];
+  const fixedCosts = useExpenses(EXPENSE_RESOURCES.fixedCost, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const deleteCategory = useDeleteCategory();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | undefined>();
 
@@ -31,8 +35,8 @@ export function CategoryManager() {
         {categories.map((cat) => {
           const budget = budgets.find((b) => b.categoryId === cat.id);
           const spent = fixedCosts
-            .filter((fc) => fc.categoryId === cat.id && fc.paymentMonth === selectedMonth && fc.paymentYear === selectedYear)
-            .reduce((sum, fc) => sum + (fc.amountInPEN ?? fc.amount), 0);
+            .filter((fc) => fc.categoryId === cat.id)
+            .reduce((sum, fc) => sum + (fc.amountInPen ?? fc.amount), 0);
           const percent = budget ? (spent / budget.monthlyLimit) * 100 : 0;
           const isOverBudget = budget && percent > 100;
           const isNearLimit = budget && percent >= budget.alertThreshold;
@@ -51,7 +55,7 @@ export function CategoryManager() {
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingCategory(cat); setDialogOpen(true); }}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteCategory(cat.id)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteCategory.mutate(cat.id)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </>
@@ -102,3 +106,5 @@ export function CategoryManager() {
     </div>
   );
 }
+
+export const CategoryManager = withQuery(CategoryManagerView);

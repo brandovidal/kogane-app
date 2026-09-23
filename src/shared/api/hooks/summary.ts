@@ -1,0 +1,19 @@
+import { useQuery } from "@tanstack/react-query";
+
+import { api, unwrap, type Schemas } from "../client";
+import { useApiMutation } from "./use-api-mutation";
+
+export const summaryKeys = { month: (month: number, year: number) => ["summary", month, year] as const };
+
+// Totals of the month, salary, limit, surplus and budget groups (/v1/summary)
+export const useSummary = (month: number, year: number) =>
+  useQuery({
+    queryKey: summaryKeys.month(month, year),
+    queryFn: () => unwrap(api.GET("/v1/summary", { params: { query: { month, year } } })),
+  });
+
+export const useSetBudget = () =>
+  useApiMutation((body: Schemas["MonthlyBudgetDto"]) => unwrap(api.PUT("/v1/summary/budget", { body })), {
+    invalidate: [["summary"]],
+    success: "Presupuesto guardado",
+  });

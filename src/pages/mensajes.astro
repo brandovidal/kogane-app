@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { ChatPage } from "@/features/messages/components/ChatPage";
+---
+
+<DashboardLayout title="Mensajes">
+  <ChatPage client:load />
+</DashboardLayout>

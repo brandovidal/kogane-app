@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { DailyExpenseTable } from "@/features/daily/components/DailyExpenseTable";
+---
+
+<DashboardLayout title="Día a día">
+  <DailyExpenseTable client:load />
+</DashboardLayout>

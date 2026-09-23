@@ -1,4 +1,16 @@
-import { appStore } from "@/mocks/store";
+import { useQueries } from "@tanstack/react-query";
+
+import { api, unwrap } from "@/shared/api/client";
+import { useCategories, useCreditCards } from "@/shared/api/hooks/catalogs";
+import { useExpenses } from "@/shared/api/hooks/expenses";
+import { summaryKeys, useSummary } from "@/shared/api/hooks/summary";
+import {
+  EXPENSE_RESOURCES,
+  type Category,
+  type CreditCardExpense,
+  type PaymentMethod,
+  type Summary,
+} from "@/shared/api/types";
 
 export interface DashboardSummary {
   totalExpenses: number;
@@ -26,82 +38,93 @@ export interface CreditCardSummary {
   paymentDueDay: number;
 }
 
-function sumField(items: Array<{ amountInPEN: number | null; amount: number }>): number {
-  return items.reduce((sum, i) => sum + (i.amountInPEN ?? i.amount), 0);
+interface Spending {
+  amount: number;
+  amountInPen: number | null;
+  expenseType: string;
+  categoryId: string | null;
 }
 
-export function getDashboardSummary(month: number, year: number): DashboardSummary {
-  const s = appStore.getState();
-  const fc = s.fixedCosts.filter((i) => i.paymentMonth === month && i.paymentYear === year);
-  const subs = s.subscriptions.filter((i) => i.paymentMonth === month && i.paymentYear === year);
-  const cc = s.creditCardExpenses.filter((i) => i.paymentMonth === month && i.paymentYear === year);
+const penOf = (item: { amount: number; amountInPen: number | null }) => item.amountInPen ?? item.amount;
+const sum = <T>(items: T[], value: (item: T) => number) => items.reduce((total, item) => total + value(item), 0);
 
-  const totalFixed = sumField(fc);
-  const totalSubs = sumField(subs);
-  const totalCC = sumField(cc);
-  const totalExpenses = totalFixed + totalSubs + totalCC;
-
-  const necesario = [...fc, ...subs, ...cc].filter((i) => i.expenseType === "necesario");
-  const conCulpa = [...fc, ...subs, ...cc].filter((i) => i.expenseType === "con_culpa");
+// Totals of /v1/summary (soles) by destination, and essential vs guilty pleasure from the records of the month
+export function buildDashboardSummary(summary: Summary | undefined, records: Spending[]): DashboardSummary {
+  const totalOf = (destination: string) =>
+    sum(summary?.totals.filter((row) => row.destination === destination && row.currency === "PEN") ?? [], (row) => row.total);
+  const salary = summary?.budget?.salary ?? 0;
+  const totalExpenses = summary?.spentPen ?? 0;
 
   return {
     totalExpenses,
-    totalFixedCosts: totalFixed,
-    totalSubscriptions: totalSubs,
-    totalCreditCards: totalCC,
-    salary: s.salary,
-    surplus: s.salary - totalExpenses,
-    totalNecesario: sumField(necesario),
-    totalConCulpa: sumField(conCulpa),
+    totalFixedCosts: totalOf("fixed_cost"),
+    totalSubscriptions: totalOf("subscription"),
+    totalCreditCards: totalOf("credit_card"),
+    salary,
+    surplus: summary?.surplus ?? salary - totalExpenses,
+    totalNecesario: sum(records.filter((item) => item.expenseType === "essential"), penOf),
+    totalConCulpa: sum(records.filter((item) => item.expenseType === "guilty_pleasure"), penOf),
   };
 }
 
-export function getCategoryBreakdown(month: number, year: number): CategoryBreakdown[] {
-  const s = appStore.getState();
-  const costs = s.fixedCosts.filter((i) => i.paymentMonth === month && i.paymentYear === year);
-
-  const map = new Map<string, { name: string; color: string; amount: number }>();
-  for (const cost of costs) {
-    const cat = s.categories.find((c) => c.id === cost.categoryId);
-    if (!cat) continue;
-    const existing = map.get(cost.categoryId);
-    const amount = cost.amountInPEN ?? cost.amount;
-    if (existing) {
-      existing.amount += amount;
-    } else {
-      map.set(cost.categoryId, { name: cat.name, color: cat.color, amount });
-    }
-  }
-
-  return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
+export function buildCategoryBreakdown(categories: Category[], records: Spending[]): CategoryBreakdown[] {
+  return categories
+    .map((category) => ({
+      name: category.name,
+      color: category.color,
+      amount: sum(records.filter((item) => item.categoryId === category.id), penOf),
+    }))
+    .filter((row) => row.amount > 0)
+    .sort((a, b) => b.amount - a.amount);
 }
 
-export function getCreditCardSummaries(month: number, year: number): CreditCardSummary[] {
-  const s = appStore.getState();
-  return s.creditCards.map((card) => {
-    const expenses = s.creditCardExpenses.filter(
-      (e) => e.creditCardId === card.id && e.paymentMonth === month && e.paymentYear === year,
-    );
-    return {
-      code: card.code,
-      name: card.name,
-      color: card.color,
-      billingCloseDay: card.billingCloseDay,
-      paymentDueDay: card.paymentDueDay,
-      total: sumField(expenses),
-    };
+export function buildCreditCardSummaries(cards: PaymentMethod[], expenses: CreditCardExpense[]): CreditCardSummary[] {
+  return cards.map((card) => ({
+    code: card.code ?? card.name,
+    name: card.name,
+    color: card.color,
+    billingCloseDay: card.billingCloseDay ?? 0,
+    paymentDueDay: card.paymentDueDay ?? 0,
+    total: sum(expenses.filter((expense) => expense.paymentMethodId === card.id), penOf),
+  }));
+}
+
+// The months before `month/year`, oldest first
+export function lastMonths(month: number, year: number, count: number) {
+  return Array.from({ length: count }, (_, index) => {
+    const offset = year * 12 + (month - 1) - (count - 1 - index);
+    return { month: (offset % 12) + 1, year: Math.floor(offset / 12) };
   });
 }
 
-export function getExpensesByMonth(months: number = 6) {
-  const now = new Date();
-  const results = [];
-  for (let i = months - 1; i >= 0; i--) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const m = date.getMonth() + 1;
-    const y = date.getFullYear();
-    const summary = getDashboardSummary(m, y);
-    results.push({ month: m, year: y, totalExpenses: summary.totalExpenses, salary: summary.salary, surplus: summary.surplus });
-  }
-  return results;
+// Subscriptions stay out of the spending records (D46: the card expense is the real charge)
+export function useDashboard(month: number, year: number) {
+  const period = { month, year };
+  const summary = useSummary(month, year).data;
+  const categories = useCategories().data ?? [];
+  const cards = useCreditCards().data ?? [];
+  const daily = useExpenses(EXPENSE_RESOURCES.daily, period).data ?? [];
+  const fixedCosts = useExpenses(EXPENSE_RESOURCES.fixedCost, period).data ?? [];
+  const cardExpenses = useExpenses(EXPENSE_RESOURCES.creditCard, period).data ?? [];
+  const records = [...daily, ...fixedCosts, ...cardExpenses];
+
+  const trendMonths = lastMonths(month, year, 6);
+  const trend = useQueries({
+    queries: trendMonths.map((item) => ({
+      queryKey: summaryKeys.month(item.month, item.year),
+      queryFn: () => unwrap(api.GET("/v1/summary", { params: { query: item } })),
+    })),
+  });
+
+  return {
+    summary: buildDashboardSummary(summary, records),
+    categories: buildCategoryBreakdown(categories, records),
+    creditCards: buildCreditCardSummaries(cards, cardExpenses),
+    trend: trendMonths.map((item, index) => {
+      const data = trend[index].data;
+      const salary = data?.budget?.salary ?? 0;
+      const totalExpenses = data?.spentPen ?? 0;
+      return { ...item, totalExpenses, salary, surplus: data?.surplus ?? salary - totalExpenses };
+    }),
+  };
 }

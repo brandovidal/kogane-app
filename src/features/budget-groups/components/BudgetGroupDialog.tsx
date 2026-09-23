@@ -4,11 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { useAppStore } from "@/mocks/store";
-import { createBudgetGroupSchema, type BudgetGroup } from "../budget-group.validator";
-import type { z } from "zod/v4";
+import { z } from "zod";
+import { useBudgetGroups, useSaveBudgetGroup } from "@/shared/api/hooks/catalogs";
+import type { BudgetGroup } from "@/shared/api/types";
 
-type CreateBudgetGroup = z.infer<typeof createBudgetGroupSchema>;
+const budgetGroupFormSchema = z.object({
+  name: z.string().trim().min(1, "Nombre requerido").max(40),
+  emoji: z.string().trim().max(8),
+  percentage: z.number().min(0).max(100),
+  order: z.number().int().min(0),
+});
+type CreateBudgetGroup = z.infer<typeof budgetGroupFormSchema>;
 
 interface BudgetGroupDialogProps {
   open: boolean;
@@ -17,13 +23,12 @@ interface BudgetGroupDialogProps {
 }
 
 export function BudgetGroupDialog({ open, onOpenChange, group }: BudgetGroupDialogProps) {
-  const addBudgetGroup = useAppStore((s) => s.addBudgetGroup);
-  const updateBudgetGroup = useAppStore((s) => s.updateBudgetGroup);
-  const groups = useAppStore((s) => s.budgetGroups);
+  const saveBudgetGroup = useSaveBudgetGroup();
+  const groups = useBudgetGroups().data ?? [];
   const isEdit = !!group;
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateBudgetGroup>({
-    resolver: zodResolver(createBudgetGroupSchema) as any,
+    resolver: zodResolver(budgetGroupFormSchema),
     defaultValues: {
       name: "",
       emoji: "📦",
@@ -51,17 +56,7 @@ export function BudgetGroupDialog({ open, onOpenChange, group }: BudgetGroupDial
   }, [open, group, reset, groups.length]);
 
   const onSubmit = (data: CreateBudgetGroup) => {
-    if (isEdit) {
-      updateBudgetGroup(group.id, data);
-    } else {
-      addBudgetGroup({
-        ...data,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-    onOpenChange(false);
+    saveBudgetGroup.mutate({ ...data, id: group?.id }, { onSuccess: () => onOpenChange(false) });
   };
 
   return (
@@ -73,7 +68,7 @@ export function BudgetGroupDialog({ open, onOpenChange, group }: BudgetGroupDial
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSubmit(onSubmit)}>
+          <Button onClick={handleSubmit(onSubmit)} disabled={saveBudgetGroup.isPending}>
             {isEdit ? "Guardar" : "Crear"}
           </Button>
         </>

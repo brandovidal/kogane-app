@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { useAppStore } from "@/mocks/store";
+import { useEffect, useState } from "react";
+import { useBudgetGroups } from "@/shared/api/hooks/catalogs";
+import { useSetBudget, useSummary } from "@/shared/api/hooks/summary";
+import { withQuery } from "@/shared/api/query";
+import { getMonthName } from "@/shared/lib/dates";
+import { usePeriod } from "@/shared/stores/period.store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
@@ -7,22 +11,29 @@ import { Badge } from "@/ui/badge";
 import { Save, User, Download, RotateCcw, DollarSign, PieChart, Settings, Palette } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 
-export function SettingsPage() {
-  const salary = useAppStore((s) => s.salary);
-  const budgetLimitPercent = useAppStore((s) => s.budgetLimitPercent);
-  const setSalary = useAppStore((s) => s.setSalary);
-  const setBudgetLimitPercent = useAppStore((s) => s.setBudgetLimitPercent);
-  const budgetGroups = useAppStore((s) => s.budgetGroups);
-  const updateBudgetGroup = useAppStore((s) => s.updateBudgetGroup);
+// Salary and limit are per month (bud_monthly_budgets): this edits the month on screen
+function SettingsPageView() {
+  const month = usePeriod((s) => s.month);
+  const year = usePeriod((s) => s.year);
+  const summary = useSummary(month, year).data;
+  const budgetGroups = useBudgetGroups().data ?? [];
+  const setBudget = useSetBudget();
+  const salary = summary?.budget?.salary ?? 0;
+  const budgetLimitPercent = summary?.budget?.limitPercent ?? 100;
 
   const [salaryInput, setSalaryInput] = useState(salary.toString());
   const [limitInput, setLimitInput] = useState(budgetLimitPercent.toString());
 
+  useEffect(() => {
+    setSalaryInput(salary.toString());
+    setLimitInput(budgetLimitPercent.toString());
+  }, [salary, budgetLimitPercent]);
+
   const handleSaveSalary = () => {
     const val = parseFloat(salaryInput);
-    if (!isNaN(val) && val > 0) setSalary(val);
     const lim = parseFloat(limitInput);
-    if (!isNaN(lim) && lim > 0 && lim <= 100) setBudgetLimitPercent(lim);
+    if (isNaN(val) || val <= 0 || isNaN(lim) || lim <= 0 || lim > 100) return;
+    setBudget.mutate({ month, year, salary: val, limitPercent: lim });
   };
 
   return (
@@ -32,7 +43,7 @@ export function SettingsPage() {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <DollarSign className="h-4 w-4" />
-            Sueldo y Presupuesto
+            Sueldo y Presupuesto · {getMonthName(month)} {year}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -56,7 +67,7 @@ export function SettingsPage() {
               />
             </div>
           </div>
-          <Button size="sm" onClick={handleSaveSalary}>
+          <Button size="sm" onClick={handleSaveSalary} disabled={setBudget.isPending}>
             <Save className="mr-1.5 h-3.5 w-3.5" />
             Guardar
           </Button>
@@ -163,3 +174,5 @@ export function SettingsPage() {
     </div>
   );
 }
+
+export const SettingsPage = withQuery(SettingsPageView);

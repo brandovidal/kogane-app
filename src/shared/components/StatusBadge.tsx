@@ -1,5 +1,5 @@
 import { Badge } from "@/ui/badge";
-import { PAYMENT_STATUS_LABELS, PAYMENT_STATUS_COLORS } from "@/shared/constants";
+import { PAYMENT_STATUS_LABELS, PAYMENT_STATUS_COLORS } from "@/shared/labels";
 import { cn } from "@/shared/lib/utils";
 
 interface StatusBadgeProps {

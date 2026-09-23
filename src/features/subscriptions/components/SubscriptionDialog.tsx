@@ -1,35 +1,55 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { useSaveExpense } from "@/shared/api/hooks/expenses";
+import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/ui/select";
-import { useAppStore } from "@/mocks/store";
-import {
-  createSubscriptionSchema,
-  type CreateSubscription,
-  type Subscription,
-} from "../subscription.validator";
-import {
-  CURRENCIES, PERSONS, ACCOUNTS, SUBSCRIPTION_PERIODS,
+  CURRENCIES,
+  EXPENSE_TYPE_LABELS,
+  EXPENSE_TYPES,
   PAYMENT_STATUS_LABELS,
-} from "@/shared/constants";
-import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
-import { calculateAmountInPEN } from "@/shared/lib/currency";
+  SUBSCRIPTION_PERIOD_LABELS,
+  SUBSCRIPTION_PERIODS,
+  SUBSCRIPTION_STATUSES,
+} from "@/shared/labels";
+import { toIsoDate } from "@/shared/lib/dates";
+import { usePeriod } from "@/shared/stores/period.store";
 
-const PERIOD_LABELS: Record<string, string> = {
-  quincenal: "Quincenal",
-  mensual: "Mensual",
-  trimestral: "Trimestral",
-  semestral: "Semestral",
-  anual: "Anual",
-  exonerado: "Exonerado",
+const subscriptionFormSchema = z.object({
+  description: z.string().trim().min(1, "Descripción requerida"),
+  amount: z.number({ error: "Monto requerido" }).positive("Monto debe ser positivo"),
+  currency: z.enum(CURRENCIES),
+  exchangeRate: z.number().positive().nullable(),
+  period: z.string().min(1, "Período requerido"),
+  expenseType: z.string(),
+  paymentStatus: z.string(),
+  personId: z.string().min(1, "Persona requerida"),
+  paymentMethodId: z.string().nullable(),
+  dueDate: z.string(),
+  notes: z.string().trim().transform((value) => value || null),
+});
+type SubscriptionForm = z.input<typeof subscriptionFormSchema>;
+type SubscriptionValues = z.output<typeof subscriptionFormSchema>;
+
+const emptyForm: SubscriptionForm = {
+  description: "",
+  amount: 0,
+  currency: "PEN",
+  exchangeRate: null,
+  period: "monthly",
+  expenseType: "essential",
+  paymentStatus: "not_started",
+  personId: "",
+  paymentMethodId: null,
+  dueDate: "",
+  notes: "",
 };
-
-const SUB_PAYMENT_STATUSES = ["no_iniciado", "pendiente", "pagado", "exonerado"] as const;
 
 interface SubscriptionDialogProps {
   open: boolean;
@@ -38,116 +58,65 @@ interface SubscriptionDialogProps {
 }
 
 export function SubscriptionDialog({ open, onOpenChange, subscription }: SubscriptionDialogProps) {
-  const addSubscription = useAppStore((s) => s.addSubscription);
-  const updateSubscription = useAppStore((s) => s.updateSubscription);
+  const saveExpense = useSaveExpense(EXPENSE_RESOURCES.subscription);
+  const month = usePeriod((s) => s.month);
+  const year = usePeriod((s) => s.year);
   const isEdit = !!subscription;
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<CreateSubscription>({
-    resolver: zodResolver(createSubscriptionSchema) as any,
-    defaultValues: {
-      description: "",
-      amount: 0,
-      currency: "PEN",
-      exchangeRate: null,
-      amountInPEN: null,
-      expenseType: "necesario",
-      paymentStatus: "no_iniciado",
-      period: "mensual",
-      person: "",
-      account: null,
-      paymentMonth: getCurrentMonth(),
-      paymentYear: getCurrentYear(),
-      paymentDate: null,
-      dueDate: null,
-      comment: null,
-    },
-  });
-
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<
+    SubscriptionForm,
+    unknown,
+    SubscriptionValues
+  >({ resolver: zodResolver(subscriptionFormSchema), defaultValues: emptyForm });
   const currency = watch("currency");
-  const amount = watch("amount");
-  const exchangeRate = watch("exchangeRate");
 
   useEffect(() => {
-    if (currency === "PEN") {
-      setValue("exchangeRate", null);
-      setValue("amountInPEN", null);
-    } else if (exchangeRate && amount) {
-      try {
-        setValue("amountInPEN", calculateAmountInPEN(amount, currency, exchangeRate));
-      } catch { /* ignore */ }
-    }
-  }, [currency, amount, exchangeRate, setValue]);
-
-  useEffect(() => {
-    if (open && subscription) {
-      reset({
-        description: subscription.description,
-        amount: subscription.amount,
-        currency: subscription.currency,
-        exchangeRate: subscription.exchangeRate,
-        amountInPEN: subscription.amountInPEN,
-        expenseType: subscription.expenseType,
-        paymentStatus: subscription.paymentStatus,
-        period: subscription.period,
-        person: subscription.person,
-        account: subscription.account,
-        paymentMonth: subscription.paymentMonth,
-        paymentYear: subscription.paymentYear,
-        paymentDate: subscription.paymentDate,
-        dueDate: subscription.dueDate,
-        comment: subscription.comment,
-      });
-    } else if (open) {
-      reset({
-        description: "",
-        amount: 0,
-        currency: "PEN",
-        exchangeRate: null,
-        amountInPEN: null,
-        expenseType: "necesario",
-        paymentStatus: "no_iniciado",
-        period: "mensual",
-        person: "",
-        account: null,
-        paymentMonth: getCurrentMonth(),
-        paymentYear: getCurrentYear(),
-        paymentDate: null,
-        dueDate: null,
-        comment: null,
-      });
-    }
+    if (!open) return;
+    reset(
+      subscription
+        ? {
+            description: subscription.description,
+            amount: subscription.amount,
+            currency: subscription.currency as SubscriptionForm["currency"],
+            exchangeRate: subscription.exchangeRate,
+            period: subscription.period,
+            expenseType: subscription.expenseType,
+            paymentStatus: subscription.paymentStatus,
+            personId: subscription.personId,
+            paymentMethodId: subscription.paymentMethodId,
+            dueDate: toIsoDate(subscription.dueDate),
+            notes: subscription.notes ?? "",
+          }
+        : emptyForm,
+    );
   }, [open, subscription, reset]);
 
-  const onSubmit = (data: CreateSubscription) => {
-    if (isEdit) {
-      updateSubscription(subscription.id, data);
-    } else {
-      addSubscription({
-        ...data,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-    onOpenChange(false);
-  };
+  const onSubmit = handleSubmit((data) => {
+    const body = {
+      ...data,
+      exchangeRate: data.currency === "PEN" ? null : data.exchangeRate,
+      dueDate: data.dueDate || null,
+      ...(isEdit ? {} : { paymentMonth: month, paymentYear: year }),
+    };
+    saveExpense.mutate({ id: subscription?.id, body }, { onSuccess: () => onOpenChange(false) });
+  });
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={isEdit ? "Editar suscripción" : "Nueva suscripción"}
-      description={isEdit ? "Modifica los datos de la suscripción" : "Agrega una nueva plataforma o suscripción"}
+      title={isEdit ? "Editar plataforma" : "Nueva plataforma"}
+      description={isEdit ? "Modifica los datos de la suscripción" : "Agrega una nueva suscripción"}
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSubmit(onSubmit)}>
+          <Button onClick={onSubmit} disabled={saveExpense.isPending}>
             {isEdit ? "Guardar" : "Crear"}
           </Button>
         </>
       }
     >
-      <form className="space-y-4 py-2" onSubmit={handleSubmit(onSubmit)}>
+      <form className="space-y-4 py-2" onSubmit={onSubmit}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Descripción *</label>
           <Input {...register("description")} placeholder="Ej: Netflix, Spotify..." />
@@ -162,7 +131,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Moneda</label>
-            <Select value={currency} onValueChange={(v) => setValue("currency", v as "PEN" | "USD")}>
+            <Select value={currency} onValueChange={(v) => setValue("currency", v as SubscriptionForm["currency"])}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -174,29 +143,31 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
         {currency !== "PEN" && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de cambio</label>
-            <Input type="number" step="0.001" {...register("exchangeRate", { valueAsNumber: true })} placeholder="Ej: 3.75" />
+            <Input
+              type="number"
+              step="0.001"
+              {...register("exchangeRate", { setValueAs: (v) => (v === "" || v == null ? null : Number(v)) })}
+              placeholder="Ej: 3.75"
+            />
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Período *</label>
-            <Select value={watch("period")} onValueChange={(v) => setValue("period", v as any)}>
+            <Select value={watch("period")} onValueChange={(v) => setValue("period", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {SUBSCRIPTION_PERIODS.map((p) => (
-                  <SelectItem key={p} value={p}>{PERIOD_LABELS[p]}</SelectItem>
-                ))}
+                {SUBSCRIPTION_PERIODS.map((p) => <SelectItem key={p} value={p}>{SUBSCRIPTION_PERIOD_LABELS[p]}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de gasto</label>
-            <Select value={watch("expenseType")} onValueChange={(v) => setValue("expenseType", v as "necesario" | "con_culpa")}>
+            <Select value={watch("expenseType")} onValueChange={(v) => setValue("expenseType", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="necesario">Necesario</SelectItem>
-                <SelectItem value="con_culpa">Con culpa</SelectItem>
+                {EXPENSE_TYPES.map((t) => <SelectItem key={t} value={t}>{EXPENSE_TYPE_LABELS[t]}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -205,34 +176,22 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Persona *</label>
-            <Select value={watch("person")} onValueChange={(v) => setValue("person", v)}>
-              <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
-              <SelectContent>
-                {PERSONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            {errors.person && <p className="text-xs text-destructive">{errors.person.message}</p>}
+            <PersonSelect value={watch("personId")} onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })} />
+            {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Cuenta</label>
-            <Select value={watch("account") ?? ""} onValueChange={(v) => setValue("account", v || null)}>
-              <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
-              <SelectContent>
-                {ACCOUNTS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <PaymentMethodSelect allowEmpty value={watch("paymentMethodId")} onChange={(id) => setValue("paymentMethodId", id)} />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Estado</label>
-            <Select value={watch("paymentStatus")} onValueChange={(v) => setValue("paymentStatus", v as any)}>
+            <Select value={watch("paymentStatus")} onValueChange={(v) => setValue("paymentStatus", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {SUB_PAYMENT_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>
-                ))}
+                {SUBSCRIPTION_STATUSES.map((s) => <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -244,7 +203,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Comentario</label>
-          <Input {...register("comment")} placeholder="Nota adicional..." />
+          <Input {...register("notes")} placeholder="Nota adicional..." />
         </div>
       </form>
     </ResponsiveDialog>

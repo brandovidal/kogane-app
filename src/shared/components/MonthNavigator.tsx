@@ -1,13 +1,13 @@
-import { useAppStore } from "@/mocks/store";
+import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { getMonthName, getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 
 export function MonthNavigator() {
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
-  const navigateMonth = useAppStore((s) => s.navigateMonth);
-  const setSelectedPeriod = useAppStore((s) => s.setSelectedPeriod);
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const navigateMonth = usePeriod((s) => s.navigate);
+  const setSelectedPeriod = usePeriod((s) => s.setPeriod);
 
   const isCurrentMonth = selectedMonth === getCurrentMonth() && selectedYear === getCurrentYear();
 

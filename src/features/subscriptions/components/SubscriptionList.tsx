@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { useAppStore } from "@/mocks/store";
+import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { withQuery } from "@/shared/api/query";
+import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
+import { SUBSCRIPTION_PERIOD_LABELS as PERIOD_LABELS } from "@/shared/labels";
+import { usePeriod } from "@/shared/stores/period.store";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -10,38 +15,26 @@ import { Separator } from "@/ui/separator";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
 import { InlineAddCard } from "@/shared/components/InlineAddCard";
-import type { Subscription } from "../subscription.validator";
-
-const PERIOD_LABELS: Record<string, string> = {
-  quincenal: "Quincenal",
-  mensual: "Mensual",
-  trimestral: "Trimestral",
-  semestral: "Semestral",
-  anual: "Anual",
-  exonerado: "Exonerado",
-};
 
 const PERIOD_COLORS: Record<string, string> = {
-  quincenal: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
-  mensual: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  trimestral: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-  semestral: "bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300",
-  anual: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  exonerado: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+  biweekly: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+  monthly: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+  quarterly: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+  semiannual: "bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300",
+  annual: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
 };
 
-export function SubscriptionList() {
-  const subscriptions = useAppStore((s) => s.subscriptions);
-  const addSubscription = useAppStore((s) => s.addSubscription);
-  const deleteSubscription = useAppStore((s) => s.deleteSubscription);
+function SubscriptionListView() {
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const current = useExpenses(EXPENSE_RESOURCES.subscription, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const personName = nameById(usePeople().data);
+  const saveSubscription = useSaveExpense(EXPENSE_RESOURCES.subscription);
+  const deleteSubscription = useDeleteExpense(EXPENSE_RESOURCES.subscription);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | undefined>();
 
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
-
-  const current = subscriptions.filter((s) => s.paymentMonth === selectedMonth && s.paymentYear === selectedYear);
-  const total = current.reduce((sum, s) => sum + (s.amountInPEN ?? s.amount), 0);
+  const total = current.reduce((sum, s) => sum + (s.amountInPen ?? s.amount), 0);
 
   return (
     <div className="space-y-4">
@@ -68,47 +61,38 @@ export function SubscriptionList() {
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingSub(sub); setDialogOpen(true); }}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteSubscription(sub.id)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteSubscription.mutate(sub.id)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <CurrencyDisplay amount={sub.amount} currency={sub.currency} amountInPEN={sub.amountInPEN} />
+                <CurrencyDisplay amount={sub.amount} currency={sub.currency} amountInPEN={sub.amountInPen} />
                 <Separator />
                 <div className="flex flex-wrap gap-2">
                   <Badge className={PERIOD_COLORS[sub.period]}>{PERIOD_LABELS[sub.period]}</Badge>
                   <StatusBadge status={sub.paymentStatus} />
-                  <Badge variant="outline">{sub.person}</Badge>
+                  <Badge variant="outline">{personName(sub.personId)}</Badge>
                 </div>
-                {sub.comment && (
-                  <p className="text-xs text-muted-foreground">{sub.comment}</p>
+                {sub.notes && (
+                  <p className="text-xs text-muted-foreground">{sub.notes}</p>
                 )}
               </CardContent>
             </Card>
           ))}
           <InlineAddCard
             onSave={(values) => {
-              addSubscription({
-                id: crypto.randomUUID(),
-                description: values.description,
-                amount: Number(values.amount),
-                currency: "PEN",
-                exchangeRate: null,
-                amountInPEN: Number(values.amount),
-                expenseType: "necesario",
-                paymentStatus: "no_iniciado",
-                period: (values.period || "mensual") as "quincenal" | "mensual" | "trimestral" | "semestral" | "anual" | "exonerado",
-                person: values.person,
-                account: null,
-                paymentMonth: selectedMonth,
-                paymentYear: selectedYear,
-                paymentDate: null,
-                dueDate: null,
-                comment: null,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+              saveSubscription.mutate({
+                body: {
+                  description: values.description,
+                  amount: Number(values.amount),
+                  currency: "PEN",
+                  period: values.period,
+                  personId: values.personId,
+                  paymentMonth: selectedMonth,
+                  paymentYear: selectedYear,
+                },
               });
             }}
           />
@@ -123,3 +107,5 @@ export function SubscriptionList() {
     </div>
   );
 }
+
+export const SubscriptionList = withQuery(SubscriptionListView);

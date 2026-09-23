@@ -12,6 +12,12 @@ describe('unwrap', () => {
     await expect(unwrap(call)).resolves.toEqual([{ id: 'd1' }])
   })
 
+  it('should accept an answer without content (204 of a delete)', async () => {
+    const call = Promise.resolve({ response: new Response(null, { status: 204 }) })
+
+    await expect(unwrap(call)).resolves.toBeUndefined()
+  })
+
   it('should throw ApiError with the code and message of kogane-api', async () => {
     const call = Promise.resolve({
       error: { code: 'DEBT_PAYMENT_EXCEEDS_BALANCE', message: 'The payment is greater than the balance', details: { balance: 250 } },

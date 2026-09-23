@@ -1,23 +1,34 @@
-import { useAppStore } from "@/mocks/store";
+import { useCreditCards } from "@/shared/api/hooks/catalogs";
+import { useExpenses } from "@/shared/api/hooks/expenses";
+import { withQuery } from "@/shared/api/query";
+import { EXPENSE_RESOURCES } from "@/shared/api/types";
+import { usePeriod } from "@/shared/stores/period.store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CreditCard, ArrowRight, Calendar } from "lucide-react";
 
-export function CreditCardOverview() {
-  const creditCards = useAppStore((s) => s.creditCards);
-  const expenses = useAppStore((s) => s.creditCardExpenses);
+function CreditCardOverviewView() {
+  const month = usePeriod((s) => s.month);
+  const year = usePeriod((s) => s.year);
+  const creditCards = useCreditCards().data ?? [];
+  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
 
   const cardSummaries = creditCards.map((card) => {
-    const cardExpenses = expenses.filter(
-      (e) => e.creditCardId === card.id && e.paymentMonth === 3 && e.paymentYear === 2026,
-    );
-    const total = cardExpenses.reduce((sum, e) => sum + (e.amountInPEN ?? e.amount), 0);
-    const pending = cardExpenses.filter((e) => e.paymentStatus === "pendiente").length;
-    const paid = cardExpenses.filter((e) => e.paymentStatus === "pagado").length;
+    const cardExpenses = expenses.filter((e) => e.paymentMethodId === card.id);
+    const total = cardExpenses.reduce((sum, e) => sum + (e.amountInPen ?? e.amount), 0);
+    const pending = cardExpenses.filter((e) => e.paymentStatus === "pending").length;
+    const paid = cardExpenses.filter((e) => e.paymentStatus === "paid").length;
 
-    return { ...card, total, count: cardExpenses.length, pending, paid };
+    return {
+      ...card,
+      billingCloseDay: card.billingCloseDay ?? 0,
+      paymentDueDay: card.paymentDueDay ?? 0,
+      total,
+      count: cardExpenses.length,
+      pending,
+      paid,
+    };
   });
 
   const grandTotal = cardSummaries.reduce((sum, c) => sum + c.total, 0);
@@ -33,7 +44,7 @@ export function CreditCardOverview() {
           <CardContent>
             <span className="text-3xl font-bold">{formatCurrency(grandTotal)}</span>
             <p className="text-xs text-muted-foreground mt-1">
-              {expenses.filter((e) => e.paymentMonth === 3 && e.paymentYear === 2026).length} movimientos
+              {expenses.length} movimientos
             </p>
           </CardContent>
         </Card>
@@ -75,7 +86,7 @@ export function CreditCardOverview() {
                   <div>
                     <CardTitle className="text-base">{card.name}</CardTitle>
                     <p className="text-xs text-muted-foreground">
-                      Cierre: día {card.billingCloseDay} | Pago: día {card.paymentDueDay}
+                      {card.billingCloseDay ? `Cierre: día ${card.billingCloseDay} | Pago: día ${card.paymentDueDay}` : "Sin días de cierre y pago"}
                     </p>
                   </div>
                 </div>
@@ -95,7 +106,7 @@ export function CreditCardOverview() {
                 )}
               </div>
               <a
-                href={`/tarjetas/${card.code}`}
+                href={`/tarjetas/${card.code ?? card.id}`}
                 className="flex items-center gap-1 text-sm text-primary hover:underline mt-2"
               >
                 Ver detalle <ArrowRight className="h-3.5 w-3.5" />
@@ -107,3 +118,5 @@ export function CreditCardOverview() {
     </div>
   );
 }
+
+export const CreditCardOverview = withQuery(CreditCardOverviewView);

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { PieChart } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
-import { getBudgetGroupSummaries } from "@/features/budget-groups/budget-group.service";
+import { useBudgetGroupSummaries } from "@/features/budget-groups/budget-group.service";
 
 const GROUP_COLORS = ["#3B82F6", "#8B5CF6", "#10B981", "#F59E0B"];
 
@@ -11,7 +11,7 @@ interface BudgetAllocationSummaryProps {
 }
 
 export function BudgetAllocationSummary({ month, year }: BudgetAllocationSummaryProps) {
-  const summaries = getBudgetGroupSummaries(month, year);
+  const { summaries } = useBudgetGroupSummaries(month, year);
 
   return (
     <Card>

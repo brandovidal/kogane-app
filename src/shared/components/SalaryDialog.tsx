@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAppStore } from "@/mocks/store";
+import { useSetBudget } from "@/shared/api/hooks/summary";
+import { getMonthName } from "@/shared/lib/dates";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +15,15 @@ import { formatCurrency } from "@/shared/lib/currency";
 interface SalaryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  month: number;
+  year: number;
+  salary: number;
+  limitPercent: number;
 }
 
-export function SalaryDialog({ open, onOpenChange }: SalaryDialogProps) {
-  const salary = useAppStore((s) => s.salary);
-  const budgetLimitPercent = useAppStore((s) => s.budgetLimitPercent);
-  const setSalary = useAppStore((s) => s.setSalary);
-  const setBudgetLimitPercent = useAppStore((s) => s.setBudgetLimitPercent);
+// Salary and spending limit of one month (PUT /v1/summary/budget)
+export function SalaryDialog({ open, onOpenChange, month, year, salary, limitPercent: budgetLimitPercent }: SalaryDialogProps) {
+  const setBudget = useSetBudget();
 
   const [salaryValue, setSalaryValue] = useState(String(salary));
   const [percentValue, setPercentValue] = useState(String(budgetLimitPercent));
@@ -38,9 +41,10 @@ export function SalaryDialog({ open, onOpenChange }: SalaryDialogProps) {
 
   const handleSave = () => {
     if (salaryNum > 0 && percentNum >= 1 && percentNum <= 100) {
-      setSalary(salaryNum);
-      setBudgetLimitPercent(percentNum);
-      onOpenChange(false);
+      setBudget.mutate(
+        { month, year, salary: salaryNum, limitPercent: percentNum },
+        { onSuccess: () => onOpenChange(false) },
+      );
     }
   };
 
@@ -48,7 +52,7 @@ export function SalaryDialog({ open, onOpenChange }: SalaryDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Configurar sueldo</DialogTitle>
+          <DialogTitle>Sueldo de {getMonthName(month)} {year}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
@@ -78,7 +82,7 @@ export function SalaryDialog({ open, onOpenChange }: SalaryDialogProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSave}>Guardar</Button>
+          <Button onClick={handleSave} disabled={setBudget.isPending}>Guardar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

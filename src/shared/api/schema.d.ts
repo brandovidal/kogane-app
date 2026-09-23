@@ -635,7 +635,7 @@ export interface components {
             paymentYear: number;
             /** Format: date */
             dueDate?: string | null;
-            notes?: string[];
+            notes?: string | null;
             /** @enum {string} */
             direction: "owed_to_me" | "i_owe";
             installments?: number;
@@ -685,7 +685,7 @@ export interface components {
             paymentYear?: number;
             /** Format: date */
             dueDate?: string | null;
-            notes?: string[];
+            notes?: string | null;
             installment?: string | null;
         };
         DebtResponseDto: {
@@ -735,7 +735,7 @@ export interface components {
             /** Format: date */
             paidAt?: string;
             paymentMethodId?: string | null;
-            notes?: string[];
+            notes?: string | null;
         };
         PersonListResponseDto: {
             /** @enum {boolean} */
@@ -1254,6 +1254,234 @@ export interface components {
                 /** Format: date-time */
                 lastGeneratedAt: string | null;
             };
+        };
+        ExpenseBodyDto: {
+            description: string;
+            amount: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            installment?: string | null;
+            /** Format: date */
+            spentAt: string;
+            paymentMethodId: string;
+            merchant?: string | null;
+            operationNumber?: string | null;
+        } | {
+            description: string;
+            amount: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId: string;
+            installment?: string | null;
+            paymentMonth: number;
+            paymentYear: number;
+            paymentMethodId?: string | null;
+            /** @enum {string} */
+            paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+            /** Format: date */
+            paymentDate?: string | null;
+            /** Format: date */
+            dueDate?: string | null;
+            /** Format: date */
+            attentionDate?: string | null;
+        } | {
+            description: string;
+            amount: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            installment?: string | null;
+            paymentMonth: number;
+            paymentYear: number;
+            /** @enum {string} */
+            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            paymentMethodId?: string | null;
+            /** @enum {string} */
+            paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+            /** Format: date */
+            paymentDate?: string | null;
+            /** Format: date */
+            dueDate?: string | null;
+        } | {
+            description: string;
+            amount: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            installment?: string | null;
+            paymentMonth: number;
+            paymentYear: number;
+            paymentMethodId: string;
+            /** @enum {string} */
+            paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+            /** Format: date */
+            processDate?: string | null;
+        } | {
+            description: string;
+            amount: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId: string;
+            notes?: string | null;
+            /** @enum {string} */
+            targetType: "fixed_cost" | "subscription" | "credit_card";
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            paymentMethodId?: string | null;
+            dayOfMonth: number;
+            isActive?: boolean;
+        };
+        ExpensePatchDto: {
+            description?: string;
+            amount?: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId?: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            installment?: string | null;
+            /** Format: date */
+            spentAt?: string;
+            paymentMethodId?: string;
+            merchant?: string | null;
+            operationNumber?: string | null;
+        } | {
+            description?: string;
+            amount?: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId?: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string;
+            installment?: string | null;
+            paymentMonth?: number;
+            paymentYear?: number;
+            paymentMethodId?: string | null;
+            /** @enum {string} */
+            paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+            /** Format: date */
+            paymentDate?: string | null;
+            /** Format: date */
+            dueDate?: string | null;
+            /** Format: date */
+            attentionDate?: string | null;
+        } | {
+            description?: string;
+            amount?: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId?: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            installment?: string | null;
+            paymentMonth?: number;
+            paymentYear?: number;
+            /** @enum {string} */
+            period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            paymentMethodId?: string | null;
+            /** @enum {string} */
+            paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+            /** Format: date */
+            paymentDate?: string | null;
+            /** Format: date */
+            dueDate?: string | null;
+        } | {
+            description?: string;
+            amount?: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId?: string;
+            notes?: string | null;
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            installment?: string | null;
+            paymentMonth?: number;
+            paymentYear?: number;
+            paymentMethodId?: string;
+            /** @enum {string} */
+            paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+            /** Format: date */
+            processDate?: string | null;
+        } | {
+            description?: string;
+            amount?: number;
+            /**
+             * @default PEN
+             * @enum {string}
+             */
+            currency: "PEN" | "USD";
+            exchangeRate?: number | null;
+            personId?: string;
+            notes?: string | null;
+            /** @enum {string} */
+            targetType?: "fixed_cost" | "subscription" | "credit_card";
+            /** @enum {string} */
+            expenseType?: "essential" | "guilty_pleasure";
+            categoryId?: string | null;
+            paymentMethodId?: string | null;
+            dayOfMonth?: number;
+            isActive?: boolean;
         };
         DraftListResponseDto: {
             /** @enum {boolean} */
@@ -2172,7 +2400,7 @@ export interface operations {
         /** @description Columns of the table (validated per resource) */
         requestBody: {
             content: {
-                "application/json": Record<string, never>;
+                "application/json": components["schemas"]["ExpenseBodyDto"];
             };
         };
         responses: {
@@ -2238,10 +2466,10 @@ export interface operations {
             };
             cookie?: never;
         };
-        /** @description Columns of the table (validated per resource) */
+        /** @description Columns to change (validated per resource) */
         requestBody: {
             content: {
-                "application/json": Record<string, never>;
+                "application/json": components["schemas"]["ExpensePatchDto"];
             };
         };
         responses: {

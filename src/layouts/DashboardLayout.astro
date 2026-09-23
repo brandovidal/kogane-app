@@ -11,13 +11,13 @@ interface Props {
   title?: string;
 }
 
-const { title = "Gastos App" } = Astro.props;
+const { title = "Kogane" } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
 <Layout title={title}>
   <div class="flex h-screen overflow-hidden">
-    <Sidebar currentPath={currentPath} />
+    <Sidebar client:load currentPath={currentPath} />
 
     <div class="flex flex-1 flex-col overflow-hidden">
       <header class="flex h-16 items-center justify-between border-b px-4 md:px-6">

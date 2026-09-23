@@ -1,24 +1,16 @@
-import { useAppStore } from "@/mocks/store";
+import { withQuery } from "@/shared/api/query";
+import { usePeriod } from "@/shared/stores/period.store";
 import { MonthlySummary } from "./MonthlySummary";
 import { ExpenseChart } from "./ExpenseChart";
 import { CategoryRing } from "./CategoryRing";
 import { BillingCycleCard } from "./BillingCycleCard";
 import { BudgetAllocationSummary } from "./BudgetAllocationSummary";
-import {
-  getDashboardSummary,
-  getCategoryBreakdown,
-  getCreditCardSummaries,
-  getExpensesByMonth,
-} from "../dashboard.service";
+import { useDashboard } from "../dashboard.service";
 
-export function DashboardPage() {
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
-
-  const summary = getDashboardSummary(selectedMonth, selectedYear);
-  const categories = getCategoryBreakdown(selectedMonth, selectedYear);
-  const creditCards = getCreditCardSummaries(selectedMonth, selectedYear);
-  const trend = getExpensesByMonth(6);
+function DashboardPageView() {
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const { summary, categories, creditCards, trend } = useDashboard(selectedMonth, selectedYear);
 
   return (
     <div className="space-y-4">
@@ -36,3 +28,5 @@ export function DashboardPage() {
     </div>
   );
 }
+
+export const DashboardPage = withQuery(DashboardPageView);

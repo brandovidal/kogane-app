@@ -4,11 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { useAppStore } from "@/mocks/store";
-import { createCategorySchema, type Category } from "../category.validator";
-import type { z } from "zod/v4";
+import { z } from "zod";
+import { useSaveCategory } from "@/shared/api/hooks/catalogs";
+import type { Category } from "@/shared/api/types";
 
-type CreateCategory = z.infer<typeof createCategorySchema>;
+const categoryFormSchema = z.object({
+  name: z.string().trim().min(1, "Nombre requerido").max(40),
+  color: z.string().trim().max(20),
+  icon: z.string().trim().max(40).nullable(),
+  isDefault: z.boolean(),
+});
+type CreateCategory = z.infer<typeof categoryFormSchema>;
 
 interface CategoryDialogProps {
   open: boolean;
@@ -17,12 +23,11 @@ interface CategoryDialogProps {
 }
 
 export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogProps) {
-  const addCategory = useAppStore((s) => s.addCategory);
-  const updateCategory = useAppStore((s) => s.updateCategory);
+  const saveCategory = useSaveCategory();
   const isEdit = !!category;
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<CreateCategory>({
-    resolver: zodResolver(createCategorySchema) as any,
+    resolver: zodResolver(categoryFormSchema),
     defaultValues: {
       name: "",
       color: "#6B7280",
@@ -50,17 +55,10 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
   }, [open, category, reset]);
 
   const onSubmit = (data: CreateCategory) => {
-    if (isEdit) {
-      updateCategory(category.id, data);
-    } else {
-      addCategory({
-        ...data,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-    onOpenChange(false);
+    saveCategory.mutate(
+      { ...data, icon: data.icon || null, id: category?.id },
+      { onSuccess: () => onOpenChange(false) },
+    );
   };
 
   return (
@@ -72,7 +70,7 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSubmit(onSubmit)}>
+          <Button onClick={handleSubmit(onSubmit)} disabled={saveCategory.isPending}>
             {isEdit ? "Guardar" : "Crear"}
           </Button>
         </>

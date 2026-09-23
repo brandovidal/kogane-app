@@ -3,20 +3,22 @@ import { Card, CardContent } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
-import { PERSONS, SUBSCRIPTION_PERIODS } from "@/shared/constants";
+import { usePeople } from "@/shared/api/hooks/catalogs";
+import { SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS } from "@/shared/labels";
 
 interface InlineAddCardProps {
   onSave: (values: Record<string, string>) => void;
 }
 
+// Quick add of a Plataforma: values carry personId and period as kogane-api expects them
 export function InlineAddCard({ onSave }: InlineAddCardProps) {
+  const people = usePeople().data?.filter((person) => person.isActive) ?? [];
   const [editing, setEditing] = useState(false);
   const [values, setValues] = useState({
     description: "",
     amount: "",
-    person: "",
-    period: "mensual",
+    personId: "",
+    period: "monthly",
   });
   const descRef = useRef<HTMLInputElement>(null);
 
@@ -27,14 +29,13 @@ export function InlineAddCard({ onSave }: InlineAddCardProps) {
   }, [editing]);
 
   const reset = () => {
-    setValues({ description: "", amount: "", person: "", period: "mensual" });
+    setValues({ description: "", amount: "", personId: "", period: "monthly" });
     setEditing(false);
   };
 
   const handleSave = () => {
-    if (!values.description.trim() || !values.amount.trim()) return;
+    if (!values.description.trim() || !values.amount.trim() || !values.personId) return;
     onSave(values);
-    toast.success("Plataforma agregada");
     reset();
   };
 
@@ -80,13 +81,13 @@ export function InlineAddCard({ onSave }: InlineAddCardProps) {
         />
         <select
           className="h-9 w-full rounded-md border bg-background px-3 text-sm"
-          value={values.person}
-          onChange={(e) => setValues({ ...values, person: e.target.value })}
+          value={values.personId}
+          onChange={(e) => setValues({ ...values, personId: e.target.value })}
           onKeyDown={handleKeyDown}
         >
           <option value="">Persona...</option>
-          {PERSONS.map((p) => (
-            <option key={p} value={p}>{p}</option>
+          {people.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
         <select
@@ -96,7 +97,7 @@ export function InlineAddCard({ onSave }: InlineAddCardProps) {
           onKeyDown={handleKeyDown}
         >
           {SUBSCRIPTION_PERIODS.map((p) => (
-            <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
+            <option key={p} value={p}>{SUBSCRIPTION_PERIOD_LABELS[p]}</option>
           ))}
         </select>
         <div className="flex gap-2">

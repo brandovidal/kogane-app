@@ -44,10 +44,10 @@ export function CategoryRing({ data }: CategoryRingProps) {
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(Number(value))}
               contentStyle={{
-                backgroundColor: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
               }}
             />

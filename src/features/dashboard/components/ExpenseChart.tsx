@@ -41,14 +41,14 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
             <YAxis className="text-xs" />
             <Tooltip
               contentStyle={{
-                backgroundColor: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
               }}
             />
             <Legend />
-            <Bar dataKey="gastos" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="excedente" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="gastos" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="excedente" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

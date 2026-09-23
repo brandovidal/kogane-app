@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useAppStore } from "@/mocks/store";
+import { nameById, useCreditCards, usePeople } from "@/shared/api/hooks/catalogs";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { withQuery } from "@/shared/api/query";
+import { EXPENSE_RESOURCES } from "@/shared/api/types";
+import { usePeriod } from "@/shared/stores/period.store";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -10,11 +14,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/ui/table";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger,
 } from "@/ui/select";
 import { Plus, Trash2, ArrowLeft } from "lucide-react";
 import { formatDate } from "@/shared/lib/dates";
-import { CREDIT_CARD_STATUSES, PAYMENT_STATUS_LABELS, PERSONS } from "@/shared/constants";
+import { CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { InlineAddRow } from "@/shared/components/InlineAddRow";
 import { CreditCardExpenseDialog } from "./CreditCardExpenseDialog";
 
@@ -22,25 +26,27 @@ interface CreditCardDetailProps {
   cardCode: string;
 }
 
-export function CreditCardDetail({ cardCode }: CreditCardDetailProps) {
-  const creditCards = useAppStore((s) => s.creditCards);
-  const expenses = useAppStore((s) => s.creditCardExpenses);
-  const addCreditCardExpense = useAppStore((s) => s.addCreditCardExpense);
-  const updateExpense = useAppStore((s) => s.updateCreditCardExpense);
-  const deleteExpense = useAppStore((s) => s.deleteCreditCardExpense);
-
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
+// The card is a payment method of type credit_card (D62); the URL uses its code (CMR, IO…) or its id
+function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const { data: creditCards, isLoading } = useCreditCards();
+  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const people = usePeople().data ?? [];
+  const personName = nameById(people);
+  const saveExpense = useSaveExpense(EXPENSE_RESOURCES.creditCard);
+  const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.creditCard);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const card = creditCards.find((c) => c.code === cardCode);
+  const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
+  if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
 
   const cardExpenses = expenses
-    .filter((e) => e.creditCardId === card.id && e.paymentMonth === selectedMonth && e.paymentYear === selectedYear)
+    .filter((e) => e.paymentMethodId === card.id)
     .sort((a, b) => (b.processDate ?? "").localeCompare(a.processDate ?? ""));
 
-  const total = cardExpenses.reduce((sum, e) => sum + (e.amountInPEN ?? e.amount), 0);
+  const total = cardExpenses.reduce((sum, e) => sum + (e.amountInPen ?? e.amount), 0);
 
   return (
     <div className="space-y-4">
@@ -52,7 +58,7 @@ export function CreditCardDetail({ cardCode }: CreditCardDetailProps) {
         <div>
           <h2 className="text-xl font-bold">{card.name}</h2>
           <p className="text-sm text-muted-foreground">
-            Cierre: día {card.billingCloseDay} | Pago: día {card.paymentDueDay}
+            {card.billingCloseDay ? `Cierre: día ${card.billingCloseDay} | Pago: día ${card.paymentDueDay}` : "Sin días de cierre y pago"}
           </p>
         </div>
       </div>
@@ -94,13 +100,13 @@ export function CreditCardDetail({ cardCode }: CreditCardDetailProps) {
                       <span className="font-medium">{exp.description}</span>
                       {exp.installment && <Badge variant="outline" className="text-xs">{exp.installment}</Badge>}
                     </div>
-                    {exp.observation && <p className="text-xs text-muted-foreground">{exp.observation}</p>}
+                    {exp.notes && <p className="text-xs text-muted-foreground">{exp.notes}</p>}
                   </TableCell>
                   <TableCell>
-                    <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPEN} />
+                    <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPen} />
                   </TableCell>
                   <TableCell>
-                    <Select value={exp.paymentStatus} onValueChange={(v) => updateExpense(exp.id, { paymentStatus: v })}>
+                    <Select value={exp.paymentStatus} onValueChange={(v) => saveExpense.mutate({ id: exp.id, body: { paymentStatus: v } })}>
                       <SelectTrigger className="h-7 w-auto border-0 p-0">
                         <StatusBadge status={exp.paymentStatus} />
                       </SelectTrigger>
@@ -111,17 +117,17 @@ export function CreditCardDetail({ cardCode }: CreditCardDetailProps) {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell className="text-sm">{exp.person}</TableCell>
+                  <TableCell className="text-sm">{personName(exp.personId)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {exp.processDate ? formatDate(exp.processDate) : "—"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={exp.expenseType === "necesario" ? "default" : "secondary"} className="text-xs">
-                      {exp.expenseType === "necesario" ? "Necesario" : "Con culpa"}
+                    <Badge variant={exp.expenseType === "essential" ? "default" : "secondary"} className="text-xs">
+                      {EXPENSE_TYPE_LABELS[exp.expenseType]}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteExpense(exp.id)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteExpense.mutate(exp.id)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </TableCell>
@@ -132,27 +138,19 @@ export function CreditCardDetail({ cardCode }: CreditCardDetailProps) {
                 columns={[
                   { key: "description", placeholder: "Descripción...", type: "text" },
                   { key: "amount", placeholder: "Monto", type: "number" },
-                  { key: "person", placeholder: "Persona", type: "select", options: PERSONS.map((p) => ({ value: p, label: p })) },
+                  { key: "personId", placeholder: "Persona", type: "select", options: people.map((p) => ({ value: p.id, label: p.name })) },
                 ]}
                 onSave={(values) => {
-                  addCreditCardExpense({
-                    id: crypto.randomUUID(),
-                    description: values.description,
-                    amount: Number(values.amount),
-                    currency: "PEN",
-                    exchangeRate: null,
-                    amountInPEN: Number(values.amount),
-                    expenseType: "necesario",
-                    paymentStatus: "pendiente",
-                    person: values.person,
-                    installment: null,
-                    paymentMonth: selectedMonth,
-                    paymentYear: selectedYear,
-                    processDate: null,
-                    observation: null,
-                    creditCardId: card.id,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
+                  saveExpense.mutate({
+                    body: {
+                      description: values.description,
+                      amount: Number(values.amount),
+                      currency: "PEN",
+                      personId: values.personId,
+                      paymentMethodId: card.id,
+                      paymentMonth: selectedMonth,
+                      paymentYear: selectedYear,
+                    },
                   });
                 }}
               />
@@ -169,3 +167,5 @@ export function CreditCardDetail({ cardCode }: CreditCardDetailProps) {
     </div>
   );
 }
+
+export const CreditCardDetail = withQuery(CreditCardDetailView);

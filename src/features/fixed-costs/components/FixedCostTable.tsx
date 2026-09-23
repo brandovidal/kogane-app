@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useAppStore } from "@/mocks/store";
+import { useCategories, usePaymentMethods, usePeople, nameById } from "@/shared/api/hooks/catalogs";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { withQuery } from "@/shared/api/query";
+import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
+import { usePeriod } from "@/shared/stores/period.store";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -23,20 +27,21 @@ import {
 import { Input } from "@/ui/input";
 import { Plus, Search, Trash2, Pencil } from "lucide-react";
 import { formatDate } from "@/shared/lib/dates";
-import { PAYMENT_STATUSES, PAYMENT_STATUS_LABELS, PERSONS } from "@/shared/constants";
+import { FIXED_COST_STATUSES as PAYMENT_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { InlineAddRow } from "@/shared/components/InlineAddRow";
 import { FixedCostDialog } from "./FixedCostDialog";
-import type { FixedCost } from "../fixed-cost.validator";
 
-export function FixedCostTable() {
-  const fixedCosts = useAppStore((s) => s.fixedCosts);
-  const categories = useAppStore((s) => s.categories);
-  const addFixedCost = useAppStore((s) => s.addFixedCost);
-  const updateFixedCost = useAppStore((s) => s.updateFixedCost);
-  const deleteFixedCost = useAppStore((s) => s.deleteFixedCost);
-
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
+function FixedCostTableView() {
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const fixedCosts =
+    useExpenses(EXPENSE_RESOURCES.fixedCost, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const categories = useCategories().data ?? [];
+  const people = usePeople().data ?? [];
+  const personName = nameById(people);
+  const accountName = nameById(usePaymentMethods().data);
+  const saveFixedCost = useSaveExpense(EXPENSE_RESOURCES.fixedCost);
+  const deleteFixedCost = useDeleteExpense(EXPENSE_RESOURCES.fixedCost);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -45,12 +50,11 @@ export function FixedCostTable() {
   const [editingItem, setEditingItem] = useState<FixedCost | undefined>();
 
   const filtered = fixedCosts
-    .filter((fc) => fc.paymentMonth === selectedMonth && fc.paymentYear === selectedYear)
     .filter((fc) => !search || fc.description.toLowerCase().includes(search.toLowerCase()))
     .filter((fc) => statusFilter === "all" || fc.paymentStatus === statusFilter)
     .filter((fc) => categoryFilter === "all" || fc.categoryId === categoryFilter);
 
-  const total = filtered.reduce((sum, fc) => sum + (fc.amountInPEN ?? fc.amount), 0);
+  const total = filtered.reduce((sum, fc) => sum + (fc.amountInPen ?? fc.amount), 0);
 
   return (
     <div className="space-y-4">
@@ -120,9 +124,9 @@ export function FixedCostTable() {
                     <TableCell>
                       <div>
                         <span className="font-medium">{fc.description}</span>
-                        {fc.installments && (
+                        {fc.installment && (
                           <Badge variant="outline" className="ml-2 text-xs">
-                            {fc.installments}
+                            {fc.installment}
                           </Badge>
                         )}
                       </div>
@@ -136,12 +140,12 @@ export function FixedCostTable() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <CurrencyDisplay amount={fc.amount} currency={fc.currency} amountInPEN={fc.amountInPEN} />
+                      <CurrencyDisplay amount={fc.amount} currency={fc.currency} amountInPEN={fc.amountInPen} />
                     </TableCell>
                     <TableCell>
                       <Select
                         value={fc.paymentStatus}
-                        onValueChange={(val) => updateFixedCost(fc.id, { paymentStatus: val })}
+                        onValueChange={(val) => saveFixedCost.mutate({ id: fc.id, body: { paymentStatus: val } })}
                       >
                         <SelectTrigger className="h-7 w-auto border-0 p-0">
                           <StatusBadge status={fc.paymentStatus} />
@@ -153,11 +157,11 @@ export function FixedCostTable() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="text-sm">{fc.person}</TableCell>
+                    <TableCell className="text-sm">{personName(fc.personId)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {fc.dueDate ? formatDate(fc.dueDate) : "—"}
                     </TableCell>
-                    <TableCell className="text-sm">{fc.account ?? "—"}</TableCell>
+                    <TableCell className="text-sm">{accountName(fc.paymentMethodId)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingItem(fc); setDialogOpen(true); }}>
@@ -167,7 +171,7 @@ export function FixedCostTable() {
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7 text-destructive"
-                          onClick={() => deleteFixedCost(fc.id)}
+                          onClick={() => deleteFixedCost.mutate(fc.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -182,30 +186,19 @@ export function FixedCostTable() {
                   { key: "description", placeholder: "Descripción...", type: "text" },
                   { key: "categoryId", placeholder: "Categoría", type: "select", options: categories.map((c) => ({ value: c.id, label: c.name })) },
                   { key: "amount", placeholder: "Monto", type: "number" },
-                  { key: "person", placeholder: "Persona", type: "select", options: PERSONS.map((p) => ({ value: p, label: p })) },
+                  { key: "personId", placeholder: "Persona", type: "select", options: people.map((p) => ({ value: p.id, label: p.name })) },
                 ]}
                 onSave={(values) => {
-                  addFixedCost({
-                    id: crypto.randomUUID(),
-                    description: values.description,
-                    amount: Number(values.amount),
-                    currency: "PEN",
-                    exchangeRate: null,
-                    amountInPEN: Number(values.amount),
-                    expenseType: "necesario",
-                    paymentStatus: "no_iniciado",
-                    paymentDate: null,
-                    dueDate: null,
-                    attentionDate: null,
-                    paymentMonth: selectedMonth,
-                    paymentYear: selectedYear,
-                    account: null,
-                    installments: null,
-                    person: values.person,
-                    observation: null,
-                    categoryId: values.categoryId,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
+                  saveFixedCost.mutate({
+                    body: {
+                      description: values.description,
+                      amount: Number(values.amount),
+                      currency: "PEN",
+                      categoryId: values.categoryId,
+                      personId: values.personId,
+                      paymentMonth: selectedMonth,
+                      paymentYear: selectedYear,
+                    },
                   });
                 }}
               />
@@ -226,3 +219,5 @@ export function FixedCostTable() {
     </div>
   );
 }
+
+export const FixedCostTable = withQuery(FixedCostTableView);

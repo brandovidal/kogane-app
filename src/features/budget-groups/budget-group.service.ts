@@ -1,6 +1,7 @@
-import { appStore, type AppState } from "@/mocks/store";
-import type { BudgetGroup } from "./budget-group.validator";
-import type { FixedCost } from "@/features/fixed-costs/fixed-cost.validator";
+import { useBudgetGroups, useCategories } from "@/shared/api/hooks/catalogs";
+import { useExpenses } from "@/shared/api/hooks/expenses";
+import { useSummary } from "@/shared/api/hooks/summary";
+import { EXPENSE_RESOURCES, type BudgetGroup, type Category } from "@/shared/api/types";
 
 export interface BudgetGroupSummary {
   group: BudgetGroup;
@@ -10,43 +11,50 @@ export interface BudgetGroupSummary {
   categories: Array<{ id: string; name: string; color: string; spent: number }>;
 }
 
-function sumField(items: Array<{ amountInPEN: number | null; amount: number }>): number {
-  return items.reduce((sum: number, i) => sum + (i.amountInPEN ?? i.amount), 0);
+interface Spending {
+  categoryId: string | null;
+  amount: number;
+  amountInPen: number | null;
 }
 
-export function getBudgetGroupSummaries(month: number, year: number): BudgetGroupSummary[] {
-  const s: AppState = appStore.getState();
-  const salary = s.salary;
+// What each budget group got (salary × %) against what its categories spent in the month. Plataformas stay out: the
+// card expense is the real charge (D46).
+export function buildBudgetGroupSummaries(
+  groups: BudgetGroup[],
+  categories: Category[],
+  spending: Spending[],
+  salary: number,
+): BudgetGroupSummary[] {
+  const spentBy = (categoryId: string) =>
+    spending.filter((item) => item.categoryId === categoryId).reduce((sum, item) => sum + (item.amountInPen ?? item.amount), 0);
 
-  const fc: FixedCost[] = s.fixedCosts.filter(
-    (i: FixedCost) => i.paymentMonth === month && i.paymentYear === year,
-  );
-
-  return s.budgetGroups
+  return groups
     .slice()
-    .sort((a: BudgetGroup, b: BudgetGroup) => a.order - b.order)
-    .map((group: BudgetGroup) => {
-      const groupCats = s.categories.filter((c) => c.budgetGroupId === group.id);
-      const catIds = groupCats.map((c) => c.id);
-
-      const catSummaries = groupCats.map((cat) => {
-        const catFC = fc.filter((i: FixedCost) => i.categoryId === cat.id);
-        return {
-          id: cat.id,
-          name: cat.name,
-          color: cat.color,
-          spent: sumField(catFC),
-        };
-      });
-
-      const fixedSpent = sumField(fc.filter((i: FixedCost) => catIds.includes(i.categoryId)));
+    .sort((a, b) => a.order - b.order)
+    .map((group) => {
+      const groupCategories = categories
+        .filter((category) => category.budgetGroupId === group.id)
+        .map((category) => ({ id: category.id, name: category.name, color: category.color, spent: spentBy(category.id) }));
 
       return {
         group,
         assignedAmount: (salary * group.percentage) / 100,
-        spentAmount: fixedSpent,
-        categoryIds: catIds,
-        categories: catSummaries,
+        spentAmount: groupCategories.reduce((sum, category) => sum + category.spent, 0),
+        categoryIds: groupCategories.map((category) => category.id),
+        categories: groupCategories,
       };
     });
+}
+
+export function useBudgetGroupSummaries(month: number, year: number) {
+  const period = { month, year };
+  const summary = useSummary(month, year).data;
+  const groups = useBudgetGroups().data ?? [];
+  const categories = useCategories().data ?? [];
+  const daily = useExpenses(EXPENSE_RESOURCES.daily, period).data ?? [];
+  const fixedCosts = useExpenses(EXPENSE_RESOURCES.fixedCost, period).data ?? [];
+  const cards = useExpenses(EXPENSE_RESOURCES.creditCard, period).data ?? [];
+
+  const salary = summary?.budget?.salary ?? 0;
+  return { salary, groups, summaries: buildBudgetGroupSummaries(groups, categories, [...daily, ...fixedCosts, ...cards], salary) };
 }

@@ -1,26 +1,25 @@
 import { useState } from "react";
-import { useAppStore } from "@/mocks/store";
-import { getBudgetGroupSummaries } from "../budget-group.service";
+import { useDeleteBudgetGroup } from "@/shared/api/hooks/catalogs";
+import { withQuery } from "@/shared/api/query";
+import type { BudgetGroup } from "@/shared/api/types";
+import { usePeriod } from "@/shared/stores/period.store";
+import { useBudgetGroupSummaries } from "../budget-group.service";
 import { BudgetGroupTable } from "./BudgetGroupTable";
 import { BudgetGroupCards } from "./BudgetGroupCards";
 import { BudgetGroupDialog } from "./BudgetGroupDialog";
 import { ViewToggle } from "@/shared/components/ViewToggle";
 import { Button } from "@/ui/button";
 import { Plus } from "lucide-react";
-import type { BudgetGroup } from "../budget-group.validator";
 
-export function BudgetGroupPage() {
+function BudgetGroupPageView() {
   const [view, setView] = useState<"table" | "cards">("table");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<BudgetGroup | undefined>();
 
-  const selectedMonth = useAppStore((s) => s.selectedMonth);
-  const selectedYear = useAppStore((s) => s.selectedYear);
-  const salary = useAppStore((s) => s.salary);
-  const budgetGroups = useAppStore((s) => s.budgetGroups);
-  const deleteBudgetGroup = useAppStore((s) => s.deleteBudgetGroup);
-
-  const summaries = getBudgetGroupSummaries(selectedMonth, selectedYear);
+  const selectedMonth = usePeriod((s) => s.month);
+  const selectedYear = usePeriod((s) => s.year);
+  const { salary, groups: budgetGroups, summaries } = useBudgetGroupSummaries(selectedMonth, selectedYear);
+  const deleteBudgetGroup = useDeleteBudgetGroup();
 
   const handleEdit = (groupId: string) => {
     const group = budgetGroups.find((g) => g.id === groupId);
@@ -31,7 +30,7 @@ export function BudgetGroupPage() {
   };
 
   const handleDelete = (groupId: string) => {
-    deleteBudgetGroup(groupId);
+    deleteBudgetGroup.mutate(groupId);
   };
 
   const handleAdd = () => {
@@ -77,3 +76,5 @@ export function BudgetGroupPage() {
     </div>
   );
 }
+
+export const BudgetGroupPage = withQuery(BudgetGroupPageView);

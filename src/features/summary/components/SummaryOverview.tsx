@@ -1,46 +1,22 @@
-import { useAppStore } from "@/mocks/store";
+import { useDashboard } from "@/features/dashboard/dashboard.service";
+import { withQuery } from "@/shared/api/query";
+import { usePeriod } from "@/shared/stores/period.store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Separator } from "@/ui/separator";
 import { Badge } from "@/ui/badge";
 import { formatCurrency } from "@/shared/lib/currency";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { getMonthName } from "@/shared/lib/dates";
 
-export function SummaryOverview() {
-  const fixedCosts = useAppStore((s) => s.fixedCosts);
-  const subscriptions = useAppStore((s) => s.subscriptions);
-  const creditCardExpenses = useAppStore((s) => s.creditCardExpenses);
-  const creditCards = useAppStore((s) => s.creditCards);
-  const salary = useAppStore((s) => s.salary);
-  const month = useAppStore((s) => s.selectedMonth);
-  const year = useAppStore((s) => s.selectedYear);
+function SummaryOverviewView() {
+  const month = usePeriod((s) => s.month);
+  const year = usePeriod((s) => s.year);
+  const { summary, creditCards: cardTotals } = useDashboard(month, year);
 
-  const fc = fixedCosts.filter((i) => i.paymentMonth === month && i.paymentYear === year);
-  const subs = subscriptions.filter((i) => i.paymentMonth === month && i.paymentYear === year);
-  const ccExp = creditCardExpenses.filter((i) => i.paymentMonth === month && i.paymentYear === year);
-
-  const totalFC = fc.reduce((s, i) => s + (i.amountInPEN ?? i.amount), 0);
-  const totalSubs = subs.reduce((s, i) => s + (i.amountInPEN ?? i.amount), 0);
-
-  const cardTotals = creditCards.map((card) => ({
-    name: card.name,
-    code: card.code,
-    color: card.color,
-    total: ccExp.filter((e) => e.creditCardId === card.id).reduce((s, e) => s + (e.amountInPEN ?? e.amount), 0),
-  }));
-  const totalCC = cardTotals.reduce((s, c) => s + c.total, 0);
-  const totalExpenses = totalFC + totalSubs + totalCC;
-  const surplus = salary - totalExpenses;
-
-  const allItems = [...fc, ...subs, ...ccExp];
-  const totalNecesario = allItems
-    .filter((i) => i.expenseType === "necesario")
-    .reduce((s, i) => s + ((i as any).amountInPEN ?? i.amount), 0);
-  const totalConCulpa = allItems
-    .filter((i) => i.expenseType === "con_culpa")
-    .reduce((s, i) => s + ((i as any).amountInPEN ?? i.amount), 0);
+  const { salary, surplus, totalExpenses, totalNecesario, totalConCulpa } = summary;
+  const totalFC = summary.totalFixedCosts;
+  const totalSubs = summary.totalSubscriptions;
 
   const breakdownData = [
     { name: "Costos Fijos", monto: totalFC },
@@ -66,7 +42,9 @@ export function SummaryOverview() {
           </CardHeader>
           <CardContent>
             <span className="text-3xl font-bold text-red-500">{formatCurrency(totalExpenses)}</span>
-            <p className="text-xs text-muted-foreground">{((totalExpenses / salary) * 100).toFixed(1)}% del sueldo</p>
+            <p className="text-xs text-muted-foreground">
+              {salary > 0 ? `${((totalExpenses / salary) * 100).toFixed(1)}% del sueldo` : "Sin sueldo registrado"}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -139,12 +117,12 @@ export function SummaryOverview() {
                 <YAxis className="text-xs" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
                     borderRadius: "8px",
                   }}
                 />
-                <Bar dataKey="monto" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="monto" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -153,3 +131,5 @@ export function SummaryOverview() {
     </div>
   );
 }
+
+export const SummaryOverview = withQuery(SummaryOverviewView);

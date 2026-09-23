@@ -20,16 +20,17 @@ export class ApiError extends Error {
   }
 }
 
-interface Envelope<T> {
-  data: T
-}
+type ApiResult = { data?: unknown; error?: unknown; response: Response }
 
-type ApiResult<T> = { data?: Envelope<T>; error?: unknown; response: Response }
+// The `data` inside the envelope of ResponseInterceptor (undefined for deletes)
+// Only the success branch of openapi-fetch has `data` (the error one has `data?: never`)
+type Payload<R> = R extends { data: infer D } ? (D extends { data: infer X } ? X : undefined) : never
 
 // Every response comes wrapped by ResponseInterceptor: returns its data or throws ApiError
-export async function unwrap<T>(call: Promise<ApiResult<T>>): Promise<T> {
+export async function unwrap<R extends ApiResult>(call: Promise<R>): Promise<Payload<R>> {
   const { data, error, response } = await call
-  if (response.ok && data) return data.data
+  // 204 (deletes) has no envelope
+  if (response.ok) return (data as { data?: unknown } | undefined)?.data as Payload<R>
 
   const body = (error ?? {}) as { code?: string; message?: string; details?: unknown }
   throw new ApiError(response.status, body.code ?? 'UNKNOWN_ERROR', body.message ?? response.statusText, body.details)
