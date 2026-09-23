@@ -1,13 +1,13 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 
 import react from '@astrojs/react';
 import node from '@astrojs/node';
 import tailwindcss from '@tailwindcss/vite';
 
-// Cloudflare Pages sets CF_PAGES; the GitHub deploy workflow (wrangler, Workers) sets ASTRO_ADAPTER=cloudflare
-const isProduction =
-  (process.env.NODE_ENV === 'production' && process.env.CF_PAGES) || process.env.ASTRO_ADAPTER === 'cloudflare';
+// Workers Builds (the Cloudflare deploy, D55) sets WORKERS_CI=1; ASTRO_ADAPTER=cloudflare forces it locally
+// (e.g. `ASTRO_ADAPTER=cloudflare pnpm build && pnpm exec wrangler deploy --dry-run`)
+const isProduction = process.env.WORKERS_CI === '1' || process.env.ASTRO_ADAPTER === 'cloudflare';
 
 // Use node adapter for local dev, cloudflare for production
 const adapter = isProduction
@@ -19,6 +19,15 @@ export default defineConfig({
   output: 'server',
   integrations: [react()],
   adapter,
+
+  // Server only (D56): the /api proxy adds the key; it never reaches the browser. Locally from .env, on Cloudflare
+  // from the Worker secrets (docs/deploy.md)
+  env: {
+    schema: {
+      API_URL: envField.string({ context: 'server', access: 'secret', default: 'http://localhost:5560' }),
+      API_KEY: envField.string({ context: 'server', access: 'secret' }),
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],
