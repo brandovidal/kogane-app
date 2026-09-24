@@ -17,7 +17,7 @@ push a main → Workers Builds: pnpm install → pnpm test && pnpm build → pnp
 | local | `pnpm dev` (adaptador Node) | `http://localhost:5560` (kogane-api local) |
 | producción | Worker `kogane-app` en Cloudflare | `https://kogane-api.up.railway.app` (kogane-api en Railway) |
 
-**En local:** `cp .env.example .env` con la misma `API_KEY` de `kogane-api/.env.dev`, kogane-api con `pnpm dev` y kogane-app con `pnpm dev`. El navegador llama a `/api/v1/…` y el servidor de Astro (`src/pages/api/[...path].ts`) agrega `x-api-key` y reenvía a `API_URL`; la clave nunca llega al navegador (D56). Tipos del cliente: `pnpm api:types` con kogane-api corriendo (regenera `src/shared/api/schema.d.ts`, versionado).
+**En local:** `cp .env.example .env.dev` con la misma `API_KEY` de `kogane-api/.env.dev`, kogane-api con `pnpm dev` y kogane-app con `pnpm dev` (`astro dev --mode dev`, lee `.env.dev`). Para ver los datos de producción desde local: `.env` con `API_URL=https://kogane-api.up.railway.app` y la `API_KEY` de producción, y `pnpm build && pnpm preview` (`localhost:3000`; `astro preview` no lee archivos `.env`, por eso el script usa `node --env-file=.env`). Cuidado: lo que edites ahí cambia producción. El navegador llama a `/api/v1/…` y el servidor de Astro (`src/pages/api/[...path].ts`) agrega `x-api-key` y reenvía a `API_URL`; la clave nunca llega al navegador (D56). Tipos del cliente: `pnpm api:types` con kogane-api corriendo (regenera `src/shared/api/schema.d.ts`, versionado).
 
 Para probar el build de producción en local: `ASTRO_ADAPTER=cloudflare pnpm build && pnpm exec wrangler deploy --dry-run`.
 

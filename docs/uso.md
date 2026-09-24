@@ -15,6 +15,8 @@ El bot muestra un resumen con botones:
 - **📝 Borrador**: lo deja para revisarlo después.
 - **❌ Descartar**.
 
+Capturas del banco: el detalle de una compra de IO (con cuotas), un movimiento de Interbank (Plin o transferencia) y el resumen por categorías de IO se leen sin AI; Yape y la lista de movimientos pasan por la AI. El resumen por categorías no crea gastos: responde cuánto dice la app, cuánto tiene Kogane y cuánto falta registrar. Si mandas varias capturas juntas (álbum) o una captura trae varios movimientos, llega **una sola lista** con **✅ Guardar todos** (los repetidos o incompletos quedan en Borrador), **📝 Revisar uno por uno** y **📝 Borrador**.
+
 Para corregir rápido, empieza el mensaje con la palabra del campo: *monto 30*, *persona dany*, *cuota 2/6*, *tarjeta oh*, *categoría comida*, *con culpa*, *ayer*.
 
 ## Destinos
@@ -45,7 +47,7 @@ En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las captu
 
 ## Comandos del bot
 
-`/borrador` · `/ultimos` · `/resumen` · `/deudas [persona]` · `/cobrar <persona>` · `/uso` (cuánta AI se usó hoy) · `/cancelar` · `/ayuda`
+`/borrador` · `/ultimos` · `/resumen` · `/deudas [persona]` · `/cobrar <persona>` · `/uso` (cuánta AI se usó hoy y cuántas capturas leyó el OCR local) · `/cancelar` · `/ayuda`
 
 ## La web
 

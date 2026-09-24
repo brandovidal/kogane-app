@@ -7,9 +7,9 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --mode dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "node --env-file=.env ./node_modules/astro/bin/astro.mjs preview --port 3000",
     "astro": "astro",
     "generate-types": "wrangler types",
     "test": "vitest run",
