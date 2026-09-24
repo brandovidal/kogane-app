@@ -2,7 +2,9 @@ import { useState } from "react";
 import { OwnPart } from "@/shared/components/OwnPart";
 import { totalsOf } from "@/shared/lib/shared-expense";
 import { nameById, usePeople, useMe } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses } from "@/shared/api/hooks/expenses";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { RowActions } from "@/shared/components/RowActions";
+import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
 import { SUBSCRIPTION_PERIOD_LABELS as PERIOD_LABELS } from "@/shared/labels";
@@ -12,7 +14,7 @@ import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
 import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
@@ -42,6 +44,7 @@ function SubscriptionListView() {
   const newPlatform = () => openNewExpense({ destination: "subscription", period: "monthly" });
   const personName = nameById(usePeople().data);
   const deleteSubscription = useDeleteExpense(EXPENSE_RESOURCES.subscription);
+  const saveSubscription = useSaveExpense(EXPENSE_RESOURCES.subscription);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | undefined>();
 
@@ -64,16 +67,20 @@ function SubscriptionListView() {
       key: "actions",
       header: "",
       role: "actions",
-      className: "w-[80px]",
+      className: "w-[50px]",
       cell: (sub) => (
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Editar" onClick={() => { setEditingSub(sub); setDialogOpen(true); }}>
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteSubscription.mutate(sub.id)}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+        <RowActions
+          label={sub.description}
+          onEdit={() => { setEditingSub(sub); setDialogOpen(true); }}
+          onDuplicate={() => saveSubscription.mutate({ body: duplicateBody(EXPENSE_RESOURCES.subscription, sub) })}
+          onNextMonth={() => saveSubscription.mutate({ id: sub.id, body: nextMonthBody(sub) })}
+          onDelete={() => deleteSubscription.mutate(sub.id)}
+          status={{
+            value: sub.paymentStatus,
+            options: SUBSCRIPTION_STATUSES,
+            onChange: (paymentStatus) => saveSubscription.mutate({ id: sub.id, body: { paymentStatus } }),
+          }}
+        />
       ),
     },
   ];

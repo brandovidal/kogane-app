@@ -1,7 +1,8 @@
-import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Plus } from "lucide-react";
 
 import { nameById, useCategories, useMe, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses } from "@/shared/api/hooks/expenses";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type DailyExpense } from "@/shared/api/types";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
@@ -9,6 +10,9 @@ import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/compone
 import { EmptyState } from "@/shared/components/EmptyState";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { OwnPart } from "@/shared/components/OwnPart";
+import { RowActions } from "@/shared/components/RowActions";
+import { duplicateBody } from "@/shared/lib/expense-actions";
+import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { EXPENSE_TYPE_LABELS } from "@/shared/labels";
 import { formatCurrency } from "@/shared/lib/currency";
@@ -31,6 +35,8 @@ function DailyExpenseTableView() {
   const methodName = nameById(usePaymentMethods().data);
   const categoryName = nameById(useCategories().data);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.daily);
+  const saveExpense = useSaveExpense(EXPENSE_RESOURCES.daily);
+  const [editing, setEditing] = useState<DailyExpense | undefined>();
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("daily", "table");
@@ -70,9 +76,12 @@ function DailyExpenseTableView() {
       role: "actions",
       className: "w-[50px]",
       cell: (e) => (
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteExpense.mutate(e.id)}>
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <RowActions
+          label={e.description}
+          onEdit={() => setEditing(e)}
+          onDuplicate={() => saveExpense.mutate({ body: duplicateBody(EXPENSE_RESOURCES.daily, e) })}
+          onDelete={() => deleteExpense.mutate(e.id)}
+        />
       ),
     },
   ];
@@ -102,6 +111,13 @@ function DailyExpenseTableView() {
       ) : (
         <DataView items={sorted} columns={columns} rowKey={(e) => e.id} view={view} />
       )}
+
+      <ExpenseEditDialog
+        open={!!editing}
+        onOpenChange={(open) => !open && setEditing(undefined)}
+        resource={EXPENSE_RESOURCES.daily}
+        expense={editing}
+      />
     </div>
   );
 }

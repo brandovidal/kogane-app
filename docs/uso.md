@@ -60,9 +60,10 @@ En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las captu
 
 - **Menú**: Inicio; **Registrar** (Mensajes, Reconocimiento, Borrador); Gastos; Préstamos y deudas; **Calendario**; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar). **Nuevo gasto** es el botón de cada página.
 - **Filtros**: las páginas de gastos, tarjetas y deudas tienen buscador y filtros (persona —Yo por defecto—, categoría, medio de pago, estado, cuotas, compartidos…), guardados en la URL.
+- **Acciones (⋯)**: cada gasto de Día a día, Costos fijos, Plataformas y Tarjetas tiene un menú con Editar, Duplicar, Marcar como pagado, Estado, Pasar al mes siguiente y Eliminar (pide confirmación). El reparto de un gasto compartido se cambia desde el bot con /editar.
 - **Vistas**: cada lista se ve como tabla o como tarjetas (el botón junto a los filtros); la elección se recuerda por página.
 - **Presupuesto**: Inicio y Resumen muestran ingresos, gastado (tu parte), excedente y límite, el donut por categoría o grupo (clic para ver el detalle), presupuesto vs real y el excedente por mes. Los límites se ponen en Categorías (todos los meses o solo este) y los ingresos extra en Ingresos.
-- **Campana** (arriba): los avisos sin leer, cada minuto; al abrir uno te lleva a lo que corresponde. **Ver todas** abre Notificaciones, con el historial y filtros.
+- **Campana** (arriba): los avisos sin leer, cada minuto; al tocar uno se despliega completo y queda leído; "Ir a …" lleva a su página. **Ver todas** abre Notificaciones, con el historial y filtros. Un aviso leído se puede volver a marcar como **no leído** (en la campana o en Notificaciones).
 - **Calendario**: el mes con un punto por pago o cierre de cada día (toca un día para ver el detalle), los próximos 14 días con el botón **Pagado** y la pestaña **Cuotas comprometidas** (cada tarjeta, los 3 meses siguientes, con las cuotas "por generar").
 - **Recurrentes**: **Generar** crea ya los gastos del mes en pantalla (nunca dos veces); igual se crean solos el día 1.
 - **Configuración**: sueldo del mes, **Personas** (alias que entiende el bot, quién eres "Yo") **Cuentas y tarjetas** (las que tienes, cuáles salen en el bot y los días de cierre y pago) y **Notificaciones** (qué avisos van a Telegram y a la web).

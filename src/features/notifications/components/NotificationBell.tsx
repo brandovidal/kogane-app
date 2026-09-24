@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { ArrowRight, Bell, CheckCheck } from "lucide-react";
+import { ArrowRight, Bell, CheckCheck, MailOpen } from "lucide-react";
 
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
+  useMarkNotificationUnread,
   useRecentNotifications,
   useUnreadCount,
 } from "@/shared/api/hooks/notifications";
@@ -41,13 +42,16 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
   const unread = useUnreadCount().data ?? 0;
   const recent = useRecentNotifications().data ?? [];
   const markRead = useMarkNotificationRead();
+  const markUnread = useMarkNotificationUnread();
   const markAllRead = useMarkAllNotificationsRead();
 
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // Opening a notice reads it; closing it leaves it as it is (it may have been marked unread again)
   const toggle = (notification: AppNotification) => {
-    if (!notification.readAt) markRead.mutate(notification.id);
-    setExpanded(expanded === notification.id ? null : notification.id);
+    const opening = expanded !== notification.id;
+    if (opening && !notification.readAt) markRead.mutate(notification.id);
+    setExpanded(opening ? notification.id : null);
   };
 
   return (
@@ -101,8 +105,20 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
               >
                 {notification.body}
               </p>
-              <p className="mt-0.5 flex items-center justify-between text-[11px] text-muted-foreground">
+              <p className="mt-0.5 flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
                 {timeAgo(notification.createdAt)}
+                {expanded === notification.id && notification.readAt && (
+                  <button
+                    type="button"
+                    className="flex items-center gap-0.5 hover:text-foreground hover:underline"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      markUnread.mutate(notification.id);
+                    }}
+                  >
+                    <MailOpen className="h-3 w-3" /> No leída
+                  </button>
+                )}
                 {expanded === notification.id && notificationLink(notification) !== currentPath && (
                   <a
                     href={notificationLink(notification)}

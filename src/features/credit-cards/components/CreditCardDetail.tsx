@@ -15,7 +15,11 @@ import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/compone
 import {
   Select, SelectContent, SelectItem, SelectTrigger,
 } from "@/ui/select";
-import { Plus, Trash2, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { Plus, ArrowLeft } from "lucide-react";
+import { RowActions } from "@/shared/components/RowActions";
+import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
+import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { formatDate } from "@/shared/lib/dates";
 import { CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
@@ -43,6 +47,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
+  const [editing, setEditing] = useState<CreditCardExpense | undefined>();
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   if (isLoading) return null;
@@ -111,9 +116,18 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       role: "actions",
       className: "w-[60px]",
       cell: (exp) => (
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteExpense.mutate(exp.id)}>
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <RowActions
+          label={exp.description}
+          onEdit={() => setEditing(exp)}
+          onDuplicate={() => saveExpense.mutate({ body: duplicateBody(EXPENSE_RESOURCES.creditCard, exp) })}
+          onNextMonth={() => saveExpense.mutate({ id: exp.id, body: nextMonthBody(exp) })}
+          onDelete={() => deleteExpense.mutate(exp.id)}
+          status={{
+            value: exp.paymentStatus,
+            options: CREDIT_CARD_STATUSES,
+            onChange: (paymentStatus) => saveExpense.mutate({ id: exp.id, body: { paymentStatus } }),
+          }}
+        />
       ),
     },
   ];
@@ -167,6 +181,13 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       ) : (
         <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
       )}
+
+      <ExpenseEditDialog
+        open={!!editing}
+        onOpenChange={(open) => !open && setEditing(undefined)}
+        resource={EXPENSE_RESOURCES.creditCard}
+        expense={editing}
+      />
 
     </div>
   );

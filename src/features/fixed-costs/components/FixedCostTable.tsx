@@ -17,7 +17,9 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/ui/select";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus } from "lucide-react";
+import { RowActions } from "@/shared/components/RowActions";
+import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { formatDate } from "@/shared/lib/dates";
 import { FIXED_COST_STATUSES as PAYMENT_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { FixedCostDialog } from "./FixedCostDialog";
@@ -112,16 +114,20 @@ function FixedCostTableView() {
       key: "actions",
       header: "",
       role: "actions",
-      className: "w-[80px]",
+      className: "w-[50px]",
       cell: (fc) => (
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Editar" onClick={() => { setEditingItem(fc); setDialogOpen(true); }}>
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteFixedCost.mutate(fc.id)}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+        <RowActions
+          label={fc.description}
+          onEdit={() => { setEditingItem(fc); setDialogOpen(true); }}
+          onDuplicate={() => saveFixedCost.mutate({ body: duplicateBody(EXPENSE_RESOURCES.fixedCost, fc) })}
+          onNextMonth={() => saveFixedCost.mutate({ id: fc.id, body: nextMonthBody(fc) })}
+          onDelete={() => deleteFixedCost.mutate(fc.id)}
+          status={{
+            value: fc.paymentStatus,
+            options: PAYMENT_STATUSES,
+            onChange: (paymentStatus) => saveFixedCost.mutate({ id: fc.id, body: { paymentStatus } }),
+          }}
+        />
       ),
     },
   ];

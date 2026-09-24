@@ -44,6 +44,13 @@ export const useMarkNotificationRead = () =>
     { invalidate: [notificationKeys.all] },
   );
 
+// Back to unread: the bell counts it again
+export const useMarkNotificationUnread = () =>
+  useApiMutation(
+    (id: string) => unwrap(api.PATCH("/v1/notifications/{id}/unread", { params: { path: { id } } })),
+    { invalidate: [notificationKeys.all] },
+  );
+
 export const useMarkAllNotificationsRead = () =>
   useApiMutation(() => unwrap(api.POST("/v1/notifications/read-all")), {
     invalidate: [notificationKeys.all],

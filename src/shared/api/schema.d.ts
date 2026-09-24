@@ -302,6 +302,23 @@ export interface paths {
         patch: operations["NotificationsController_read_v1"];
         trace?: never;
     };
+    "/v1/notifications/{id}/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Mark one notification as unread again (the bell counts it) */
+        patch: operations["NotificationsController_unread_v1"];
+        trace?: never;
+    };
     "/v1/notifications/settings": {
         parameters: {
             query?: never;
@@ -3016,6 +3033,27 @@ export interface operations {
         };
     };
     NotificationsController_read_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_unread_v1: {
         parameters: {
             query?: never;
             header?: never;

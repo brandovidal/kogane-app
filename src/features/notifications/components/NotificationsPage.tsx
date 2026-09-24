@@ -4,6 +4,7 @@ import { CheckCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
+  useMarkNotificationUnread,
   useNotificationHistory,
 } from "@/shared/api/hooks/notifications";
 import { withQuery } from "@/shared/api/query";
@@ -33,6 +34,7 @@ function NotificationsPageView() {
     offset: page * PAGE_SIZE,
   });
   const markRead = useMarkNotificationRead();
+  const markUnread = useMarkNotificationUnread();
   const markAllRead = useMarkAllNotificationsRead();
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -108,9 +110,13 @@ function NotificationsPageView() {
                   {notification.amount != null && ` · ${formatCurrency(notification.amount)}`}
                 </p>
               </div>
-              {!notification.readAt && (
+              {notification.readAt ? (
+                <Button variant="ghost" size="sm" onClick={() => markUnread.mutate(notification.id)}>
+                  Marcar no leída
+                </Button>
+              ) : (
                 <Button variant="ghost" size="sm" onClick={() => markRead.mutate(notification.id)}>
-                  Leída
+                  Marcar leída
                 </Button>
               )}
             </CardContent>
