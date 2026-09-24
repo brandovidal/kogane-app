@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { nameById, useCategories, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useGenerateRecurring } from "@/shared/api/hooks/calendar";
+import { usePeriod } from "@/shared/stores/period.store";
+import { toast } from "sonner";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
 import { RECURRING_TARGET_LABELS as TARGET_LABELS } from "@/shared/labels";
@@ -9,12 +12,13 @@ import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { Card, CardContent } from "@/ui/card";
 import { Switch } from "@/ui/switch";
-import { Plus, Trash2, Calendar } from "lucide-react";
+import { Plus, Trash2, Calendar, CalendarPlus } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
-import { formatDate } from "@/shared/lib/dates";
+import { getMonthName } from "@/shared/lib/dates";
 import { RecurringDialog } from "./RecurringDialog";
 
-// Recurring templates; generating the month's expenses from them belongs to the scheduler of P20
+// Recurring templates (D88): kogane-api creates their pending rows on day 1 at 06:00; "Generar" does it now for the
+// month on screen, never twice
 function RecurringListView() {
   const { data: recurring = [], isLoading } = useExpenses(EXPENSE_RESOURCES.recurring);
   const categories = useCategories().data ?? [];
@@ -23,6 +27,25 @@ function RecurringListView() {
   const saveRecurring = useSaveExpense(EXPENSE_RESOURCES.recurring);
   const deleteRecurring = useDeleteExpense(EXPENSE_RESOURCES.recurring);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const month = usePeriod((s) => s.month);
+  const year = usePeriod((s) => s.year);
+  const generate = useGenerateRecurring();
+
+  const generateMonth = () =>
+    generate.mutate(
+      { month, year },
+      {
+        onSuccess: ({ created, skipped }) => {
+          const missing = skipped.filter((item) => item.reason !== "already_generated").length;
+          toast.success(
+            created.length
+              ? `${created.length} gastos creados como pendientes en ${getMonthName(month)}`
+              : `${getMonthName(month)} ya estaba generado`,
+            missing ? { description: `${missing} sin tarjeta o categoría: complétalos para generarlos.` } : undefined,
+          );
+        },
+      },
+    );
 
   const totalMonthly = recurring
     .filter((r) => r.isActive)
@@ -38,6 +61,9 @@ function RecurringListView() {
           <p className="text-2xl font-bold">{formatCurrency(totalMonthly)} <span className="text-sm font-normal text-muted-foreground">/mes estimado</span></p>
         </div>
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={generateMonth} disabled={generate.isPending}>
+            <CalendarPlus className="mr-1 h-4 w-4" /> Generar {getMonthName(month).toLowerCase()}
+          </Button>
           <Button size="sm" onClick={() => setDialogOpen(true)}>
             <Plus className="mr-1 h-4 w-4" /> Nuevo recurrente
           </Button>
@@ -83,7 +109,8 @@ function RecurringListView() {
                 </div>
                 {rec.lastGeneratedAt && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    Último generado: {formatDate(rec.lastGeneratedAt)}
+                    Generado hasta {getMonthName(Number(rec.lastGeneratedAt.slice(5, 7))).toLowerCase()}{" "}
+                    {rec.lastGeneratedAt.slice(0, 4)}
                   </p>
                 )}
               </CardContent>

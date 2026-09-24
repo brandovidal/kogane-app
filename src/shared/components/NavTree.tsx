@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   BarChart3,
+  CalendarDays,
   ChevronDown,
   Coffee,
   CreditCard,
@@ -41,6 +42,7 @@ export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string
   "bar-chart-3": BarChart3,
   settings: Settings,
   wallet: Wallet,
+  calendar: CalendarDays,
 };
 
 // v2: the menu of D80 (Registrar); an older saved state would leave it closed

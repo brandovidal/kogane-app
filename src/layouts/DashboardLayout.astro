@@ -6,6 +6,7 @@ import { MobileNav } from "@/shared/components/MobileNav";
 import { MonthNavigator } from "@/shared/components/MonthNavigator";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
 import { SalaryEditor } from "@/shared/components/SalaryEditor";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { Toaster } from "@/ui/sonner";
 
 interface Props {
@@ -30,6 +31,7 @@ const currentPath = Astro.url.pathname;
           <MonthNavigator client:load />
           <div class="hidden sm:block h-4 w-px bg-border" />
           <SalaryEditor client:load />
+          <NotificationBell client:load currentPath={currentPath} />
           <ThemeToggle client:load />
         </div>
       </header>

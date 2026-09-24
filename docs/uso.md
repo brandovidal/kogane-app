@@ -45,17 +45,27 @@ En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las captu
 - `/deudas` muestra quién te debe y a quién le debes; `/deudas dany` el detalle; `/cobrar dany` arma un mensaje para reenviarle.
 - En la web: **Préstamos y deudas** ▸ Me deben · Debo · Por persona, con el botón de abono en cada cuota.
 
+## Avisos
+
+- El bot te avisa un día antes de cada vencimiento (pago y cierre de tarjeta, costos fijos, plataformas y cuotas de deudas), a las 09:00, con **✅ Pagado** · **✏️ Editar monto** · **🔕 Silenciar**. Después de ✏️, el siguiente mensaje es el monto (*45.90*).
+- A las 21:00 llega el cierre del día (solo a la web, salvo que lo actives): lo que gastaste hoy, lo que vence hoy sin pagar, categorías al 80 % o más y **cargos raros** (una plataforma que cambió de precio, un cargo que aparece dos veces, una plataforma que no se cobró).
+- El domingo a las 20:00, el resumen de la semana. El día 1 a las 06:00 se crean como pendientes los gastos de **Recurrentes** del mes.
+- `/avisos` elige qué llega por Telegram; en la web, **Configuración ▸ Notificaciones** elige Telegram y web por tipo.
+
 ## Comandos del bot
 
-`/borrador` · `/ultimos` · `/resumen` · `/deudas [persona]` · `/cobrar <persona>` · `/uso` (cuánta AI se usó hoy y cuántas capturas leyó el OCR local) · `/cancelar` · `/ayuda`
+`/borrador` · `/ultimos` · `/resumen` · `/deudas [persona]` · `/cobrar <persona>` · `/calendario` (próximos 14 días) · `/cuotas` (cuotas de tarjeta de 3 meses) · `/avisos` · `/uso` (cuánta AI se usó hoy y cuántas capturas leyó el OCR local) · `/cancelar` · `/ayuda`
 
 ## La web
 
-- **Menú**: Inicio; **Registrar** (Mensajes, Reconocimiento, Borrador); Gastos; Préstamos y deudas; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar). **Nuevo gasto** es el botón de cada página.
+- **Menú**: Inicio; **Registrar** (Mensajes, Reconocimiento, Borrador); Gastos; Préstamos y deudas; **Calendario**; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar). **Nuevo gasto** es el botón de cada página.
 - **Filtros**: las páginas de gastos, tarjetas y deudas tienen buscador y filtros (persona —Yo por defecto—, categoría, medio de pago, estado, cuotas, compartidos…), guardados en la URL.
 - **Vistas**: cada lista se ve como tabla o como tarjetas (el botón junto a los filtros); la elección se recuerda por página.
 - **Presupuesto**: Inicio y Resumen muestran ingresos, gastado (tu parte), excedente y límite, el donut por categoría o grupo (clic para ver el detalle), presupuesto vs real y el excedente por mes. Los límites se ponen en Categorías (todos los meses o solo este) y los ingresos extra en Ingresos.
-- **Configuración**: sueldo del mes, **Personas** (alias que entiende el bot, quién eres "Yo") y **Cuentas y tarjetas** (las que tienes, cuáles salen en el bot y los días de cierre y pago).
+- **Campana** (arriba): los avisos sin leer, cada minuto; al abrir uno te lleva a lo que corresponde. **Ver todas** abre Notificaciones, con el historial y filtros.
+- **Calendario**: el mes con un punto por pago o cierre de cada día (toca un día para ver el detalle), los próximos 14 días con el botón **Pagado** y la pestaña **Cuotas comprometidas** (cada tarjeta, los 3 meses siguientes, con las cuotas "por generar").
+- **Recurrentes**: **Generar** crea ya los gastos del mes en pantalla (nunca dos veces); igual se crean solos el día 1.
+- **Configuración**: sueldo del mes, **Personas** (alias que entiende el bot, quién eres "Yo") **Cuentas y tarjetas** (las que tienes, cuáles salen en el bot y los días de cierre y pago) y **Notificaciones** (qué avisos van a Telegram y a la web).
 - **Ctrl + K** (⌘K en Mac): buscar cualquier pantalla o tarjeta escribiendo parte del nombre.
 - **Mes**: el selector de arriba cambia el mes de todas las pantallas; el lápiz al lado del sueldo lo edita para ese mes.
 - **Mensajes** guarda el historial solo en ese navegador (*Limpiar* lo borra); los gastos quedan en la base igual.

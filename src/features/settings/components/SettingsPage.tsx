@@ -10,6 +10,7 @@ import { Button } from "@/ui/button";
 import { Save, DollarSign, PieChart, Palette } from "lucide-react";
 import { AccountsTable } from "./AccountsTable";
 import { PeopleTable } from "./PeopleTable";
+import { NotificationSettingsCard } from "./NotificationSettingsCard";
 import { formatCurrency } from "@/shared/lib/currency";
 
 // Salary and limit are per month (bud_monthly_budgets): this edits the month on screen
@@ -108,6 +109,7 @@ function SettingsPageView() {
 
       <PeopleTable />
       <AccountsTable />
+      <NotificationSettingsCard />
 
       {/* Preferencias */}
       <Card>

@@ -38,3 +38,10 @@ export interface ExpenseByResource {
   "credit-card-expenses": CreditCardExpense;
   "recurring-expenses": RecurringExpense;
 }
+
+// Reminders and notifications (P20)
+export type AppNotification = DataOf<"RecentNotificationsResponseDto">[number];
+export type NotificationSettings = DataOf<"NotificationSettingsResponseDto">;
+export type NotificationKind = AppNotification["kind"];
+export type CalendarEvent = DataOf<"CalendarEventsResponseDto">[number];
+export type CommittedInstallments = DataOf<"CommittedInstallmentsResponseDto">;

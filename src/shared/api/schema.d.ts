@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Database and Telegram webhook status (always 200 while the process is up) */
+        /** Database, Redis and Telegram webhook status (always 200 while the process is up) */
         get: operations["HealthController_getHealth_v1"];
         put?: never;
         post?: never;
@@ -217,6 +217,244 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History of notifications, newest first */
+        get: operations["NotificationsController_history_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest notifications for the bell (from Redis, rebuilt from the database) */
+        get: operations["NotificationsController_recent_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Unread notifications (the number on the bell) */
+        get: operations["NotificationsController_unreadCount_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark every notification as read */
+        post: operations["NotificationsController_readAll_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Mark one notification as read (also when it was answered in Telegram) */
+        patch: operations["NotificationsController_read_v1"];
+        trace?: never;
+    };
+    "/v1/notifications/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Which kinds of notification go to Telegram and to the web bell */
+        get: operations["NotificationsController_settings_v1"];
+        /** Change the channels of some kinds; the rest stay as they are */
+        put: operations["NotificationsController_updateSettings_v1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/run/{job}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run a scheduled job now (make notify JOB=…); notices already sent are not repeated */
+        post: operations["NotificationsController_run_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reminders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What closes or is due in the next days (at most 45), from the Redis list */
+        get: operations["RemindersController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Card closing and payment days, due dates and recurring expenses between two days (at most 100) */
+        get: operations["CalendarController_events_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/calendar/installments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Card installments of the next months, including the ones still to be generated */
+        get: operations["CalendarController_installments_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/calendar/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark a calendar event paid: card statement, fixed cost, subscription or debt installment */
+        post: operations["CalendarController_pay_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/expenses/{resource}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List a table (month/year filter by payment month, or by spent date for daily expenses) */
+        get: operations["ExpensesController_findMany_v1"];
+        put?: never;
+        post: operations["ExpensesController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/expenses/{resource}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ExpensesController_findById_v1"];
+        put?: never;
+        post?: never;
+        delete: operations["ExpensesController_delete_v1"];
+        options?: never;
+        head?: never;
+        patch: operations["ExpensesController_update_v1"];
+        trace?: never;
+    };
+    "/v1/recurring-expenses/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create the pending rows of a month from the active recurring expenses (never twice) */
+        post: operations["RecurringExpensesController_generate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/people": {
         parameters: {
             query?: never;
@@ -351,39 +589,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["BudgetGroupsController_update_v1"];
-        trace?: never;
-    };
-    "/v1/expenses/{resource}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List a table (month/year filter by payment month, or by spent date for daily expenses) */
-        get: operations["ExpensesController_findMany_v1"];
-        put?: never;
-        post: operations["ExpensesController_create_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/expenses/{resource}/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ExpensesController_findById_v1"];
-        put?: never;
-        post?: never;
-        delete: operations["ExpensesController_delete_v1"];
-        options?: never;
-        head?: never;
-        patch: operations["ExpensesController_update_v1"];
         trace?: never;
     };
     "/v1/drafts": {
@@ -572,6 +777,11 @@ export interface components {
                 status: "OK";
                 /** @enum {string} */
                 database: "OK" | "DOWN";
+                /**
+                 * @description Reminders queues (P20); DISABLED without REDIS_URL
+                 * @enum {string}
+                 */
+                redis: "OK" | "DOWN" | "DISABLED";
                 telegram: {
                     /**
                      * @description NOT_CONFIGURED without bot token; ERROR if Telegram failed to deliver recently
@@ -953,55 +1163,36 @@ export interface components {
                 updatedAt: string;
             };
         };
-        PersonListResponseDto: {
+        NotificationPageResponseDto: {
             /** @enum {boolean} */
             success: true;
             code: string;
             status: number;
             message: string;
             data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
-                aliases: string[];
-                isActive: boolean;
-                isDefault: boolean;
-            }[];
-        };
-        CreatePersonDto: {
-            name: string;
-            aliases?: string[];
-            isDefault?: boolean;
-            isActive?: boolean;
-        };
-        PersonResponseDto: {
-            /** @enum {boolean} */
-            success: true;
-            code: string;
-            status: number;
-            message: string;
-            data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
-                aliases: string[];
-                isActive: boolean;
-                isDefault: boolean;
+                items: {
+                    id: string;
+                    /** @enum {string} */
+                    kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring";
+                    title: string;
+                    body: string;
+                    amount: number | null;
+                    /** @enum {string|null} */
+                    refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                    refId: string | null;
+                    /** Format: date-time */
+                    eventDate: string | null;
+                    /** Format: date-time */
+                    readAt: string | null;
+                    /** Format: date-time */
+                    telegramSentAt: string | null;
+                    /** Format: date-time */
+                    createdAt: string;
+                }[];
+                total: number;
             };
         };
-        UpdatePersonDto: {
-            name?: string;
-            aliases?: string[];
-            isDefault?: boolean;
-            isActive?: boolean;
-        };
-        PaymentMethodListResponseDto: {
+        RecentNotificationsResponseDto: {
             /** @enum {boolean} */
             success: true;
             code: string;
@@ -1009,169 +1200,184 @@ export interface components {
             message: string;
             data: {
                 id: string;
+                /** @enum {string} */
+                kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring";
+                title: string;
+                body: string;
+                amount: number | null;
+                /** @enum {string|null} */
+                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                refId: string | null;
+                /** Format: date-time */
+                eventDate: string | null;
+                /** Format: date-time */
+                readAt: string | null;
+                /** Format: date-time */
+                telegramSentAt: string | null;
                 /** Format: date-time */
                 createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
+            }[];
+        };
+        UnreadCountResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                unread: number;
+            };
+        };
+        ReadAllResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                updated: number;
+            };
+        };
+        NotificationSettingsResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                [key: string]: {
+                    telegram: boolean;
+                    web: boolean;
+                };
+            };
+        };
+        UpdateNotificationSettingsDto: {
+            [key: string]: {
+                telegram?: boolean;
+                web?: boolean;
+            };
+        };
+        JobResultResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
                 /** @enum {string} */
-                type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-                code: string | null;
-                aliases: string[];
-                isActive: boolean;
-                showInBot: boolean;
-                billingCloseDay: number | null;
-                paymentDueDay: number | null;
+                job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup";
+                /** @description Created in this run (existing ones are never repeated) */
+                notifications: number;
+                details?: {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        RemindersResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** Format: date */
+                date: string;
+                /** @enum {string} */
+                kind: "card_close" | "card_due" | "fixed_cost" | "subscription" | "debt_owed_to_me" | "debt_i_owe" | "recurring";
+                /** @description Card, expense or debt description */
+                name: string;
+                personName: string | null;
+                installment: string | null;
+                /** @description What is still to pay; the total once paid; null on an empty closing day */
+                amount: number | null;
+                currency: string;
+                /** @enum {string} */
+                status: "pending" | "paid" | "late";
+                /** @enum {string|null} */
+                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                refId: string | null;
                 color: string | null;
             }[];
         };
-        CreatePaymentMethodDto: {
-            name: string;
-            /** @enum {string} */
-            type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-            code?: string | null;
-            aliases?: string[];
-            isActive?: boolean;
-            showInBot?: boolean;
-            billingCloseDay?: number | null;
-            paymentDueDay?: number | null;
-            color?: string | null;
-        };
-        PaymentMethodResponseDto: {
+        CalendarEventsResponseDto: {
             /** @enum {boolean} */
             success: true;
             code: string;
             status: number;
             message: string;
             data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
+                /** Format: date */
+                date: string;
                 /** @enum {string} */
-                type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-                code: string | null;
-                aliases: string[];
-                isActive: boolean;
-                showInBot: boolean;
-                billingCloseDay: number | null;
-                paymentDueDay: number | null;
+                kind: "card_close" | "card_due" | "fixed_cost" | "subscription" | "debt_owed_to_me" | "debt_i_owe" | "recurring";
+                /** @description Card, expense or debt description */
+                name: string;
+                personName: string | null;
+                installment: string | null;
+                /** @description What is still to pay; the total once paid; null on an empty closing day */
+                amount: number | null;
+                currency: string;
+                /** @enum {string} */
+                status: "pending" | "paid" | "late";
+                /** @enum {string|null} */
+                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                refId: string | null;
                 color: string | null;
+            }[];
+        };
+        CommittedInstallmentsResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                months: {
+                    month: number;
+                    year: number;
+                    total: number;
+                }[];
+                cards: {
+                    paymentMethodId: string;
+                    name: string;
+                    color: string | null;
+                    total: number;
+                    months: {
+                        month: number;
+                        year: number;
+                        amount: number;
+                        count: number;
+                        /** @description Installments "por generar" in that month */
+                        estimated: number;
+                    }[];
+                }[];
+                items: {
+                    paymentMethodId: string;
+                    description: string;
+                    installment: string;
+                    amount: number;
+                    month: number;
+                    year: number;
+                    /** @description Not saved yet: same amount as the last saved installment of the series */
+                    estimated: boolean;
+                }[];
             };
         };
-        UpdatePaymentMethodDto: {
-            name?: string;
+        PayEventDto: {
             /** @enum {string} */
-            type?: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-            code?: string | null;
-            aliases?: string[];
-            isActive?: boolean;
-            showInBot?: boolean;
-            billingCloseDay?: number | null;
-            paymentDueDay?: number | null;
-            color?: string | null;
+            refType: "card_statement" | "fixed_cost" | "subscription" | "debt";
+            refId: string;
         };
-        CategoryListResponseDto: {
+        PayEventResponseDto: {
             /** @enum {boolean} */
             success: true;
             code: string;
             status: number;
             message: string;
             data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
-                color: string;
-                icon: string | null;
-                isDefault: boolean;
-                budgetGroupId: string | null;
-            }[];
-        };
-        CreateCategoryDto: {
-            name: string;
-            color?: string;
-            icon?: string | null;
-            isDefault?: boolean;
-            budgetGroupId?: string | null;
-        };
-        CategoryResponseDto: {
-            /** @enum {boolean} */
-            success: true;
-            code: string;
-            status: number;
-            message: string;
-            data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
-                color: string;
-                icon: string | null;
-                isDefault: boolean;
-                budgetGroupId: string | null;
+                /** @enum {string} */
+                outcome: "paid" | "already_paid" | "nothing_to_pay" | "not_found";
             };
-        };
-        UpdateCategoryDto: {
-            name?: string;
-            color?: string;
-            icon?: string | null;
-            isDefault?: boolean;
-            budgetGroupId?: string | null;
-        };
-        BudgetGroupListResponseDto: {
-            /** @enum {boolean} */
-            success: true;
-            code: string;
-            status: number;
-            message: string;
-            data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
-                emoji: string;
-                percentage: number;
-                order: number;
-            }[];
-        };
-        CreateBudgetGroupDto: {
-            name: string;
-            emoji?: string;
-            percentage?: number;
-            order?: number;
-        };
-        BudgetGroupResponseDto: {
-            /** @enum {boolean} */
-            success: true;
-            code: string;
-            status: number;
-            message: string;
-            data: {
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                name: string;
-                emoji: string;
-                percentage: number;
-                order: number;
-            };
-        };
-        UpdateBudgetGroupDto: {
-            name?: string;
-            emoji?: string;
-            percentage?: number;
-            order?: number;
         };
         ExpenseRecordListResponseDto: {
             /** @enum {boolean} */
@@ -1686,6 +1892,259 @@ export interface components {
             paymentMethodId?: string | null;
             dayOfMonth?: number;
             isActive?: boolean;
+        };
+        GenerateRecurringDto: {
+            month?: number;
+            year?: number;
+        };
+        RecurringGenerationResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                month: number;
+                year: number;
+                created: {
+                    recurringId: string;
+                    /** @description The new row of its table */
+                    id: string;
+                    /** @enum {string} */
+                    targetType: "fixed_cost" | "subscription" | "credit_card";
+                    description: string;
+                    amount: number;
+                    currency: string;
+                    /** Format: date */
+                    date: string;
+                }[];
+                skipped: {
+                    recurringId: string;
+                    description: string;
+                    /** @enum {string} */
+                    reason: "already_generated" | "missing_card" | "missing_category";
+                }[];
+            };
+        };
+        PersonListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                aliases: string[];
+                isActive: boolean;
+                isDefault: boolean;
+            }[];
+        };
+        CreatePersonDto: {
+            name: string;
+            aliases?: string[];
+            isDefault?: boolean;
+            isActive?: boolean;
+        };
+        PersonResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                aliases: string[];
+                isActive: boolean;
+                isDefault: boolean;
+            };
+        };
+        UpdatePersonDto: {
+            name?: string;
+            aliases?: string[];
+            isDefault?: boolean;
+            isActive?: boolean;
+        };
+        PaymentMethodListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                /** @enum {string} */
+                type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
+                code: string | null;
+                aliases: string[];
+                isActive: boolean;
+                showInBot: boolean;
+                billingCloseDay: number | null;
+                paymentDueDay: number | null;
+                color: string | null;
+            }[];
+        };
+        CreatePaymentMethodDto: {
+            name: string;
+            /** @enum {string} */
+            type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
+            code?: string | null;
+            aliases?: string[];
+            isActive?: boolean;
+            showInBot?: boolean;
+            billingCloseDay?: number | null;
+            paymentDueDay?: number | null;
+            color?: string | null;
+        };
+        PaymentMethodResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                /** @enum {string} */
+                type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
+                code: string | null;
+                aliases: string[];
+                isActive: boolean;
+                showInBot: boolean;
+                billingCloseDay: number | null;
+                paymentDueDay: number | null;
+                color: string | null;
+            };
+        };
+        UpdatePaymentMethodDto: {
+            name?: string;
+            /** @enum {string} */
+            type?: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
+            code?: string | null;
+            aliases?: string[];
+            isActive?: boolean;
+            showInBot?: boolean;
+            billingCloseDay?: number | null;
+            paymentDueDay?: number | null;
+            color?: string | null;
+        };
+        CategoryListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                color: string;
+                icon: string | null;
+                isDefault: boolean;
+                budgetGroupId: string | null;
+            }[];
+        };
+        CreateCategoryDto: {
+            name: string;
+            color?: string;
+            icon?: string | null;
+            isDefault?: boolean;
+            budgetGroupId?: string | null;
+        };
+        CategoryResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                color: string;
+                icon: string | null;
+                isDefault: boolean;
+                budgetGroupId: string | null;
+            };
+        };
+        UpdateCategoryDto: {
+            name?: string;
+            color?: string;
+            icon?: string | null;
+            isDefault?: boolean;
+            budgetGroupId?: string | null;
+        };
+        BudgetGroupListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                emoji: string;
+                percentage: number;
+                order: number;
+            }[];
+        };
+        CreateBudgetGroupDto: {
+            name: string;
+            emoji?: string;
+            percentage?: number;
+            order?: number;
+        };
+        BudgetGroupResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                name: string;
+                emoji: string;
+                percentage: number;
+                order: number;
+            };
+        };
+        UpdateBudgetGroupDto: {
+            name?: string;
+            emoji?: string;
+            percentage?: number;
+            order?: number;
         };
         DraftListResponseDto: {
             /** @enum {boolean} */
@@ -2473,6 +2932,404 @@ export interface operations {
             };
         };
     };
+    NotificationsController_history_v1: {
+        parameters: {
+            query?: {
+                kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring";
+                unread?: "true" | "false";
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPageResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_recent_v1: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecentNotificationsResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_unreadCount_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnreadCountResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_readAll_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadAllResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_read_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_settings_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationSettingsResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_updateSettings_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateNotificationSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationSettingsResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_run_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResultResponseDto"];
+                };
+            };
+        };
+    };
+    RemindersController_list_v1: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemindersResponseDto"];
+                };
+            };
+        };
+    };
+    CalendarController_events_v1: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalendarEventsResponseDto"];
+                };
+            };
+        };
+    };
+    CalendarController_installments_v1: {
+        parameters: {
+            query?: {
+                months?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommittedInstallmentsResponseDto"];
+                };
+            };
+        };
+    };
+    CalendarController_pay_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayEventDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayEventResponseDto"];
+                };
+            };
+        };
+    };
+    ExpensesController_findMany_v1: {
+        parameters: {
+            query?: {
+                month?: number;
+                year?: number;
+                personId?: string;
+                paymentMethodId?: string;
+            };
+            header?: never;
+            path: {
+                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRecordListResponseDto"];
+                };
+            };
+        };
+    };
+    ExpensesController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
+            };
+            cookie?: never;
+        };
+        /** @description Columns of the table (validated per resource) */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpenseBodyDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRecordResponseDto"];
+                };
+            };
+        };
+    };
+    ExpensesController_findById_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRecordResponseDto"];
+                };
+            };
+        };
+    };
+    ExpensesController_delete_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExpensesController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Columns to change (validated per resource) */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpensePatchDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRecordResponseDto"];
+                };
+            };
+        };
+    };
+    RecurringExpensesController_generate_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRecurringDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringGenerationResponseDto"];
+                };
+            };
+        };
+    };
     PeopleController_findAll_v1: {
         parameters: {
             query?: never;
@@ -2817,127 +3674,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BudgetGroupResponseDto"];
-                };
-            };
-        };
-    };
-    ExpensesController_findMany_v1: {
-        parameters: {
-            query?: {
-                month?: number;
-                year?: number;
-                personId?: string;
-                paymentMethodId?: string;
-            };
-            header?: never;
-            path: {
-                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpenseRecordListResponseDto"];
-                };
-            };
-        };
-    };
-    ExpensesController_create_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-            };
-            cookie?: never;
-        };
-        /** @description Columns of the table (validated per resource) */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ExpenseBodyDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpenseRecordResponseDto"];
-                };
-            };
-        };
-    };
-    ExpensesController_findById_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpenseRecordResponseDto"];
-                };
-            };
-        };
-    };
-    ExpensesController_delete_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ExpensesController_update_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description Columns to change (validated per resource) */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ExpensePatchDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpenseRecordResponseDto"];
                 };
             };
         };

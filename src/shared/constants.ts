@@ -17,7 +17,8 @@ export type NavIcon =
   | "tags"
   | "bar-chart-3"
   | "settings"
-  | "wallet";
+  | "wallet"
+  | "calendar";
 
 export interface NavLink {
   href: string;
@@ -61,6 +62,7 @@ export const NAV: NavEntry[] = [
     ],
   },
   { href: "/deudas", label: "Préstamos y deudas", icon: "hand-coins" },
+  { href: "/calendario", label: "Calendario", icon: "calendar" },
   {
     label: "Presupuesto",
     icon: "pie-chart",
@@ -77,6 +79,9 @@ export const NAV: NavEntry[] = [
 export const DEFAULT_OPEN_GROUPS = ["Registrar"];
 
 export const SETTINGS_NAV: NavLink = { href: "/configuracion", label: "Configuración", icon: "settings" };
+
+// Reached from the bell of the header (P20), not from the menu; Ctrl+K still finds it
+export const NOTIFICATIONS_LINK = { href: "/notificaciones", label: "Notificaciones" };
 
 export interface Card {
   href: string;
@@ -103,7 +108,7 @@ export function flattenNav(nav: NavEntry[], cards: Card[] = []): FlatLink[] {
       if (child.cards) cards.forEach((card) => links.push({ ...card, group: entry.label }));
     }
   }
-  return [...links, { href: SETTINGS_NAV.href, label: SETTINGS_NAV.label }];
+  return [...links, NOTIFICATIONS_LINK, { href: SETTINGS_NAV.href, label: SETTINGS_NAV.label }];
 }
 
 export const isActivePath = (href: string, currentPath: string) =>

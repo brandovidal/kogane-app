@@ -20,7 +20,8 @@ describe("menu", () => {
 
     expect(hrefs.indexOf("/tarjetas/IO")).toBe(hrefs.indexOf("/tarjetas") + 1);
     expect(links.find((link) => link.href === "/tarjetas/IO")?.group).toBe("Gastos");
-    expect(hrefs.at(-1)).toBe("/configuracion");
+    expect(hrefs.slice(-2)).toEqual(["/notificaciones", "/configuracion"]);
+    expect(hrefs).toContain("/calendario");
     expect(new Set(hrefs).size).toBe(hrefs.length);
   });
 
