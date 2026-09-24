@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { OwnPart } from "@/shared/components/OwnPart";
 import { totalsOf } from "@/shared/lib/shared-expense";
-import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
+import { nameById, usePeople, useMe } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
@@ -10,19 +10,18 @@ import { usePeriod } from "@/shared/stores/period.store";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Separator } from "@/ui/separator";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
+import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
 import { SUBSCRIPTION_STATUSES } from "@/shared/labels";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
 
-const FILTERS: ExpenseFilterKey[] = ["q", "status", "period", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "status", "period", "shared"];
 
 const PERIOD_COLORS: Record<string, string> = {
   biweekly: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
@@ -35,9 +34,10 @@ const PERIOD_COLORS: Record<string, string> = {
 function SubscriptionListView() {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
-  const all = useExpenses(EXPENSE_RESOURCES.subscription, { month: selectedMonth, year: selectedYear }, { byPerson: true }).data ?? [];
+  const all = useExpenses(EXPENSE_RESOURCES.subscription, { month: selectedMonth, year: selectedYear }).data ?? [];
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
-  const current = applyExpenseFilters(all, filters);
+  const me = useMe();
+  const current = applyExpenseFilters(all, filters, me);
   const openNewExpense = useNewExpense((state) => state.openWith);
   const newPlatform = () => openNewExpense({ destination: "subscription", period: "monthly" });
   const personName = nameById(usePeople().data);
@@ -46,6 +46,37 @@ function SubscriptionListView() {
   const [editingSub, setEditingSub] = useState<Subscription | undefined>();
 
   const totals = totalsOf(current);
+  const [view, setView] = useViewMode("subscriptions", "cards");
+
+  const columns: Column<Subscription>[] = [
+    { key: "description", header: "Plataforma", role: "title", cell: (sub) => <span className="font-medium">{sub.description}</span> },
+    {
+      key: "amount",
+      header: "Monto",
+      role: "amount",
+      cell: (sub) => <CurrencyDisplay amount={sub.amount} currency={sub.currency} amountInPEN={sub.amountInPen} othersShare={sub.othersShare} />,
+    },
+    { key: "period", header: "Periodo", cell: (sub) => <Badge className={PERIOD_COLORS[sub.period]}>{PERIOD_LABELS[sub.period]}</Badge> },
+    { key: "status", header: "Estado", cell: (sub) => <StatusBadge status={sub.paymentStatus} /> },
+    { key: "person", header: "Persona", cell: (sub) => <span className="text-sm">{personName(sub.personId)}</span> },
+    { key: "notes", header: "Nota", cell: (sub) => <span className="text-xs text-muted-foreground">{sub.notes ?? "—"}</span> },
+    {
+      key: "actions",
+      header: "",
+      role: "actions",
+      className: "w-[80px]",
+      cell: (sub) => (
+        <div className="flex gap-1">
+          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Editar" onClick={() => { setEditingSub(sub); setDialogOpen(true); }}>
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteSubscription.mutate(sub.id)}>
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -55,9 +86,12 @@ function SubscriptionListView() {
           <p className="text-2xl font-bold">S/ {totals.paid.toFixed(2)} <span className="text-sm font-normal text-muted-foreground">/mes</span></p>
           <OwnPart {...totals} />
         </div>
-        <Button size="sm" onClick={newPlatform}>
-          <Plus className="mr-1 h-4 w-4" /> Nueva plataforma
-        </Button>
+        <div className="flex items-center gap-2">
+          <ViewToggle value={view} onChange={setView} />
+          <Button size="sm" onClick={newPlatform}>
+            <Plus className="mr-1 h-4 w-4" /> Nueva plataforma
+          </Button>
+        </div>
       </div>
 
       <ExpenseFilters
@@ -72,44 +106,21 @@ function SubscriptionListView() {
       {current.length === 0 ? (
         <EmptyState description={all.length ? "No hay plataformas con estos filtros" : "No hay suscripciones registradas"} />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {current.map((sub) => (
-            <Card key={sub.id}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-base">{sub.description}</CardTitle>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingSub(sub); setDialogOpen(true); }}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteSubscription.mutate(sub.id)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <CurrencyDisplay amount={sub.amount} currency={sub.currency} amountInPEN={sub.amountInPen} othersShare={sub.othersShare} />
-                <Separator />
-                <div className="flex flex-wrap gap-2">
-                  <Badge className={PERIOD_COLORS[sub.period]}>{PERIOD_LABELS[sub.period]}</Badge>
-                  <StatusBadge status={sub.paymentStatus} />
-                  <Badge variant="outline">{personName(sub.personId)}</Badge>
-                </div>
-                {sub.notes && (
-                  <p className="text-xs text-muted-foreground">{sub.notes}</p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-          <button
-            type="button"
-            onClick={newPlatform}
-            className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground hover:bg-muted/50"
-          >
-            <Plus className="h-5 w-5" /> Nueva plataforma
-          </button>
-        </div>
+        <DataView
+          items={current}
+          columns={columns}
+          rowKey={(sub) => sub.id}
+          view={view}
+          extraCard={
+            <button
+              type="button"
+              onClick={newPlatform}
+              className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground hover:bg-muted/50"
+            >
+              <Plus className="h-5 w-5" /> Nueva plataforma
+            </button>
+          }
+        />
       )}
 
       <SubscriptionDialog

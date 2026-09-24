@@ -3,16 +3,14 @@ import { describe, expect, it } from "vitest";
 import { NAV, flattenNav, isActivePath } from "@/shared/constants";
 
 describe("menu", () => {
-  it("should start with Inicio and the Registrar group, whose Nuevo gasto opens the dialog (D79, D80)", () => {
+  it("should start with Inicio and the Registrar group (D80)", () => {
     expect(NAV.slice(0, 2).map((entry) => entry.label)).toEqual(["Inicio", "Registrar"]);
     const links = flattenNav(NAV);
     expect(links.filter((link) => link.group === "Registrar").map((link) => link.label)).toEqual([
-      "Nuevo gasto",
       "Mensajes",
       "Reconocimiento",
       "Borrador",
     ]);
-    expect(links.find((link) => link.label === "Nuevo gasto")?.action).toBe("new-expense");
     expect(links.map((link) => link.href)).toContain("/ingresos");
   });
 

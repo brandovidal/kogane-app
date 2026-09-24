@@ -41,10 +41,11 @@ export const useBudgetGroups = () =>
     staleTime: CATALOG_STALE_MS,
   });
 
-// Credit cards are payment methods of type credit_card (D62)
+// Credit cards are payment methods of type credit_card (D62); only the ones you have (isActive, Configuración ▸
+// Cuentas y tarjetas) show in the menu and the pages
 export const useCreditCards = () => {
   const query = usePaymentMethods();
-  return { ...query, data: query.data?.filter((method) => method.type === "credit_card") };
+  return { ...query, data: query.data?.filter((method) => method.type === "credit_card" && method.isActive) };
 };
 
 export const useSavePerson = () =>
@@ -100,3 +101,6 @@ export const nameById = <T extends { id: string; name: string }>(items: T[] | un
   const names = new Map((items ?? []).map((item) => [item.id, item.name]));
   return (id: string | null | undefined) => (id ? (names.get(id) ?? "—") : "—");
 };
+
+// "Yo": the default person (D19), what the Persona filter shows by default (D80)
+export const useMe = () => usePeople().data?.find((person) => person.isDefault)?.id;

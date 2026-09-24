@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useCategories, useDeleteCategory } from "@/shared/api/hooks/catalogs";
-import { EXPENSE_RESOURCES, type Category } from "@/shared/api/types";
-import { useExpenses } from "@/shared/api/hooks/expenses";
+import type { Category } from "@/shared/api/types";
+import { useCategoryBudgets, useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/shared/api/hooks/budget";
+import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { Input } from "@/ui/input";
+import { Switch } from "@/ui/switch";
 import { withQuery } from "@/shared/api/query";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
@@ -12,14 +15,15 @@ import { Plus, Trash2, Pencil, AlertTriangle } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CategoryDialog } from "./CategoryDialog";
 
-// Category budgets with alerts arrive with P19; until then every category shows what was spent
-const budgets: { categoryId: string; monthlyLimit: number; alertThreshold: number }[] = [];
+// Categorías (D78): what you spent this month against the limit of each one (GET /v1/category-budgets, your part only);
+// the limit is for every month or only for the month on screen, with an alert at its threshold
 
 function CategoryManagerView() {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
   const categories = useCategories().data ?? [];
-  const fixedCosts = useExpenses(EXPENSE_RESOURCES.fixedCost, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const lines = useCategoryBudgets(selectedMonth, selectedYear).data ?? [];
+  const [limitOf, setLimitOf] = useState<{ category: Category; line?: CategoryBudgetLine } | undefined>();
   const deleteCategory = useDeleteCategory();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | undefined>();
@@ -33,13 +37,12 @@ function CategoryManagerView() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((cat) => {
-          const budget = budgets.find((b) => b.categoryId === cat.id);
-          const spent = fixedCosts
-            .filter((fc) => fc.categoryId === cat.id)
-            .reduce((sum, fc) => sum + (fc.amountInPen ?? fc.amount), 0);
-          const percent = budget ? (spent / budget.monthlyLimit) * 100 : 0;
-          const isOverBudget = budget && percent > 100;
-          const isNearLimit = budget && percent >= budget.alertThreshold;
+          const line = lines.find((item) => item.categoryId === cat.id);
+          const spent = line?.spent ?? 0;
+          const limit = line?.limit ?? null;
+          const percent = line?.percent ?? 0;
+          const isOverBudget = line?.status === "over";
+          const isNearLimit = line?.status === "warning";
 
           return (
             <Card key={cat.id}>
@@ -65,33 +68,36 @@ function CategoryManagerView() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {budget ? (
+                {limit != null ? (
                   <>
                     <div className="flex justify-between text-sm">
                       <span>Gastado: {formatCurrency(spent)}</span>
-                      <span className="text-muted-foreground">de {formatCurrency(budget.monthlyLimit)}</span>
+                      <span className="text-muted-foreground">
+                        de {formatCurrency(limit)} {line?.limitMonthOnly ? "(solo este mes)" : "/ mes"}
+                      </span>
                     </div>
                     <Progress
                       value={Math.min(percent, 100)}
-                      className={`h-2 ${isOverBudget ? "[&>div]:bg-red-500" : isNearLimit ? "[&>div]:bg-yellow-500" : ""}`}
+                      className={`h-2 ${isOverBudget ? "[&>div]:bg-destructive" : isNearLimit ? "[&>div]:bg-amber-500" : ""}`}
                     />
                     {isOverBudget && (
-                      <div className="flex items-center gap-1 text-xs text-red-500">
+                      <div className="flex items-center gap-1 text-xs text-destructive">
                         <AlertTriangle className="h-3 w-3" />
-                        Excedido por {formatCurrency(spent - budget.monthlyLimit)}
+                        Excedido por {formatCurrency(spent - limit)}
                       </div>
                     )}
-                    {isNearLimit && !isOverBudget && (
-                      <p className="text-xs text-yellow-600 dark:text-yellow-400">
-                        {percent.toFixed(0)}% del presupuesto
+                    {isNearLimit && (
+                      <p className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                        <AlertTriangle className="h-3 w-3" /> {Math.round(percent)} % del límite
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="text-xs text-muted-foreground">
-                    Gastado: {formatCurrency(spent)} | Sin presupuesto
-                  </p>
+                  <p className="text-xs text-muted-foreground">Gastado: {formatCurrency(spent)} · sin límite</p>
                 )}
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setLimitOf({ category: cat, line })}>
+                  {limit != null ? "Editar límite" : "Poner límite"}
+                </Button>
               </CardContent>
             </Card>
           );
@@ -103,8 +109,84 @@ function CategoryManagerView() {
         onOpenChange={setDialogOpen}
         category={editingCategory}
       />
+      {limitOf && (
+        <LimitDialog
+          category={limitOf.category}
+          line={limitOf.line}
+          month={selectedMonth}
+          year={selectedYear}
+          onClose={() => setLimitOf(undefined)}
+        />
+      )}
     </div>
   );
 }
 
 export const CategoryManager = withQuery(CategoryManagerView);
+
+// The limit of one category: for every month, or only the month on screen (it replaces the general one then)
+function LimitDialog({
+  category,
+  line,
+  month,
+  year,
+  onClose,
+}: {
+  category: Category;
+  line?: CategoryBudgetLine;
+  month: number;
+  year: number;
+  onClose: () => void;
+}) {
+  const save = useSaveCategoryBudget();
+  const remove = useDeleteCategoryBudget();
+  const [limit, setLimit] = useState(line?.limit != null ? String(line.limit) : "");
+  const [threshold, setThreshold] = useState(String(line?.alertThreshold ?? 80));
+  const [monthOnly, setMonthOnly] = useState(line?.limitMonthOnly ?? false);
+  const valid = Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100;
+
+  const submit = () =>
+    save.mutate(
+      {
+        categoryId: category.id,
+        monthlyLimit: Number(limit),
+        alertThreshold: Number(threshold),
+        ...(monthOnly ? { month, year } : { month: null, year: null }),
+      },
+      { onSuccess: onClose },
+    );
+
+  return (
+    <ResponsiveDialog
+      open
+      onOpenChange={(open) => !open && onClose()}
+      title={`Límite de ${category.name}`}
+      description="El bot avisa al cruzar la alerta y al pasar el 100 %."
+      footer={
+        <>
+          {line?.budgetId && (
+            <Button variant="ghost" className="mr-auto text-destructive" onClick={() => remove.mutate(line.budgetId as string, { onSuccess: onClose })}>
+              Quitar límite
+            </Button>
+          )}
+          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button onClick={submit} disabled={!valid || save.isPending}>Guardar</Button>
+        </>
+      }
+    >
+      <div className="space-y-3">
+        <label className="block space-y-1 text-sm">
+          <span className="font-medium">Límite mensual (S/)</span>
+          <Input type="number" min="0" step="0.01" value={limit} onChange={(e) => setLimit(e.target.value)} />
+        </label>
+        <label className="block space-y-1 text-sm">
+          <span className="font-medium">Alerta al (%)</span>
+          <Input type="number" min="1" max="100" value={threshold} onChange={(e) => setThreshold(e.target.value)} />
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <Switch checked={monthOnly} onCheckedChange={setMonthOnly} /> Solo este mes (si no, para todos los meses)
+        </label>
+      </div>
+    </ResponsiveDialog>
+  );
+}

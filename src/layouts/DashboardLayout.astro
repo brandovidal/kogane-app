@@ -4,7 +4,6 @@ import { Sidebar } from "@/shared/components/Sidebar";
 import { ThemeToggle } from "@/shared/components/ThemeToggle";
 import { MobileNav } from "@/shared/components/MobileNav";
 import { MonthNavigator } from "@/shared/components/MonthNavigator";
-import { PersonFilter } from "@/shared/components/PersonFilter";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
 import { SalaryEditor } from "@/shared/components/SalaryEditor";
 import { Toaster } from "@/ui/sonner";
@@ -29,9 +28,6 @@ const currentPath = Astro.url.pathname;
         </div>
         <div class="flex items-center gap-3">
           <MonthNavigator client:load />
-          <div class="hidden md:block">
-            <PersonFilter client:load />
-          </div>
           <div class="hidden sm:block h-4 w-px bg-border" />
           <SalaryEditor client:load />
           <ThemeToggle client:load />

@@ -6,13 +6,13 @@ import { debtReportUrl, useDebtSummary, useDebts, useDeleteDebt } from "@/shared
 import { withQuery } from "@/shared/api/query";
 import type { Debt } from "@/shared/api/types";
 import { EmptyState } from "@/shared/components/EmptyState";
+import { DataView, useViewMode, ViewToggle, type Column, type ViewMode } from "@/shared/components/DataView";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { DEBT_TIMING_LABELS } from "@/shared/labels";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
-import { PERSON_ALL, PERSON_ME, usePersonFilter } from "@/shared/stores/person.store";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
@@ -36,19 +36,12 @@ import { DebtPaymentDialog } from "./DebtPaymentDialog";
 type Direction = "owed_to_me" | "i_owe";
 const ALL = "__all__";
 
-// The person of the header (D80): one person shows only theirs; Yo and Todos show everyone (you owe nobody yourself)
-function useHeaderPerson(): string | undefined {
-  const person = usePersonFilter((state) => state.person);
-  return person === PERSON_ME || person === PERSON_ALL ? undefined : person;
-}
-
 // Préstamos y deudas (P17, D60, D80): Me deben · Debo · Por persona, with filters and grouping
 function DebtsPageView() {
   const [tab, setTab] = useState<Direction | "people">("owed_to_me");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [paying, setPaying] = useState<Debt | undefined>();
   const direction: Direction = tab === "i_owe" ? "i_owe" : "owed_to_me";
-  const headerPerson = useHeaderPerson();
 
   return (
     <div className="space-y-4">
@@ -60,7 +53,7 @@ function DebtsPageView() {
             <TabsTrigger value="people">Por persona</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2">
-            <ReportLinks personId={headerPerson} />
+            <ReportLinks />
             <Button size="sm" onClick={() => setDialogOpen(true)}>
               <Plus className="mr-1 h-4 w-4" /> Nueva
             </Button>
@@ -68,13 +61,13 @@ function DebtsPageView() {
         </div>
 
         <TabsContent value="owed_to_me" className="mt-4">
-          <DebtList direction="owed_to_me" headerPerson={headerPerson} onPay={setPaying} />
+          <DebtList direction="owed_to_me" onPay={setPaying} />
         </TabsContent>
         <TabsContent value="i_owe" className="mt-4">
-          <DebtList direction="i_owe" headerPerson={headerPerson} onPay={setPaying} />
+          <DebtList direction="i_owe" onPay={setPaying} />
         </TabsContent>
         <TabsContent value="people" className="mt-4">
-          <PeopleSummary headerPerson={headerPerson} />
+          <PeopleSummary />
         </TabsContent>
       </Tabs>
 
@@ -84,20 +77,13 @@ function DebtsPageView() {
   );
 }
 
-function DebtList({
-  direction,
-  headerPerson,
-  onPay,
-}: {
-  direction: Direction;
-  headerPerson?: string;
-  onPay: (debt: Debt) => void;
-}) {
+function DebtList({ direction, onPay }: { direction: Direction; onPay: (debt: Debt) => void }) {
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
-  const { data: debts = [], isLoading } = useDebts({ direction, ...(headerPerson ? { personId: headerPerson } : {}) });
+  const { data: debts = [], isLoading } = useDebts({ direction });
   const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS);
   const [grouped, setGrouped] = useState(false);
+  const [view, setView] = useViewMode("debts", "cards");
 
   const open = debts.filter((debt) => debt.balance > 0);
   const shown = applyDebtFilters(open, filters, { month, year });
@@ -115,9 +101,12 @@ function DebtList({
           <p className="text-sm text-muted-foreground">{direction === "owed_to_me" ? "Por cobrar" : "Por pagar"}</p>
           <p className="text-2xl font-bold">{formatCurrency(total)}</p>
         </div>
-        <label className="flex items-center gap-2 text-sm">
-          <Switch checked={grouped} onCheckedChange={setGrouped} /> Agrupar por persona
-        </label>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={grouped} onCheckedChange={setGrouped} /> Agrupar por persona
+          </label>
+          <ViewToggle value={view} onChange={setView} />
+        </div>
       </div>
 
       <DebtFilters
@@ -140,12 +129,12 @@ function DebtList({
                 </h3>
                 {direction === "owed_to_me" && <CollectButton name={group.name} debts={group.debts} />}
               </div>
-              <DebtGrid debts={group.debts} onPay={onPay} />
+              <DebtGrid debts={group.debts} view={view} onPay={onPay} />
             </section>
           ))}
         </div>
       ) : (
-        <DebtGrid debts={shown} onPay={onPay} />
+        <DebtGrid debts={shown} view={view} onPay={onPay} />
       )}
     </div>
   );
@@ -230,67 +219,85 @@ function CollectButton({ name, debts }: { name: string; debts: Debt[] }) {
   );
 }
 
-function DebtGrid({ debts, onPay }: { debts: Debt[]; onPay: (debt: Debt) => void }) {
+function DebtGrid({ debts, view, onPay }: { debts: Debt[]; view: ViewMode; onPay: (debt: Debt) => void }) {
   const deleteDebt = useDeleteDebt();
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {debts.map((debt) => {
+  const columns: Column<Debt>[] = [
+    {
+      key: "concept",
+      header: "Concepto",
+      role: "title",
+      cell: (debt) => (
+        <div>
+          <span className="font-medium">
+            {debt.description}
+            {debt.installment && <Badge variant="outline" className="ml-2 text-xs">{debt.installment}</Badge>}
+          </span>
+          {debt.notes && <p className="text-xs italic text-muted-foreground">{debt.notes}</p>}
+        </div>
+      ),
+    },
+    {
+      key: "balance",
+      header: "Saldo",
+      role: "amount",
+      cell: (debt) => {
         const progress = debt.amount > 0 ? (debt.paidAmount / debt.amount) * 100 : 0;
         return (
-          <Card key={debt.id}>
-            <CardContent className="space-y-3 pt-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-medium">
-                    {debt.description}
-                    {debt.installment && <Badge variant="outline" className="ml-2 text-xs">{debt.installment}</Badge>}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {debt.person.name} · {getMonthName(debt.paymentMonth)} {debt.paymentYear}
-                  </p>
-                </div>
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-green-600" onClick={() => onPay(debt)} title="Registrar abono">
-                    <HandCoins className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteDebt.mutate(debt.id)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <StatusBadge status={debt.status} />
-                {debt.timing === "late" && (
-                  <Badge variant="destructive" className="gap-1">
-                    <AlertCircle className="h-3 w-3" /> {DEBT_TIMING_LABELS.late}
-                  </Badge>
-                )}
-                {debt.timing === "upcoming" && <Badge variant="outline">{DEBT_TIMING_LABELS.upcoming}</Badge>}
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span>Abonado: {formatCurrency(debt.paidAmount)}</span>
-                  <span className="font-medium">{formatCurrency(debt.amount)}</span>
-                </div>
-                <Progress value={progress} className="h-2" />
-                <p className="text-xs text-muted-foreground">Saldo: {formatCurrency(debt.balance)}</p>
-              </div>
-
-              {debt.notes && <p className="text-xs italic text-muted-foreground">{debt.notes}</p>}
-            </CardContent>
-          </Card>
+          <div className="min-w-[140px] space-y-1">
+            <span className="font-semibold tabular-nums">{formatCurrency(debt.balance)}</span>
+            <Progress value={progress} className="h-1.5" />
+            <p className="text-xs text-muted-foreground">
+              Abonado {formatCurrency(debt.paidAmount)} de {formatCurrency(debt.amount)}
+            </p>
+          </div>
         );
-      })}
-    </div>
-  );
+      },
+    },
+    { key: "person", header: "Persona", cell: (debt) => <span className="text-sm">{debt.person.name}</span> },
+    {
+      key: "month",
+      header: "Mes de pago",
+      cell: (debt) => <span className="text-sm text-muted-foreground">{getMonthName(debt.paymentMonth)} {debt.paymentYear}</span>,
+    },
+    {
+      key: "state",
+      header: "Estado",
+      cell: (debt) => (
+        <span className="inline-flex items-center gap-1">
+          <StatusBadge status={debt.status} />
+          {debt.timing === "late" && (
+            <Badge variant="destructive" className="gap-1">
+              <AlertCircle className="h-3 w-3" /> {DEBT_TIMING_LABELS.late}
+            </Badge>
+          )}
+          {debt.timing === "upcoming" && <Badge variant="outline">{DEBT_TIMING_LABELS.upcoming}</Badge>}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "",
+      role: "actions",
+      className: "w-[80px]",
+      cell: (debt) => (
+        <div className="flex gap-1">
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-green-600" onClick={() => onPay(debt)} title="Registrar abono" aria-label="Registrar abono">
+            <HandCoins className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteDebt.mutate(debt.id)}>
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+  return <DataView items={debts} columns={columns} rowKey={(debt) => debt.id} view={view} />;
 }
 
-function PeopleSummary({ headerPerson }: { headerPerson?: string }) {
+function PeopleSummary() {
   const { data: rows = [], isLoading } = useDebtSummary();
   const { data: owed = [] } = useDebts({ direction: "owed_to_me" });
-  const shown = headerPerson ? rows.filter((row) => row.personId === headerPerson) : rows;
+  const shown = rows;
   if (isLoading) return null;
   if (!shown.length) return <EmptyState description="No hay deudas pendientes" />;
 
@@ -327,7 +334,7 @@ function PeopleSummary({ headerPerson }: { headerPerson?: string }) {
   );
 }
 
-// 📥 Excel · 📄 PDF (D39): everyone from the header, one person from their card or the header filter
+// 📥 Excel · 📄 PDF (D39): everyone from the header, one person from their card
 function ReportLinks({ personId }: { personId?: string }) {
   return (
     <div className="flex items-center gap-1">

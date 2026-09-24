@@ -1,13 +1,14 @@
 import { Search, X } from "lucide-react";
 
-import { useCategories, usePaymentMethods } from "@/shared/api/hooks/catalogs";
+import { useCategories, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
 import { EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS, SUBSCRIPTION_PERIOD_LABELS } from "@/shared/labels";
-import { hasActiveFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
+import { hasActiveFilters, PERSON_ALL, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 const ALL = "__all__";
+const ME = "__me__"; // the person filter is empty: Yo
 
 interface ExpenseFiltersProps {
   fields: ExpenseFilterKey[];
@@ -55,11 +56,28 @@ const entriesOf = (labels: Record<string, string>, keys?: string[]) =>
 export function ExpenseFilters({ fields, value, onChange, statuses, shown, total }: ExpenseFiltersProps) {
   const categories = useCategories().data ?? [];
   const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
+  const others = usePeople().data?.filter((person) => person.isActive && !person.isDefault) ?? [];
   const set = (key: ExpenseFilterKey, next: string | undefined) => onChange({ ...value, [key]: next || undefined });
   const has = (key: ExpenseFilterKey) => fields.includes(key);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {has("person") && (
+        <Select value={value.person ?? ME} onValueChange={(next) => set("person", next === ME ? undefined : next)}>
+          <SelectTrigger className="h-9 w-[150px]" aria-label="Persona">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ME}>Persona: Yo</SelectItem>
+            <SelectItem value={PERSON_ALL}>Persona: todas</SelectItem>
+            {others.map((person) => (
+              <SelectItem key={person.id} value={person.id}>
+                {person.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
       {has("q") && (
         <div className="relative w-full sm:w-56">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -122,7 +140,7 @@ export function ExpenseFilters({ fields, value, onChange, statuses, shown, total
             { value: "no", label: "Solo míos" },
           ]}
           onChange={(next) => set("shared", next)}
-          width="w-[140px]"
+          width="w-[180px]"
         />
       )}
       {hasActiveFilters(value) && (

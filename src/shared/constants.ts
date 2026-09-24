@@ -1,4 +1,5 @@
-// Menu of the web (D41, D80): Inicio, then Registrar (Nuevo gasto · Mensajes · Reconocimiento · Borrador) and the
+// Menu of the web (D41, D80): Inicio, then Registrar (Mensajes · Reconocimiento · Borrador; Nuevo gasto is the button
+// of each page, D79) and the
 // screens grouped. Labels of API values live in labels.ts (D62).
 export type NavIcon =
   | "message-circle"
@@ -43,7 +44,6 @@ export const NAV: NavEntry[] = [
     label: "Registrar",
     icon: "plus-circle",
     children: [
-      { href: "#nuevo-gasto", label: "Nuevo gasto", icon: "plus-circle", action: "new-expense" },
       { href: "/mensajes", label: "Mensajes", icon: "message-circle" },
       { href: "/reconocimiento", label: "Reconocimiento", icon: "scan-text" },
       { href: "/borrador", label: "Borrador", icon: "inbox", badge: "drafts" },

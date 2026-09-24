@@ -2,39 +2,22 @@ import { useQuery } from "@tanstack/react-query";
 
 import { api, unwrap } from "../client";
 import type { ExpenseByResource, ExpenseResource } from "../types";
-import { PERSON_ME, resolvePersonId, usePersonFilter } from "@/shared/stores/person.store";
-
-import { usePeople } from "./catalogs";
 import { useApiMutation } from "./use-api-mutation";
 
 export const expenseKeys = {
   resource: (resource: ExpenseResource) => ["expenses", resource] as const,
-  list: (resource: ExpenseResource, month?: number, year?: number, personId?: string) =>
-    ["expenses", resource, month, year, personId] as const,
+  list: (resource: ExpenseResource, month?: number, year?: number) => ["expenses", resource, month, year] as const,
 };
 
 // One table of /v1/expenses (month and year filter by payment month, or by spent date for day-to-day expenses).
-// `byPerson` applies the Persona filter of the header (D71, D78); totals of the budget never do.
-export function useExpenses<R extends ExpenseResource>(
-  resource: R,
-  period?: { month: number; year: number },
-  { byPerson = false }: { byPerson?: boolean } = {},
-) {
-  const person = usePersonFilter((state) => state.person);
-  const defaultPersonId = usePeople().data?.find((item) => item.isDefault)?.id;
-  const personId = byPerson ? resolvePersonId(person, defaultPersonId) : undefined;
-  // "Yo" waits for the catalog, so it never shows everyone's expenses for a moment
-  const waiting = byPerson && person === PERSON_ME && !defaultPersonId;
-
+// The person is filtered on the page, with the rest of the filters (D80)
+export function useExpenses<R extends ExpenseResource>(resource: R, period?: { month: number; year: number }) {
   return useQuery({
-    queryKey: expenseKeys.list(resource, period?.month, period?.year, personId),
+    queryKey: expenseKeys.list(resource, period?.month, period?.year),
     queryFn: async () =>
       (await unwrap(
-        api.GET("/v1/expenses/{resource}", {
-          params: { path: { resource }, query: { ...period, ...(personId ? { personId } : {}) } },
-        }),
+        api.GET("/v1/expenses/{resource}", { params: { path: { resource }, query: period } }),
       )) as ExpenseByResource[R][],
-    enabled: !waiting,
   });
 }
 

@@ -17,3 +17,10 @@ export const useSetBudget = () =>
     invalidate: [["summary"]],
     success: "Presupuesto guardado",
   });
+
+// Salary, extras, spent and surplus of the last months up to month/year, oldest first (one call, D78)
+export const useSummaryHistory = (month: number, year: number, months = 6) =>
+  useQuery({
+    queryKey: ["summary", "history", month, year, months],
+    queryFn: () => unwrap(api.GET("/v1/summary/history", { params: { query: { month, year, months } } })),
+  });

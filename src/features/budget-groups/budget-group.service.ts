@@ -1,7 +1,6 @@
 import { useBudgetGroups, useCategories } from "@/shared/api/hooks/catalogs";
-import { useExpenses } from "@/shared/api/hooks/expenses";
 import { useSummary } from "@/shared/api/hooks/summary";
-import { EXPENSE_RESOURCES, type BudgetGroup, type Category } from "@/shared/api/types";
+import type { BudgetGroup, Category } from "@/shared/api/types";
 
 export interface BudgetGroupSummary {
   group: BudgetGroup;
@@ -46,15 +45,17 @@ export function buildBudgetGroupSummaries(
     });
 }
 
+// Spending per category comes from /v1/summary: your part only (D71, D73), the same numbers as the Resumen
 export function useBudgetGroupSummaries(month: number, year: number) {
-  const period = { month, year };
   const summary = useSummary(month, year).data;
   const groups = useBudgetGroups().data ?? [];
   const categories = useCategories().data ?? [];
-  const daily = useExpenses(EXPENSE_RESOURCES.daily, period).data ?? [];
-  const fixedCosts = useExpenses(EXPENSE_RESOURCES.fixedCost, period).data ?? [];
-  const cards = useExpenses(EXPENSE_RESOURCES.creditCard, period).data ?? [];
+  const spending = (summary?.byCategory ?? []).map((line) => ({
+    categoryId: line.categoryId,
+    amount: line.spent,
+    amountInPen: null,
+  }));
 
   const salary = summary?.budget?.salary ?? 0;
-  return { salary, groups, summaries: buildBudgetGroupSummaries(groups, categories, [...daily, ...fixedCosts, ...cards], salary) };
+  return { salary, groups, summaries: buildBudgetGroupSummaries(groups, categories, spending, salary) };
 }

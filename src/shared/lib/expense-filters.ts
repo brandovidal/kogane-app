@@ -1,6 +1,7 @@
 // Filters of the expense pages (D79): a pure function over the month already loaded, so totals follow what is shown
 
 export interface ExpenseFilterValues {
+  person?: string; // D71, D80: empty = the default person ("Yo"), "all" = everyone, or one person's id
   q?: string; // concept, merchant or note
   category?: string;
   method?: string; // payment method id
@@ -13,7 +14,10 @@ export interface ExpenseFilterValues {
 
 export type ExpenseFilterKey = keyof ExpenseFilterValues;
 
+export const PERSON_ALL = "all";
+
 export const EXPENSE_FILTER_KEYS: ExpenseFilterKey[] = [
+  "person",
   "q",
   "category",
   "method",
@@ -26,6 +30,7 @@ export const EXPENSE_FILTER_KEYS: ExpenseFilterKey[] = [
 
 export interface FilterableExpense {
   description: string;
+  personId?: string | null;
   merchant?: string | null;
   notes?: string | null;
   categoryId?: string | null;
@@ -49,10 +54,17 @@ const hasInstallments = (installment: string | null | undefined) => {
   return total > 1;
 };
 
-export function applyExpenseFilters<T extends FilterableExpense>(records: T[], filters: ExpenseFilterValues): T[] {
+// `me`: the default person, what "Yo" means while the person filter is empty
+export function applyExpenseFilters<T extends FilterableExpense>(
+  records: T[],
+  filters: ExpenseFilterValues,
+  me?: string,
+): T[] {
   const q = filters.q?.trim() ? fold(filters.q.trim()) : null;
+  const person = filters.person === PERSON_ALL ? null : (filters.person ?? me ?? null);
   return records.filter(
     (record) =>
+      (!person || record.personId === person) &&
       (!q || [record.description, record.merchant, record.notes].some((text) => text && fold(text).includes(q))) &&
       (!filters.category || record.categoryId === filters.category) &&
       (!filters.method || record.paymentMethodId === filters.method) &&

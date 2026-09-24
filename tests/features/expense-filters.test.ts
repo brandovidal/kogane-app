@@ -27,6 +27,16 @@ describe("expense filters (D79)", () => {
     expect(applyExpenseFilters(records, { shared: "no" })).toHaveLength(2);
   });
 
+  it("should show only the default person until another one (or everyone) is chosen (D80)", () => {
+    const people = [
+      { description: "Mío", personId: "me" },
+      { description: "De Danery", personId: "danery" },
+    ];
+    expect(applyExpenseFilters(people, {}, "me").map((r) => r.description)).toEqual(["Mío"]);
+    expect(applyExpenseFilters(people, { person: "all" }, "me")).toHaveLength(2);
+    expect(applyExpenseFilters(people, { person: "danery" }, "me").map((r) => r.description)).toEqual(["De Danery"]);
+  });
+
   it("should know when a filter is on", () => {
     expect(hasActiveFilters({})).toBe(false);
     expect(hasActiveFilters({ q: "" })).toBe(false);

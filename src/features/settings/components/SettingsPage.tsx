@@ -7,8 +7,9 @@ import { usePeriod } from "@/shared/stores/period.store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
-import { Save, User, Download, RotateCcw, DollarSign, PieChart, Settings, Palette } from "lucide-react";
+import { Save, DollarSign, PieChart, Palette } from "lucide-react";
+import { AccountsTable } from "./AccountsTable";
+import { PeopleTable } from "./PeopleTable";
 import { formatCurrency } from "@/shared/lib/currency";
 
 // Salary and limit are per month (bud_monthly_budgets): this edits the month on screen
@@ -37,7 +38,7 @@ function SettingsPageView() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="max-w-4xl space-y-6">
       {/* Sueldo y Presupuesto */}
       <Card>
         <CardHeader className="pb-3">
@@ -105,28 +106,8 @@ function SettingsPageView() {
         </CardContent>
       </Card>
 
-      {/* Perfil */}
-      <Card className="opacity-60">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <User className="h-4 w-4" />
-            Perfil
-            <Badge variant="secondary" className="text-xs">Próximamente</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-muted-foreground">Nombre</label>
-              <Input disabled placeholder="Tu nombre" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <Input disabled placeholder="tu@email.com" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <PeopleTable />
+      <AccountsTable />
 
       {/* Preferencias */}
       <Card>
@@ -152,25 +133,6 @@ function SettingsPageView() {
         </CardContent>
       </Card>
 
-      {/* Datos */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Settings className="h-4 w-4" />
-            Datos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-3">
-          <Button variant="outline" size="sm" disabled>
-            <Download className="mr-1.5 h-3.5 w-3.5" />
-            Exportar datos
-          </Button>
-          <Button variant="outline" size="sm" disabled className="text-destructive">
-            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-            Resetear datos
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

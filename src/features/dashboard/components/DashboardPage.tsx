@@ -1,28 +1,30 @@
+import { BudgetDonut } from "@/features/budget/components/BudgetDonut";
+import { BudgetKpis } from "@/features/budget/components/BudgetKpis";
+import { BudgetVsActual } from "@/features/budget/components/BudgetVsActual";
+import { SurplusTrend } from "@/features/budget/components/SurplusTrend";
+import { useSummary } from "@/shared/api/hooks/summary";
 import { withQuery } from "@/shared/api/query";
 import { usePeriod } from "@/shared/stores/period.store";
-import { MonthlySummary } from "./MonthlySummary";
-import { ExpenseChart } from "./ExpenseChart";
-import { CategoryRing } from "./CategoryRing";
-import { BillingCycleCard } from "./BillingCycleCard";
-import { BudgetAllocationSummary } from "./BudgetAllocationSummary";
-import { useDashboard } from "../dashboard.service";
 
+import { useCreditCardSummaries } from "../dashboard.service";
+import { BillingCycleCard } from "./BillingCycleCard";
+
+// Inicio (D78): your budget of the month and the cards; the same pieces as the Resumen, without the detail
 function DashboardPageView() {
-  const selectedMonth = usePeriod((s) => s.month);
-  const selectedYear = usePeriod((s) => s.year);
-  const { summary, categories, creditCards, trend } = useDashboard(selectedMonth, selectedYear);
+  const month = usePeriod((s) => s.month);
+  const year = usePeriod((s) => s.year);
+  const summary = useSummary(month, year).data;
+  const creditCards = useCreditCardSummaries(month, year);
 
   return (
     <div className="space-y-4">
-      <MonthlySummary summary={summary} />
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <ExpenseChart data={trend} />
-        <CategoryRing data={categories} />
+      <BudgetKpis summary={summary} month={month} year={year} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <BudgetDonut summary={summary} month={month} year={year} />
+        <SurplusTrend month={month} year={year} />
       </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <BudgetAllocationSummary month={selectedMonth} year={selectedYear} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <BudgetVsActual summary={summary} compact />
         <BillingCycleCard cards={creditCards} />
       </div>
     </div>

@@ -51,8 +51,11 @@ En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las captu
 
 ## La web
 
-- **Menú**: Inicio; **Registrar** (Nuevo gasto, Mensajes, Reconocimiento, Borrador); Gastos; Préstamos y deudas; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar).
-- **Filtros**: las páginas de gastos y de deudas tienen buscador y filtros (categoría, medio de pago, estado, cuotas, compartidos…), guardados en la URL. La persona se elige en la cabecera (Yo por defecto).
+- **Menú**: Inicio; **Registrar** (Mensajes, Reconocimiento, Borrador); Gastos; Préstamos y deudas; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar). **Nuevo gasto** es el botón de cada página.
+- **Filtros**: las páginas de gastos, tarjetas y deudas tienen buscador y filtros (persona —Yo por defecto—, categoría, medio de pago, estado, cuotas, compartidos…), guardados en la URL.
+- **Vistas**: cada lista se ve como tabla o como tarjetas (el botón junto a los filtros); la elección se recuerda por página.
+- **Presupuesto**: Inicio y Resumen muestran ingresos, gastado (tu parte), excedente y límite, el donut por categoría o grupo (clic para ver el detalle), presupuesto vs real y el excedente por mes. Los límites se ponen en Categorías (todos los meses o solo este) y los ingresos extra en Ingresos.
+- **Configuración**: sueldo del mes, **Personas** (alias que entiende el bot, quién eres "Yo") y **Cuentas y tarjetas** (las que tienes, cuáles salen en el bot y los días de cierre y pago).
 - **Ctrl + K** (⌘K en Mac): buscar cualquier pantalla o tarjeta escribiendo parte del nombre.
 - **Mes**: el selector de arriba cambia el mes de todas las pantallas; el lápiz al lado del sueldo lo edita para ese mes.
 - **Mensajes** guarda el historial solo en ese navegador (*Limpiar* lo borra); los gastos quedan en la base igual.

@@ -914,6 +914,10 @@ export interface components {
                 budgetGroupId: string | null;
                 spent: number;
                 limit: number | null;
+                /** @description The category budget row of the limit (PUT or DELETE it) */
+                budgetId: string | null;
+                /** @description The limit is only for this month (otherwise for every month) */
+                limitMonthOnly: boolean;
                 alertThreshold: number;
                 percent: number | null;
                 /**
@@ -1978,6 +1982,10 @@ export interface components {
                     budgetGroupId: string | null;
                     spent: number;
                     limit: number | null;
+                    /** @description The category budget row of the limit (PUT or DELETE it) */
+                    budgetId: string | null;
+                    /** @description The limit is only for this month (otherwise for every month) */
+                    limitMonthOnly: boolean;
                     alertThreshold: number;
                     percent: number | null;
                     /**

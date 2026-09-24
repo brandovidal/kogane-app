@@ -1,9 +1,9 @@
 import { OwnPart } from "@/shared/components/OwnPart";
 import { totalsOf } from "@/shared/lib/shared-expense";
-import { nameById, useCreditCards, usePeople } from "@/shared/api/hooks/catalogs";
+import { nameById, useCreditCards, usePeople, useMe } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
-import { EXPENSE_RESOURCES } from "@/shared/api/types";
+import { EXPENSE_RESOURCES, type CreditCardExpense } from "@/shared/api/types";
 import { usePeriod } from "@/shared/stores/period.store";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
@@ -11,9 +11,7 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/ui/table";
+import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
 import {
   Select, SelectContent, SelectItem, SelectTrigger,
 } from "@/ui/select";
@@ -25,7 +23,7 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
 
-const FILTERS: ExpenseFilterKey[] = ["q", "category", "status", "installments", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "status", "installments", "type", "shared"];
 
 interface CreditCardDetailProps {
   cardCode: string;
@@ -36,24 +34,89 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
   const { data: creditCards, isLoading } = useCreditCards();
-  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month: selectedMonth, year: selectedYear }, { byPerson: true }).data ?? [];
+  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month: selectedMonth, year: selectedYear }).data ?? [];
   const people = usePeople().data ?? [];
   const personName = nameById(people);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.creditCard);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.creditCard);
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
+  const me = useMe();
+  const [view, setView] = useViewMode("card-detail", "table");
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
 
   const ofCard = expenses.filter((e) => e.paymentMethodId === card.id);
-  const cardExpenses = applyExpenseFilters(ofCard, filters).sort((a, b) =>
+  const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) =>
     (b.processDate ?? "").localeCompare(a.processDate ?? ""),
   );
 
   const totals = totalsOf(cardExpenses);
+
+  const columns: Column<CreditCardExpense>[] = [
+    {
+      key: "description",
+      header: "Descripción",
+      role: "title",
+      cell: (exp) => (
+        <div>
+          <span className="font-medium">{exp.description}</span>
+          {exp.installment && <Badge variant="outline" className="ml-2 text-xs">{exp.installment}</Badge>}
+          {exp.notes && <p className="text-xs text-muted-foreground">{exp.notes}</p>}
+        </div>
+      ),
+    },
+    {
+      key: "amount",
+      header: "Monto",
+      role: "amount",
+      cell: (exp) => <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPen} othersShare={exp.othersShare} />,
+    },
+    {
+      key: "status",
+      header: "Estado",
+      cell: (exp) => (
+        <Select value={exp.paymentStatus} onValueChange={(v) => saveExpense.mutate({ id: exp.id, body: { paymentStatus: v } })}>
+          <SelectTrigger className="h-7 w-auto border-0 p-0">
+            <StatusBadge status={exp.paymentStatus} />
+          </SelectTrigger>
+          <SelectContent>
+            {CREDIT_CARD_STATUSES.map((status) => (
+              <SelectItem key={status} value={status}>{PAYMENT_STATUS_LABELS[status]}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+    },
+    { key: "person", header: "Persona", cell: (exp) => <span className="text-sm">{personName(exp.personId)}</span> },
+    {
+      key: "date",
+      header: "Fecha",
+      cell: (exp) => <span className="text-sm text-muted-foreground">{exp.processDate ? formatDate(exp.processDate) : "—"}</span>,
+    },
+    {
+      key: "type",
+      header: "Tipo",
+      cell: (exp) => (
+        <Badge variant={exp.expenseType === "essential" ? "default" : "secondary"} className="text-xs">
+          {EXPENSE_TYPE_LABELS[exp.expenseType]}
+        </Badge>
+      ),
+    },
+    {
+      key: "actions",
+      header: "",
+      role: "actions",
+      className: "w-[60px]",
+      cell: (exp) => (
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label="Borrar" onClick={() => deleteExpense.mutate(exp.id)}>
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -89,13 +152,12 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           shown={cardExpenses.length}
           total={ofCard.length}
         />
-        <Button
-          size="sm"
-          className="shrink-0"
-          onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}
-        >
-          <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          <ViewToggle value={view} onChange={setView} />
+          <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
+            <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
+          </Button>
+        </div>
       </div>
 
       {cardExpenses.length === 0 ? (
@@ -103,63 +165,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
         />
       ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Descripción</TableHead>
-                <TableHead>Monto</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Persona</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead className="w-[60px]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {cardExpenses.map((exp) => (
-                <TableRow key={exp.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{exp.description}</span>
-                      {exp.installment && <Badge variant="outline" className="text-xs">{exp.installment}</Badge>}
-                    </div>
-                    {exp.notes && <p className="text-xs text-muted-foreground">{exp.notes}</p>}
-                  </TableCell>
-                  <TableCell>
-                    <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPen} othersShare={exp.othersShare} />
-                  </TableCell>
-                  <TableCell>
-                    <Select value={exp.paymentStatus} onValueChange={(v) => saveExpense.mutate({ id: exp.id, body: { paymentStatus: v } })}>
-                      <SelectTrigger className="h-7 w-auto border-0 p-0">
-                        <StatusBadge status={exp.paymentStatus} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CREDIT_CARD_STATUSES.map((s) => (
-                          <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell className="text-sm">{personName(exp.personId)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {exp.processDate ? formatDate(exp.processDate) : "—"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={exp.expenseType === "essential" ? "default" : "secondary"} className="text-xs">
-                      {EXPENSE_TYPE_LABELS[exp.expenseType]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteExpense.mutate(exp.id)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
       )}
 
     </div>
