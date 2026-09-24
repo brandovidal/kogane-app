@@ -779,6 +779,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/statements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Statements read, newest month first, with their row counts */
+        get: operations["StatementsController_list_v1"];
+        put?: never;
+        /** Read a statement PDF and reconcile it with the card expenses of its month */
+        post: operations["StatementsController_upload_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/statements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A statement with its rows, the card expenses missing from it and both totals */
+        get: operations["StatementsController_get_v1"];
+        put?: never;
+        post?: never;
+        /** Delete a statement and its rows (the expenses it created stay) */
+        delete: operations["StatementsController_delete_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/statements/{id}/create-new": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create the new rows (all or the given ones) as pending card expenses */
+        post: operations["StatementsController_createNew_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/statements/{id}/rows/{rowId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Ignore a new row, or bring an ignored one back */
+        patch: operations["StatementsController_setRowResult_v1"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1190,12 +1260,12 @@ export interface components {
                 items: {
                     id: string;
                     /** @enum {string} */
-                    kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring";
+                    kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement";
                     title: string;
                     body: string;
                     amount: number | null;
                     /** @enum {string|null} */
-                    refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                    refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
                     refId: string | null;
                     /** Format: date-time */
                     eventDate: string | null;
@@ -1218,12 +1288,12 @@ export interface components {
             data: {
                 id: string;
                 /** @enum {string} */
-                kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring";
+                kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement";
                 title: string;
                 body: string;
                 amount: number | null;
                 /** @enum {string|null} */
-                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
                 refId: string | null;
                 /** Format: date-time */
                 eventDate: string | null;
@@ -1311,7 +1381,7 @@ export interface components {
                 /** @enum {string} */
                 status: "pending" | "paid" | "late";
                 /** @enum {string|null} */
-                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
                 refId: string | null;
                 color: string | null;
             }[];
@@ -1337,7 +1407,7 @@ export interface components {
                 /** @enum {string} */
                 status: "pending" | "paid" | "late";
                 /** @enum {string|null} */
-                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | null;
+                refType: "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
                 refId: string | null;
                 color: string | null;
             }[];
@@ -1959,6 +2029,8 @@ export interface components {
                 aliases: string[];
                 isActive: boolean;
                 isDefault: boolean;
+                /** @description Masked: only the last 3 characters (D94) */
+                documentNumber: string | null;
             }[];
         };
         CreatePersonDto: {
@@ -1966,6 +2038,7 @@ export interface components {
             aliases?: string[];
             isDefault?: boolean;
             isActive?: boolean;
+            documentNumber?: string | null;
         };
         PersonResponseDto: {
             /** @enum {boolean} */
@@ -1983,6 +2056,8 @@ export interface components {
                 aliases: string[];
                 isActive: boolean;
                 isDefault: boolean;
+                /** @description Masked: only the last 3 characters (D94) */
+                documentNumber: string | null;
             };
         };
         UpdatePersonDto: {
@@ -1990,6 +2065,7 @@ export interface components {
             aliases?: string[];
             isDefault?: boolean;
             isActive?: boolean;
+            documentNumber?: string | null;
         };
         PaymentMethodListResponseDto: {
             /** @enum {boolean} */
@@ -2526,6 +2602,111 @@ export interface components {
                 updatedAt: string;
             };
         };
+        StatementResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                paymentMethodId: string;
+                cardName: string;
+                paymentMonth: number;
+                paymentYear: number;
+                /** Format: date-time */
+                periodStart: string | null;
+                /** Format: date-time */
+                periodEnd: string | null;
+                /** Format: date-time */
+                dueDate: string | null;
+                totalDue: number | null;
+                minimumDue: number | null;
+                currency: string;
+                /** @enum {string} */
+                source: "template" | "ai";
+                fileId: string | null;
+                /** @enum {string} */
+                status: "review" | "done";
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                rows: {
+                    id: string;
+                    statementId: string;
+                    /** Format: date-time */
+                    date: string | null;
+                    description: string;
+                    amount: number;
+                    currency: string;
+                    installment: string | null;
+                    /** @enum {string} */
+                    result: "matched" | "new" | "created" | "ignored";
+                    expenseId: string | null;
+                    /** Format: date-time */
+                    createdAt: string;
+                }[];
+                /** @description Card expenses of the month that are not in the statement */
+                missing: {
+                    id: string;
+                    description: string;
+                    amount: number;
+                    processDate: string | null;
+                    installment: string | null;
+                }[];
+                /** @description Card expenses registered for that payment month */
+                koganeTotal: number;
+                /** @description totalDue − koganeTotal */
+                difference: number | null;
+            };
+        };
+        StatementListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                paymentMethodId: string;
+                cardName: string;
+                paymentMonth: number;
+                paymentYear: number;
+                /** Format: date-time */
+                periodStart: string | null;
+                /** Format: date-time */
+                periodEnd: string | null;
+                /** Format: date-time */
+                dueDate: string | null;
+                totalDue: number | null;
+                minimumDue: number | null;
+                currency: string;
+                /** @enum {string} */
+                source: "template" | "ai";
+                fileId: string | null;
+                /** @enum {string} */
+                status: "review" | "done";
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                counts: {
+                    matched: number;
+                    new: number;
+                    created: number;
+                    ignored: number;
+                };
+            }[];
+        };
+        CreateNewRowsDto: {
+            /** @description Only these rows; without it every new row */
+            rowIds?: string[];
+        };
+        RowResultDto: {
+            /** @enum {string} */
+            result: "ignored" | "new";
+        };
     };
     responses: never;
     parameters: never;
@@ -2952,7 +3133,7 @@ export interface operations {
     NotificationsController_history_v1: {
         parameters: {
             query?: {
-                kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring";
+                kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement";
                 unread?: "true" | "false";
                 limit?: number;
                 offset?: number;
@@ -3993,6 +4174,151 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MonthlyBudgetResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementListResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_upload_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description Statement PDF (≤ 15 MB)
+                     */
+                    file: string;
+                    /** @description Only when the saved document number does not open it */
+                    password?: string;
+                    /** @description Only when the statement does not say which card */
+                    paymentMethodId?: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_delete_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_createNew_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateNewRowsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_setRowResult_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                rowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RowResultDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementResponseDto"];
                 };
             };
         };

@@ -18,7 +18,8 @@ export type NavIcon =
   | "bar-chart-3"
   | "settings"
   | "wallet"
-  | "calendar";
+  | "calendar"
+  | "file-text";
 
 export interface NavLink {
   href: string;
@@ -47,6 +48,7 @@ export const NAV: NavEntry[] = [
     children: [
       { href: "/mensajes", label: "Mensajes", icon: "message-circle" },
       { href: "/reconocimiento", label: "Reconocimiento", icon: "scan-text" },
+      { href: "/estados-de-cuenta", label: "Estados de cuenta", icon: "file-text" },
       { href: "/borrador", label: "Borrador", icon: "inbox", badge: "drafts" },
     ],
   },

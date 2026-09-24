@@ -9,6 +9,7 @@ describe("menu", () => {
     expect(links.filter((link) => link.group === "Registrar").map((link) => link.label)).toEqual([
       "Mensajes",
       "Reconocimiento",
+      "Estados de cuenta",
       "Borrador",
     ]);
     expect(links.map((link) => link.href)).toContain("/ingresos");

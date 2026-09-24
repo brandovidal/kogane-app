@@ -45,3 +45,8 @@ export type NotificationSettings = DataOf<"NotificationSettingsResponseDto">;
 export type NotificationKind = AppNotification["kind"];
 export type CalendarEvent = DataOf<"CalendarEventsResponseDto">[number];
 export type CommittedInstallments = DataOf<"CommittedInstallmentsResponseDto">;
+
+// Bank statements (P14, D95)
+export type Statement = DataOf<"StatementResponseDto">;
+export type StatementRow = Statement["rows"][number];
+export type StatementSummary = DataOf<"StatementListResponseDto">[number];

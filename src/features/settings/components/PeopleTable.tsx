@@ -37,6 +37,7 @@ export function PeopleTable() {
               <TableRow>
                 <TableHead>Nombre</TableHead>
                 <TableHead>Alias (bot)</TableHead>
+                <TableHead>Documento</TableHead>
                 <TableHead>Activa</TableHead>
                 <TableHead className="w-[50px]" />
               </TableRow>
@@ -48,6 +49,7 @@ export function PeopleTable() {
                     {person.name} {person.isDefault && <Badge variant="secondary" className="ml-1">Yo</Badge>}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{person.aliases.join(", ") || "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground tabular-nums">{person.documentNumber ?? "—"}</TableCell>
                   <TableCell>
                     <Switch
                       checked={person.isActive}
@@ -77,6 +79,9 @@ function PersonDialog({ person, onClose }: { person: Person | null; onClose: () 
   const [name, setName] = useState(person?.name ?? "");
   const [aliases, setAliases] = useState(person?.aliases.join(", ") ?? "");
   const [isDefault, setIsDefault] = useState(person?.isDefault ?? false);
+  // Never shown whole (D94): empty keeps the saved one, "Quitar" deletes it
+  const [documentNumber, setDocumentNumber] = useState("");
+  const [clearDocument, setClearDocument] = useState(false);
 
   const save = () =>
     savePerson.mutate(
@@ -85,6 +90,7 @@ function PersonDialog({ person, onClose }: { person: Person | null; onClose: () 
         name: name.trim(),
         aliases: aliases.split(",").map((alias) => alias.trim()).filter(Boolean),
         isDefault,
+        ...(documentNumber.trim() ? { documentNumber: documentNumber.trim() } : clearDocument ? { documentNumber: null } : {}),
       },
       { onSuccess: onClose },
     );
@@ -108,6 +114,23 @@ function PersonDialog({ person, onClose }: { person: Person | null; onClose: () 
         <label className="flex items-center gap-2 text-sm">
           <Switch checked={isDefault} onCheckedChange={setIsDefault} /> Soy yo (persona por defecto)
         </label>
+        <div className="space-y-1">
+          <Input
+            placeholder={person?.documentNumber ? `N.º de documento (guardado ${person.documentNumber})` : "N.º de documento (DNI)"}
+            value={documentNumber}
+            inputMode="numeric"
+            autoComplete="off"
+            onChange={(e) => setDocumentNumber(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Abre los PDF de tus estados de cuenta. Se guarda en el servidor y nunca se muestra completo.
+            {person?.documentNumber && !documentNumber && (
+              <button type="button" className="ml-1 underline" onClick={() => setClearDocument(!clearDocument)}>
+                {clearDocument ? "No quitar" : "Quitar"}
+              </button>
+            )}
+          </p>
+        </div>
       </div>
     </ResponsiveDialog>
   );

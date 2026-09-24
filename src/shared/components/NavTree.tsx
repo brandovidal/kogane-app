@@ -5,6 +5,7 @@ import {
   ChevronDown,
   Coffee,
   CreditCard,
+  FileText,
   HandCoins,
   Inbox,
   LayoutDashboard,
@@ -43,6 +44,7 @@ export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string
   settings: Settings,
   wallet: Wallet,
   calendar: CalendarDays,
+  "file-text": FileText,
 };
 
 // v2: the menu of D80 (Registrar); an older saved state would leave it closed

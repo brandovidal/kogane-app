@@ -12,7 +12,8 @@ interface CatalogSelectProps {
 
 const EMPTY = "__none__";
 
-function OptionsSelect({
+// Any list of { id, name } as a select (e.g. only the cards of a page)
+export function CatalogSelectOptions({
   value,
   onChange,
   placeholder = "Selecciona",
@@ -39,16 +40,16 @@ function OptionsSelect({
 
 export function PersonSelect(props: CatalogSelectProps) {
   const people = usePeople().data?.filter((person) => person.isActive) ?? [];
-  return <OptionsSelect {...props} options={people} />;
+  return <CatalogSelectOptions {...props} options={people} />;
 }
 
 // `type: "credit_card"` limits it to cards (Tarjetas)
 export function PaymentMethodSelect({ type, ...props }: CatalogSelectProps & { type?: string }) {
   const methods = usePaymentMethods().data?.filter((method) => method.isActive && (!type || method.type === type)) ?? [];
-  return <OptionsSelect {...props} options={methods} />;
+  return <CatalogSelectOptions {...props} options={methods} />;
 }
 
 export function CategorySelect(props: CatalogSelectProps) {
   const categories = useCategories().data ?? [];
-  return <OptionsSelect {...props} options={categories} />;
+  return <CatalogSelectOptions {...props} options={categories} />;
 }

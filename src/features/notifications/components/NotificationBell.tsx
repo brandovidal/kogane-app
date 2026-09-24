@@ -32,6 +32,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/deudas": "Préstamos y deudas",
   "/categorias": "Categorías",
   "/recurrentes": "Recurrentes",
+  "/estados-de-cuenta": "Estados de cuenta",
 };
 
 const SHOWN = 8;

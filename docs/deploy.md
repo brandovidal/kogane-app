@@ -19,6 +19,8 @@ push a main → Workers Builds: pnpm install → pnpm test && pnpm build → pnp
 
 **En local:** `cp .env.example .env.dev` con la misma `API_KEY` de `kogane-api/.env.dev`, kogane-api con `pnpm dev` y kogane-app con `pnpm dev` (`astro dev --mode dev`, lee `.env.dev`). Para ver los datos de producción desde local: `.env` con `API_URL=https://kogane-api.up.railway.app` y la `API_KEY` de producción, y `pnpm build && pnpm preview` (`localhost:3000`; `astro preview` no lee archivos `.env`, por eso el script usa `node --env-file=.env`). Cuidado: lo que edites ahí cambia producción. El navegador llama a `/api/v1/…` y el servidor de Astro (`src/pages/api/[...path].ts`) agrega `x-api-key` y reenvía a `API_URL`; la clave nunca llega al navegador (D56). Tipos del cliente: `pnpm api:types` con kogane-api corriendo (regenera `src/shared/api/schema.d.ts`, versionado).
 
+**Si una página sale sin estilos en local:** reinicia `pnpm dev`. `astro dev` no le da el CSS global a una página **agregada** con el servidor corriendo (le pasa a cualquier página nueva después de un `git pull`), y correr `astro check` o `astro build` con el servidor activo deja desactualizada su caché de Vite. Si reiniciar no alcanza, borra `node_modules/.vite`.
+
 Para probar el build de producción en local: `ASTRO_ADAPTER=cloudflare pnpm build && pnpm exec wrangler deploy --dry-run`.
 
 ## 1. Cloudflare (Workers Builds)

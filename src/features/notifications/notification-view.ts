@@ -9,6 +9,7 @@ export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   budget: "Presupuesto al 80 %",
   anomaly: "Cargos raros",
   recurring: "Gastos recurrentes del mes",
+  statement: "Estados de cuenta conciliados",
 };
 
 export const NOTIFICATION_KINDS = Object.keys(NOTIFICATION_KIND_LABELS) as NotificationKind[];
@@ -21,6 +22,7 @@ const LINK_BY_REF: Record<string, string> = {
   daily_expense: "/dia-a-dia",
   debt: "/deudas",
   category: "/categorias",
+  statement: "/estados-de-cuenta",
 };
 
 const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {
