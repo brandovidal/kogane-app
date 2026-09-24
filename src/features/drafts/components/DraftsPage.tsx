@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { shareParts } from "@/shared/lib/shared-expense";
 import { toast } from "sonner";
 import { Check, ImageIcon, Mic, MessageSquare, Pencil, RotateCw, Send, X } from "lucide-react";
 import { Badge } from "@/ui/badge";
@@ -94,6 +95,14 @@ function DraftList({ tab, onEdit }: { tab: DraftTab; onEdit: (draft: Draft) => v
                     {draft.destination && ` · ${DESTINATION_LABELS[draft.destination] ?? draft.destination}`}
                     {draft.personId && ` · ${personName(draft.personId)}`}
                   </p>
+                  {draft.sharedWith?.shares.length && draft.amount != null ? (
+                    <p className="text-xs text-muted-foreground">
+                      👥{" "}
+                      {shareParts(draft.amount, draft.sharedWith.shares)
+                        .parts.map((part) => `${personName(part.personId)} ${formatCurrency(part.amount, draft.currency ?? "PEN")} (${part.percent} %)`)
+                        .join(" · ")}
+                    </p>
+                  ) : null}
                 </div>
                 <Badge variant="outline" className="shrink-0 gap-1">
                   <ChannelIcon className="h-3 w-3" />
@@ -184,6 +193,7 @@ function DraftEditDialog({ draft, onClose }: { draft?: Draft; onClose: () => voi
         merchant: draft.merchant,
         operationNumber: draft.operationNumber,
         notes: draft.notes,
+        sharedWith: draft.sharedWith?.shares.length ? draft.sharedWith : null,
       });
     }
   }, [draft]);

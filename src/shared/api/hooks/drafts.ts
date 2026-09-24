@@ -48,10 +48,11 @@ export const useUpdateDraft = () =>
     { invalidate: [draftKeys.all] },
   );
 
-export const useSaveDraft = () =>
+// `quiet`: the caller shows its own message (Nuevo gasto says where it went)
+export const useSaveDraft = ({ quiet = false }: { quiet?: boolean } = {}) =>
   useApiMutation((id: string) => unwrap(api.POST("/v1/drafts/{id}/save", { params: { path: { id } } })), {
     invalidate: afterSave,
-    success: "Guardado",
+    ...(quiet ? {} : { success: "Guardado" }),
   });
 
 export const useDiscardDraft = () =>
@@ -65,7 +66,3 @@ export const useRetryDraft = () =>
     invalidate: [draftKeys.all],
     success: "Reintentado",
   });
-
-// "Nuevo gasto": the AI reads a typed or pasted text and returns the fields to prefill (D40)
-export const useExtractExpense = () =>
-  useApiMutation((text: string) => unwrap(api.POST("/v1/expenses/extract", { body: { text } })), { invalidate: [] });

@@ -129,6 +129,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/incomes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Extra incomes of a month */
+        get: operations["IncomesController_list_v1"];
+        put?: never;
+        /** Add an extra income (month and year default to receivedAt) */
+        post: operations["IncomesController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/incomes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an extra income */
+        delete: operations["IncomesController_delete_v1"];
+        options?: never;
+        head?: never;
+        /** Edit an extra income */
+        patch: operations["IncomesController_update_v1"];
+        trace?: never;
+    };
+    "/v1/category-budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Spent vs limit per category in a month (status ok · warning · over) */
+        get: operations["CategoryBudgetsController_list_v1"];
+        /** Set the limit of a category, for every month or for one month */
+        put: operations["CategoryBudgetsController_upsert_v1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/category-budgets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a category limit */
+        delete: operations["CategoryBudgetsController_delete_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reports/debts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Debts per person (me debe · le debo · neto) and open installments, as Excel or PDF */
+        get: operations["ReportsController_debts_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/people": {
         parameters: {
             query?: never;
@@ -263,23 +351,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["BudgetGroupsController_update_v1"];
-        trace?: never;
-    };
-    "/v1/expenses/extract": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Nuevo gasto: read a typed or pasted text with the AI and return the fields to prefill */
-        post: operations["ExpensesController_extract_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/v1/expenses/{resource}": {
@@ -442,8 +513,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Month totals by destination and person, salary, limit, surplus and budget groups */
+        /** Month totals by destination and person, budget, extra incomes, spending per category and group, surplus */
         get: operations["SummaryController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/summary/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Salary, extra incomes, spent and surplus of the last months up to month/year */
+        get: operations["SummaryController_history_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -539,6 +627,8 @@ export interface components {
                 personId: string;
                 notes: string | null;
                 draftId: string | null;
+                /** @description The expense draft that created it (installments, shared parts, D73) */
+                originDraftId: string | null;
                 /** Format: date-time */
                 createdAt: string;
                 /** Format: date-time */
@@ -597,6 +687,8 @@ export interface components {
                 personId: string;
                 notes: string | null;
                 draftId: string | null;
+                /** @description The expense draft that created it (installments, shared parts, D73) */
+                originDraftId: string | null;
                 /** Format: date-time */
                 createdAt: string;
                 /** Format: date-time */
@@ -668,6 +760,8 @@ export interface components {
                 personId: string;
                 notes: string | null;
                 draftId: string | null;
+                /** @description The expense draft that created it (installments, shared parts, D73) */
+                originDraftId: string | null;
                 /** Format: date-time */
                 createdAt: string;
                 /** Format: date-time */
@@ -716,6 +810,8 @@ export interface components {
                 personId: string;
                 notes: string | null;
                 draftId: string | null;
+                /** @description The expense draft that created it (installments, shared parts, D73) */
+                originDraftId: string | null;
                 /** Format: date-time */
                 createdAt: string;
                 /** Format: date-time */
@@ -736,6 +832,122 @@ export interface components {
             paidAt?: string;
             paymentMethodId?: string | null;
             notes?: string | null;
+        };
+        IncomeListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                description: string;
+                amount: number;
+                currency: string;
+                /** Format: date-time */
+                receivedAt: string;
+                month: number;
+                year: number;
+                notes: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            }[];
+        };
+        CreateIncomeDto: {
+            description: string;
+            amount: number;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
+            /** Format: date */
+            receivedAt: string;
+            month?: number;
+            year?: number;
+            notes?: string | null;
+        };
+        IncomeResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                description: string;
+                amount: number;
+                currency: string;
+                /** Format: date-time */
+                receivedAt: string;
+                month: number;
+                year: number;
+                notes: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            };
+        };
+        UpdateIncomeDto: {
+            description?: string;
+            amount?: number;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
+            /** Format: date */
+            receivedAt?: string;
+            month?: number;
+            year?: number;
+            notes?: string | null;
+        };
+        CategoryBudgetLineListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @description null: expenses without category */
+                categoryId: string | null;
+                name: string;
+                color: string;
+                icon: string | null;
+                budgetGroupId: string | null;
+                spent: number;
+                limit: number | null;
+                alertThreshold: number;
+                percent: number | null;
+                /**
+                 * @description null without limit
+                 * @enum {string|null}
+                 */
+                status: "ok" | "warning" | "over" | null;
+            }[];
+        };
+        UpsertCategoryBudgetDto: {
+            categoryId: string;
+            monthlyLimit: number;
+            alertThreshold?: number;
+            month?: number | null;
+            year?: number | null;
+        };
+        CategoryBudgetResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                categoryId: string;
+                monthlyLimit: number;
+                alertThreshold: number;
+                month: number | null;
+                year: number | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            };
         };
         PersonListResponseDto: {
             /** @enum {boolean} */
@@ -957,38 +1169,6 @@ export interface components {
             percentage?: number;
             order?: number;
         };
-        ExtractExpenseDto: {
-            text: string;
-        };
-        ExtractedExpensesResponseDto: {
-            /** @enum {boolean} */
-            success: true;
-            code: string;
-            status: number;
-            message: string;
-            data: {
-                destination: string | null;
-                description: string | null;
-                amount: number | null;
-                currency: string | null;
-                /** @description YYYY-MM-DD */
-                spentAt: string | null;
-                expenseType: string | null;
-                installment: string | null;
-                period: string | null;
-                personId: string | null;
-                paymentMethodId: string | null;
-                categoryId: string | null;
-                merchant: string | null;
-                operationNumber: string | null;
-                notes: string | null;
-                confidence: {
-                    [key: string]: number;
-                };
-                missingFields: string[];
-                lowConfidenceFields: string[];
-            }[];
-        };
         ExpenseRecordListResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -1012,6 +1192,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** Format: date-time */
                 spentAt: string;
                 paymentMethodId: string;
@@ -1034,6 +1216,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** @enum {string} */
                 paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
                 installment: string | null;
@@ -1063,6 +1247,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** @enum {string} */
                 paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
                 installment: string | null;
@@ -1092,6 +1278,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** @enum {string} */
                 paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
                 installment: string | null;
@@ -1100,6 +1288,8 @@ export interface components {
                 paymentMethodId: string;
                 /** Format: date-time */
                 processDate: string | null;
+                /** @description The draft that also created this installment (D73) */
+                originDraftId: string | null;
             } | {
                 id: string;
                 description: string;
@@ -1145,6 +1335,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** Format: date-time */
                 spentAt: string;
                 paymentMethodId: string;
@@ -1167,6 +1359,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** @enum {string} */
                 paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
                 installment: string | null;
@@ -1196,6 +1390,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** @enum {string} */
                 paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
                 installment: string | null;
@@ -1225,6 +1421,8 @@ export interface components {
                 amountInPen: number | null;
                 notes: string | null;
                 draftId: string | null;
+                /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
+                othersShare: number;
                 /** @enum {string} */
                 paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
                 installment: string | null;
@@ -1233,6 +1431,8 @@ export interface components {
                 paymentMethodId: string;
                 /** Format: date-time */
                 processDate: string | null;
+                /** @description The draft that also created this installment (D73) */
+                originDraftId: string | null;
             } | {
                 id: string;
                 description: string;
@@ -1520,6 +1720,16 @@ export interface components {
                     personId: string | null;
                     paymentMethodId: string | null;
                     categoryId: string | null;
+                    /** @description Shared expense (D73): the user paid it all; each person owes a ratio of the total or an amount */
+                    sharedWith: {
+                        shares: {
+                            personId: string;
+                            ratio?: number;
+                            amount?: number;
+                        }[];
+                    } | null;
+                    /** @description /editar (D76): the saved draft this copy replaces */
+                    replacesDraftId: string | null;
                     confidence: {
                         [key: string]: number;
                     };
@@ -1570,6 +1780,16 @@ export interface components {
                 personId: string | null;
                 paymentMethodId: string | null;
                 categoryId: string | null;
+                /** @description Shared expense (D73): the user paid it all; each person owes a ratio of the total or an amount */
+                sharedWith: {
+                    shares: {
+                        personId: string;
+                        ratio?: number;
+                        amount?: number;
+                    }[];
+                } | null;
+                /** @description /editar (D76): the saved draft this copy replaces */
+                replacesDraftId: string | null;
                 confidence: {
                     [key: string]: number;
                 };
@@ -1603,6 +1823,13 @@ export interface components {
             merchant?: string | null;
             operationNumber?: string | null;
             notes?: string | null;
+            sharedWith?: {
+                shares: {
+                    personId: string;
+                    ratio?: number;
+                    amount?: number;
+                }[];
+            } | null;
         };
         DraftResponseDto: {
             /** @enum {boolean} */
@@ -1640,6 +1867,16 @@ export interface components {
                 personId: string | null;
                 paymentMethodId: string | null;
                 categoryId: string | null;
+                /** @description Shared expense (D73): the user paid it all; each person owes a ratio of the total or an amount */
+                sharedWith: {
+                    shares: {
+                        personId: string;
+                        ratio?: number;
+                        amount?: number;
+                    }[];
+                } | null;
+                /** @description /editar (D76): the saved draft this copy replaces */
+                replacesDraftId: string | null;
                 confidence: {
                     [key: string]: number;
                 };
@@ -1704,27 +1941,82 @@ export interface components {
                     total: number;
                     count: number;
                 }[];
+                /** @description PEN spent: day to day + fixed costs + cards (subscriptions are card charges, D46) */
                 spentPen: number;
                 budget: {
                     salary: number;
                     limitPercent: number;
-                    limit: number | null;
+                    limit: number;
+                    /** @description No salary for this month: the latest one, saved with PUT /v1/summary/budget */
+                    isProposal: boolean;
                 } | null;
-                /** @description Salary minus what was spent, like the Notion Resumen */
+                incomes: {
+                    id: string;
+                    description: string;
+                    amount: number;
+                    currency: string;
+                    /** Format: date-time */
+                    receivedAt: string;
+                    month: number;
+                    year: number;
+                    notes: string | null;
+                    /** Format: date-time */
+                    createdAt: string;
+                    /** Format: date-time */
+                    updatedAt: string;
+                }[];
+                /** @description PEN extra incomes of the month */
+                extraIncome: number;
+                /** @description Salary + extra incomes − spent (D65) */
                 surplus: number | null;
+                byCategory: {
+                    /** @description null: expenses without category */
+                    categoryId: string | null;
+                    name: string;
+                    color: string;
+                    icon: string | null;
+                    budgetGroupId: string | null;
+                    spent: number;
+                    limit: number | null;
+                    alertThreshold: number;
+                    percent: number | null;
+                    /**
+                     * @description null without limit
+                     * @enum {string|null}
+                     */
+                    status: "ok" | "warning" | "over" | null;
+                }[];
                 budgetGroups: {
                     id: string;
                     name: string;
                     emoji: string;
                     percentage: number;
                     order: number;
+                    /** @description Salary × percentage */
                     amount: number | null;
+                    spent: number;
+                    percent: number | null;
                     /** Format: date-time */
                     createdAt: string;
                     /** Format: date-time */
                     updatedAt: string;
                 }[];
             };
+        };
+        SummaryHistoryResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                month: number;
+                year: number;
+                salary: number | null;
+                extraIncome: number;
+                spentPen: number;
+                surplus: number | null;
+            }[];
         };
         MonthlyBudgetDto: {
             month: number;
@@ -1987,6 +2279,188 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DebtResponseDto"];
+                };
+            };
+        };
+    };
+    IncomesController_list_v1: {
+        parameters: {
+            query: {
+                month: number;
+                year: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncomeListResponseDto"];
+                };
+            };
+        };
+    };
+    IncomesController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateIncomeDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncomeResponseDto"];
+                };
+            };
+        };
+    };
+    IncomesController_delete_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    IncomesController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateIncomeDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncomeResponseDto"];
+                };
+            };
+        };
+    };
+    CategoryBudgetsController_list_v1: {
+        parameters: {
+            query: {
+                month: number;
+                year: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryBudgetLineListResponseDto"];
+                };
+            };
+        };
+    };
+    CategoryBudgetsController_upsert_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertCategoryBudgetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryBudgetResponseDto"];
+                };
+            };
+        };
+    };
+    CategoryBudgetsController_delete_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    ReportsController_debts_v1: {
+        parameters: {
+            query: {
+                format: "xlsx" | "pdf";
+                /** @description Only that person; without it, everyone */
+                personId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file (attachment) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    "application/pdf": string;
                 };
             };
         };
@@ -2335,29 +2809,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BudgetGroupResponseDto"];
-                };
-            };
-        };
-    };
-    ExpensesController_extract_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ExtractExpenseDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExtractedExpensesResponseDto"];
                 };
             };
         };
@@ -2714,6 +3165,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SummaryResponseDto"];
+                };
+            };
+        };
+    };
+    SummaryController_history_v1: {
+        parameters: {
+            query: {
+                month: number;
+                year: number;
+                months?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SummaryHistoryResponseDto"];
                 };
             };
         };

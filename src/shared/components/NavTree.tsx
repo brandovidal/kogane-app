@@ -16,10 +16,12 @@ import {
   Settings,
   Tags,
   Tv,
+  Wallet,
 } from "lucide-react";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
 import { useDraftCount } from "@/shared/api/hooks/drafts";
-import { NAV, SETTINGS_NAV, isActivePath, isGroup, type NavIcon, type NavLink } from "@/shared/constants";
+import { DEFAULT_OPEN_GROUPS, NAV, SETTINGS_NAV, isActivePath, isGroup, type NavIcon, type NavLink } from "@/shared/constants";
+import { newExpenseStore } from "@/shared/stores/new-expense.store";
 import { cn } from "@/shared/lib/utils";
 
 export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
@@ -38,9 +40,11 @@ export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string
   tags: Tags,
   "bar-chart-3": BarChart3,
   settings: Settings,
+  wallet: Wallet,
 };
 
-const OPEN_GROUPS_KEY = "kogane:nav-open";
+// v2: the menu of D80 (Registrar); an older saved state would leave it closed
+const OPEN_GROUPS_KEY = "kogane:nav-open:v2";
 
 // Credit cards as links under Tarjetas (/tarjetas/IO…)
 export function useCardLinks() {
@@ -68,9 +72,10 @@ export function NavTree({ currentPath, compact = false }: NavTreeProps) {
   const [openGroups, setOpenGroups] = useState<string[]>([]);
 
   useEffect(() => {
-    let saved: string[] = [];
+    let saved: string[] = DEFAULT_OPEN_GROUPS;
     try {
-      saved = JSON.parse(localStorage.getItem(OPEN_GROUPS_KEY) ?? "[]");
+      const stored = localStorage.getItem(OPEN_GROUPS_KEY);
+      if (stored) saved = JSON.parse(stored);
     } catch {
       // ignore
     }
@@ -94,12 +99,21 @@ export function NavTree({ currentPath, compact = false }: NavTreeProps) {
   const renderLink = (link: NavLink) => {
     const Icon = NAV_ICONS[link.icon];
     const badge = link.badge === "drafts" && draftCount > 0 ? draftCount : null;
+    // Nuevo gasto opens its dialog over the current page (D79)
+    const Tag = link.action ? "button" : "a";
+    const target = link.action
+      ? { type: "button" as const, onClick: () => newExpenseStore.getState().openWith() }
+      : { href: link.href };
     return (
-      <a
+      <Tag
         key={link.href}
-        href={link.href}
+        {...target}
         title={compact ? link.label : undefined}
-        className={cn(linkClass(isActivePath(link.href, currentPath)), compact && "justify-center px-2")}
+        className={cn(
+          linkClass(!link.action && isActivePath(link.href, currentPath)),
+          "w-full",
+          compact && "justify-center px-2",
+        )}
       >
         <span className="relative">
           <Icon className="h-4 w-4" />
@@ -109,20 +123,16 @@ export function NavTree({ currentPath, compact = false }: NavTreeProps) {
         {!compact && badge && (
           <span className="rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">{badge}</span>
         )}
-      </a>
+      </Tag>
     );
   };
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-      {NAV.map((entry, index) => {
+      {NAV.map((entry) => {
         if (!isGroup(entry)) {
           return (
-            <div key={entry.href}>
-              {renderLink(entry)}
-              {/* Mensajes · Reconocimiento · Borrador first, then the rest (D49) */}
-              {index === 2 && <div className="my-2 border-t border-sidebar-border" />}
-            </div>
+            <div key={entry.href}>{renderLink(entry)}</div>
           );
         }
 
@@ -134,6 +144,10 @@ export function NavTree({ currentPath, compact = false }: NavTreeProps) {
               <button type="button" onClick={() => toggle(entry.label)} className={cn(linkClass(false), "w-full")}>
                 <Icon className="h-4 w-4" />
                 <span className="flex-1 text-left">{entry.label}</span>
+                {/* a closed group keeps the counter of Borrador in sight */}
+                {!open && draftCount > 0 && entry.children.some((child) => child.badge === "drafts") && (
+                  <span className="rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">{draftCount}</span>
+                )}
                 <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
               </button>
             )}

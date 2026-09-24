@@ -12,7 +12,7 @@ function CreditCardOverviewView() {
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const creditCards = useCreditCards().data ?? [];
-  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
+  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }, { byPerson: true }).data ?? [];
 
   const cardSummaries = creditCards.map((card) => {
     const cardExpenses = expenses.filter((e) => e.paymentMethodId === card.id);

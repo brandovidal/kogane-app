@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { IncomesPage } from "@/features/incomes/components/IncomesPage";
+---
+
+<DashboardLayout title="Ingresos">
+  <IncomesPage client:load />
+</DashboardLayout>

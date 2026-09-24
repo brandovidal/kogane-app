@@ -30,11 +30,16 @@ export function buildProxyRequest(path: string, request: Request, { apiUrl, apiK
   } as RequestInit)
 }
 
-// The answer goes back as is (status and JSON envelope), without the upstream headers
+// Upstream headers the browser needs: the type, and the file name of the downloads (Excel / PDF, D39)
+const RETURNED_HEADERS = ['content-type', 'content-disposition']
+
+// The answer goes back as is (status and body), with only those headers
 export function toProxyResponse(response: Response): Response {
   const headers = new Headers()
-  const contentType = response.headers.get('content-type')
-  if (contentType) headers.set('content-type', contentType)
+  for (const name of RETURNED_HEADERS) {
+    const value = response.headers.get(name)
+    if (value) headers.set(name, value)
+  }
   return new Response(response.body, { status: response.status, headers })
 }
 

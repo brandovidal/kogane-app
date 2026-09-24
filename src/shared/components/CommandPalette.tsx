@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/ui/dialog";
-import { NAV, flattenNav } from "@/shared/constants";
+import { NAV, flattenNav, type FlatLink } from "@/shared/constants";
+import { newExpenseStore } from "@/shared/stores/new-expense.store";
 import { normalize } from "@/shared/lib/text";
 import { useCardLinks } from "./NavTree";
 
@@ -31,9 +32,10 @@ export function CommandPalette() {
 
   useEffect(() => setSelected(0), [query, open]);
 
-  const go = (href: string) => {
+  const go = (link: FlatLink) => {
     setOpen(false);
-    window.location.href = href;
+    if (link.action === "new-expense") newExpenseStore.getState().openWith();
+    else window.location.href = link.href;
   };
 
   return (
@@ -49,7 +51,7 @@ export function CommandPalette() {
             onKeyDown={(event) => {
               if (event.key === "ArrowDown") setSelected((current) => Math.min(current + 1, results.length - 1));
               if (event.key === "ArrowUp") setSelected((current) => Math.max(current - 1, 0));
-              if (event.key === "Enter" && results[selected]) go(results[selected].href);
+              if (event.key === "Enter" && results[selected]) go(results[selected]);
             }}
             placeholder="Ir a… (ej: borrador, io, deudas)"
             className="h-11 flex-1 bg-transparent text-sm outline-none"
@@ -61,7 +63,7 @@ export function CommandPalette() {
               <button
                 type="button"
                 onMouseEnter={() => setSelected(index)}
-                onClick={() => go(link.href)}
+                onClick={() => go(link)}
                 className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${index === selected ? "bg-muted" : ""}`}
               >
                 <span>{link.label}</span>

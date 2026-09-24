@@ -51,4 +51,18 @@ describe('/api proxy', () => {
     expect(response.headers.get('set-cookie')).toBeNull()
     await expect(response.json()).resolves.toEqual({ success: false, code: 'DEBT_NOT_FOUND' })
   })
+
+  it('should keep the file name of a download (Excel / PDF)', async () => {
+    const upstream = new Response(new Uint8Array([37, 80, 68, 70]), {
+      headers: {
+        'content-type': 'application/pdf',
+        'content-disposition': 'attachment; filename="deudas-todas-2026-09-23.pdf"',
+      },
+    })
+
+    const response = toProxyResponse(upstream)
+
+    expect(response.headers.get('content-disposition')).toBe('attachment; filename="deudas-todas-2026-09-23.pdf"')
+    expect(new Uint8Array(await response.arrayBuffer())).toEqual(new Uint8Array([37, 80, 68, 70]))
+  })
 })

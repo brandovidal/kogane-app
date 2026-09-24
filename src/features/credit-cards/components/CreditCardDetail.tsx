@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { OwnPart } from "@/shared/components/OwnPart";
+import { totalsOf } from "@/shared/lib/shared-expense";
 import { nameById, useCreditCards, usePeople } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
@@ -19,8 +20,12 @@ import {
 import { Plus, Trash2, ArrowLeft } from "lucide-react";
 import { formatDate } from "@/shared/lib/dates";
 import { CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
-import { InlineAddRow } from "@/shared/components/InlineAddRow";
-import { CreditCardExpenseDialog } from "./CreditCardExpenseDialog";
+import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
+import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
+import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
+import { useNewExpense } from "@/shared/stores/new-expense.store";
+
+const FILTERS: ExpenseFilterKey[] = ["q", "category", "status", "installments", "type", "shared"];
 
 interface CreditCardDetailProps {
   cardCode: string;
@@ -31,22 +36,24 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
   const { data: creditCards, isLoading } = useCreditCards();
-  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month: selectedMonth, year: selectedYear }, { byPerson: true }).data ?? [];
   const people = usePeople().data ?? [];
   const personName = nameById(people);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.creditCard);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.creditCard);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const openNewExpense = useNewExpense((state) => state.openWith);
+  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
 
-  const cardExpenses = expenses
-    .filter((e) => e.paymentMethodId === card.id)
-    .sort((a, b) => (b.processDate ?? "").localeCompare(a.processDate ?? ""));
+  const ofCard = expenses.filter((e) => e.paymentMethodId === card.id);
+  const cardExpenses = applyExpenseFilters(ofCard, filters).sort((a, b) =>
+    (b.processDate ?? "").localeCompare(a.processDate ?? ""),
+  );
 
-  const total = cardExpenses.reduce((sum, e) => sum + (e.amountInPen ?? e.amount), 0);
+  const totals = totalsOf(cardExpenses);
 
   return (
     <div className="space-y-4">
@@ -68,16 +75,33 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           <CardTitle className="text-sm text-muted-foreground">Total del mes</CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-3xl font-bold">{`S/ ${total.toFixed(2)}`}</span>
+          <span className="text-3xl font-bold">{`S/ ${totals.paid.toFixed(2)}`}</span>
+          <OwnPart {...totals} />
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button size="sm" onClick={() => setDialogOpen(true)}><Plus className="mr-1 h-4 w-4" /> Nuevo gasto</Button>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <ExpenseFilters
+          fields={FILTERS}
+          value={filters}
+          onChange={setFilters}
+          statuses={CREDIT_CARD_STATUSES}
+          shown={cardExpenses.length}
+          total={ofCard.length}
+        />
+        <Button
+          size="sm"
+          className="shrink-0"
+          onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}
+        >
+          <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
+        </Button>
       </div>
 
       {cardExpenses.length === 0 ? (
-        <EmptyState description="No hay gastos registrados para esta tarjeta" />
+        <EmptyState
+          description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
+        />
       ) : (
         <div className="rounded-md border">
           <Table>
@@ -103,7 +127,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
                     {exp.notes && <p className="text-xs text-muted-foreground">{exp.notes}</p>}
                   </TableCell>
                   <TableCell>
-                    <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPen} />
+                    <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPen} othersShare={exp.othersShare} />
                   </TableCell>
                   <TableCell>
                     <Select value={exp.paymentStatus} onValueChange={(v) => saveExpense.mutate({ id: exp.id, body: { paymentStatus: v } })}>
@@ -133,37 +157,11 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
                   </TableCell>
                 </TableRow>
               ))}
-              <InlineAddRow
-                totalColumns={7}
-                columns={[
-                  { key: "description", placeholder: "Descripción...", type: "text" },
-                  { key: "amount", placeholder: "Monto", type: "number" },
-                  { key: "personId", placeholder: "Persona", type: "select", options: people.map((p) => ({ value: p.id, label: p.name })) },
-                ]}
-                onSave={(values) => {
-                  saveExpense.mutate({
-                    body: {
-                      description: values.description,
-                      amount: Number(values.amount),
-                      currency: "PEN",
-                      personId: values.personId,
-                      paymentMethodId: card.id,
-                      paymentMonth: selectedMonth,
-                      paymentYear: selectedYear,
-                    },
-                  });
-                }}
-              />
             </TableBody>
           </Table>
         </div>
       )}
 
-      <CreditCardExpenseDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        creditCardId={card.id}
-      />
     </div>
   );
 }

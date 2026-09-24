@@ -7,7 +7,7 @@ Kogane registra tus gastos desde el chat (Telegram o **Mensajes** en la web) y l
 | Desde | Cómo |
 |---|---|
 | **Telegram** (@kogane_finanzas_bot) o **Mensajes** en la web | Escribe como hablas: *almuerzo 25 soles con yape*, *netflix 45 mensual con la oh*, *zapatillas 300 con io en 3 cuotas*. También una captura de Yape o Plin, la foto de un voucher o una nota de voz. |
-| **Nuevo gasto** en la web | Eliges el destino y llenas el formulario, o pegas un texto y la AI lo prellena. |
+| **Nuevo gasto** en la web | Un diálogo (desde el menú o el botón de cada página, con el destino ya elegido): llenas el formulario y, si lo compartes, el reparto. Textos, capturas y audios van por Mensajes. |
 
 El bot muestra un resumen con botones:
 - **✅ Guardar**: lo guarda en su tabla y te llega un mensaje de confirmación.
@@ -51,7 +51,8 @@ En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las captu
 
 ## La web
 
-- **Menú**: Mensajes, Reconocimiento y Borrador arriba; luego Inicio, Nuevo gasto y los grupos. El número en Borrador es lo pendiente por revisar.
+- **Menú**: Inicio; **Registrar** (Nuevo gasto, Mensajes, Reconocimiento, Borrador); Gastos; Préstamos y deudas; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar).
+- **Filtros**: las páginas de gastos y de deudas tienen buscador y filtros (categoría, medio de pago, estado, cuotas, compartidos…), guardados en la URL. La persona se elige en la cabecera (Yo por defecto).
 - **Ctrl + K** (⌘K en Mac): buscar cualquier pantalla o tarjeta escribiendo parte del nombre.
 - **Mes**: el selector de arriba cambia el mes de todas las pantallas; el lápiz al lado del sueldo lo edita para ese mes.
 - **Mensajes** guarda el historial solo en ese navegador (*Limpiar* lo borra); los gastos quedan en la base igual.

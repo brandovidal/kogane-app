@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { OwnPart } from "@/shared/components/OwnPart";
+import { totalsOf } from "@/shared/lib/shared-expense";
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useDeleteExpense, useExpenses } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
 import { SUBSCRIPTION_PERIOD_LABELS as PERIOD_LABELS } from "@/shared/labels";
@@ -14,7 +16,13 @@ import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
-import { InlineAddCard } from "@/shared/components/InlineAddCard";
+import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
+import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
+import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
+import { SUBSCRIPTION_STATUSES } from "@/shared/labels";
+import { useNewExpense } from "@/shared/stores/new-expense.store";
+
+const FILTERS: ExpenseFilterKey[] = ["q", "status", "period", "shared"];
 
 const PERIOD_COLORS: Record<string, string> = {
   biweekly: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
@@ -27,29 +35,42 @@ const PERIOD_COLORS: Record<string, string> = {
 function SubscriptionListView() {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
-  const current = useExpenses(EXPENSE_RESOURCES.subscription, { month: selectedMonth, year: selectedYear }).data ?? [];
+  const all = useExpenses(EXPENSE_RESOURCES.subscription, { month: selectedMonth, year: selectedYear }, { byPerson: true }).data ?? [];
+  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
+  const current = applyExpenseFilters(all, filters);
+  const openNewExpense = useNewExpense((state) => state.openWith);
+  const newPlatform = () => openNewExpense({ destination: "subscription", period: "monthly" });
   const personName = nameById(usePeople().data);
-  const saveSubscription = useSaveExpense(EXPENSE_RESOURCES.subscription);
   const deleteSubscription = useDeleteExpense(EXPENSE_RESOURCES.subscription);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | undefined>();
 
-  const total = current.reduce((sum, s) => sum + (s.amountInPen ?? s.amount), 0);
+  const totals = totalsOf(current);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{current.length} plataformas activas</p>
-          <p className="text-2xl font-bold">S/ {total.toFixed(2)} <span className="text-sm font-normal text-muted-foreground">/mes</span></p>
+          <p className="text-2xl font-bold">S/ {totals.paid.toFixed(2)} <span className="text-sm font-normal text-muted-foreground">/mes</span></p>
+          <OwnPart {...totals} />
         </div>
-        <Button size="sm" onClick={() => { setEditingSub(undefined); setDialogOpen(true); }}>
+        <Button size="sm" onClick={newPlatform}>
           <Plus className="mr-1 h-4 w-4" /> Nueva plataforma
         </Button>
       </div>
 
+      <ExpenseFilters
+        fields={FILTERS}
+        value={filters}
+        onChange={setFilters}
+        statuses={SUBSCRIPTION_STATUSES}
+        shown={current.length}
+        total={all.length}
+      />
+
       {current.length === 0 ? (
-        <EmptyState description="No hay suscripciones registradas" />
+        <EmptyState description={all.length ? "No hay plataformas con estos filtros" : "No hay suscripciones registradas"} />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {current.map((sub) => (
@@ -68,7 +89,7 @@ function SubscriptionListView() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <CurrencyDisplay amount={sub.amount} currency={sub.currency} amountInPEN={sub.amountInPen} />
+                <CurrencyDisplay amount={sub.amount} currency={sub.currency} amountInPEN={sub.amountInPen} othersShare={sub.othersShare} />
                 <Separator />
                 <div className="flex flex-wrap gap-2">
                   <Badge className={PERIOD_COLORS[sub.period]}>{PERIOD_LABELS[sub.period]}</Badge>
@@ -81,21 +102,13 @@ function SubscriptionListView() {
               </CardContent>
             </Card>
           ))}
-          <InlineAddCard
-            onSave={(values) => {
-              saveSubscription.mutate({
-                body: {
-                  description: values.description,
-                  amount: Number(values.amount),
-                  currency: "PEN",
-                  period: values.period,
-                  personId: values.personId,
-                  paymentMonth: selectedMonth,
-                  paymentYear: selectedYear,
-                },
-              });
-            }}
-          />
+          <button
+            type="button"
+            onClick={newPlatform}
+            className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground hover:bg-muted/50"
+          >
+            <Plus className="h-5 w-5" /> Nueva plataforma
+          </button>
         </div>
       )}
 

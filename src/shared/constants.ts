@@ -1,5 +1,5 @@
-// Menu of the web (D41, D49): Mensajes · Reconocimiento · Borrador first, then the screens grouped. Labels of API
-// values live in labels.ts (D62).
+// Menu of the web (D41, D80): Inicio, then Registrar (Nuevo gasto · Mensajes · Reconocimiento · Borrador) and the
+// screens grouped. Labels of API values live in labels.ts (D62).
 export type NavIcon =
   | "message-circle"
   | "scan-text"
@@ -15,7 +15,8 @@ export type NavIcon =
   | "pie-chart"
   | "tags"
   | "bar-chart-3"
-  | "settings";
+  | "settings"
+  | "wallet";
 
 export interface NavLink {
   href: string;
@@ -23,6 +24,7 @@ export interface NavLink {
   icon: NavIcon;
   badge?: "drafts"; // counter of Borrador
   cards?: boolean; // one sub-item per credit card (from the catalog)
+  action?: "new-expense"; // opens the Nuevo gasto dialog instead of a page (D79)
 }
 
 export interface NavGroup {
@@ -36,11 +38,17 @@ export type NavEntry = NavLink | NavGroup;
 export const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 export const NAV: NavEntry[] = [
-  { href: "/mensajes", label: "Mensajes", icon: "message-circle" },
-  { href: "/reconocimiento", label: "Reconocimiento", icon: "scan-text" },
-  { href: "/borrador", label: "Borrador", icon: "inbox", badge: "drafts" },
   { href: "/", label: "Inicio", icon: "layout-dashboard" },
-  { href: "/nuevo", label: "Nuevo gasto", icon: "plus-circle" },
+  {
+    label: "Registrar",
+    icon: "plus-circle",
+    children: [
+      { href: "#nuevo-gasto", label: "Nuevo gasto", icon: "plus-circle", action: "new-expense" },
+      { href: "/mensajes", label: "Mensajes", icon: "message-circle" },
+      { href: "/reconocimiento", label: "Reconocimiento", icon: "scan-text" },
+      { href: "/borrador", label: "Borrador", icon: "inbox", badge: "drafts" },
+    ],
+  },
   {
     label: "Gastos",
     icon: "receipt",
@@ -59,10 +67,14 @@ export const NAV: NavEntry[] = [
     children: [
       { href: "/relacion-gastos", label: "Grupos", icon: "pie-chart" },
       { href: "/categorias", label: "Categorías", icon: "tags" },
+      { href: "/ingresos", label: "Ingresos", icon: "wallet" },
     ],
   },
   { label: "Reportes", icon: "bar-chart-3", children: [{ href: "/resumen", label: "Resumen mensual", icon: "bar-chart-3" }] },
 ];
+
+// Groups open the first time (nothing remembered yet in this browser)
+export const DEFAULT_OPEN_GROUPS = ["Registrar"];
 
 export const SETTINGS_NAV: NavLink = { href: "/configuracion", label: "Configuración", icon: "settings" };
 
@@ -72,15 +84,22 @@ export interface Card {
 }
 
 // Every link, with the cards under Tarjetas: for Ctrl+K and to know which group holds the current page
-export function flattenNav(nav: NavEntry[], cards: Card[] = []): { href: string; label: string; group?: string }[] {
-  const links: { href: string; label: string; group?: string }[] = [];
+export interface FlatLink {
+  href: string;
+  label: string;
+  group?: string;
+  action?: NavLink["action"];
+}
+
+export function flattenNav(nav: NavEntry[], cards: Card[] = []): FlatLink[] {
+  const links: FlatLink[] = [];
   for (const entry of nav) {
     if (!isGroup(entry)) {
       links.push({ href: entry.href, label: entry.label });
       continue;
     }
     for (const child of entry.children) {
-      links.push({ href: child.href, label: child.label, group: entry.label });
+      links.push({ href: child.href, label: child.label, group: entry.label, action: child.action });
       if (child.cards) cards.forEach((card) => links.push({ ...card, group: entry.label }));
     }
   }

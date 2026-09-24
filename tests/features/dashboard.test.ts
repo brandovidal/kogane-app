@@ -18,8 +18,11 @@ const summary = {
     { destination: "subscription", currency: "PEN", personId: "p1", total: 45, count: 1 },
   ],
   spentPen: 1345,
-  budget: { salary: 5000, limitPercent: 80, limit: 4000 },
+  budget: { salary: 5000, limitPercent: 80, limit: 4000, isProposal: false },
+  incomes: [],
+  extraIncome: 0,
   surplus: 3655,
+  byCategory: [],
   budgetGroups: [],
 } as Summary;
 

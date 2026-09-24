@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { OwnPart } from "@/shared/components/OwnPart";
+import { totalsOf } from "@/shared/lib/shared-expense";
 import { useCategories, usePaymentMethods, usePeople, nameById } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
@@ -22,20 +24,23 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/ui/select";
-import { Input } from "@/ui/input";
-import { Plus, Search, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil } from "lucide-react";
 import { formatDate } from "@/shared/lib/dates";
 import { FIXED_COST_STATUSES as PAYMENT_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
-import { InlineAddRow } from "@/shared/components/InlineAddRow";
 import { FixedCostDialog } from "./FixedCostDialog";
+import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
+import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
+import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
+import { useNewExpense } from "@/shared/stores/new-expense.store";
+
+const FILTERS: ExpenseFilterKey[] = ["q", "status", "category", "method", "type", "shared"];
 
 function FixedCostTableView() {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
   const fixedCosts =
-    useExpenses(EXPENSE_RESOURCES.fixedCost, { month: selectedMonth, year: selectedYear }).data ?? [];
+    useExpenses(EXPENSE_RESOURCES.fixedCost, { month: selectedMonth, year: selectedYear }, { byPerson: true }).data ?? [];
   const categories = useCategories().data ?? [];
   const people = usePeople().data ?? [];
   const personName = nameById(people);
@@ -43,57 +48,27 @@ function FixedCostTableView() {
   const saveFixedCost = useSaveExpense(EXPENSE_RESOURCES.fixedCost);
   const deleteFixedCost = useDeleteExpense(EXPENSE_RESOURCES.fixedCost);
 
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const openNewExpense = useNewExpense((state) => state.openWith);
+  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FixedCost | undefined>();
 
-  const filtered = fixedCosts
-    .filter((fc) => !search || fc.description.toLowerCase().includes(search.toLowerCase()))
-    .filter((fc) => statusFilter === "all" || fc.paymentStatus === statusFilter)
-    .filter((fc) => categoryFilter === "all" || fc.categoryId === categoryFilter);
+  const filtered = applyExpenseFilters(fixedCosts, filters);
 
-  const total = filtered.reduce((sum, fc) => sum + (fc.amountInPen ?? fc.amount), 0);
+  const totals = totalsOf(filtered);
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 gap-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Estado" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {PAYMENT_STATUSES.map((s) => (
-                <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button size="sm" onClick={() => { setEditingItem(undefined); setDialogOpen(true); }}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <ExpenseFilters
+          fields={FILTERS}
+          value={filters}
+          onChange={setFilters}
+          statuses={PAYMENT_STATUSES}
+          shown={filtered.length}
+          total={fixedCosts.length}
+        />
+        <Button size="sm" className="shrink-0" onClick={() => openNewExpense({ destination: "fixed_cost" })}>
           <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
         </Button>
       </div>
@@ -140,7 +115,7 @@ function FixedCostTableView() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <CurrencyDisplay amount={fc.amount} currency={fc.currency} amountInPEN={fc.amountInPen} />
+                      <CurrencyDisplay amount={fc.amount} currency={fc.currency} amountInPEN={fc.amountInPen} othersShare={fc.othersShare} />
                     </TableCell>
                     <TableCell>
                       <Select
@@ -180,33 +155,14 @@ function FixedCostTableView() {
                   </TableRow>
                 );
               })}
-              <InlineAddRow
-                totalColumns={8}
-                columns={[
-                  { key: "description", placeholder: "Descripción...", type: "text" },
-                  { key: "categoryId", placeholder: "Categoría", type: "select", options: categories.map((c) => ({ value: c.id, label: c.name })) },
-                  { key: "amount", placeholder: "Monto", type: "number" },
-                  { key: "personId", placeholder: "Persona", type: "select", options: people.map((p) => ({ value: p.id, label: p.name })) },
-                ]}
-                onSave={(values) => {
-                  saveFixedCost.mutate({
-                    body: {
-                      description: values.description,
-                      amount: Number(values.amount),
-                      currency: "PEN",
-                      categoryId: values.categoryId,
-                      personId: values.personId,
-                      paymentMonth: selectedMonth,
-                      paymentYear: selectedYear,
-                    },
-                  });
-                }}
-              />
             </TableBody>
           </Table>
           <div className="flex items-center justify-between border-t px-4 py-3">
             <span className="text-sm text-muted-foreground">{filtered.length} registros</span>
-            <span className="text-sm font-semibold">Total: S/ {total.toFixed(2)}</span>
+            <div className="text-right">
+              <span className="text-sm font-semibold">Total: S/ {totals.paid.toFixed(2)}</span>
+              <OwnPart {...totals} />
+            </div>
           </div>
         </div>
       )}

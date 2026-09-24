@@ -49,3 +49,9 @@ export const useAddDebtPayment = () =>
       unwrap(api.POST("/v1/debts/{id}/payments", { params: { path: { id } }, body })),
     { invalidate, success: "Abono guardado" },
   );
+
+// Excel / PDF of the debts (D39), downloaded through the /api proxy: everyone, or one person
+export function debtReportUrl(format: "xlsx" | "pdf", personId?: string): string {
+  const query = new URLSearchParams({ format, ...(personId ? { personId } : {}) });
+  return `/api/v1/reports/debts?${query}`;
+}

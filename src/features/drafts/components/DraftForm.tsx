@@ -11,6 +11,7 @@ import {
   SUBSCRIPTION_PERIODS,
 } from "@/shared/labels";
 import { FIELDS_BY_DESTINATION, FORM_DESTINATIONS } from "../draft-form";
+import { ShareEditor } from "./ShareEditor";
 
 interface DraftFormProps {
   value: DraftFields;
@@ -75,7 +76,7 @@ export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProp
         <Field label="Fecha">
           <Input type="date" value={value.spentAt?.slice(0, 10) ?? ""} onChange={(e) => set("spentAt", e.target.value || null)} />
         </Field>
-        <Field label={isDebt ? "Persona" : "Para quién"} missing={missing("personId")}>
+        <Field label={isDebt ? "Persona" : value.sharedWith?.shares.length ? "Paga" : "Para quién"} missing={missing("personId")}>
           <PersonSelect value={value.personId} onChange={(id) => set("personId", id)} />
         </Field>
       </div>
@@ -127,6 +128,15 @@ export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProp
             </Field>
           )}
         </div>
+      )}
+
+      {rules.shareable && (
+        <ShareEditor
+          value={value.sharedWith}
+          total={value.amount}
+          currency={value.currency ?? "PEN"}
+          onChange={(sharedWith) => set("sharedWith", sharedWith)}
+        />
       )}
 
       <Field label="Nota">
