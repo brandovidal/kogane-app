@@ -6,14 +6,14 @@ import { ApiError } from "../client";
 // A write to kogane-api: refreshes the lists it touches and shows the error of the API (in Spanish when possible)
 export function useApiMutation<TInput, TOutput>(
   mutationFn: (input: TInput) => Promise<TOutput>,
-  { invalidate, success }: { invalidate: QueryKey[]; success?: string },
+  { invalidate, success }: { invalidate: QueryKey[]; success?: string | ((output: TOutput) => string) },
 ) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn,
-    onSuccess: async () => {
+    onSuccess: async (output) => {
       await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
-      if (success) toast.success(success);
+      if (success) toast.success(typeof success === "function" ? success(output) : success);
     },
     onError: (error) => toast.error(errorMessage(error)),
   });

@@ -20,7 +20,7 @@ const LINK_BY_REF: Record<string, string> = {
   card_statement: "/tarjetas",
   credit_card_expense: "/tarjetas",
   daily_expense: "/dia-a-dia",
-  debt: "/deudas",
+  debt: "/cobros", // debt notices are what others owe (due, late)
   category: "/categorias",
   statement: "/reconocimiento",
 };

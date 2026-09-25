@@ -28,6 +28,8 @@ export function duplicateBody(resource: ExpenseResource, row: Row): Row {
     body[field] = DATE_FIELDS.includes(field) ? toDay(value) : value;
   }
   if (typeof body.description === "string") body.description = `${body.description} (copia)`.slice(0, 120);
+  // A copy is a new expense: it starts "No iniciado" (day to day and templates have no status)
+  if (resource !== "daily-expenses" && resource !== "recurring-expenses") body.paymentStatus = "not_started";
   return body;
 }
 

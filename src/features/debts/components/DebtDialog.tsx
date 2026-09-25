@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { PersonSelect } from "@/shared/components/CatalogSelect";
+import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
@@ -19,6 +19,7 @@ const debtFormSchema = z.object({
   installments: z.number().int().min(1).max(120),
   dueDate: z.string(),
   notes: z.string().trim().transform((value) => value || null),
+  paymentMethodId: z.string().nullable(), // the card it was charged on (D114)
 });
 type DebtForm = z.input<typeof debtFormSchema>;
 type DebtValues = z.output<typeof debtFormSchema>;
@@ -35,7 +36,7 @@ export function DebtDialog({ open, onOpenChange, direction }: DebtDialogProps) {
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
 
-  const emptyForm: DebtForm = { direction, description: "", amount: 0, personId: "", installments: 1, dueDate: "", notes: "" };
+  const emptyForm: DebtForm = { direction, description: "", amount: 0, personId: "", installments: 1, dueDate: "", notes: "", paymentMethodId: null };
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<DebtForm, unknown, DebtValues>({
     resolver: zodResolver(debtFormSchema),
     defaultValues: emptyForm,
@@ -109,6 +110,16 @@ export function DebtDialog({ open, onOpenChange, direction }: DebtDialogProps) {
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Fecha límite</label>
           <Input type="date" {...register("dueDate")} />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">Tarjeta o cuenta con que se pagó</label>
+          <PaymentMethodSelect
+            allowEmpty
+            value={watch("paymentMethodId")}
+            onChange={(id) => setValue("paymentMethodId", id)}
+            placeholder="Opcional: para contrastar con el estado de cuenta"
+          />
         </div>
 
         <div className="space-y-1.5">

@@ -66,10 +66,44 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Per person: owed to me · I owe · net, late and due this month (PEN) */
+        /** Per person: owed to me · I owe · net, late and due this month (PEN); by month optionally */
         get: operations["DebtsController_summary_v1"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/debts/card-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What others owe of a card and month vs the statement of that month (D114) */
+        get: operations["DebtsController_cardCheck_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/debts/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** One action over several debts: pay, amortize, cashback, spread an abono, clone, reset, card or delete */
+        post: operations["DebtsController_bulk_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -542,6 +576,24 @@ export interface paths {
         patch: operations["PeopleController_update_v1"];
         trace?: never;
     };
+    "/v1/payment-methods/{id}/holders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Titular and additional people of a credit card (D116) */
+        get: operations["PaymentMethodsController_holders_v1"];
+        /** Replace the titular and additional people of a credit card; statements assign by them */
+        put: operations["PaymentMethodsController_saveHolders_v1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/payment-methods": {
         parameters: {
             query?: never;
@@ -847,6 +899,24 @@ export interface paths {
         delete: operations["StatementsController_delete_v1"];
         options?: never;
         head?: never;
+        /** Assign the statement to another person */
+        patch: operations["StatementsController_update_v1"];
+        trace?: never;
+    };
+    "/v1/statements/{id}/rows/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give several purchases not saved yet to a person (the additional card or who pays it) */
+        post: operations["StatementsController_assignRows_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -1038,11 +1108,12 @@ export interface components {
                 /** Format: date-time */
                 dueDate: string | null;
                 /** @enum {string} */
-                status: "pending" | "partial" | "prepaid" | "paid";
+                status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
                 paidAmount: number;
                 /** Format: date-time */
                 paidDate: string | null;
                 personId: string;
+                paymentMethodId: string | null;
                 notes: string | null;
                 draftId: string | null;
                 /** @description The expense draft that created it (installments, shared parts, D73) */
@@ -1077,6 +1148,78 @@ export interface components {
                 dueThisMonth: number;
             }[];
         };
+        CardCheckResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                paymentMethodId: string;
+                month: number;
+                year: number;
+                /** @description The statement of that card and month, when uploaded */
+                statementId: string | null;
+                /** @description What the bank asks to pay */
+                statementTotal: number | null;
+                /** @description Card expenses registered for that month */
+                koganeTotal: number;
+                /** @description statementTotal − koganeTotal: interest, fees or charges not registered */
+                unexplained: number | null;
+                /** @description What other people owe of that card and month */
+                othersOwed: number;
+                othersPaid: number;
+                people: {
+                    personId: string;
+                    name: string;
+                    /** @description Their debts on that card and month */
+                    owed: number;
+                    paid: number;
+                    balance: number;
+                }[];
+                /** @description Statement lines of that month or the next that read like interest or fees */
+                possibleInterest: {
+                    description: string;
+                    amount: number;
+                }[];
+            };
+        };
+        DebtBulkDto: {
+            ids: string[];
+            /** @enum {string} */
+            action: "pay" | "prepaid" | "cashback" | "partial" | "clone" | "reset" | "card" | "delete";
+            /** @description partial: the amount to spread */
+            amount?: number;
+            /** Format: date */
+            paidAt?: string;
+            /** @description card: the card; payments: how it was paid */
+            paymentMethodId?: string | null;
+            /** @description clone: the target month */
+            month?: number;
+            /** @description clone: the target year */
+            year?: number;
+            /** @description delete: also debts with payments */
+            force?: boolean;
+        };
+        DebtBulkResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @enum {string} */
+                action: "pay" | "prepaid" | "cashback" | "partial" | "clone" | "reset" | "card" | "delete";
+                /** @description Debts changed, created or deleted */
+                affected: number;
+                /** @description Amount registered as payments */
+                paid: number;
+                /** @description partial: what was left over after every balance */
+                excess: number;
+                /** @description Debts left out: already paid, or with payments on delete without force */
+                skipped: string[];
+            };
+        };
         DebtDetailResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -1098,11 +1241,12 @@ export interface components {
                 /** Format: date-time */
                 dueDate: string | null;
                 /** @enum {string} */
-                status: "pending" | "partial" | "prepaid" | "paid";
+                status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
                 paidAmount: number;
                 /** Format: date-time */
                 paidDate: string | null;
                 personId: string;
+                paymentMethodId: string | null;
                 notes: string | null;
                 draftId: string | null;
                 /** @description The expense draft that created it (installments, shared parts, D73) */
@@ -1125,6 +1269,8 @@ export interface components {
                     /** Format: date-time */
                     paidAt: string;
                     paymentMethodId: string | null;
+                    /** @enum {string} */
+                    kind: "payment" | "partial" | "prepaid" | "cashback";
                     batchId: string | null;
                     /** Format: date-time */
                     confirmedAt: string | null;
@@ -1145,6 +1291,8 @@ export interface components {
             paymentYear: number;
             /** Format: date */
             dueDate?: string | null;
+            /** @description The card it was charged on (D114) */
+            paymentMethodId?: string | null;
             notes?: string | null;
             /** @enum {string} */
             direction: "owed_to_me" | "i_owe";
@@ -1171,11 +1319,12 @@ export interface components {
                 /** Format: date-time */
                 dueDate: string | null;
                 /** @enum {string} */
-                status: "pending" | "partial" | "prepaid" | "paid";
+                status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
                 paidAmount: number;
                 /** Format: date-time */
                 paidDate: string | null;
                 personId: string;
+                paymentMethodId: string | null;
                 notes: string | null;
                 draftId: string | null;
                 /** @description The expense draft that created it (installments, shared parts, D73) */
@@ -1197,6 +1346,8 @@ export interface components {
             paymentYear?: number;
             /** Format: date */
             dueDate?: string | null;
+            /** @description The card it was charged on (D114) */
+            paymentMethodId?: string | null;
             notes?: string | null;
             installment?: string | null;
         };
@@ -1221,11 +1372,12 @@ export interface components {
                 /** Format: date-time */
                 dueDate: string | null;
                 /** @enum {string} */
-                status: "pending" | "partial" | "prepaid" | "paid";
+                status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
                 paidAmount: number;
                 /** Format: date-time */
                 paidDate: string | null;
                 personId: string;
+                paymentMethodId: string | null;
                 notes: string | null;
                 draftId: string | null;
                 /** @description The expense draft that created it (installments, shared parts, D73) */
@@ -1246,6 +1398,11 @@ export interface components {
         };
         DebtPaymentDto: {
             amount: number;
+            /**
+             * @description Pago · Abono · Amortizado · Cashback (D114); payment by default
+             * @enum {string}
+             */
+            kind?: "payment" | "partial" | "prepaid" | "cashback";
             /** Format: date */
             paidAt?: string;
             paymentMethodId?: string | null;
@@ -2295,6 +2452,34 @@ export interface components {
             isActive?: boolean;
             documentNumber?: string | null;
         };
+        CardHolderListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                paymentMethodId: string;
+                personId: string;
+                /** @enum {string} */
+                role: "titular" | "additional";
+                last4: string | null;
+                person: {
+                    id: string;
+                    name: string;
+                    aliases: string[];
+                };
+            }[];
+        };
+        CardHoldersDto: {
+            holders: {
+                personId: string;
+                /** @enum {string} */
+                role: "titular" | "additional";
+                last4?: string | null;
+            }[];
+        };
         PaymentMethodListResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -2502,6 +2687,9 @@ export interface components {
                     expenseType: string | null;
                     installment: string | null;
                     period: string | null;
+                    /** @description Subscriptions: platform when empty (D107) */
+                    kind: string | null;
+                    supplyNumber: string | null;
                     merchant: string | null;
                     operationNumber: string | null;
                     notes: string | null;
@@ -2562,6 +2750,9 @@ export interface components {
                 expenseType: string | null;
                 installment: string | null;
                 period: string | null;
+                /** @description Subscriptions: platform when empty (D107) */
+                kind: string | null;
+                supplyNumber: string | null;
                 merchant: string | null;
                 operationNumber: string | null;
                 notes: string | null;
@@ -2605,6 +2796,9 @@ export interface components {
             installment?: string | null;
             /** @enum {string|null} */
             period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual" | null;
+            /** @enum {string|null} */
+            kind?: "platform" | "service" | "annual" | "other" | null;
+            supplyNumber?: string | null;
             personId?: string | null;
             paymentMethodId?: string | null;
             categoryId?: string | null;
@@ -2649,6 +2843,9 @@ export interface components {
                 expenseType: string | null;
                 installment: string | null;
                 period: string | null;
+                /** @description Subscriptions: platform when empty (D107) */
+                kind: string | null;
+                supplyNumber: string | null;
                 merchant: string | null;
                 operationNumber: string | null;
                 notes: string | null;
@@ -2843,6 +3040,7 @@ export interface components {
             data: {
                 id: string;
                 paymentMethodId: string;
+                personId: string | null;
                 cardName: string;
                 paymentMonth: number;
                 paymentYear: number;
@@ -2879,6 +3077,10 @@ export interface components {
                     /** @enum {string} */
                     result: "matched" | "new" | "created" | "ignored";
                     expenseId: string | null;
+                    /** @description Who it belongs to: the person of its expense, the one chosen for the row, or the statement's */
+                    personId: string | null;
+                    /** @description The cobro created with it when the purchase is another person's (D116) */
+                    debtId: string | null;
                     /** Format: date-time */
                     createdAt: string;
                 }[];
@@ -2889,6 +3091,7 @@ export interface components {
                     amount: number;
                     processDate: string | null;
                     installment: string | null;
+                    personId: string;
                 }[];
                 /** @description Card expenses registered for that payment month */
                 koganeTotal: number;
@@ -2905,6 +3108,7 @@ export interface components {
             data: {
                 id: string;
                 paymentMethodId: string;
+                personId: string | null;
                 cardName: string;
                 paymentMonth: number;
                 paymentYear: number;
@@ -2934,6 +3138,13 @@ export interface components {
                 };
             }[];
         };
+        UpdateStatementDto: {
+            personId: string;
+        };
+        AssignRowsDto: {
+            rowIds: string[];
+            personId: string | null;
+        };
         CreateNewRowsDto: {
             /** @description Only these rows (also matched or ignored ones: created anyway); without it every new row */
             rowIds?: string[];
@@ -2943,6 +3154,8 @@ export interface components {
             result?: "ignored" | "new";
             /** @description Your description; empty goes back to the bank text */
             label?: string | null;
+            /** @description Who made it; null goes back to the statement's person */
+            personId?: string | null;
         };
         ImportDetailResponseDto: {
             /** @enum {boolean} */
@@ -3141,7 +3354,13 @@ export interface operations {
             query?: {
                 personId?: string;
                 direction?: "owed_to_me" | "i_owe";
-                status?: "pending" | "partial" | "prepaid" | "paid";
+                status?: "pending" | "partial" | "prepaid" | "paid" | "cashback";
+                month?: number;
+                year?: number;
+                /** @description With month and year: that month and every earlier one */
+                until?: string;
+                /** @description The card the debts were charged on (D114) */
+                paymentMethodId?: string;
             };
             header?: never;
             path?: never;
@@ -3184,7 +3403,11 @@ export interface operations {
     };
     DebtsController_summary_v1: {
         parameters: {
-            query?: never;
+            query?: {
+                month?: number;
+                year?: number;
+                until?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3197,6 +3420,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DebtSummaryResponseDto"];
+                };
+            };
+        };
+    };
+    DebtsController_cardCheck_v1: {
+        parameters: {
+            query: {
+                paymentMethodId: string;
+                month: number;
+                year: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardCheckResponseDto"];
+                };
+            };
+        };
+    };
+    DebtsController_bulk_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DebtBulkDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebtBulkResponseDto"];
                 };
             };
         };
@@ -3520,6 +3789,10 @@ export interface operations {
                 format: "xlsx" | "pdf";
                 /** @description Only that person; without it, everyone */
                 personId?: string;
+                /** @description Cobros (owed_to_me) or Deudas (i_owe); both without it */
+                direction?: "owed_to_me" | "i_owe";
+                month?: number;
+                year?: number;
             };
             header?: never;
             path?: never;
@@ -4067,6 +4340,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentMethodsController_holders_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardHolderListResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentMethodsController_saveHolders_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardHoldersDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardHolderListResponseDto"];
                 };
             };
         };
@@ -4650,6 +4969,10 @@ export interface operations {
                     password?: string;
                     /** @description Only when the statement does not say which card */
                     paymentMethodId?: string;
+                    /** @description Optional person override; otherwise detected from the statement holder */
+                    personId?: string;
+                    /** @description Save the typed password as the document number of the statement person (if it opened it) */
+                    savePassword?: boolean;
                 };
             };
         };
@@ -4702,6 +5025,56 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStatementDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementResponseDto"];
+                };
+            };
+        };
+    };
+    StatementsController_assignRows_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignRowsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementResponseDto"];
                 };
             };
         };

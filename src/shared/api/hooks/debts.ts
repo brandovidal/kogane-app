@@ -7,8 +7,13 @@ import { useApiMutation } from "./use-api-mutation";
 export const debtKeys = {
   all: ["debts"] as const,
   list: (filter: DebtFilter) => ["debts", "list", filter] as const,
-  summary: ["debts", "summary"] as const,
+  summary: (filter: SummaryFilter = {}) => ["debts", "summary", filter] as const,
+  cardCheck: (query: CardCheckQuery) => ["debts", "card-check", query] as const,
 };
+
+type SummaryFilter = NonNullable<paths["/v1/debts/summary"]["get"]["parameters"]["query"]>;
+type CardCheckQuery = paths["/v1/debts/card-check"]["get"]["parameters"]["query"];
+export type DebtBulk = Schemas["DebtBulkDto"];
 
 type DebtFilter = NonNullable<paths["/v1/debts"]["get"]["parameters"]["query"]>;
 
@@ -19,8 +24,20 @@ export const useDebts = (filter: DebtFilter = {}) =>
     queryFn: () => unwrap(api.GET("/v1/debts", { params: { query: filter } })),
   });
 
-export const useDebtSummary = () =>
-  useQuery({ queryKey: debtKeys.summary, queryFn: () => unwrap(api.GET("/v1/debts/summary")) });
+// Me deben · debo · neto per person; with a month, only that one (or until it)
+export const useDebtSummary = (filter: SummaryFilter = {}) =>
+  useQuery({
+    queryKey: debtKeys.summary(filter),
+    queryFn: () => unwrap(api.GET("/v1/debts/summary", { params: { query: filter } })),
+  });
+
+// Contraste con la tarjeta (D114): only when a card and a month are chosen
+export const useCardCheck = (query: CardCheckQuery | null) =>
+  useQuery({
+    queryKey: debtKeys.cardCheck(query ?? { paymentMethodId: "", month: 0, year: 0 }),
+    queryFn: () => unwrap(api.GET("/v1/debts/card-check", { params: { query: query! } })),
+    enabled: !!query,
+  });
 
 const invalidate = [debtKeys.all, ["summary"]];
 
@@ -50,8 +67,36 @@ export const useAddDebtPayment = () =>
     { invalidate, success: "Abono guardado" },
   );
 
-// Excel / PDF of the debts (D39), downloaded through the /api proxy: everyone, or one person
-export function debtReportUrl(format: "xlsx" | "pdf", personId?: string): string {
+const BULK_MESSAGES: Record<DebtBulk["action"], string> = {
+  pay: "Pagadas",
+  prepaid: "Amortizadas",
+  cashback: "Registradas con cashback",
+  partial: "Abono registrado",
+  clone: "Clonadas",
+  reset: "Vueltas a No iniciado",
+  card: "Tarjeta asignada",
+  delete: "Eliminadas",
+};
+
+// Selección múltiple (D115): the toast says how many and what was left out
+export const useBulkDebts = () =>
+  useApiMutation((body: DebtBulk) => unwrap(api.POST("/v1/debts/bulk", { body })), {
+    invalidate,
+    success: (result) => {
+      const skipped = result.skipped.length ? ` · ${result.skipped.length} sin cambios` : "";
+      return `${BULK_MESSAGES[result.action]}: ${result.affected}${skipped}`;
+    },
+  });
+
+// Excel / PDF of the debts (D39), downloaded through the /api proxy: everyone or one person, one direction and month
+export function debtReportUrl(
+  format: "xlsx" | "pdf",
+  personId?: string,
+  filter: { direction?: "owed_to_me" | "i_owe"; month?: number; year?: number } = {},
+): string {
   const query = new URLSearchParams({ format, ...(personId ? { personId } : {}) });
+  if (filter.direction) query.set("direction", filter.direction);
+  if (filter.month) query.set("month", String(filter.month));
+  if (filter.year) query.set("year", String(filter.year));
   return `/api/v1/reports/debts?${query}`;
 }

@@ -22,6 +22,7 @@ function pageOf(fields: DraftFields, cardCode: (id: string | null | undefined) =
     case "credit_card":
       return `/tarjetas/${cardCode(fields.paymentMethodId) ?? ""}`;
     case "receivable":
+      return "/cobros";
     case "payable":
       return "/deudas";
     default:

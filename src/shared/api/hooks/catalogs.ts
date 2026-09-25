@@ -104,3 +104,19 @@ export const nameById = <T extends { id: string; name: string }>(items: T[] | un
 
 // "Yo": the default person (D19), what the Persona filter shows by default (D80)
 export const useMe = () => usePeople().data?.find((person) => person.isDefault)?.id;
+
+// Titular and additional people of a credit card (D116): statements give each purchase to them
+export const useCardHolders = (paymentMethodId: string | null) =>
+  useQuery({
+    queryKey: ["catalogs", "card-holders", paymentMethodId],
+    queryFn: () =>
+      unwrap(api.GET("/v1/payment-methods/{id}/holders", { params: { path: { id: paymentMethodId! } } })),
+    enabled: !!paymentMethodId,
+  });
+
+export const useSaveCardHolders = () =>
+  useApiMutation(
+    ({ id, holders }: { id: string; holders: Schemas["CardHoldersDto"]["holders"] }) =>
+      unwrap(api.PUT("/v1/payment-methods/{id}/holders", { params: { path: { id } }, body: { holders } })),
+    { invalidate: [["catalogs", "card-holders"]], success: "Titular y adicionales guardados" },
+  );

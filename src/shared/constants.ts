@@ -62,7 +62,16 @@ export const NAV: NavEntry[] = [
       { href: "/recurrentes", label: "Recurrentes", icon: "repeat" },
     ],
   },
-  { href: "/deudas", label: "Préstamos y deudas", icon: "hand-coins" },
+  {
+    // Cobros (me deben) · Deudas (debo) · Resumen (D114)
+    label: "Préstamos y deudas",
+    icon: "hand-coins",
+    children: [
+      { href: "/cobros", label: "Cobros", icon: "hand-coins" },
+      { href: "/deudas", label: "Deudas", icon: "wallet" },
+      { href: "/resumen-deudas", label: "Resumen", icon: "file-text" },
+    ],
+  },
   { href: "/calendario", label: "Calendario", icon: "calendar" },
   {
     label: "Presupuesto",

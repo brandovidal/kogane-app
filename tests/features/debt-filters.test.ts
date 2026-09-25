@@ -33,11 +33,28 @@ describe("debt filters (D80)", () => {
     expect(names({ person: "brenda" })).toEqual(["Préstamo"]);
     expect(names({ state: "late" })).toEqual(["Iphone 16"]);
     expect(names({ state: "partial" })).toEqual(["Iphone 16"]);
-    expect(names({ month: "only" })).toEqual(["Netflix (compartido)"]);
+    expect(names({ month: "9" })).toEqual(["Netflix (compartido)"]);
     expect(names({ month: "until" })).toEqual(["Netflix (compartido)", "Iphone 16"]);
+    expect(names({ month: "until", year: "2027" })).toEqual(["Netflix (compartido)", "Iphone 16", "Préstamo"]);
+    expect(names({ month: "9", year: "2025" })).toEqual([]);
     expect(names({ origin: "shared" })).toEqual(["Netflix (compartido)"]);
     expect(names({ q: "prestamo" })).toEqual(["Préstamo"]);
     expect(isSharedDebt({ description: "Netflix (compartido)" })).toBe(true);
+  });
+
+  it("should filter by card, by the stored states and leave paid ones out of the timing states (D114)", () => {
+    const rows = [
+      debt({ description: "CMR 1/3", paymentMethodId: "cmr" }),
+      debt({ description: "Pagada", status: "paid", timing: "late", balance: 0, paymentMethodId: "cmr" }),
+      debt({ description: "Cashback", status: "cashback", balance: 0 }),
+    ];
+    const names = (filters: Parameters<typeof applyDebtFilters>[1]) =>
+      applyDebtFilters(rows, filters, september).map((item) => item.description);
+
+    expect(names({ card: "cmr" })).toEqual(["CMR 1/3", "Pagada"]);
+    expect(names({ state: "cashback" })).toEqual(["Cashback"]);
+    expect(names({ state: "open" })).toEqual(["CMR 1/3"]);
+    expect(names({ state: "late" })).toEqual([]);
   });
 
   it("should group by person with the biggest balance first", () => {

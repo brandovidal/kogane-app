@@ -1,10 +1,14 @@
-import { CreditCard } from "lucide-react";
+import { useState } from "react";
+import { CreditCard, Users } from "lucide-react";
 
 import { usePaymentMethods, useSavePaymentMethod } from "@/shared/api/hooks/catalogs";
+import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+
+import { CardHoldersDialog } from "./CardHoldersDialog";
 
 const TYPE_LABELS: Record<string, string> = {
   credit_card: "Tarjeta de crédito",
@@ -22,6 +26,7 @@ export function AccountsTable() {
   const update = (id: string, name: string, type: string, body: Record<string, unknown>) =>
     save.mutate({ id, name, type: type as never, ...body });
   const day = (value: string) => (value === "" ? null : Math.min(31, Math.max(1, Number(value))));
+  const [holdersOf, setHoldersOf] = useState<{ id: string; name: string } | null>(null);
 
   return (
     <Card>
@@ -41,6 +46,7 @@ export function AccountsTable() {
                 <TableHead>En el bot</TableHead>
                 <TableHead>Cierre</TableHead>
                 <TableHead>Pago</TableHead>
+                <TableHead>Personas</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -87,9 +93,15 @@ export function AccountsTable() {
                           onBlur={(e) => update(method.id, method.name, method.type, { paymentDueDay: day(e.target.value) })}
                         />
                       </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm" onClick={() => setHoldersOf({ id: method.id, name: method.name })}>
+                          <Users className="mr-1 h-3.5 w-3.5" /> Titular y adicionales
+                        </Button>
+                      </TableCell>
                     </>
                   ) : (
                     <>
+                      <TableCell className="text-muted-foreground">—</TableCell>
                       <TableCell className="text-muted-foreground">—</TableCell>
                       <TableCell className="text-muted-foreground">—</TableCell>
                     </>
@@ -99,6 +111,7 @@ export function AccountsTable() {
             </TableBody>
           </Table>
         </div>
+        {holdersOf && <CardHoldersDialog key={holdersOf.id} card={holdersOf} onClose={() => setHoldersOf(null)} />}
       </CardContent>
     </Card>
   );

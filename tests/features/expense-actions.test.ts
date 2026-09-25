@@ -29,7 +29,7 @@ describe("row actions of the expense tables", () => {
     });
   });
 
-  it("should keep the payment month of a card charge and leave its status out (a copy starts unpaid)", () => {
+  it("should keep the payment month of a card charge and start the copy as \"No iniciado\"", () => {
     const body = duplicateBody("credit-card-expenses", {
       description: "Falabella",
       amount: 50,
@@ -47,6 +47,7 @@ describe("row actions of the expense tables", () => {
       paymentMonth: 12,
       paymentYear: 2026,
       installment: "2/6",
+      paymentStatus: "not_started",
     });
   });
 

@@ -28,6 +28,8 @@ export interface StatementUploadInput {
   file: File;
   password?: string;
   paymentMethodId?: string;
+  personId?: string;
+  savePassword?: boolean; // keep the typed password as the person's document number (D94)
 }
 
 // Multipart through the /api proxy: the PDF, and the password or the card only when the first try asked for them.
@@ -35,11 +37,13 @@ export interface StatementUploadInput {
 export function useUploadStatement() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ file, password, paymentMethodId }: StatementUploadInput): Promise<Statement> => {
+    mutationFn: async ({ file, password, paymentMethodId, personId, savePassword }: StatementUploadInput): Promise<Statement> => {
       const form = new FormData();
       form.set("file", file);
       if (password) form.set("password", password);
       if (paymentMethodId) form.set("paymentMethodId", paymentMethodId);
+      if (personId) form.set("personId", personId);
+      if (password && savePassword) form.set("savePassword", "true");
       const response = await fetch("/api/v1/statements", { method: "POST", body: form, headers: { accept: "application/json" } });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -64,9 +68,35 @@ export const useCreateStatementRows = () =>
 // Ignore a row, bring it back, or give it your description (null goes back to the bank text)
 export const useUpdateStatementRow = () =>
   useApiMutation(
-    ({ id, rowId, ...body }: { id: string; rowId: string; result?: "ignored" | "new"; label?: string | null }) =>
+    ({
+      id,
+      rowId,
+      ...body
+    }: {
+      id: string;
+      rowId: string;
+      result?: "ignored" | "new";
+      label?: string | null;
+      personId?: string | null; // who made the purchase (D113); null = the statement's person
+    }) =>
       unwrap(api.PATCH("/v1/statements/{id}/rows/{rowId}", { params: { path: { id, rowId } }, body })),
     { invalidate: [statementKeys.all] },
+  );
+
+// Selección múltiple (D116): several purchases to a person (the additional card or who pays it); null = the statement's
+export const useAssignStatementRows = () =>
+  useApiMutation(
+    ({ id, rowIds, personId }: { id: string; rowIds: string[]; personId: string | null }) =>
+      unwrap(api.POST("/v1/statements/{id}/rows/assign", { params: { path: { id } }, body: { rowIds, personId } })),
+    { invalidate: [statementKeys.all], success: "Persona asignada" },
+  );
+
+// Whose statement it is, when the PDF did not say or said someone else
+export const useAssignStatementPerson = () =>
+  useApiMutation(
+    ({ id, personId }: { id: string; personId: string }) =>
+      unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body: { personId } })),
+    { invalidate: [statementKeys.all], success: "Persona asignada" },
   );
 
 export const useDeleteStatement = () =>
@@ -74,4 +104,3 @@ export const useDeleteStatement = () =>
     (id: string) => unwrap(api.DELETE("/v1/statements/{id}", { params: { path: { id } } })),
     { invalidate: [statementKeys.all, ["calendar"]], success: "Estado de cuenta eliminado" },
   );
-

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { api, unwrap } from "@/shared/api/client";
-import { useMoveSeries } from "@/shared/api/hooks/expenses";
+import { useMoveSeries, type MoveSeries } from "@/shared/api/hooks/expenses";
 import { CategorySelect } from "@/shared/components/CatalogSelect";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
 import { getMonthName } from "@/shared/lib/dates";
@@ -24,14 +24,14 @@ interface Destination {
   key: string;
   label: string;
   to: Movable;
-  kind?: string;
+  kind?: MoveSeries["kind"];
 }
 
 // Where a row can go (D106): the other table, or another kind of subscription
 const DESTINATIONS: Destination[] = [
   { key: "fixed", label: "Costos fijos", to: "fixed-costs" },
   { key: "platform", label: "Plataformas", to: "subscriptions", kind: "platform" },
-  ...["service", "annual", "other"].map((kind) => ({
+  ...(["service", "annual", "other"] as const).map((kind) => ({
     key: kind,
     label: `Recurrentes · ${SUBSCRIPTION_KIND_LABELS[kind]}`,
     to: "subscriptions" as const,
@@ -127,7 +127,7 @@ export function MoveSeriesDialog({ source, onClose }: { source: MoveSource; onCl
             <label className="text-sm font-medium">Categoría *</label>
             <CategorySelect value={categoryId} onChange={setCategoryId} />
             <p className="text-xs text-muted-foreground">
-              {series.withoutCategory} {series.withoutCategory === 1 ? "fila no tiene" : "filas no tienen"} categoría y
+              {series?.withoutCategory} {series?.withoutCategory === 1 ? "fila no tiene" : "filas no tienen"} categoría y
               en Costos fijos es obligatoria.
             </p>
           </div>
@@ -135,9 +135,8 @@ export function MoveSeriesDialog({ source, onClose }: { source: MoveSource; onCl
 
         {blocked && (
           <p className="text-sm text-destructive">
-            {series.blocked.map((row) => monthLabel(row))
-              .join(", ")}{" "}
-            {series.blocked.length === 1 ? "tiene" : "tienen"} una edición abierta en el bot (/editar): termínala o
+            {series?.blocked.map((row) => monthLabel(row)).join(", ")}{" "}
+            {series?.blocked.length === 1 ? "tiene" : "tienen"} una edición abierta en el bot (/editar): termínala o
             cancélala antes de moverla.
           </p>
         )}

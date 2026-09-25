@@ -6,7 +6,7 @@ import { useApplyImport, useDiscardImport, useImport, useImportRows, useImports,
 import { useDeleteStatement, useStatement, useStatements, useUploadStatement } from "@/shared/api/hooks/statements";
 import { withQuery } from "@/shared/api/query";
 import type { ImportDetail, ImportRow, ImportRowStatus, ImportTab } from "@/shared/api/types";
-import { PaymentMethodSelect } from "@/shared/components/CatalogSelect";
+import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
@@ -15,6 +15,7 @@ import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { Switch } from "@/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
@@ -41,6 +42,8 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
   const [files, setFiles] = useState<File[]>([]);
   const [password, setPassword] = useState("");
   const [cardId, setCardId] = useState<string | null>(null);
+  const [personId, setPersonId] = useState<string | null>(null);
+  const [savePassword, setSavePassword] = useState(true);
   const notion = useUploadNotion();
   const statement = useUploadStatement();
   const upload = source === "notion" ? notion : statement;
@@ -51,6 +54,7 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
   const reset = () => {
     setFiles([]);
     setPassword("");
+    setPersonId(null);
     notion.reset();
     statement.reset();
   };
@@ -62,7 +66,13 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
       return;
     }
     statement.mutate(
-      { file: files[0], password: password || undefined, paymentMethodId: cardId ?? undefined },
+      {
+        file: files[0],
+        password: password || undefined,
+        paymentMethodId: cardId ?? undefined,
+        personId: personId ?? undefined,
+        savePassword,
+      },
       { onSuccess: (read) => (reset(), onRead(`statement:${read.id}`)) },
     );
   };
@@ -119,13 +129,36 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
         </div>
 
         {source === "statement" && (
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Tarjeta (opcional)</label>
-            <PaymentMethodSelect type="credit_card" allowEmpty value={cardId} onChange={setCardId} placeholder="La reconoce del PDF" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Tarjeta (opcional)</label>
+              <PaymentMethodSelect type="credit_card" allowEmpty value={cardId} onChange={setCardId} placeholder="La reconoce del PDF" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Persona (opcional)</label>
+              <PersonSelect allowEmpty value={personId} onChange={setPersonId} placeholder="Detectar en el PDF" />
+              <p className="text-xs text-muted-foreground">Si no la eliges, se busca el titular en el PDF; si no aparece, se usa tu persona predeterminada.</p>
+            </div>
           </div>
         )}
-        {needsPassword && (
-          <Input type="password" placeholder="Contraseña del PDF" autoComplete="off" value={password} onChange={(event) => setPassword(event.target.value)} />
+        {source === "statement" && (
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Contraseña del PDF {needsPassword ? "*" : "(opcional)"}</label>
+            <Input
+              type="password"
+              placeholder="Se prueban los N.º de documento guardados"
+              autoComplete="off"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              aria-invalid={needsPassword}
+            />
+            {password && (
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Switch checked={savePassword} onCheckedChange={setSavePassword} />
+                Guardarla como N.º de documento de la persona del estado de cuenta (si abre el PDF)
+              </label>
+            )}
+          </div>
         )}
 
         {error && (

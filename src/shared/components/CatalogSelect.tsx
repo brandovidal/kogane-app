@@ -8,6 +8,7 @@ interface CatalogSelectProps {
   placeholder?: string;
   allowEmpty?: boolean; // adds "—" to clear an optional field
   className?: string;
+  disabled?: boolean;
 }
 
 const EMPTY = "__none__";
@@ -19,10 +20,11 @@ export function CatalogSelectOptions({
   placeholder = "Selecciona",
   allowEmpty,
   className,
+  disabled,
   options,
 }: CatalogSelectProps & { options: { id: string; name: string }[] }) {
   return (
-    <Select value={value ?? (allowEmpty ? EMPTY : "")} onValueChange={(v) => onChange(v === EMPTY ? null : v)}>
+    <Select disabled={disabled} value={value ?? (allowEmpty ? EMPTY : "")} onValueChange={(v) => onChange(v === EMPTY ? null : v)}>
       <SelectTrigger className={className}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

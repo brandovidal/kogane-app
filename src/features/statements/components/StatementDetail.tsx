@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { useCreateStatementRows, useUpdateStatementRow } from "@/shared/api/hooks/statements";
+import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
+import {
+  useAssignStatementPerson,
+  useAssignStatementRows,
+  useCreateStatementRows,
+  useUpdateStatementRow,
+} from "@/shared/api/hooks/statements";
+import { PersonSelect } from "@/shared/components/CatalogSelect";
 import type { Statement, StatementRow } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
@@ -18,6 +25,7 @@ import {
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Checkbox } from "@/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
@@ -32,34 +40,93 @@ interface PendingCreate {
   description: string;
 }
 
+// A purchase of someone else on the owner's card becomes their cobro when it is saved (D116)
+const isCollect = (row: StatementRow, statementPersonId: string | null) =>
+  !!row.debtId || (row.result !== "matched" && row.result !== "created" && !!row.personId && row.personId !== statementPersonId);
+
 function RowsTable({
   statementId,
+  statementPersonId,
   rows,
   onCreate,
 }: {
   statementId: string;
+  statementPersonId: string | null;
   rows: StatementRow[];
   onCreate: (row: StatementRow) => void;
 }) {
   const update = useUpdateStatementRow();
+  const assignRows = useAssignStatementRows();
   const [editingRow, setEditingRow] = useState<StatementRow | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [assignTo, setAssignTo] = useState<string | null>(null);
+  const personName = nameById(usePeople().data);
+  // Matched and created rows follow the person of their expense: only the others can be given to someone
+  const selectable = rows.filter((row) => row.result === "new" || row.result === "ignored");
+  const allChecked = selectable.length > 0 && selectable.every((row) => selected.has(row.id));
+  const toggle = (id: string, on: boolean) => {
+    const next = new Set(selected);
+    if (on) next.add(id);
+    else next.delete(id);
+    setSelected(next);
+  };
+  const assign = () =>
+    assignRows.mutate(
+      { id: statementId, rowIds: [...selected], personId: assignTo },
+      { onSuccess: () => (setSelected(new Set()), setAssignTo(null)) },
+    );
 
   return (
     <>
+      {selected.size > 0 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/40 p-2 text-sm">
+          <span className="px-1 font-medium">{selected.size} seleccionadas · Asignar a</span>
+          <div className="w-48">
+            <PersonSelect value={assignTo} onChange={setAssignTo} placeholder="Elige la persona" />
+          </div>
+          <Button size="sm" onClick={assign} disabled={!assignTo || assignRows.isPending}>
+            Asignar
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+            Quitar selección
+          </Button>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[36px]">
+                <Checkbox
+                  aria-label="Seleccionar todas"
+                  disabled={!selectable.length}
+                  checked={allChecked ? true : selected.size ? "indeterminate" : false}
+                  onCheckedChange={(on) => setSelected(on === true ? new Set(selectable.map((row) => row.id)) : new Set())}
+                />
+              </TableHead>
               <TableHead>Fecha</TableHead>
               <TableHead>Descripción</TableHead>
               <TableHead className="text-right">Monto</TableHead>
+              <TableHead>Persona</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.id} className={row.result === "ignored" ? "opacity-60" : ""}>
+              <TableRow
+                key={row.id}
+                className={row.result === "ignored" ? "opacity-60" : ""}
+                data-state={selected.has(row.id) ? "selected" : undefined}
+              >
+                <TableCell>
+                  <Checkbox
+                    aria-label="Seleccionar"
+                    disabled={row.result === "matched" || row.result === "created"}
+                    checked={selected.has(row.id)}
+                    onCheckedChange={(on) => toggle(row.id, on === true)}
+                  />
+                </TableCell>
                 <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                   {row.date ? formatDate(row.date) : "—"}
                 </TableCell>
@@ -72,6 +139,14 @@ function RowsTable({
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {formatCurrency(row.amount, row.currency)}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-sm">
+                  {row.personId ? personName(row.personId) : "—"}
+                  {isCollect(row, statementPersonId) && (
+                    <Badge variant="outline" className="ml-2 text-[10px]" title="Al guardarlo se crea su cobro">
+                      {row.debtId ? "cobro creado" : "se cobra"}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                   {ROW_RESULT_LABELS[row.result]}
@@ -101,8 +176,8 @@ function RowsTable({
           key={editingRow.id}
           row={editingRow}
           onClose={() => setEditingRow(null)}
-          onSave={(label) =>
-            update.mutate({ id: statementId, rowId: editingRow.id, label }, { onSuccess: () => setEditingRow(null) })
+          onSave={(changes) =>
+            update.mutate({ id: statementId, rowId: editingRow.id, ...changes }, { onSuccess: () => setEditingRow(null) })
           }
           saving={update.isPending}
         />
@@ -116,12 +191,18 @@ function RowsTable({
 export function StatementDetail({ statement }: { statement: Statement }) {
   const createRows = useCreateStatementRows();
   const [pending, setPending] = useState<PendingCreate | null>(null);
+  const assignPerson = useAssignStatementPerson();
+  const personName = nameById(usePeople().data);
   const counts = countsOf(statement);
   const newRows = rowsOf(statement, "new");
   const matchedRows = rowsOf(statement, "matched");
   const where = `${statement.cardName} · ${getMonthName(statement.paymentMonth)} ${statement.paymentYear}`;
 
-  const askCreate = (row: StatementRow) => setPending({ rowIds: [row.id], ...confirmCreateText(row, where) });
+  const collectFrom = (row: StatementRow) =>
+    row.personId && row.personId !== statement.personId ? personName(row.personId) : undefined;
+  const askCreate = (row: StatementRow) =>
+    setPending({ rowIds: [row.id], ...confirmCreateText(row, where, collectFrom(row)) });
+  const newCollects = newRows.filter((row) => row.result === "new" && collectFrom(row)).length;
 
   return (
     <Card>
@@ -130,6 +211,14 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           {where}
           <Badge variant="outline">{statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}</Badge>
         </CardTitle>
+        <div className="flex max-w-sm items-center gap-2 text-sm">
+          <span className="shrink-0 text-muted-foreground">Persona</span>
+          <PersonSelect
+            value={statement.personId}
+            onChange={(personId) => personId && assignPerson.mutate({ id: statement.id, personId })}
+            placeholder="Sin asignar"
+          />
+        </div>
         <div className="grid gap-2 pt-2 text-sm sm:grid-cols-4">
           <div>
             <p className="text-muted-foreground">Total del banco</p>
@@ -167,7 +256,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                 onClick={() =>
                   setPending({
                     title: `¿Guardar los ${counts.new} nuevos?`,
-                    description: `Se crean como gastos pendientes de ${where}, con el nombre que les diste (o el del banco). Los ignorados no se guardan.`,
+                    description: `Se crean como gastos pendientes de ${where}, con el nombre que les diste (o el del banco) y a nombre de su persona.${newCollects ? ` ${newCollects} son de otras personas: también se crea su cobro.` : ""} Los ignorados no se guardan.`,
                   })
                 }
                 disabled={createRows.isPending}
@@ -178,7 +267,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
             {newRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">Todo lo del estado de cuenta ya está registrado.</p>
             ) : (
-              <RowsTable statementId={statement.id} rows={newRows} onCreate={askCreate} />
+              <RowsTable statementId={statement.id} statementPersonId={statement.personId} rows={newRows} onCreate={askCreate} />
             )}
           </TabsContent>
 
@@ -191,7 +280,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                   Coinciden por monto y fecha cercana o cuota. Si uno se llama igual pero es de otro mes u otra tarjeta, guárdalo de todas
                   formas o ignóralo.
                 </p>
-                <RowsTable statementId={statement.id} rows={matchedRows} onCreate={askCreate} />
+                <RowsTable statementId={statement.id} statementPersonId={statement.personId} rows={matchedRows} onCreate={askCreate} />
               </>
             )}
           </TabsContent>
@@ -212,6 +301,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                         <TableHead>Fecha</TableHead>
                         <TableHead>Descripción</TableHead>
                         <TableHead className="text-right">Monto</TableHead>
+                        <TableHead>Persona</TableHead>
                         <TableHead className="text-right">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -223,6 +313,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                             {expense.description} {expense.installment && <Badge variant="outline">{expense.installment}</Badge>}
                           </TableCell>
                           <TableCell className="text-right tabular-nums">{formatCurrency(expense.amount)}</TableCell>
+                          <TableCell className="text-sm">{personName(expense.personId)}</TableCell>
                           <TableCell className="text-right">
                             <MissingExpenseActions expenseName={expense.description} />
                           </TableCell>

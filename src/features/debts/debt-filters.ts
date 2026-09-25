@@ -4,20 +4,40 @@ import type { Debt } from "@/shared/api/types";
 export interface DebtFilterValues {
   q?: string;
   person?: string;
-  state?: "pending" | "partial" | "late" | "due" | "upcoming";
-  month?: "only" | "until"; // against the month of the header; empty: every month
+  state?: "pending" | "partial" | "paid" | "prepaid" | "cashback" | "open" | "late" | "due" | "upcoming";
+  month?: string; // 1–12 or "until" against the month of the header
+  year?: string;
   origin?: "shared" | "loan";
+  card?: string; // the card it was charged on (D114)
 }
 
-export const DEBT_FILTER_KEYS: (keyof DebtFilterValues)[] = ["q", "person", "state", "month", "origin"];
+export const DEBT_FILTER_KEYS: (keyof DebtFilterValues)[] = ["q", "person", "state", "month", "year", "origin", "card"];
+
+const STORED_STATES = ["pending", "partial", "paid", "prepaid", "cashback"];
 
 export const DEBT_STATE_LABELS: Record<NonNullable<DebtFilterValues["state"]>, string> = {
-  pending: "Pendiente",
+  open: "Por cobrar (con saldo)",
+  pending: "No iniciado",
   partial: "Abonado",
+  paid: "Pagado",
+  prepaid: "Amortizado",
+  cashback: "Cashback",
   late: "Vencida",
   due: "Este mes",
   upcoming: "Por venir",
 };
+
+// What a payment was (D114), as Notion calls it
+export type PaymentKind = "payment" | "partial" | "prepaid" | "cashback";
+export const PAYMENT_KIND_LABELS: Record<PaymentKind, string> = {
+  payment: "Pago",
+  partial: "Abono",
+  prepaid: "Amortizado",
+  cashback: "Cashback",
+};
+
+// A debt without payments reads "No iniciado" like the expenses (D112); its stored status stays pending
+export const debtBadgeStatus = (status: string) => (status === "pending" ? "not_started" : status);
 
 // The parts of a shared expense (D73) are saved as "<concepto> (compartido)"
 export const isSharedDebt = (debt: Pick<Debt, "description">) => /\(compartido\)$/.test(debt.description);
@@ -30,8 +50,8 @@ const fold = (text: string) =>
 
 type FilterableDebt = Pick<
   Debt,
-  "description" | "personId" | "status" | "timing" | "paymentMonth" | "paymentYear" | "notes"
-> & { person: { name: string } };
+  "description" | "personId" | "status" | "timing" | "paymentMonth" | "paymentYear" | "notes" | "balance"
+> & { person: { name: string }; paymentMethodId?: string | null };
 
 export function applyDebtFilters<T extends FilterableDebt>(
   debts: T[],
@@ -39,7 +59,8 @@ export function applyDebtFilters<T extends FilterableDebt>(
   period: { month: number; year: number },
 ): T[] {
   const q = filters.q?.trim() ? fold(filters.q.trim()) : null;
-  const selected = period.year * 12 + period.month;
+  const until = filters.month === "until";
+  const selected = (filters.year ? Number(filters.year) : period.year) * 12 + period.month;
   return debts.filter((debt) => {
     const index = debt.paymentYear * 12 + debt.paymentMonth;
     const state = filters.state;
@@ -47,9 +68,16 @@ export function applyDebtFilters<T extends FilterableDebt>(
       (!q || [debt.description, debt.notes, debt.person.name].some((text) => text && fold(text).includes(q))) &&
       (!filters.person || debt.personId === filters.person) &&
       (!state ||
-        (state === "pending" || state === "partial" ? debt.status === state : debt.timing === state)) &&
-      (!filters.month || (filters.month === "only" ? index === selected : index <= selected)) &&
-      (!filters.origin || isSharedDebt(debt) === (filters.origin === "shared"))
+        (state === "open"
+          ? debt.balance > 0
+          : STORED_STATES.includes(state)
+            ? debt.status === state
+            : debt.balance > 0 && debt.timing === state)) &&
+      (!filters.month || (until ? index <= selected : debt.paymentMonth === Number(filters.month))) &&
+      // "Hasta" takes every earlier year too; the year only sets where it stops
+      (!filters.year || until || debt.paymentYear === Number(filters.year)) &&
+      (!filters.origin || isSharedDebt(debt) === (filters.origin === "shared")) &&
+      (!filters.card || debt.paymentMethodId === filters.card)
     );
   });
 }

@@ -26,7 +26,7 @@ export const totalsMatch = (statement: Pick<Statement, "difference">) =>
 export function uploadErrorText(code: string, reason?: string): string {
   if (code === "STATEMENT_PASSWORD") {
     return reason === "missing"
-      ? "El PDF tiene contraseña: guarda tu N.º de documento en Configuración ▸ Personas o escríbela aquí."
+      ? "El PDF tiene contraseña y ningún N.º de documento guardado lo abre: escríbela aquí (puedes guardarla) o regístrala en Configuración ▸ Personas."
       : "La contraseña no abrió el PDF. Escribe la correcta.";
   }
   if (code === "STATEMENT_UNREADABLE") {
@@ -47,16 +47,22 @@ export const ROW_RESULT_LABELS: Record<StatementRow["result"], string> = {
 export const rowName = (row: Pick<StatementRow, "label" | "description">) => row.label || row.description;
 
 // What the confirmation says before saving one row: a matched one warns that it may already be registered
-export function confirmCreateText(row: StatementRow, where: string): { title: string; description: string } {
+// collectFrom: the person whose purchase it is, when it also becomes their cobro (D116)
+export function confirmCreateText(
+  row: StatementRow,
+  where: string,
+  collectFrom?: string,
+): { title: string; description: string } {
   const what = `${rowName(row)} · ${formatCurrency(row.amount, row.currency)}`;
+  const collect = collectFrom ? ` A nombre de ${collectFrom}, con su cobro en Cobros por el mismo monto.` : "";
   if (row.result === "matched") {
     return {
       title: "¿Guardarlo de todas formas?",
-      description: `${what} ya coincide con un gasto registrado (mismo monto y fecha cercana). Si es de otro mes u otra tarjeta, se crea uno nuevo en ${where} y el registrado pasa a "Solo en Kogane".`,
+      description: `${what} ya coincide con un gasto registrado (mismo monto y fecha cercana). Si es de otro mes u otra tarjeta, se crea uno nuevo en ${where} y el registrado pasa a "Solo en Kogane".${collect}`,
     };
   }
   return {
     title: "¿Guardar este gasto?",
-    description: `${what} se crea como gasto pendiente de ${where}.`,
+    description: `${what} se crea como gasto pendiente de ${where}.${collect}`,
   };
 }

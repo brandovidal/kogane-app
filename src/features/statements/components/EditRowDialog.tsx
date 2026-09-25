@@ -1,28 +1,38 @@
 import { useState } from "react";
 
 import type { StatementRow } from "@/shared/api/types";
+import { PersonSelect } from "@/shared/components/CatalogSelect";
 import { Button } from "@/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/dialog";
 import { Input } from "@/ui/input";
 
+export interface RowChanges {
+  label: string | null;
+  personId?: string | null; // only when it changed
+}
+
 interface EditRowDialogProps {
   row: StatementRow;
   onClose: () => void;
-  onSave: (label: string | null) => void;
+  onSave: (changes: RowChanges) => void;
   saving?: boolean;
 }
 
-// Mounted per row (keyed by id), so the field starts with that row's description
+// Mounted per row (keyed by id), so the fields start with that row's values. The person of a matched or created row is
+// the one of its expense: it is changed in Tarjetas, not here (D113)
 export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogProps) {
   const [value, setValue] = useState(row.label ?? "");
-  const save = () => onSave(value.trim() || null);
+  const [personId, setPersonId] = useState<string | null>(row.personId);
+  const linked = row.result === "matched" || row.result === "created";
+  const save = () =>
+    onSave({ label: value.trim() || null, ...(!linked && personId !== row.personId ? { personId } : {}) });
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Editar descripción</DialogTitle>
-          <DialogDescription>Tu descripción de este movimiento. El texto del banco es el que se usa para coincidir.</DialogDescription>
+          <DialogTitle>Editar movimiento</DialogTitle>
+          <DialogDescription>Tu descripción y de quién es. El texto del banco es el que se usa para coincidir.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -40,6 +50,15 @@ export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogPro
                 if (event.key === "Enter") save();
               }}
             />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Persona</label>
+            <PersonSelect value={personId} onChange={setPersonId} disabled={linked} />
+            <p className="text-xs text-muted-foreground">
+              {linked
+                ? "Es la persona de su gasto registrado: cámbiala en Tarjetas."
+                : "Quién hizo este consumo. Al guardarlo, el gasto queda a su nombre."}
+            </p>
           </div>
           <div className="space-y-1 rounded-md bg-muted p-3 text-sm">
             <p className="font-medium text-muted-foreground">Texto del banco (no se edita)</p>
