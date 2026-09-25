@@ -849,6 +849,92 @@ export interface paths {
         patch: operations["StatementsController_setRowResult_v1"];
         trace?: never;
     };
+    "/v1/imports/notion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read a Notion export and save it as a preview (nothing is written in the expenses) */
+        post: operations["ImportsController_previewNotion_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notion imports, newest first */
+        get: operations["ImportsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** An import with its month-by-month check and the rows per tab */
+        get: operations["ImportsController_get_v1"];
+        put?: never;
+        post?: never;
+        /** Discard a preview */
+        delete: operations["ImportsController_discard_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{id}/rows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The rows of one tab, paginated, with where each one goes */
+        get: operations["ImportsController_rows_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Write a preview: new rows created, changed ones updated, the same ones left alone */
+        post: operations["ImportsController_apply_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2707,6 +2793,136 @@ export interface components {
             /** @enum {string} */
             result: "ignored" | "new";
         };
+        ImportDetailResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                source: string;
+                sourceDir: string;
+                /** @enum {string} */
+                status: "preview" | "applied" | "discarded";
+                files: number;
+                /** @description New rows (on a preview: to create) */
+                created: number;
+                /** @description Rows that changed in Notion */
+                updated: number;
+                /** @description Same rows as the last import: not touched */
+                unchanged: number;
+                /** Format: date-time */
+                appliedAt: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                summary: {
+                    files: {
+                        file: string;
+                        base: string;
+                        rows: number;
+                    }[];
+                    months: {
+                        month: number;
+                        year: number;
+                        /** @description Fixed costs + cards of the payment month in soles, everyone’s */
+                        spent: number;
+                        salary: number | null;
+                        surplus: number | null;
+                        /** @description Rows linked to the Resumen page of the month, as Notion adds them */
+                        linked: number;
+                        /** @description "Gastos" of that Resumen page: equal to linked when all came through */
+                        notionSpent: number | null;
+                    }[];
+                };
+                /** @description Rows per tab */
+                tabs: {
+                    [key: string]: number;
+                };
+                blocked: number;
+                warnings: number;
+            };
+        };
+        ImportListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                source: string;
+                sourceDir: string;
+                /** @enum {string} */
+                status: "preview" | "applied" | "discarded";
+                files: number;
+                /** @description New rows (on a preview: to create) */
+                created: number;
+                /** @description Rows that changed in Notion */
+                updated: number;
+                /** @description Same rows as the last import: not touched */
+                unchanged: number;
+                /** Format: date-time */
+                appliedAt: string | null;
+                /** Format: date-time */
+                createdAt: string;
+            }[];
+        };
+        ImportRowsResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                items: {
+                    id: string;
+                    /** @enum {string} */
+                    kind: "expense" | "group" | "budget" | "issue";
+                    /** @enum {string} */
+                    status: "new" | "changed" | "unchanged" | "blocked" | "warning";
+                    message: string | null;
+                    file: string;
+                    line: number;
+                    targetTable: string | null;
+                    targetId: string | null;
+                    /** @description Where it goes: "Tarjetas ▸ IO · Setiembre 2026" */
+                    destination: string | null;
+                    description: string | null;
+                    amount: number | null;
+                    currency: string | null;
+                    month: number | null;
+                    year: number | null;
+                    /** @description The Kogane row that is written */
+                    data: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The Notion CSV row */
+                    raw: {
+                        [key: string]: string;
+                    };
+                }[];
+                total: number;
+                page: number;
+                pageSize: number;
+            };
+        };
+        ApplyImportResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                batchId: string;
+                created: number;
+                updated: number;
+                unchanged: number;
+                payments: number;
+                groups: number;
+                budgets: number;
+            };
+        };
     };
     responses: never;
     parameters: never;
@@ -4319,6 +4535,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatementResponseDto"];
+                };
+            };
+        };
+    };
+    ImportsController_previewNotion_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** @description The ZIP exported by Notion, or its CSV files */
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportDetailResponseDto"];
+                };
+            };
+        };
+    };
+    ImportsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportListResponseDto"];
+                };
+            };
+        };
+    };
+    ImportsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportDetailResponseDto"];
+                };
+            };
+        };
+    };
+    ImportsController_discard_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    ImportsController_rows_v1: {
+        parameters: {
+            query?: {
+                tab?: "cards" | "fixed_costs" | "platforms" | "debts" | "budget" | "issues";
+                status?: "new" | "changed" | "unchanged" | "blocked" | "warning";
+                /** @description Search in the description */
+                q?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportRowsResponseDto"];
+                };
+            };
+        };
+    };
+    ImportsController_apply_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplyImportResponseDto"];
                 };
             };
         };

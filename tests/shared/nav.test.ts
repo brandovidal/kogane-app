@@ -8,8 +8,7 @@ describe("menu", () => {
     const links = flattenNav(NAV);
     expect(links.filter((link) => link.group === "Registrar").map((link) => link.label)).toEqual([
       "Mensajes",
-      "Reconocimiento",
-      "Estados de cuenta",
+      "Reconocimiento / Importación",
       "Borrador",
     ]);
     expect(links.map((link) => link.href)).toContain("/ingresos");

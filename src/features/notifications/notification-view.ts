@@ -22,7 +22,7 @@ const LINK_BY_REF: Record<string, string> = {
   daily_expense: "/dia-a-dia",
   debt: "/deudas",
   category: "/categorias",
-  statement: "/estados-de-cuenta",
+  statement: "/reconocimiento",
 };
 
 const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {

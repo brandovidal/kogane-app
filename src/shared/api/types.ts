@@ -1,4 +1,5 @@
 import type { Schemas } from "./client";
+import type { operations } from "./schema";
 
 // Entities of kogane-api as the web uses them (D62): taken from the generated schema, never written by hand
 type DataOf<K extends keyof Schemas> = Schemas[K] extends { data: infer D } ? D : never;
@@ -50,3 +51,9 @@ export type CommittedInstallments = DataOf<"CommittedInstallmentsResponseDto">;
 export type Statement = DataOf<"StatementResponseDto">;
 export type StatementRow = Statement["rows"][number];
 export type StatementSummary = DataOf<"StatementListResponseDto">[number];
+export type ImportBatch = DataOf<"ImportListResponseDto">[number];
+export type ImportDetail = DataOf<"ImportDetailResponseDto">;
+export type ImportRows = DataOf<"ImportRowsResponseDto">;
+export type ImportRow = ImportRows["items"][number];
+export type ImportTab = NonNullable<NonNullable<operations["ImportsController_rows_v1"]["parameters"]["query"]>["tab"]>;
+export type ImportRowStatus = ImportRow["status"];

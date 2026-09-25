@@ -18,6 +18,8 @@ const adapter = isProduction
 export default defineConfig({
   output: 'server',
   integrations: [react()],
+  // Estados de cuenta joined Reconocimiento / Importación (D104)
+  redirects: { '/estados-de-cuenta': '/reconocimiento' },
   adapter,
 
   // Server only (D56): the /api proxy adds the key; it never reaches the browser. Locally from .env, on Cloudflare

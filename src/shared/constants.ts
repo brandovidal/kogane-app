@@ -47,8 +47,7 @@ export const NAV: NavEntry[] = [
     icon: "plus-circle",
     children: [
       { href: "/mensajes", label: "Mensajes", icon: "message-circle" },
-      { href: "/reconocimiento", label: "Reconocimiento", icon: "scan-text" },
-      { href: "/estados-de-cuenta", label: "Estados de cuenta", icon: "file-text" },
+      { href: "/reconocimiento", label: "Reconocimiento / Importación", icon: "scan-text" },
       { href: "/borrador", label: "Borrador", icon: "inbox", badge: "drafts" },
     ],
   },

@@ -7,6 +7,7 @@ import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/comp
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { Switch } from "@/ui/switch";
 import { useSaveExpense } from "@/shared/api/hooks/expenses";
 import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
 import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES, FIXED_COST_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
@@ -26,8 +27,13 @@ const fixedCostFormSchema = z.object({
   paymentMethodId: z.string().nullable(),
   categoryId: z.string().min(1, "Categoría requerida"),
   dueDate: z.string(),
-  installment: optionalText.refine((value) => !value || /^\d{1,3}\/\d{1,3}$/.test(value), "Usa n/m, ej: 3/6"),
+  // "Se paga en cuotas": only then the installment is asked for, and it is required (e.g. Terreno 14/48)
+  hasInstallments: z.boolean(),
+  installment: optionalText.refine((value) => !value || /^\d{1,3}\/\d{1,3}$/.test(value), "Usa n/m, ej: 14/48"),
   notes: optionalText,
+}).refine((form) => !form.hasInstallments || !!form.installment, {
+  path: ["installment"],
+  message: "Indica la cuota, ej: 14/48",
 });
 type FixedCostForm = z.input<typeof fixedCostFormSchema>;
 type FixedCostValues = z.output<typeof fixedCostFormSchema>;
@@ -43,6 +49,7 @@ const emptyForm: FixedCostForm = {
   paymentMethodId: null,
   categoryId: "",
   dueDate: "",
+  hasInstallments: false,
   installment: "",
   notes: "",
 };
@@ -64,6 +71,7 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
     defaultValues: emptyForm,
   });
   const currency = watch("currency");
+  const hasInstallments = watch("hasInstallments");
 
   useEffect(() => {
     if (!open) return;
@@ -80,6 +88,7 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
             paymentMethodId: fixedCost.paymentMethodId,
             categoryId: fixedCost.categoryId,
             dueDate: toIsoDate(fixedCost.dueDate),
+            hasInstallments: !!fixedCost.installment,
             installment: fixedCost.installment ?? "",
             notes: fixedCost.notes ?? "",
           }
@@ -87,9 +96,10 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
     );
   }, [open, fixedCost, reset]);
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit(({ hasInstallments: inInstallments, ...data }) => {
     const body = {
       ...data,
+      installment: inInstallments ? data.installment : null,
       exchangeRate: data.currency === "PEN" ? null : data.exchangeRate,
       dueDate: data.dueDate || null,
       // a new one goes to the month on screen; editing keeps its month
@@ -194,16 +204,26 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
           {errors.categoryId && <p className="text-xs text-destructive">{errors.categoryId.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Fecha vencimiento</label>
-            <Input type="date" {...register("dueDate")} />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Cuotas</label>
-            <Input {...register("installment")} placeholder="Ej: 3/6" />
-            {errors.installment && <p className="text-xs text-destructive">{errors.installment.message}</p>}
-          </div>
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">Fecha vencimiento</label>
+          <Input type="date" {...register("dueDate")} />
+        </div>
+
+        <div className="space-y-3 rounded-md border p-3">
+          <label className="flex items-center justify-between gap-3 text-sm font-medium">
+            Se paga en cuotas
+            <Switch
+              checked={hasInstallments}
+              onCheckedChange={(checked) => setValue("hasInstallments", checked, { shouldValidate: !checked })}
+            />
+          </label>
+          {hasInstallments && (
+            <div className="space-y-1.5">
+              <label className="text-sm text-muted-foreground">Cuota actual / total *</label>
+              <Input {...register("installment")} placeholder="Ej: 14/48" />
+              {errors.installment && <p className="text-xs text-destructive">{errors.installment.message}</p>}
+            </div>
+          )}
         </div>
 
         <div className="space-y-1.5">
