@@ -24,6 +24,8 @@ const MESSAGES: Record<string, string> = {
   CATALOG_ITEM_DUPLICATE: "Ya existe uno con ese nombre.",
   DEBT_PAYMENT_EXCEEDS_BALANCE: "El abono es mayor que el saldo.",
   EXPENSE_NOT_SAVEABLE: "Faltan datos para guardarlo.",
+  EXPENSE_MOVE_BLOCKED: "No se puede mover todavía: revisa la categoría o termina la edición abierta en el bot.",
+  PAYMENT_METHOD_INCOMPLETE: "A la tarjeta le faltan datos: una de crédito necesita código, cierre y pago; una de débito, su banco.",
   API_KEY_REQUIRED: "La web no tiene la API key configurada.",
   API_KEY_INVALID: "La API key de la web no coincide con la de kogane-api.",
 };

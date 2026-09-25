@@ -60,9 +60,18 @@ export const SUBSCRIPTION_PERIOD_LABELS: Record<string, string> = {
 };
 export const SUBSCRIPTION_PERIODS = Object.keys(SUBSCRIPTION_PERIOD_LABELS);
 
+// exp_subscriptions.kind (D107): Plataformas shows platform, Recurrentes the other three
+export const SUBSCRIPTION_KIND_LABELS: Record<string, string> = {
+  platform: "Plataforma",
+  service: "Servicio",
+  annual: "Anual",
+  other: "Otro",
+};
+export const RECURRING_KINDS = ["service", "annual", "other"] as const;
+
 export const RECURRING_TARGET_LABELS: Record<string, string> = {
   fixed_cost: "Costo fijo",
-  subscription: "Plataforma",
+  subscription: "Recurrente o plataforma",
   credit_card: "Tarjeta",
 };
 export const RECURRING_TARGETS = Object.keys(RECURRING_TARGET_LABELS);

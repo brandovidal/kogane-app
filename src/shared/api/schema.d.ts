@@ -200,6 +200,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/budget-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What adds to the budget besides fixed costs, cards and day to day */
+        get: operations["BudgetSettingsController_get_v1"];
+        /** Switch Recurrentes or Plataformas on or off in the budget */
+        put: operations["BudgetSettingsController_update_v1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/reports/debts": {
         parameters: {
             query?: never;
@@ -453,6 +471,23 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["ExpensesController_update_v1"];
+        trace?: never;
+    };
+    "/v1/expense-moves": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move a row and its whole series between fixed costs, Recurrentes and Plataformas (dryRun counts it) */
+        post: operations["ExpenseMovesController_move_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/recurring-expenses/generate": {
@@ -1336,6 +1371,25 @@ export interface components {
                 updatedAt: string;
             };
         };
+        BudgetSettingsResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @description Recurrentes (service, annual, other) add to the budget unless paid with a credit card */
+                recurringCount: boolean;
+                /** @description Plataformas add to the budget unless paid with a credit card */
+                platformsCount: boolean;
+            };
+        };
+        UpdateBudgetSettingsDto: {
+            /** @description Recurrentes (service, annual, other) add to the budget unless paid with a credit card */
+            recurringCount?: boolean;
+            /** @description Plataformas add to the budget unless paid with a credit card */
+            platformsCount?: boolean;
+        };
         NotificationPageResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -1639,6 +1693,9 @@ export interface components {
                 paymentYear: number;
                 /** @enum {string} */
                 period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+                /** @enum {string} */
+                kind: "platform" | "service" | "annual" | "other";
+                supplyNumber: string | null;
                 paymentMethodId: string | null;
                 /** Format: date-time */
                 paymentDate: string | null;
@@ -1688,6 +1745,11 @@ export interface components {
                 updatedAt: string;
                 /** @enum {string} */
                 targetType: "fixed_cost" | "subscription" | "credit_card";
+                /** @enum {string} */
+                kind: "platform" | "service" | "annual" | "other";
+                /** @enum {string} */
+                period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+                supplyNumber: string | null;
                 paymentMethodId: string | null;
                 dayOfMonth: number;
                 isActive: boolean;
@@ -1782,6 +1844,9 @@ export interface components {
                 paymentYear: number;
                 /** @enum {string} */
                 period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+                /** @enum {string} */
+                kind: "platform" | "service" | "annual" | "other";
+                supplyNumber: string | null;
                 paymentMethodId: string | null;
                 /** Format: date-time */
                 paymentDate: string | null;
@@ -1831,6 +1896,11 @@ export interface components {
                 updatedAt: string;
                 /** @enum {string} */
                 targetType: "fixed_cost" | "subscription" | "credit_card";
+                /** @enum {string} */
+                kind: "platform" | "service" | "annual" | "other";
+                /** @enum {string} */
+                period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+                supplyNumber: string | null;
                 paymentMethodId: string | null;
                 dayOfMonth: number;
                 isActive: boolean;
@@ -1903,6 +1973,9 @@ export interface components {
             paymentYear: number;
             /** @enum {string} */
             period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            /** @enum {string} */
+            kind?: "platform" | "service" | "annual" | "other";
+            supplyNumber?: string | null;
             paymentMethodId?: string | null;
             /** @enum {string} */
             paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
@@ -1945,6 +2018,11 @@ export interface components {
             notes?: string | null;
             /** @enum {string} */
             targetType: "fixed_cost" | "subscription" | "credit_card";
+            /** @enum {string} */
+            kind?: "platform" | "service" | "annual" | "other";
+            /** @enum {string} */
+            period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            supplyNumber?: string | null;
             /** @enum {string} */
             expenseType?: "essential" | "guilty_pleasure";
             categoryId?: string | null;
@@ -2017,6 +2095,9 @@ export interface components {
             paymentYear?: number;
             /** @enum {string} */
             period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            /** @enum {string} */
+            kind?: "platform" | "service" | "annual" | "other";
+            supplyNumber?: string | null;
             paymentMethodId?: string | null;
             /** @enum {string} */
             paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
@@ -2060,11 +2141,72 @@ export interface components {
             /** @enum {string} */
             targetType?: "fixed_cost" | "subscription" | "credit_card";
             /** @enum {string} */
+            kind?: "platform" | "service" | "annual" | "other";
+            /** @enum {string} */
+            period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            supplyNumber?: string | null;
+            /** @enum {string} */
             expenseType?: "essential" | "guilty_pleasure";
             categoryId?: string | null;
             paymentMethodId?: string | null;
             dayOfMonth?: number;
             isActive?: boolean;
+        };
+        MoveSeriesDto: {
+            /**
+             * @description Table of the row the user picked
+             * @enum {string}
+             */
+            resource: "fixed-costs" | "subscriptions";
+            id: string;
+            /** @enum {string} */
+            to: "fixed-costs" | "subscriptions";
+            /**
+             * @description Required when moving to subscriptions
+             * @enum {string}
+             */
+            kind?: "platform" | "service" | "annual" | "other";
+            /**
+             * @description Subscriptions only; monthly when it comes from a fixed cost
+             * @enum {string}
+             */
+            period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            /** @description For rows without a category when moving to fixed costs */
+            categoryId?: string;
+            /** @description Only count what would move (the confirmation of the dialog) */
+            dryRun?: boolean;
+        };
+        MoveSeriesResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                dryRun: boolean;
+                /** @description Rows of the series */
+                count: number;
+                /** @description First payment month of the series */
+                from: {
+                    month: number;
+                    year: number;
+                } | null;
+                /** @description Last payment month of the series */
+                until: {
+                    month: number;
+                    year: number;
+                } | null;
+                /** @description Recurring templates moved with it */
+                templates: number;
+                /** @description Rows that need categoryId to become fixed costs */
+                withoutCategory: number;
+                /** @description Rows with an /editar copy open: finish or cancel it first */
+                blocked: {
+                    id: string;
+                    month: number;
+                    year: number;
+                }[];
+            };
         };
         GenerateRecurringDto: {
             month?: number;
@@ -2095,7 +2237,7 @@ export interface components {
                     recurringId: string;
                     description: string;
                     /** @enum {string} */
-                    reason: "already_generated" | "missing_card" | "missing_category";
+                    reason: "already_generated" | "not_due" | "missing_card" | "missing_category";
                 }[];
             };
         };
@@ -2174,6 +2316,7 @@ export interface components {
                 showInBot: boolean;
                 billingCloseDay: number | null;
                 paymentDueDay: number | null;
+                bank: string | null;
                 color: string | null;
             }[];
         };
@@ -2187,6 +2330,7 @@ export interface components {
             showInBot?: boolean;
             billingCloseDay?: number | null;
             paymentDueDay?: number | null;
+            bank?: string | null;
             color?: string | null;
         };
         PaymentMethodResponseDto: {
@@ -2210,6 +2354,7 @@ export interface components {
                 showInBot: boolean;
                 billingCloseDay: number | null;
                 paymentDueDay: number | null;
+                bank: string | null;
                 color: string | null;
             };
         };
@@ -2223,6 +2368,7 @@ export interface components {
             showInBot?: boolean;
             billingCloseDay?: number | null;
             paymentDueDay?: number | null;
+            bank?: string | null;
             color?: string | null;
         };
         CategoryListResponseDto: {
@@ -3326,6 +3472,48 @@ export interface operations {
             };
         };
     };
+    BudgetSettingsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetSettingsResponseDto"];
+                };
+            };
+        };
+    };
+    BudgetSettingsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateBudgetSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetSettingsResponseDto"];
+                };
+            };
+        };
+    };
     ReportsController_debts_v1: {
         parameters: {
             query: {
@@ -3633,6 +3821,8 @@ export interface operations {
                 year?: number;
                 personId?: string;
                 paymentMethodId?: string;
+                /** @description Subscriptions only: platform = Plataformas, recurring = Recurrentes (D107) */
+                kind?: "platform" | "recurring";
             };
             header?: never;
             path: {
@@ -3743,6 +3933,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExpenseRecordResponseDto"];
+                };
+            };
+        };
+    };
+    ExpenseMovesController_move_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoveSeriesDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveSeriesResponseDto"];
                 };
             };
         };

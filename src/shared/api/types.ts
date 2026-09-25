@@ -12,9 +12,11 @@ export type BudgetGroup = DataOf<"BudgetGroupResponseDto">;
 export type ExpenseRecord = DataOf<"ExpenseRecordResponseDto">;
 export type DailyExpense = Extract<ExpenseRecord, { spentAt: string }>;
 export type FixedCost = Extract<ExpenseRecord, { attentionDate: string | null }>;
-export type Subscription = Extract<ExpenseRecord, { period: string }>;
+export type Subscription = Extract<ExpenseRecord, { period: string; paymentMonth: number }>;
 export type CreditCardExpense = Extract<ExpenseRecord, { processDate: string | null }>;
 export type RecurringExpense = Extract<ExpenseRecord, { dayOfMonth: number }>;
+export type MoveSeriesResult = DataOf<"MoveSeriesResponseDto">;
+export type BudgetSettings = DataOf<"BudgetSettingsResponseDto">;
 export type ExpenseBody = Schemas["ExpenseBodyDto"];
 
 export type Summary = DataOf<"SummaryResponseDto">;

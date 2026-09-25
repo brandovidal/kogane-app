@@ -22,6 +22,8 @@ export const emptyDraftFields = (): DraftFields => ({
   expenseType: "essential",
   installment: null,
   period: null,
+  kind: null,
+  supplyNumber: null,
   personId: null,
   paymentMethodId: null,
   categoryId: null,
@@ -41,6 +43,9 @@ export function toDraftBody(fields: DraftFields): DraftFields {
     spentAt: fields.spentAt ? fields.spentAt.slice(0, 10) : null,
     installment: rules.installment ? text(fields.installment) : null,
     period: rules.period ? (fields.period ?? "monthly") : null,
+    // Subscriptions only: Recurrentes sends its kind (service by default), without one it is a platform (D107, D109)
+    kind: rules.period ? (fields.kind ?? null) : null,
+    supplyNumber: rules.period ? text(fields.supplyNumber) : null,
     paymentMethodId: rules.paymentMethod ? fields.paymentMethodId : null,
     categoryId: rules.category ? fields.categoryId : null,
     merchant: text(fields.merchant),

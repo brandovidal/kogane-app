@@ -1,22 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { api, unwrap } from "../client";
+import type { Schemas } from "../client";
 import type { ExpenseByResource, ExpenseResource } from "../types";
 import { useApiMutation } from "./use-api-mutation";
 
 export const expenseKeys = {
   resource: (resource: ExpenseResource) => ["expenses", resource] as const,
-  list: (resource: ExpenseResource, month?: number, year?: number) => ["expenses", resource, month, year] as const,
+  list: (resource: ExpenseResource, month?: number, year?: number, kind?: SubscriptionGroup) =>
+    ["expenses", resource, month, year, kind] as const,
 };
+
+// Subscriptions split in two pages (D107): Plataformas and Recurrentes
+export type SubscriptionGroup = "platform" | "recurring";
 
 // One table of /v1/expenses (month and year filter by payment month, or by spent date for day-to-day expenses).
 // The person is filtered on the page, with the rest of the filters (D80)
-export function useExpenses<R extends ExpenseResource>(resource: R, period?: { month: number; year: number }) {
+export function useExpenses<R extends ExpenseResource>(
+  resource: R,
+  period?: { month: number; year: number },
+  kind?: SubscriptionGroup,
+) {
   return useQuery({
-    queryKey: expenseKeys.list(resource, period?.month, period?.year),
+    queryKey: expenseKeys.list(resource, period?.month, period?.year, kind),
     queryFn: async () =>
       (await unwrap(
-        api.GET("/v1/expenses/{resource}", { params: { path: { resource }, query: period } }),
+        api.GET("/v1/expenses/{resource}", { params: { path: { resource }, query: { ...period, kind } } }),
       )) as ExpenseByResource[R][],
   });
 }
@@ -41,3 +50,17 @@ export const useDeleteExpense = (resource: ExpenseResource) =>
     (id: string) => unwrap(api.DELETE("/v1/expenses/{resource}/{id}", { params: { path: { resource, id } } })),
     { invalidate: invalidateFor(resource), success: "Eliminado" },
   );
+
+export type MoveSeries = Schemas["MoveSeriesDto"];
+
+// "Pasar a…" (D106): with dryRun it only counts the series for the dialog; otherwise it moves it and refreshes both
+// tables and the templates
+export const useMoveSeries = () =>
+  useApiMutation((body: MoveSeries) => unwrap(api.POST("/v1/expense-moves", { body })), {
+    invalidate: [
+      expenseKeys.resource("fixed-costs"),
+      expenseKeys.resource("subscriptions"),
+      expenseKeys.resource("recurring-expenses"),
+      ["summary"],
+    ],
+  });

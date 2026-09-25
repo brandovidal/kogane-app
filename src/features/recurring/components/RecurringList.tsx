@@ -36,7 +36,7 @@ function RecurringListView() {
       { month, year },
       {
         onSuccess: ({ created, skipped }) => {
-          const missing = skipped.filter((item) => item.reason !== "already_generated").length;
+          const missing = skipped.filter((item) => item.reason === "missing_card" || item.reason === "missing_category").length;
           toast.success(
             created.length
               ? `${created.length} gastos creados como pendientes en ${getMonthName(month)}`

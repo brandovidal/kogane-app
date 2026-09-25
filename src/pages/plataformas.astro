@@ -3,6 +3,6 @@ import DashboardLayout from "@/layouts/DashboardLayout.astro";
 import { SubscriptionList } from "@/features/subscriptions/components/SubscriptionList";
 ---
 
-<DashboardLayout title="Plataformas y Suscripciones">
-  <SubscriptionList client:load />
+<DashboardLayout title="Plataformas">
+  <SubscriptionList client:load group="platform" />
 </DashboardLayout>

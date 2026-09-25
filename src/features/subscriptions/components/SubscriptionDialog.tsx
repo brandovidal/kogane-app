@@ -33,6 +33,7 @@ const subscriptionFormSchema = z.object({
   paymentMethodId: z.string().nullable(),
   dueDate: z.string(),
   notes: z.string().trim().transform((value) => value || null),
+  supplyNumber: z.string().trim().max(40).transform((value) => value || null),
 });
 type SubscriptionForm = z.input<typeof subscriptionFormSchema>;
 type SubscriptionValues = z.output<typeof subscriptionFormSchema>;
@@ -49,6 +50,7 @@ const emptyForm: SubscriptionForm = {
   paymentMethodId: null,
   dueDate: "",
   notes: "",
+  supplyNumber: "",
 };
 
 interface SubscriptionDialogProps {
@@ -86,6 +88,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
             paymentMethodId: subscription.paymentMethodId,
             dueDate: toIsoDate(subscription.dueDate),
             notes: subscription.notes ?? "",
+            supplyNumber: subscription.supplyNumber ?? "",
           }
         : emptyForm,
     );
@@ -200,6 +203,13 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
             <Input type="date" {...register("dueDate")} />
           </div>
         </div>
+
+        {subscription && subscription.kind !== "platform" && (
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">N.º de suministro</label>
+            <Input {...register("supplyNumber")} placeholder="Ej: 987654321" />
+          </div>
+        )}
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Comentario</label>

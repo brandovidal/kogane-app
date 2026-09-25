@@ -19,6 +19,7 @@ import {
 } from "@/ui/select";
 import { Plus } from "lucide-react";
 import { RowActions } from "@/shared/components/RowActions";
+import { MoveSeriesDialog, type MoveSource } from "@/shared/components/MoveSeriesDialog";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { formatDate } from "@/shared/lib/dates";
 import { FIXED_COST_STATUSES as PAYMENT_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
@@ -48,6 +49,7 @@ function FixedCostTableView() {
   const me = useMe();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FixedCost | undefined>();
+  const [moving, setMoving] = useState<MoveSource | null>(null);
 
   const filtered = applyExpenseFilters(fixedCosts, filters, me);
 
@@ -121,6 +123,7 @@ function FixedCostTableView() {
           onEdit={() => { setEditingItem(fc); setDialogOpen(true); }}
           onDuplicate={() => saveFixedCost.mutate({ body: duplicateBody(EXPENSE_RESOURCES.fixedCost, fc) })}
           onNextMonth={() => saveFixedCost.mutate({ id: fc.id, body: nextMonthBody(fc) })}
+          onMove={() => setMoving({ resource: EXPENSE_RESOURCES.fixedCost, id: fc.id, description: fc.description })}
           onDelete={() => deleteFixedCost.mutate(fc.id)}
           status={{
             value: fc.paymentStatus,
@@ -176,6 +179,8 @@ function FixedCostTableView() {
         onOpenChange={setDialogOpen}
         fixedCost={editingItem}
       />
+
+      {moving && <MoveSeriesDialog key={moving.id} source={moving} onClose={() => setMoving(null)} />}
     </div>
   );
 }

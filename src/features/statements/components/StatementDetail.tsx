@@ -96,15 +96,17 @@ function RowsTable({
         </Table>
       </div>
 
-      <EditRowDialog
-        row={editingRow}
-        open={!!editingRow}
-        onOpenChange={(open) => !open && setEditingRow(null)}
-        onSave={(label) =>
-          update.mutate({ id: statementId, rowId: editingRow!.id, label }, { onSuccess: () => setEditingRow(null) })
-        }
-        saving={update.isPending}
-      />
+      {editingRow && (
+        <EditRowDialog
+          key={editingRow.id}
+          row={editingRow}
+          onClose={() => setEditingRow(null)}
+          onSave={(label) =>
+            update.mutate({ id: statementId, rowId: editingRow.id, label }, { onSuccess: () => setEditingRow(null) })
+          }
+          saving={update.isPending}
+        />
+      )}
     </>
   );
 }

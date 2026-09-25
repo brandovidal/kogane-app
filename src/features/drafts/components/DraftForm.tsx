@@ -7,6 +7,7 @@ import {
   DESTINATION_LABELS,
   EXPENSE_TYPE_LABELS,
   EXPENSE_TYPES,
+  SUBSCRIPTION_KIND_LABELS,
   SUBSCRIPTION_PERIOD_LABELS,
   SUBSCRIPTION_PERIODS,
 } from "@/shared/labels";
@@ -122,12 +123,30 @@ export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProp
               </Select>
             </Field>
           )}
+          {rules.period && (
+            <Field label="Es">
+              <Select value={value.kind ?? "platform"} onValueChange={(v) => set("kind", v as DraftFields["kind"])}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SUBSCRIPTION_KIND_LABELS).map(([kind, label]) => (
+                    <SelectItem key={kind} value={kind}>{kind === "platform" ? "Plataforma" : `Recurrente · ${label}`}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
           {rules.installment && (
             <Field label="Cuota (n/m)">
               <Input value={value.installment ?? ""} onChange={(e) => set("installment", e.target.value)} placeholder={isDebt ? "1/3 crea las 3 cuotas" : "Ej: 1/3"} />
             </Field>
           )}
         </div>
+      )}
+
+      {rules.period && value.kind && value.kind !== "platform" && (
+        <Field label="N.º de suministro">
+          <Input value={value.supplyNumber ?? ""} onChange={(e) => set("supplyNumber", e.target.value)} placeholder="Opcional (Bitel, Enel…)" />
+        </Field>
       )}
 
       {rules.shareable && (

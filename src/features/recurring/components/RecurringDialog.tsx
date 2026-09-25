@@ -15,6 +15,9 @@ import {
   EXPENSE_TYPES,
   RECURRING_TARGET_LABELS,
   RECURRING_TARGETS,
+  SUBSCRIPTION_KIND_LABELS,
+  SUBSCRIPTION_PERIOD_LABELS,
+  SUBSCRIPTION_PERIODS,
 } from "@/shared/labels";
 
 const recurringFormSchema = z
@@ -28,6 +31,10 @@ const recurringFormSchema = z
     paymentMethodId: z.string().nullable(),
     categoryId: z.string().nullable(),
     expenseType: z.string(),
+    // Only for subscriptions (D107): what it is, how often it comes back and its supply number
+    kind: z.string(),
+    period: z.string(),
+    supplyNumber: z.string().trim().max(40),
   })
   // A card expense needs its card, like in kogane-api
   .refine((data) => data.targetType !== "credit_card" || !!data.paymentMethodId, {
@@ -47,6 +54,9 @@ const emptyForm: RecurringForm = {
   paymentMethodId: null,
   categoryId: null,
   expenseType: "essential",
+  kind: "service",
+  period: "monthly",
+  supplyNumber: "",
 };
 
 interface RecurringDialogProps {
@@ -68,7 +78,9 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
     if (open) reset(emptyForm);
   }, [open, reset]);
 
-  const onSubmit = handleSubmit((body) => {
+  const onSubmit = handleSubmit(({ kind, period, supplyNumber, ...rest }) => {
+    const subscription = rest.targetType === "subscription";
+    const body = subscription ? { ...rest, kind, period, supplyNumber: supplyNumber || null } : rest;
     saveRecurring.mutate({ body }, { onSuccess: () => onOpenChange(false) });
   });
 
@@ -77,7 +89,7 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
       open={open}
       onOpenChange={onOpenChange}
       title="Nuevo gasto recurrente"
-      description="Se repite cada mes en el día indicado"
+      description="Se repite en el día indicado: cada mes, o según su período si es un recurrente"
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
@@ -125,6 +137,35 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
             {errors.dayOfMonth && <p className="text-xs text-destructive">{errors.dayOfMonth.message}</p>}
           </div>
         </div>
+
+        {targetType === "subscription" && (
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Tipo</label>
+              <Select value={watch("kind")} onValueChange={(v) => setValue("kind", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SUBSCRIPTION_KIND_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Período</label>
+              <Select value={watch("period")} onValueChange={(v) => setValue("period", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {SUBSCRIPTION_PERIODS.map((p) => <SelectItem key={p} value={p}>{SUBSCRIPTION_PERIOD_LABELS[p]}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">N.º de suministro</label>
+              <Input {...register("supplyNumber")} placeholder="Opcional" />
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">

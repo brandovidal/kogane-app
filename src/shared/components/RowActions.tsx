@@ -1,4 +1,4 @@
-import { CalendarArrowUp, Check, Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ArrowRightLeft, CalendarArrowUp, Check, Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { Button } from "@/ui/button";
@@ -22,12 +22,13 @@ interface RowActionsProps {
   onEdit?: () => void;
   onDuplicate?: () => void;
   onNextMonth?: () => void;
+  onMove?: () => void; // "Pasar a…" (D106): Costos fijos ↔ Recurrentes ↔ Plataformas
   onDelete?: () => void;
   status?: { value: string; options: readonly string[]; onChange: (status: string) => void };
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
-export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onDelete, status }: RowActionsProps) {
+export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, onDelete, status }: RowActionsProps) {
   const confirmDelete = () => {
     if (window.confirm(`¿Eliminar «${label}»? No se puede deshacer.`)) onDelete?.();
   };
@@ -72,6 +73,11 @@ export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onDelete, 
         {onNextMonth && (
           <DropdownMenuItem onSelect={onNextMonth}>
             <CalendarArrowUp /> Pasar al mes siguiente
+          </DropdownMenuItem>
+        )}
+        {onMove && (
+          <DropdownMenuItem onSelect={onMove}>
+            <ArrowRightLeft /> Pasar a…
           </DropdownMenuItem>
         )}
         {onDelete && (
