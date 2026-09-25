@@ -824,7 +824,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create the new rows (all or the given ones) as pending card expenses */
+        /** Create the new rows (all, or the given ones even if matched or ignored) as pending card expenses */
         post: operations["StatementsController_createNew_v1"];
         delete?: never;
         options?: never;
@@ -845,8 +845,8 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Ignore a new row, or bring an ignored one back */
-        patch: operations["StatementsController_setRowResult_v1"];
+        /** Ignore a row, bring an ignored one back, or give it your description */
+        patch: operations["StatementsController_updateRow_v1"];
         trace?: never;
     };
     "/v1/imports/notion": {
@@ -2723,7 +2723,10 @@ export interface components {
                     statementId: string;
                     /** Format: date-time */
                     date: string | null;
+                    /** @description As the bank wrote it (never edited) */
                     description: string;
+                    /** @description Your description: the name of the expense it creates */
+                    label: string | null;
                     amount: number;
                     currency: string;
                     installment: string | null;
@@ -2786,12 +2789,14 @@ export interface components {
             }[];
         };
         CreateNewRowsDto: {
-            /** @description Only these rows; without it every new row */
+            /** @description Only these rows (also matched or ignored ones: created anyway); without it every new row */
             rowIds?: string[];
         };
-        RowResultDto: {
+        UpdateRowDto: {
             /** @enum {string} */
-            result: "ignored" | "new";
+            result?: "ignored" | "new";
+            /** @description Your description; empty goes back to the bank text */
+            label?: string | null;
         };
         ImportDetailResponseDto: {
             /** @enum {boolean} */
@@ -4513,7 +4518,7 @@ export interface operations {
             };
         };
     };
-    StatementsController_setRowResult_v1: {
+    StatementsController_updateRow_v1: {
         parameters: {
             query?: never;
             header?: never;
@@ -4525,7 +4530,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RowResultDto"];
+                "application/json": components["schemas"]["UpdateRowDto"];
             };
         };
         responses: {

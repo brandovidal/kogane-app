@@ -1,4 +1,5 @@
 import type { Statement, StatementRow } from "@/shared/api/types";
+import { formatCurrency } from "@/shared/lib/currency";
 
 // Estados de cuenta (P14, D95): the three tabs of a statement and the line that sums it up
 
@@ -33,4 +34,29 @@ export function uploadErrorText(code: string, reason?: string): string {
     return "No pude leer movimientos en ese PDF.";
   }
   return "No se pudo subir el estado de cuenta.";
+}
+
+export const ROW_RESULT_LABELS: Record<StatementRow["result"], string> = {
+  new: "Nuevo",
+  matched: "Ya registrado",
+  created: "Creado del estado",
+  ignored: "Ignorado",
+};
+
+// Your description when you gave one, else the text of the bank
+export const rowName = (row: Pick<StatementRow, "label" | "description">) => row.label || row.description;
+
+// What the confirmation says before saving one row: a matched one warns that it may already be registered
+export function confirmCreateText(row: StatementRow, where: string): { title: string; description: string } {
+  const what = `${rowName(row)} · ${formatCurrency(row.amount, row.currency)}`;
+  if (row.result === "matched") {
+    return {
+      title: "¿Guardarlo de todas formas?",
+      description: `${what} ya coincide con un gasto registrado (mismo monto y fecha cercana). Si es de otro mes u otra tarjeta, se crea uno nuevo en ${where} y el registrado pasa a "Solo en Kogane".`,
+    };
+  }
+  return {
+    title: "¿Guardar este gasto?",
+    description: `${what} se crea como gasto pendiente de ${where}.`,
+  };
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { countsOf, rowsOf, totalsMatch, uploadErrorText } from "@/features/statements/statement-view";
-import type { Statement } from "@/shared/api/types";
+import { confirmCreateText, countsOf, rowName, rowsOf, totalsMatch, uploadErrorText } from "@/features/statements/statement-view";
+import type { Statement, StatementRow } from "@/shared/api/types";
 
 const row = (id: string, result: string) => ({ id, result }) as Statement["rows"][number];
 const statement = {
@@ -28,5 +28,23 @@ describe("statement view (P14)", () => {
     expect(uploadErrorText("STATEMENT_PASSWORD", "incorrect")).toContain("contraseña no abrió");
     expect(uploadErrorText("STATEMENT_UNREADABLE", "card not found: choose it")).toContain("elígela");
     expect(uploadErrorText("STATEMENT_UNREADABLE", "no movements")).toContain("No pude leer");
+  });
+});
+
+describe("statement rows: your name and saving anyway", () => {
+  const row = (over: Partial<StatementRow>): StatementRow =>
+    ({ id: "r", description: "IZI*OSTEO PERU T", label: null, amount: 139.64, currency: "PEN", result: "new", ...over }) as StatementRow;
+
+  it("should show your description over the bank text, which stays", () => {
+    expect(rowName(row({}))).toBe("IZI*OSTEO PERU T");
+    expect(rowName(row({ label: "OsteoPeru" }))).toBe("OsteoPeru");
+  });
+
+  it("should warn before saving a row that already matched", () => {
+    expect(confirmCreateText(row({ result: "matched", label: "OsteoPeru" }), "Oh Pay · Setiembre 2026")).toMatchObject({
+      title: "¿Guardarlo de todas formas?",
+      description: expect.stringContaining('pasa a "Solo en Kogane"'),
+    });
+    expect(confirmCreateText(row({}), "Oh Pay · Setiembre 2026").title).toBe("¿Guardar este gasto?");
   });
 });

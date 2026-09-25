@@ -61,10 +61,11 @@ export const useCreateStatementRows = () =>
     { invalidate, success: "Gastos creados" },
   );
 
-export const useSetStatementRow = () =>
+// Ignore a row, bring it back, or give it your description (null goes back to the bank text)
+export const useUpdateStatementRow = () =>
   useApiMutation(
-    ({ id, rowId, result }: { id: string; rowId: string; result: "ignored" | "new" }) =>
-      unwrap(api.PATCH("/v1/statements/{id}/rows/{rowId}", { params: { path: { id, rowId } }, body: { result } })),
+    ({ id, rowId, ...body }: { id: string; rowId: string; result?: "ignored" | "new"; label?: string | null }) =>
+      unwrap(api.PATCH("/v1/statements/{id}/rows/{rowId}", { params: { path: { id, rowId } }, body })),
     { invalidate: [statementKeys.all] },
   );
 
