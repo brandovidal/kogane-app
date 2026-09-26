@@ -129,3 +129,45 @@ export function groupByPaymentMethod<T extends { paymentMethodId?: string | null
   }
   return [...groups.values()].sort((a, b) => b.total - a.total);
 }
+
+// Compact Cobros summaries (person × type): card purchases together, streaming/platform charges together, and other
+// personal debts together. The detail remains available inside each collapsed summary.
+const PLATFORM_CHARGE =
+  /\b(stream|streaming|plataforma|netflix|spotify|youtube|icloud|disney|hbo|max|prime video|apple tv|paramount|crunchyroll|deezer|tidal|mubi|google one|dropbox)\b/;
+
+export function groupByPersonAndType<T extends Pick<Debt, "personId" | "balance" | "description" | "notes"> & {
+  person: { name: string };
+  paymentMethodId?: string | null;
+}>(debts: T[], cardNames: Map<string, string>) {
+  const groups = new Map<
+    string,
+    { key: string; personId: string; name: string; type: string; total: number; debts: T[] }
+  >();
+  for (const debt of debts) {
+    const words = fold(`${debt.description} ${debt.notes ?? ""}`);
+    const typeKey = PLATFORM_CHARGE.test(words)
+      ? "platform"
+      : debt.paymentMethodId
+        ? `card:${debt.paymentMethodId}`
+        : "own-debt";
+    const type =
+      typeKey === "platform"
+        ? "Plataformas"
+        : typeKey === "own-debt"
+          ? "Deuda propia"
+          : cardNames.get(debt.paymentMethodId!) ?? "Tarjeta";
+    const key = `${debt.personId}:${typeKey}`;
+    const group = groups.get(key) ?? {
+      key,
+      personId: debt.personId,
+      name: debt.person.name,
+      type,
+      total: 0,
+      debts: [],
+    };
+    group.total = Math.round((group.total + debt.balance) * 100) / 100;
+    group.debts.push(debt);
+    groups.set(key, group);
+  }
+  return [...groups.values()].sort((a, b) => b.total - a.total);
+}

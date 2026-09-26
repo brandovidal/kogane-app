@@ -78,13 +78,6 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       })()
     : null;
 
-  const ofCard = expenses.filter((e) => e.paymentMethodId === card.id);
-  const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) =>
-    (b.processDate ?? "").localeCompare(a.processDate ?? ""),
-  );
-
-  const totals = totalsOf(cardExpenses);
-
   const columns: Column<CreditCardExpense>[] = [
     {
       key: "description",
@@ -208,7 +201,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         />
       ) : groupedByPerson ? (
         <div className="space-y-6">
-          {personGroups.map((group) => {
+          {personGroups?.map((group) => {
             const gTotal = group.expenses.reduce((sum, e) => sum + e.amount, 0);
             return (
               <section key={group.personId} className="space-y-3">
