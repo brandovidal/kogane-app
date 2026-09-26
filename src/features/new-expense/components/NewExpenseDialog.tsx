@@ -1,3 +1,4 @@
+import { cardHref } from "@/shared/lib/card-links";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +21,7 @@ function pageOf(fields: DraftFields, cardCode: (id: string | null | undefined) =
     case "subscription":
       return "/plataformas";
     case "credit_card":
-      return `/tarjetas/${cardCode(fields.paymentMethodId) ?? ""}`;
+      return cardHref(cardCode(fields.paymentMethodId));
     case "receivable":
       return "/cobros";
     case "payable":

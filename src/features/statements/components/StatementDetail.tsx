@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
+import { useExpenses } from "@/shared/api/hooks/expenses";
 import {
   useAssignStatementPerson,
   useAssignStatementRows,
@@ -9,7 +10,7 @@ import {
   useUpdateStatementRow,
 } from "@/shared/api/hooks/statements";
 import { PersonSelect } from "@/shared/components/CatalogSelect";
-import type { Statement, StatementRow } from "@/shared/api/types";
+import { EXPENSE_RESOURCES, type CreditCardExpense, type Statement, type StatementRow } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import {
@@ -33,6 +34,7 @@ import { confirmCreateText, countsOf, ROW_RESULT_LABELS, rowName, rowsOf, totals
 import { EditRowDialog } from "./EditRowDialog";
 import { StatementRowActions } from "./StatementRowActions";
 import { MissingExpenseActions } from "./MissingExpenseActions";
+import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 
 interface PendingCreate {
   rowIds?: string[];
@@ -193,6 +195,18 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   const [pending, setPending] = useState<PendingCreate | null>(null);
   const assignPerson = useAssignStatementPerson();
   const personName = nameById(usePeople().data);
+  const previousPeriod = statement.paymentMonth === 1
+    ? { month: 12, year: statement.paymentYear - 1 }
+    : { month: statement.paymentMonth - 1, year: statement.paymentYear };
+  const { data: currentCardExpenses = [] } = useExpenses(EXPENSE_RESOURCES.creditCard, {
+    month: statement.paymentMonth,
+    year: statement.paymentYear,
+  });
+  const { data: previousCardExpenses = [] } = useExpenses(EXPENSE_RESOURCES.creditCard, previousPeriod);
+  const [editingExpenseId, setEditingExpenseId] = useState<string>();
+  const editingExpense: CreditCardExpense | undefined = [...currentCardExpenses, ...previousCardExpenses]
+    .find((expense) => expense.id === editingExpenseId);
+  const openExpense = (expenseId: string) => setEditingExpenseId(expenseId);
   const counts = countsOf(statement);
   const newRows = rowsOf(statement, "new");
   const matchedRows = rowsOf(statement, "matched");
@@ -315,7 +329,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                           <TableCell className="text-right tabular-nums">{formatCurrency(expense.amount)}</TableCell>
                           <TableCell className="text-sm">{personName(expense.personId)}</TableCell>
                           <TableCell className="text-right">
-                            <MissingExpenseActions expenseName={expense.description} />
+                            <MissingExpenseActions expenseName={expense.description} onEdit={() => openExpense(expense.id)} />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -347,6 +361,12 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ExpenseEditDialog
+        open={!!editingExpense}
+        onOpenChange={(open) => !open && setEditingExpenseId(undefined)}
+        resource={EXPENSE_RESOURCES.creditCard}
+        expense={editingExpense}
+      />
     </Card>
   );
 }

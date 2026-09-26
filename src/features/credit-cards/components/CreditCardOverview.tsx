@@ -1,3 +1,4 @@
+import { cardHref } from "@/shared/lib/card-links";
 import { ArrowRight, Calendar, CreditCard } from "lucide-react";
 
 import { useCreditCards, useMe } from "@/shared/api/hooks/catalogs";
@@ -48,7 +49,7 @@ function CreditCardOverviewView() {
     const { paid, own } = totalsOf(ofCard);
     return {
       id: card.id,
-      href: `/tarjetas/${card.code ?? card.id}`,
+      href: cardHref(card.code ?? card.id),
       name: card.name,
       color: card.color,
       billingCloseDay: card.billingCloseDay ?? 0,

@@ -1,0 +1,44 @@
+import {
+  BarChart3,
+  CalendarDays,
+  Coffee,
+  CreditCard,
+  FileText,
+  HandCoins,
+  Inbox,
+  LayoutDashboard,
+  MessageCircle,
+  PieChart,
+  PlusCircle,
+  Receipt,
+  Repeat,
+  ScanText,
+  Settings,
+  Tags,
+  Tv,
+  Wallet,
+} from "lucide-react";
+
+import type { NavIcon } from "@/shared/constants";
+
+// The icons of the menu (D41). The menu is drawn by Astro at build time: these render to plain SVG, nothing hydrates
+export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
+  "message-circle": MessageCircle,
+  "scan-text": ScanText,
+  inbox: Inbox,
+  "layout-dashboard": LayoutDashboard,
+  "plus-circle": PlusCircle,
+  receipt: Receipt,
+  coffee: Coffee,
+  tv: Tv,
+  "credit-card": CreditCard,
+  repeat: Repeat,
+  "hand-coins": HandCoins,
+  "pie-chart": PieChart,
+  tags: Tags,
+  "bar-chart-3": BarChart3,
+  settings: Settings,
+  wallet: Wallet,
+  calendar: CalendarDays,
+  "file-text": FileText,
+};

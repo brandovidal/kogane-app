@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreditCard, Users } from "lucide-react";
+import { CreditCard, Plus, Users } from "lucide-react";
 
 import { usePaymentMethods, useSavePaymentMethod } from "@/shared/api/hooks/catalogs";
 import { Button } from "@/ui/button";
@@ -9,6 +9,7 @@ import { Switch } from "@/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 import { CardHoldersDialog } from "./CardHoldersDialog";
+import { NewCardDialog } from "./NewCardDialog";
 
 const TYPE_LABELS: Record<string, string> = {
   credit_card: "Tarjeta de crédito",
@@ -27,13 +28,17 @@ export function AccountsTable() {
     save.mutate({ id, name, type: type as never, ...body });
   const day = (value: string) => (value === "" ? null : Math.min(31, Math.max(1, Number(value))));
   const [holdersOf, setHoldersOf] = useState<{ id: string; name: string } | null>(null);
+  const [creating, setCreating] = useState(false);
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle className="flex items-center gap-2 text-base">
           <CreditCard className="h-4 w-4" /> Cuentas y tarjetas
         </CardTitle>
+        <Button size="sm" onClick={() => setCreating(true)}>
+          <Plus className="mr-1 h-4 w-4" /> Nueva tarjeta
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border">
@@ -111,6 +116,7 @@ export function AccountsTable() {
             </TableBody>
           </Table>
         </div>
+        {creating && <NewCardDialog onClose={() => setCreating(false)} />}
         {holdersOf && <CardHoldersDialog key={holdersOf.id} card={holdersOf} onClose={() => setHoldersOf(null)} />}
       </CardContent>
     </Card>

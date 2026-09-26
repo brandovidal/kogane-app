@@ -1,6 +1,6 @@
 # Despliegue y configuración de kogane-app
 
-kogane-app es un **Worker de Cloudflare** (Astro SSR con `@astrojs/cloudflare`), privado con **Cloudflare Access**. No se conecta a la base: llama a kogane-api (`/v1/*`) desde el servidor con `x-api-key`, así la clave nunca llega al navegador (D23, D53).
+kogane-app es un **Worker de Cloudflare** (Astro con `@astrojs/cloudflare`), privado con **Cloudflare Access**. Todas las páginas son **HTML estático** (`output: 'static'`, D102): cascarones con islas que piden los datos por `/api`, servidos como assets (gratis e ilimitados). Lo único que corre en el Worker es el proxy `/api/[...path]` (`prerender = false`). El detalle de una tarjeta es `/tarjetas?tarjeta=IO`; los enlaces viejos `/tarjetas/IO` ya no existen (Astro no permite redirigir una ruta dinámica a una con query). No se conecta a la base: llama a kogane-api (`/v1/*`) desde el servidor con `x-api-key`, así la clave nunca llega al navegador (D23, D53).
 
 Cada push a `main` lo despliega **Cloudflare Workers Builds**, conectado al repo de GitHub (igual que Railway con kogane-api). GitHub Actions (`.github/workflows/test.yml`) solo corre los tests en cada push y pull request.
 

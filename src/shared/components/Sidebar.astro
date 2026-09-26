@@ -1,0 +1,97 @@
+---
+// Desktop menu (D41, D102): brand, compact mode (icons only, remembered in this browser), the tree and Ctrl+K. Drawn at
+// build time; the small inline script below restores the compact mode and the open groups before the first paint
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+
+import NavMenu from "./NavMenu.astro";
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+---
+
+<aside
+  data-sidebar
+  data-compact="false"
+  class="group/sb hidden border-r border-sidebar-border bg-sidebar transition-[width] md:flex md:w-64 md:flex-col data-[compact=true]:md:w-16"
+>
+  <div class="flex h-16 items-center justify-between border-b border-sidebar-border px-4 group-data-[compact=true]/sb:justify-center group-data-[compact=true]/sb:gap-1 group-data-[compact=true]/sb:px-0">
+    <a href="/" aria-label="Kogane" title="Kogane" class="flex items-center gap-2">
+      <img src="/kogane.webp" alt="" class="h-10 w-10 shrink-0 object-contain group-data-[compact=true]/sb:h-7 group-data-[compact=true]/sb:w-7" />
+      <span class="text-lg font-bold text-sidebar-foreground group-data-[compact=true]/sb:hidden">Kogane</span>
+    </a>
+    <button
+      type="button"
+      data-sidebar-toggle
+      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md hover:bg-sidebar-accent group-data-[compact=true]/sb:h-7 group-data-[compact=true]/sb:w-7"
+      title="Compactar menú"
+      aria-label="Compactar o expandir el menú"
+    >
+      <PanelLeftClose className="h-4 w-4 group-data-[compact=true]/sb:hidden" />
+      <PanelLeftOpen className="hidden h-4 w-4 group-data-[compact=true]/sb:block" />
+    </button>
+  </div>
+  <NavMenu currentPath={currentPath} />
+  <p class="border-t border-sidebar-border px-4 py-2 text-xs text-sidebar-foreground/60 group-data-[compact=true]/sb:hidden">
+    <kbd class="rounded border px-1">Ctrl</kbd> + <kbd class="rounded border px-1">K</kbd> para buscar
+  </p>
+</aside>
+
+<script is:inline>
+  (function () {
+    var COMPACT_KEY = "kogane:sidebar-compact";
+    // v2: the menu of D80 (Registrar); an older saved state would leave it closed
+    var GROUPS_KEY = "kogane:nav-open:v2";
+    var aside = document.querySelector("[data-sidebar]");
+    if (!aside) return;
+    var groups = aside.querySelectorAll("details[data-group]");
+    var read = function (key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    };
+    var write = function (key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { /* not remembered */ }
+    };
+    // Nothing remembered yet: the groups the page opened (Registrar and the one of the page). Otherwise the remembered
+    // ones, plus the group of the current page, which always opens
+    var stored = read(GROUPS_KEY);
+    var saved = [];
+    try { saved = JSON.parse(stored || "[]") || []; } catch (e) { saved = []; }
+    var opened = [];
+    var current = [];
+    groups.forEach(function (group) {
+      if (group.open) opened.push(group.dataset.group);
+      if (group.dataset.current === "true") current.push(group.dataset.group);
+    });
+    var openGroups = stored === null
+      ? opened
+      : saved.concat(current.filter(function (label) { return saved.indexOf(label) < 0; }));
+
+    // A compact menu shows every link (icons only); leaving it brings the remembered groups back
+    var apply = function (compact) {
+      aside.dataset.compact = compact ? "true" : "false";
+      groups.forEach(function (group) { group.open = compact || openGroups.indexOf(group.dataset.group) >= 0; });
+    };
+    apply(read(COMPACT_KEY) === "1");
+
+    groups.forEach(function (group) {
+      group.addEventListener("toggle", function () {
+        if (aside.dataset.compact === "true") return;
+        var label = group.dataset.group;
+        openGroups = openGroups.filter(function (item) { return item !== label; });
+        if (group.open) openGroups.push(label);
+        write(GROUPS_KEY, JSON.stringify(openGroups));
+      });
+    });
+
+    var toggle = aside.querySelector("[data-sidebar-toggle]");
+    if (toggle) {
+      toggle.addEventListener("click", function () {
+        var compact = aside.dataset.compact !== "true";
+        write(COMPACT_KEY, compact ? "1" : "0");
+        apply(compact);
+      });
+    }
+  })();
+</script>

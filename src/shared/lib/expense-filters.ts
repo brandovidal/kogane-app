@@ -78,3 +78,14 @@ export function applyExpenseFilters<T extends FilterableExpense>(
 
 export const hasActiveFilters = (filters: ExpenseFilterValues) =>
   Object.values(filters).some((value) => value != null && value !== "");
+
+// Filters that live in the side panel (D98): everything but the search and the person, which stay on the bar
+export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = ["category", "method", "type", "status", "period", "installments", "shared"];
+
+// A page with more than 3 of those shows the search and the person on the bar, and the rest behind "Filtros (N)"
+export const usesPanel = (fields: ExpenseFilterKey[]) =>
+  fields.filter((key) => PANEL_FILTER_KEYS.includes(key)).length > 3;
+
+// How many of the filters of the panel are on (the N of the button)
+export const activePanelCount = (filters: ExpenseFilterValues, fields: ExpenseFilterKey[]) =>
+  PANEL_FILTER_KEYS.filter((key) => fields.includes(key) && filters[key] != null && filters[key] !== "").length;

@@ -54,6 +54,7 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
   const reset = () => {
     setFiles([]);
     setPassword("");
+    setCardId(null);
     setPersonId(null);
     notion.reset();
     statement.reset();

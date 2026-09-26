@@ -34,7 +34,11 @@ export function useExpenses<R extends ExpenseResource>(
 export type ExpenseInput = Record<string, unknown>;
 
 // A change in a table also moves the month summary (Inicio, Resumen)
-const invalidateFor = (resource: ExpenseResource) => [expenseKeys.resource(resource), ["summary"]];
+const invalidateFor = (resource: ExpenseResource) => [
+  expenseKeys.resource(resource),
+  ["summary"],
+  ...(resource === "credit-card-expenses" ? [["statements"] as const] : []),
+];
 
 export const useSaveExpense = (resource: ExpenseResource) =>
   useApiMutation(

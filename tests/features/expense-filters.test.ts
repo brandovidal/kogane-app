@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { applyExpenseFilters, hasActiveFilters } from "@/shared/lib/expense-filters";
+import { activePanelCount, applyExpenseFilters, hasActiveFilters, usesPanel } from "@/shared/lib/expense-filters";
 
 const records = [
   { description: "Netflix", categoryId: "fun", paymentMethodId: "io", expenseType: "essential", paymentStatus: "pending", period: "monthly", installment: null, othersShare: 32 },
@@ -41,5 +41,19 @@ describe("expense filters (D79)", () => {
     expect(hasActiveFilters({})).toBe(false);
     expect(hasActiveFilters({ q: "" })).toBe(false);
     expect(hasActiveFilters({ category: "fun" })).toBe(true);
+  });
+
+  it("should put the filters behind a panel only when a page has more than 3 of them (D98)", () => {
+    expect(usesPanel(["person", "q", "status", "period", "shared"])).toBe(false); // Plataformas
+    expect(usesPanel(["person", "q", "category", "method", "type", "shared"])).toBe(true); // Día a día
+    expect(usesPanel(["person", "q", "status", "category", "method", "type", "shared"])).toBe(true); // Costos fijos
+  });
+
+  it("should count the active filters of the panel, not the search nor the person", () => {
+    const fields = ["person", "q", "category", "method", "type", "shared"] as const;
+
+    expect(activePanelCount({ q: "uber", person: "all" }, [...fields])).toBe(0);
+    expect(activePanelCount({ category: "c1", shared: "yes", q: "uber" }, [...fields])).toBe(2);
+    expect(activePanelCount({ status: "paid" }, [...fields])).toBe(0); // not a filter of that page
   });
 });

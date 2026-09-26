@@ -1,8 +1,9 @@
 ---
 import Layout from "./Layout.astro";
-import { Sidebar } from "@/shared/components/Sidebar";
+import Sidebar from "@/shared/components/Sidebar.astro";
+import MobileNav from "@/shared/components/MobileNav.astro";
+import { CommandPalette } from "@/shared/components/CommandPalette";
 import { ThemeToggle } from "@/shared/components/ThemeToggle";
-import { MobileNav } from "@/shared/components/MobileNav";
 import { MonthNavigator } from "@/shared/components/MonthNavigator";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
 import { SalaryEditor } from "@/shared/components/SalaryEditor";
@@ -19,28 +20,29 @@ const currentPath = Astro.url.pathname;
 
 <Layout title={title}>
   <div class="flex h-screen overflow-hidden">
-    <Sidebar client:load currentPath={currentPath} />
+    <Sidebar currentPath={currentPath} />
 
     <div class="flex flex-1 flex-col overflow-hidden">
       <header class="flex h-16 items-center justify-between border-b px-4 md:px-6">
         <div class="flex items-center gap-2">
-          <MobileNav client:load currentPath={currentPath} />
+          <MobileNav currentPath={currentPath} />
           <h1 class="text-lg font-semibold">{title}</h1>
         </div>
         <div class="flex items-center gap-3">
-          <MonthNavigator client:load />
+          <MonthNavigator client:idle />
           <div class="hidden sm:block h-4 w-px bg-border" />
-          <SalaryEditor client:load />
-          <NotificationBell client:load currentPath={currentPath} />
-          <ThemeToggle client:load />
+          <SalaryEditor client:idle />
+          <NotificationBell client:idle currentPath={currentPath} />
+          <ThemeToggle client:idle />
         </div>
       </header>
 
       <main class="flex-1 overflow-y-auto p-4 md:p-6">
         <slot />
       </main>
-      <NewExpenseDialog client:load />
+      <NewExpenseDialog client:idle />
+      <CommandPalette client:idle />
     </div>
   </div>
-  <Toaster client:load />
+  <Toaster client:idle />
 </Layout>

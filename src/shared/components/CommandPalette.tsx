@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import { useCreditCards } from "@/shared/api/hooks/catalogs";
+import { withQuery } from "@/shared/api/query";
+import { cardHref } from "@/shared/lib/card-links";
 import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/ui/dialog";
 import { NAV, flattenNav, type FlatLink } from "@/shared/constants";
 import { newExpenseStore } from "@/shared/stores/new-expense.store";
 import { normalize } from "@/shared/lib/text";
-import { useCardLinks } from "./NavTree";
 
 // Ctrl+K (or ⌘K): jump to any screen or card by typing part of its name (D41)
-export function CommandPalette() {
-  const cards = useCardLinks();
+function CommandPaletteView() {
+  const cards = (useCreditCards().data ?? []).map((card) => ({ href: cardHref(card.code ?? card.id), label: card.name }));
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
@@ -77,3 +79,5 @@ export function CommandPalette() {
     </Dialog>
   );
 }
+
+export const CommandPalette = withQuery(CommandPaletteView);

@@ -18,14 +18,11 @@ interface EditRowDialogProps {
   saving?: boolean;
 }
 
-// Mounted per row (keyed by id), so the fields start with that row's values. The person of a matched or created row is
-// the one of its expense: it is changed in Tarjetas, not here (D113)
+// Mounted per row (keyed by id), so the fields start with that row's values.
 export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogProps) {
   const [value, setValue] = useState(row.label ?? "");
   const [personId, setPersonId] = useState<string | null>(row.personId);
-  const linked = row.result === "matched" || row.result === "created";
-  const save = () =>
-    onSave({ label: value.trim() || null, ...(!linked && personId !== row.personId ? { personId } : {}) });
+  const save = () => onSave({ label: value.trim() || null, ...(personId !== row.personId ? { personId } : {}) });
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -53,11 +50,9 @@ export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogPro
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Persona</label>
-            <PersonSelect value={personId} onChange={setPersonId} disabled={linked} />
+            <PersonSelect value={personId} onChange={setPersonId} />
             <p className="text-xs text-muted-foreground">
-              {linked
-                ? "Es la persona de su gasto registrado: cámbiala en Tarjetas."
-                : "Quién hizo este consumo. Al guardarlo, el gasto queda a su nombre."}
+              Al guardar, la persona se actualiza también en el gasto de Kogane si ya estaba vinculado.
             </p>
           </div>
           <div className="space-y-1 rounded-md bg-muted p-3 text-sm">

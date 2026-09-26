@@ -4,7 +4,7 @@ import { Button } from "@/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
 // ⋯ of a "Solo en Kogane" expense: it is corrected where it lives, in Tarjetas
-export function MissingExpenseActions({ expenseName }: { expenseName: string }) {
+export function MissingExpenseActions({ expenseName, onEdit }: { expenseName: string; onEdit: () => void }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -13,10 +13,8 @@ export function MissingExpenseActions({ expenseName }: { expenseName: string }) 
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem asChild>
-          <a href="/tarjetas">
-            <Pencil /> Editar en Tarjetas
-          </a>
+        <DropdownMenuItem onSelect={onEdit}>
+          <Pencil /> Editar gasto en Kogane
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

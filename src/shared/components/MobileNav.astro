@@ -1,0 +1,38 @@
+---
+// The same menu (D41) in a drawer on the phone: a native <dialog>, no JavaScript framework (D102)
+import { Menu } from "lucide-react";
+
+import NavMenu from "./NavMenu.astro";
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+---
+
+<button type="button" data-nav-open class="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent md:hidden" aria-label="Abrir el menú">
+  <Menu className="h-5 w-5" />
+</button>
+
+<dialog
+  data-nav-drawer
+  aria-label="Menú"
+  class="fixed inset-y-0 left-0 m-0 h-full max-h-none w-72 max-w-[85vw] flex-col bg-sidebar p-0 text-sidebar-foreground backdrop:bg-black/50 open:flex"
+>
+  <div class="flex h-16 items-center gap-2 border-b px-6">
+    <img src="/kogane.webp" alt="" class="h-9 w-9 shrink-0 object-contain" />
+    <span class="text-lg font-bold">Kogane</span>
+  </div>
+  <NavMenu currentPath={currentPath} />
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("[data-nav-drawer]");
+  document.querySelector("[data-nav-open]")?.addEventListener("click", () => dialog?.showModal());
+  // a tap on the dark side or on a link closes it
+  dialog?.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    if (target === dialog || target.closest("a")) dialog.close();
+  });
+</script>

@@ -16,7 +16,9 @@ const adapter = isProduction
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'server',
+  // Every page is a static shell with islands that ask for data through /api (D102); the only route that runs on the
+  // server is the /api proxy (prerender = false)
+  output: 'static',
   server: { port: 4000 },
   integrations: [react()],
   // Estados de cuenta joined Reconocimiento / Importación (D104)

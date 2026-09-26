@@ -121,5 +121,8 @@ export function flattenNav(nav: NavEntry[], cards: Card[] = []): FlatLink[] {
   return [...links, NOTIFICATIONS_LINK, { href: SETTINGS_NAV.href, label: SETTINGS_NAV.label }];
 }
 
-export const isActivePath = (href: string, currentPath: string) =>
-  href === "/" ? currentPath === "/" : currentPath === href || currentPath.startsWith(`${href}/`);
+// A static page is served with or without a trailing slash (/cobros, /cobros/): both are the same page (D102)
+export const isActivePath = (href: string, currentPath: string) => {
+  const path = currentPath.length > 1 ? currentPath.replace(/\/+$/, "") : currentPath;
+  return href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
+};
