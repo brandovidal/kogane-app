@@ -99,6 +99,13 @@ export const useAssignStatementPerson = () =>
     { invalidate: [statementKeys.all], success: "Persona asignada" },
   );
 
+export const useUpdateStatementMinimum = () =>
+  useApiMutation(
+    ({ id, ...body }: { id: string; minimumDue?: number | null; minimumAllocations?: Record<string, number> | null }) =>
+      unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body })),
+    { invalidate: [statementKeys.all, ["debts"]], success: "Pago mínimo actualizado" },
+  );
+
 export const useDeleteStatement = () =>
   useApiMutation(
     (id: string) => unwrap(api.DELETE("/v1/statements/{id}", { params: { path: { id } } })),

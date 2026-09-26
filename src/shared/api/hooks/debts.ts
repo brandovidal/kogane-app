@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { api, unwrap, type Schemas } from "../client";
 import type { paths } from "../schema";
@@ -37,6 +37,17 @@ export const useCardCheck = (query: CardCheckQuery | null) =>
     queryKey: debtKeys.cardCheck(query ?? { paymentMethodId: "", month: 0, year: 0 }),
     queryFn: () => unwrap(api.GET("/v1/debts/card-check", { params: { query: query! } })),
     enabled: !!query,
+  });
+
+export const useCardChecks = (paymentMethodIds: string[], month: number, year: number) =>
+  useQueries({
+    queries: paymentMethodIds.map((paymentMethodId) => {
+      const query = { paymentMethodId, month, year };
+      return {
+        queryKey: debtKeys.cardCheck(query),
+        queryFn: () => unwrap(api.GET("/v1/debts/card-check", { params: { query } })),
+      };
+    }),
   });
 
 const invalidate = [debtKeys.all, ["summary"]];
@@ -88,15 +99,33 @@ export const useBulkDebts = () =>
     },
   });
 
-// Excel / PDF of the debts (D39), downloaded through the /api proxy: everyone or one person, one direction and month
+export interface DebtReportFilter {
+  direction?: "owed_to_me" | "i_owe";
+  month?: number;
+  year?: number;
+  until?: boolean;
+  person?: string;
+  state?: "pending" | "partial" | "paid" | "prepaid" | "cashback" | "open" | "late" | "due" | "upcoming";
+  card?: string;
+  origin?: "shared" | "loan";
+  q?: string;
+}
+
+// Excel / PDF of the debts (D39), with the same filters selected on screen
 export function debtReportUrl(
   format: "xlsx" | "pdf",
   personId?: string,
-  filter: { direction?: "owed_to_me" | "i_owe"; month?: number; year?: number } = {},
+  filter: DebtReportFilter = {},
 ): string {
   const query = new URLSearchParams({ format, ...(personId ? { personId } : {}) });
   if (filter.direction) query.set("direction", filter.direction);
   if (filter.month) query.set("month", String(filter.month));
   if (filter.year) query.set("year", String(filter.year));
+  if (filter.until) query.set("until", "true");
+  if (filter.person) query.set("person", filter.person);
+  if (filter.state) query.set("state", filter.state);
+  if (filter.card) query.set("card", filter.card);
+  if (filter.origin) query.set("origin", filter.origin);
+  if (filter.q) query.set("q", filter.q);
   return `/api/v1/reports/debts?${query}`;
 }

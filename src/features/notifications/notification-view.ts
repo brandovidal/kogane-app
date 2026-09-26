@@ -10,6 +10,7 @@ export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   anomaly: "Cargos raros",
   recurring: "Gastos recurrentes del mes",
   statement: "Estados de cuenta conciliados",
+  collect: "Cobros del mes y atrasados",
 };
 
 export const NOTIFICATION_KINDS = Object.keys(NOTIFICATION_KIND_LABELS) as NotificationKind[];
@@ -30,6 +31,7 @@ const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {
   card_close: "/calendario",
   recurring: "/recurrentes",
   budget: "/categorias",
+  collect: "/cobros",
 };
 
 export function notificationLink(notification: Pick<AppNotification, "kind" | "refType">): string {

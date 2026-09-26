@@ -28,6 +28,8 @@ import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import { StatementMinimumCard } from "./StatementMinimumCard";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "status", "installments", "type", "shared"];
 
@@ -62,7 +64,6 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   );
 
   const totals = totalsOf(cardExpenses);
-
   const personMap = new Map(people.map((p) => [p.id, p.name]));
   const personGroups = groupedByPerson
     ? (() => {
@@ -175,6 +176,12 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         </CardContent>
       </Card>
 
+      <Tabs defaultValue="expenses" className="space-y-4">
+      <TabsList>
+        <TabsTrigger value="expenses">Gastos de la tarjeta</TabsTrigger>
+        <TabsTrigger value="minimum">Pago mínimo</TabsTrigger>
+      </TabsList>
+      <TabsContent value="expenses" className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <ExpenseFilters
           fields={FILTERS}
@@ -218,6 +225,12 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       ) : (
         <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
       )}
+      </TabsContent>
+      <TabsContent value="minimum" className="space-y-4">
+        <p className="text-sm text-muted-foreground">Detalle del estado de cuenta {card.name}.</p>
+        <StatementMinimumCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
+      </TabsContent>
+      </Tabs>
 
       <ExpenseEditDialog
         open={!!editing}

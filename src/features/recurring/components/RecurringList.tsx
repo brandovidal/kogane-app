@@ -96,6 +96,11 @@ function RecurringListView() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-3">
                   <Badge variant="outline">{TARGET_LABELS[rec.targetType]}</Badge>
+                  {rec.sharedWith && (
+                    <Badge variant="secondary" title="Cada mes crea también el cobro de su parte">
+                      Compartido · {rec.sharedWith.shares.length}
+                    </Badge>
+                  )}
                   {cat && (
                     <Badge style={{ backgroundColor: `${cat.color}20`, color: cat.color }}>
                       {cat.name}

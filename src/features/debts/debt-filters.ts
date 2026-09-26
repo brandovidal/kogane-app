@@ -4,6 +4,7 @@ import type { Debt } from "@/shared/api/types";
 export interface DebtFilterValues {
   q?: string;
   person?: string;
+  direction?: Debt["direction"];
   state?: "pending" | "partial" | "paid" | "prepaid" | "cashback" | "open" | "late" | "due" | "upcoming";
   month?: string; // 1–12 or "until" against the month of the header
   year?: string;
@@ -11,7 +12,7 @@ export interface DebtFilterValues {
   card?: string; // the card it was charged on (D114)
 }
 
-export const DEBT_FILTER_KEYS: (keyof DebtFilterValues)[] = ["q", "person", "state", "month", "year", "origin", "card"];
+export const DEBT_FILTER_KEYS: (keyof DebtFilterValues)[] = ["q", "person", "direction", "state", "month", "year", "origin", "card"];
 
 const STORED_STATES = ["pending", "partial", "paid", "prepaid", "cashback"];
 
@@ -50,7 +51,7 @@ const fold = (text: string) =>
 
 type FilterableDebt = Pick<
   Debt,
-  "description" | "personId" | "status" | "timing" | "paymentMonth" | "paymentYear" | "notes" | "balance"
+  "description" | "personId" | "direction" | "status" | "timing" | "paymentMonth" | "paymentYear" | "notes" | "balance"
 > & { person: { name: string }; paymentMethodId?: string | null };
 
 export function applyDebtFilters<T extends FilterableDebt>(
@@ -67,6 +68,7 @@ export function applyDebtFilters<T extends FilterableDebt>(
     return (
       (!q || [debt.description, debt.notes, debt.person.name].some((text) => text && fold(text).includes(q))) &&
       (!filters.person || debt.personId === filters.person) &&
+      (!filters.direction || debt.direction === filters.direction) &&
       (!state ||
         (state === "open"
           ? debt.balance > 0
@@ -101,7 +103,71 @@ export function buildCollectMessage(name: string, debts: Pick<Debt, "description
 }
 
 // Cobrar from a grouped person row: own debts stay itemized while each card/platform is summarized once.
-export function buildCollectSummaryMessage(name: string, debts: Debt[], cardNames: Map<string, string>): string {
+export function buildCollectSummaryMessage(
+  name: string,
+  debts: Debt[],
+  cardNames: Map<string, string>,
+  additionalCharges: { description: string; amount: number; periodMonth: number; periodYear: number }[] = [],
+  fullSummary?: {
+    debts: Debt[];
+    personalExpenses: { description: string; amount: number; source: string }[];
+  },
+): string {
+  if (fullSummary) {
+    type SummaryGroup = { name: string; count: number; owed: number; owe: number };
+    const summaryGroups = new Map<string, SummaryGroup>();
+    const add = (key: string, label: string, direction: "owed_to_me" | "i_owe", amount: number) => {
+      const group = summaryGroups.get(key) ?? { name: label, count: 0, owed: 0, owe: 0 };
+      group.count += 1;
+      if (direction === "owed_to_me") group.owed += amount;
+      else group.owe += amount;
+      summaryGroups.set(key, group);
+    };
+    for (const debt of fullSummary.debts) {
+      const words = fold(`${debt.description} ${debt.notes ?? ""}`);
+      const cardName = debt.paymentMethodId ? cardNames.get(debt.paymentMethodId) : undefined;
+      const isPlatform = PLATFORM_CHARGE.test(words);
+      const isIo = /\bisil\b/.test(words);
+      const isLoan = /pr[eé]stamo/.test(words);
+      const label = cardName
+        ? /cmr|falabella/i.test(cardName) ? "CMR (Falabella)" : cardName
+        : isIo ? "IO"
+          : isPlatform ? "Plataformas · Stream"
+            : isLoan ? "Préstamo" : debt.description.trim();
+      const canGroup = Boolean(cardName) || isIo || isPlatform || isLoan;
+      add(canGroup ? label : `${label}:${debt.id}`, label, debt.direction, debt.balance);
+    }
+    for (const charge of additionalCharges) {
+      const label = "CMR (Falabella)";
+      add(label, label, "owed_to_me", charge.amount);
+    }
+    for (const expense of fullSummary.personalExpenses) {
+      add(expense.source, expense.source, "i_owe", expense.amount);
+    }
+    const groups = [...summaryGroups.values()];
+    const totalOwed = groups.reduce((sum, group) => sum + group.owed, 0);
+    const totalOwe = groups.reduce((sum, group) => sum + group.owe, 0);
+    const net = totalOwed - totalOwe;
+    const recordCount = fullSummary.debts.length + additionalCharges.length + fullSummary.personalExpenses.length;
+    const amount = (value: number) => soles(Math.abs(Math.round(value * 100) / 100));
+    return [
+      `*${name} · resumen de saldos*`,
+      `Me debe ${amount(totalOwed)} · Le debo ${amount(totalOwe)}`,
+      `*Neto ${net < 0 ? "−" : ""}${amount(net)} ${net > 0 ? "por cobrar" : net < 0 ? "por pagar" : "saldado"}*`,
+      "",
+      ...groups.map((group) => {
+        const count = `${group.count} ${group.count === 1 ? "registro" : "registros"}`;
+        const amounts = [
+          group.owed > 0 ? `+ ${amount(group.owed)}` : "",
+          group.owe > 0 ? `− ${amount(group.owe)}` : "",
+        ].filter(Boolean).join(" · ");
+        return `*${group.name}* · ${count} · ${amounts}`;
+      }),
+      "",
+      `*Total registros: ${recordCount} ${recordCount === 1 ? "registro" : "registros"} · ${net < 0 ? "−" : ""}${amount(net)}*`,
+    ].join("\n");
+  }
+
   const groups = groupByPersonAndType(debts, cardNames);
   const lines = groups.flatMap((group) => {
     if (group.type === "Deuda propia") {
@@ -118,11 +184,16 @@ export function buildCollectSummaryMessage(name: string, debts: Debt[], cardName
     return [`• ${label} · ${group.debts.length} ${countLabel}: ${soles(group.total)}`];
   });
   const total = Math.round(debts.reduce((sum, debt) => sum + debt.balance, 0) * 100) / 100;
+  const additionalTotal = Math.round(additionalCharges.reduce((sum, charge) => sum + charge.amount, 0) * 100) / 100;
+  const additionalLines = additionalCharges.map((charge) =>
+    `• CMR (Falabella) · ${charge.description}, ${MONTHS[charge.periodMonth - 1]} ${charge.periodYear}: ${charge.amount < 0 ? "−" : "+"}${soles(Math.abs(charge.amount))}`,
+  );
   return [
     `Hola ${name} 👋, te paso el resumen de lo pendiente:`,
     ...lines,
+    ...additionalLines,
     "",
-    `Total: ${soles(total)}`,
+    `Total: ${soles(total + additionalTotal)}`,
     "¡Gracias! 🙌",
   ].join("\n");
 }

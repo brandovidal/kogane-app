@@ -1160,8 +1160,20 @@ export interface components {
                 year: number;
                 /** @description The statement of that card and month, when uploaded */
                 statementId: string | null;
+                /** @description The person assigned as the statement holder */
+                statementPersonId: string | null;
                 /** @description What the bank asks to pay */
                 statementTotal: number | null;
+                /** @description End of the card billing cycle */
+                statementPeriodEnd: string | null;
+                /** @description Due date of the statement payment */
+                statementDueDate: string | null;
+                /** @description Minimum payment on the statement */
+                minimumDue: number | null;
+                /** @description Saved proposed minimum payment contribution per person */
+                minimumAllocations: {
+                    [key: string]: number;
+                } | null;
                 /** @description Card expenses registered for that month */
                 koganeTotal: number;
                 /** @description statementTotal − koganeTotal: interest, fees or charges not registered */
@@ -1176,6 +1188,34 @@ export interface components {
                     owed: number;
                     paid: number;
                     balance: number;
+                }[];
+                /** Confirmed payments posted during the statement month across all CMR debts */
+                periodPayments: {
+                    personId: string;
+                    name: string;
+                    amount: number;
+                }[];
+                expensesByPerson: {
+                    personId: string;
+                    name: string;
+                    amount: number;
+                    expenses: {
+                        id: string;
+                        description: string;
+                        amount: number;
+                    }[];
+                }[];
+                statementRows: {
+                    id: string;
+                    date: string | null;
+                    description: string;
+                    label: string | null;
+                    amount: number;
+                    installment: string | null;
+                    result: "matched" | "new" | "created" | "ignored";
+                    personId: string | null;
+                    expenseId: string | null;
+                    debtId: string | null;
                 }[];
                 /** @description Statement lines of that month or the next that read like interest or fees */
                 possibleInterest: {
@@ -1557,7 +1597,7 @@ export interface components {
                 items: {
                     id: string;
                     /** @enum {string} */
-                    kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement";
+                    kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
                     title: string;
                     body: string;
                     amount: number | null;
@@ -1585,7 +1625,7 @@ export interface components {
             data: {
                 id: string;
                 /** @enum {string} */
-                kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement";
+                kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
                 title: string;
                 body: string;
                 amount: number | null;
@@ -1649,7 +1689,7 @@ export interface components {
             message: string;
             data: {
                 /** @enum {string} */
-                job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup";
+                job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup" | "collect-month" | "collect-late";
                 /** @description Created in this run (existing ones are never repeated) */
                 notifications: number;
                 details?: {
@@ -1907,6 +1947,14 @@ export interface components {
                 /** @enum {string} */
                 period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
                 supplyNumber: string | null;
+                /** @description Shared with people: each month their cobro is created with the row (D73, P30) */
+                sharedWith: {
+                    shares: {
+                        personId: string;
+                        ratio?: number;
+                        amount?: number;
+                    }[];
+                } | null;
                 paymentMethodId: string | null;
                 dayOfMonth: number;
                 isActive: boolean;
@@ -2058,6 +2106,14 @@ export interface components {
                 /** @enum {string} */
                 period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
                 supplyNumber: string | null;
+                /** @description Shared with people: each month their cobro is created with the row (D73, P30) */
+                sharedWith: {
+                    shares: {
+                        personId: string;
+                        ratio?: number;
+                        amount?: number;
+                    }[];
+                } | null;
                 paymentMethodId: string | null;
                 dayOfMonth: number;
                 isActive: boolean;
@@ -2180,6 +2236,13 @@ export interface components {
             /** @enum {string} */
             period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
             supplyNumber?: string | null;
+            sharedWith?: {
+                shares: {
+                    personId: string;
+                    ratio?: number;
+                    amount?: number;
+                }[];
+            } | null;
             /** @enum {string} */
             expenseType?: "essential" | "guilty_pleasure";
             categoryId?: string | null;
@@ -2302,6 +2365,13 @@ export interface components {
             /** @enum {string} */
             period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
             supplyNumber?: string | null;
+            sharedWith?: {
+                shares: {
+                    personId: string;
+                    ratio?: number;
+                    amount?: number;
+                }[];
+            } | null;
             /** @enum {string} */
             expenseType?: "essential" | "guilty_pleasure";
             categoryId?: string | null;
@@ -3139,7 +3209,11 @@ export interface components {
             }[];
         };
         UpdateStatementDto: {
-            personId: string;
+            personId?: string;
+            minimumDue?: number | null;
+            minimumAllocations?: {
+                [key: string]: number;
+            } | null;
         };
         AssignRowsDto: {
             rowIds: string[];
@@ -3793,6 +3867,12 @@ export interface operations {
                 direction?: "owed_to_me" | "i_owe";
                 month?: number;
                 year?: number;
+                until?: string;
+                person?: string;
+                state?: ("pending" | "partial" | "prepaid" | "paid" | "cashback") | ("upcoming" | "due" | "late") | "open";
+                card?: string;
+                origin?: "shared" | "loan";
+                q?: string;
             };
             header?: never;
             path?: never;
@@ -3815,7 +3895,7 @@ export interface operations {
     NotificationsController_history_v1: {
         parameters: {
             query?: {
-                kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement";
+                kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
                 unread?: "true" | "false";
                 limit?: number;
                 offset?: number;
@@ -3984,7 +4064,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup";
+                job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup" | "collect-month" | "collect-late";
             };
             cookie?: never;
         };

@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { ShareEditor } from "@/features/drafts/components/ShareEditor";
+import type { DraftFields } from "@/shared/api/hooks/drafts";
 import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -73,14 +75,23 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
     RecurringValues
   >({ resolver: zodResolver(recurringFormSchema), defaultValues: emptyForm });
   const targetType = watch("targetType");
+  // Shared with people (Netflix a medias): each month the row keeps their part and they get their cobro (P30)
+  const [sharedWith, setSharedWith] = useState<DraftFields["sharedWith"]>(null);
 
   useEffect(() => {
-    if (open) reset(emptyForm);
+    if (open) {
+      reset(emptyForm);
+      setSharedWith(null);
+    }
   }, [open, reset]);
 
   const onSubmit = handleSubmit(({ kind, period, supplyNumber, ...rest }) => {
     const subscription = rest.targetType === "subscription";
-    const body = subscription ? { ...rest, kind, period, supplyNumber: supplyNumber || null } : rest;
+    const shares = sharedWith?.shares.filter((share) => share.personId) ?? [];
+    const body = {
+      ...(subscription ? { ...rest, kind, period, supplyNumber: supplyNumber || null } : rest),
+      sharedWith: shares.length ? { shares } : null,
+    };
     saveRecurring.mutate({ body }, { onSuccess: () => onOpenChange(false) });
   });
 
@@ -184,6 +195,8 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
             {errors.paymentMethodId && <p className="text-xs text-destructive">{errors.paymentMethodId.message}</p>}
           </div>
         </div>
+
+        <ShareEditor value={sharedWith} total={watch("amount")} currency={watch("currency")} onChange={setSharedWith} />
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
