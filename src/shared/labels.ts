@@ -67,7 +67,6 @@ export const SUBSCRIPTION_KIND_LABELS: Record<string, string> = {
   annual: "Anual",
   other: "Otro",
 };
-export const RECURRING_KINDS = ["service", "annual", "other"] as const;
 
 export const RECURRING_TARGET_LABELS: Record<string, string> = {
   fixed_cost: "Costo fijo",
@@ -75,15 +74,6 @@ export const RECURRING_TARGET_LABELS: Record<string, string> = {
   credit_card: "Tarjeta",
 };
 export const RECURRING_TARGETS = Object.keys(RECURRING_TARGET_LABELS);
-
-export const PAYMENT_METHOD_TYPE_LABELS: Record<string, string> = {
-  credit_card: "Tarjeta de crédito",
-  debit_card: "Tarjeta de débito",
-  wallet: "Billetera (Yape, Plin)",
-  cash: "Efectivo",
-  bank_transfer: "Transferencia",
-};
-export const PAYMENT_METHOD_TYPES = Object.keys(PAYMENT_METHOD_TYPE_LABELS);
 
 export const DESTINATION_LABELS: Record<string, string> = {
   daily: "Día a día",

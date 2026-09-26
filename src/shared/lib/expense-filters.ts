@@ -17,18 +17,6 @@ export type ExpenseFilterKey = keyof ExpenseFilterValues;
 
 export const PERSON_ALL = "all";
 
-export const EXPENSE_FILTER_KEYS: ExpenseFilterKey[] = [
-  "person",
-  "q",
-  "category",
-  "method",
-  "type",
-  "status",
-  "period",
-  "installments",
-  "shared",
-];
-
 export interface FilterableExpense {
   description: string;
   personId?: string | null;

@@ -37,9 +37,6 @@ export function eventLabel(event: CalendarEvent): string {
   return `${event.name}${installment}${person}`;
 }
 
-const pad = (value: number) => String(value).padStart(2, "0");
-export const isoDay = (year: number, month: number, day: number) => `${year}-${pad(month)}-${pad(day)}`;
-
 export interface GridDay {
   date: string; // YYYY-MM-DD
   day: number;

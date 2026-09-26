@@ -4,7 +4,6 @@ import type { operations } from "./schema";
 // Entities of kogane-api as the web uses them (D62): taken from the generated schema, never written by hand
 type DataOf<K extends keyof Schemas> = Schemas[K] extends { data: infer D } ? D : never;
 
-export type Person = DataOf<"PersonResponseDto">;
 export type PaymentMethod = DataOf<"PaymentMethodResponseDto">;
 export type Category = DataOf<"CategoryResponseDto">;
 export type BudgetGroup = DataOf<"BudgetGroupResponseDto">;
@@ -15,14 +14,9 @@ export type FixedCost = Extract<ExpenseRecord, { attentionDate: string | null }>
 export type Subscription = Extract<ExpenseRecord, { period: string; paymentMonth: number }>;
 export type CreditCardExpense = Extract<ExpenseRecord, { processDate: string | null }>;
 export type RecurringExpense = Extract<ExpenseRecord, { dayOfMonth: number }>;
-export type MoveSeriesResult = DataOf<"MoveSeriesResponseDto">;
-export type BudgetSettings = DataOf<"BudgetSettingsResponseDto">;
-export type ExpenseBody = Schemas["ExpenseBodyDto"];
 
 export type Summary = DataOf<"SummaryResponseDto">;
 export type Debt = DataOf<"DebtListResponseDto">[number];
-export type DebtSummary = DataOf<"DebtSummaryResponseDto">[number];
-export type CreateDebt = Schemas["CreateDebtDto"];
 
 // The path of each table in /v1/expenses/{resource}
 export const EXPENSE_RESOURCES = {
@@ -44,10 +38,8 @@ export interface ExpenseByResource {
 
 // Reminders and notifications (P20)
 export type AppNotification = DataOf<"RecentNotificationsResponseDto">[number];
-export type NotificationSettings = DataOf<"NotificationSettingsResponseDto">;
 export type NotificationKind = AppNotification["kind"];
 export type CalendarEvent = DataOf<"CalendarEventsResponseDto">[number];
-export type CommittedInstallments = DataOf<"CommittedInstallmentsResponseDto">;
 
 // Bank statements (P14, D95)
 export type Statement = DataOf<"StatementResponseDto">;

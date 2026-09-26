@@ -35,6 +35,7 @@ All commands are run from the root of the project, from a terminal:
 | `pnpm dev`             | Local dev server at `localhost:4321` (`.env.dev`) |
 | `pnpm build`           | Build your production site to `./dist/`          |
 | `pnpm preview`         | Build preview at `localhost:3000` (`.env`)       |
+| `pnpm knip`            | Unused files, exports and dependencies (justified in `knip.jsonc`) |
 | `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `pnpm astro -- --help` | Get help using the Astro CLI                     |
 

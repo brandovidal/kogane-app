@@ -14,6 +14,7 @@
     "generate-types": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
+    "knip": "knip --no-progress",
     "api:types": "openapi-typescript ${API_DOCS_URL:-http://localhost:5560/docs-json} -o src/shared/api/schema.d.ts"
   },
   "dependencies": {
@@ -23,12 +24,10 @@
     "@hookform/resolvers": "5.2.2",
     "@tailwindcss/vite": "4.2.1",
     "@tanstack/react-query": "^5.103.2",
-    "@tanstack/react-table": "8.21.3",
     "astro": "6.0.3",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "0.577.0",
-    "next-themes": "^0.4.6",
     "openapi-fetch": "^0.17.0",
     "radix-ui": "1.4.3",
     "react": "19.2.4",
@@ -47,8 +46,8 @@
     "@types/node": "^22.20.4",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "knip": "6.35.1",
     "openapi-typescript": "^7.13.0",
-    "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vitest": "4.0.18"
   }

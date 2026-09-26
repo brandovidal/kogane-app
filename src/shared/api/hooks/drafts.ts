@@ -9,7 +9,6 @@ export type DraftFields = Schemas["DraftFieldsDto"];
 export const draftKeys = {
   all: ["drafts"] as const,
   list: (tab: DraftTab) => ["drafts", "list", tab] as const,
-  detail: (id: string) => ["drafts", "detail", id] as const,
 };
 
 // Borrador (D50): everything pending review, from the bot, the web chat or the form
@@ -25,14 +24,6 @@ export const useDraftCount = () =>
     queryKey: [...draftKeys.list("review"), "count"],
     queryFn: async () => (await unwrap(api.GET("/v1/drafts", { params: { query: { tab: "review", limit: 1, offset: 0 } } }))).total,
     refetchInterval: 60_000,
-  });
-
-// With a signed link of 10 minutes to its screenshot or voice note (D58)
-export const useDraft = (id: string | undefined) =>
-  useQuery({
-    queryKey: draftKeys.detail(id ?? ""),
-    queryFn: () => unwrap(api.GET("/v1/drafts/{id}", { params: { path: { id: id! } } })),
-    enabled: !!id,
   });
 
 // A saved draft is a new record: every table and the summary may change

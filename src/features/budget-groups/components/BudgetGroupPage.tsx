@@ -56,7 +56,6 @@ function BudgetGroupPageView() {
       {view === "table" ? (
         <BudgetGroupTable
           groups={summaries}
-          salary={salary}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />

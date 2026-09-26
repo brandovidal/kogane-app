@@ -29,11 +29,3 @@ export function formatDate(date: Date | string): string {
 // YYYY-MM-DD for <input type="date"> and the API
 export const toIsoDate = (date: Date | string | null | undefined): string =>
   date ? (typeof date === "string" ? date : date.toISOString()).slice(0, 10) : "";
-
-export function getDaysUntil(date: Date | string): number {
-  const target = typeof date === "string" ? new Date(date) : date;
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  target.setHours(0, 0, 0, 0);
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-}

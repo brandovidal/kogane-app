@@ -7,11 +7,9 @@ import { useApiMutation } from "./use-api-mutation";
 export const debtKeys = {
   all: ["debts"] as const,
   list: (filter: DebtFilter) => ["debts", "list", filter] as const,
-  summary: (filter: SummaryFilter = {}) => ["debts", "summary", filter] as const,
   cardCheck: (query: CardCheckQuery) => ["debts", "card-check", query] as const,
 };
 
-type SummaryFilter = NonNullable<paths["/v1/debts/summary"]["get"]["parameters"]["query"]>;
 type CardCheckQuery = paths["/v1/debts/card-check"]["get"]["parameters"]["query"];
 export type DebtBulk = Schemas["DebtBulkDto"];
 
@@ -22,13 +20,6 @@ export const useDebts = (filter: DebtFilter = {}) =>
   useQuery({
     queryKey: debtKeys.list(filter),
     queryFn: () => unwrap(api.GET("/v1/debts", { params: { query: filter } })),
-  });
-
-// Me deben · debo · neto per person; with a month, only that one (or until it)
-export const useDebtSummary = (filter: SummaryFilter = {}) =>
-  useQuery({
-    queryKey: debtKeys.summary(filter),
-    queryFn: () => unwrap(api.GET("/v1/debts/summary", { params: { query: filter } })),
   });
 
 // Contraste con la tarjeta (D114): only when a card and a month are chosen
@@ -57,13 +48,6 @@ export const useCreateDebt = () =>
     invalidate,
     success: "Deuda guardada",
   });
-
-export const useUpdateDebt = () =>
-  useApiMutation(
-    ({ id, body }: { id: string; body: Schemas["UpdateDebtDto"] }) =>
-      unwrap(api.PATCH("/v1/debts/{id}", { params: { path: { id } }, body })),
-    { invalidate, success: "Deuda guardada" },
-  );
 
 export const useDeleteDebt = () =>
   useApiMutation((id: string) => unwrap(api.DELETE("/v1/debts/{id}", { params: { path: { id } } })), {

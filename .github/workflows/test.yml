@@ -20,4 +20,6 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Unused files, exports and dependencies (P28, D121); what is kept on purpose is justified in knip.jsonc
+      - run: pnpm knip
       - run: pnpm test

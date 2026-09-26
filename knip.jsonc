@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  // An export used only inside its own file is fine
+  "ignoreExportsUsedInFile": true,
+  "ignore": [
+    "src/styles/globals.css" // imported from a <style> block of Layout.astro
+  ],
+  // shadcn/ui primitives keep every part of the component: adding one back by hand is worse than carrying it
+  "ignoreIssues": { "src/ui/**": ["exports", "types"] },
+  "ignoreDependencies": [
+    "@astrojs/check", // `astro check` loads it
+    "tailwindcss" // globals.css starts with @import "tailwindcss"
+  ]
+}

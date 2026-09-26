@@ -1,8 +1,6 @@
 import type { Commitment } from "@/shared/api/types";
 
 // What a card or the detail says about a commitment, from the API's progress (nothing is recomputed here)
-export const isLoanLike = (commitment: Pick<Commitment, "installmentCount">) => !!commitment.installmentCount;
-
 export interface CommitmentTotals {
   paid: number;
   pending: number;

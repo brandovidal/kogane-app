@@ -14,12 +14,11 @@ import type { BudgetGroupSummary } from "../budget-group.service";
 
 interface BudgetGroupTableProps {
   groups: BudgetGroupSummary[];
-  salary: number;
   onEdit: (groupId: string) => void;
   onDelete: (groupId: string) => void;
 }
 
-export function BudgetGroupTable({ groups, salary, onEdit, onDelete }: BudgetGroupTableProps) {
+export function BudgetGroupTable({ groups, onEdit, onDelete }: BudgetGroupTableProps) {
   const totalAssigned = groups.reduce((sum, g) => sum + g.assignedAmount, 0);
   const totalSpent = groups.reduce((sum, g) => sum + g.spentAmount, 0);
   const totalPercentage = groups.reduce((sum, g) => sum + g.group.percentage, 0);
