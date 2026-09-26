@@ -6,6 +6,7 @@ import {
   FileText,
   HandCoins,
   Inbox,
+  Landmark,
   LayoutDashboard,
   MessageCircle,
   PieChart,
@@ -41,4 +42,5 @@ export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string
   wallet: Wallet,
   calendar: CalendarDays,
   "file-text": FileText,
+  landmark: Landmark,
 };

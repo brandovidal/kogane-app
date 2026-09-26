@@ -27,7 +27,7 @@ Para corregir rápido, empieza el mensaje con la palabra del campo: *monto 30*, 
 | Tarjeta | Compras con tarjeta de crédito; van al mes de facturación de la tarjeta | Gastos ▸ Tarjetas |
 | Costo fijo | Alquiler, luz, agua, internet, préstamos | Gastos ▸ Costos fijos |
 | Plataforma | Netflix, Spotify, gimnasio (control; el cobro real es el de la tarjeta) | Gastos ▸ Plataformas |
-| Me deben / Le debo | Préstamos y deudas con personas, en cuotas si hace falta | Préstamos y deudas |
+| Me deben / Le debo | Préstamos y deudas con personas, en cuotas si hace falta | Cobros y deudas |
 
 ## Borrador
 
@@ -38,12 +38,21 @@ Todo lo que no se guardó: lo que mandaste a 📝 Borrador, lo que quedó abiert
 
 En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las capturas y audios se guardan 7 días mientras están en Borrador; si guardas el gasto, se conservan.
 
-## Préstamos y deudas
+## Cobros y deudas
 
 - *le presté 100 a dany* o *dany me prestó 50* registra la deuda; *iphone 1200 en 3 cuotas para dany* crea las 3 cuotas, una por mes.
 - *dany me pagó 150*, *abono 150 dany* o *le pagué 50 a dany* registra un abono: cubre primero las cuotas más antiguas y se guarda recién con **✅ Confirmar** (**✏️ Elegir cuota** para asignarlo a otra).
 - `/deudas` muestra quién te debe y a quién le debes; `/deudas dany` el detalle; `/cobrar dany` arma un mensaje para reenviarle.
-- En la web: **Préstamos y deudas** ▸ Me deben · Debo · Por persona, con el botón de abono en cada cuota.
+- En la web: **Cobros y deudas** ▸ Cobros · Deudas · Resumen, con el botón de abono en cada cuota.
+
+## Préstamos e inversiones
+
+Página **Préstamos e inversiones** (`/compromisos`): tus préstamos (BCP, Compartamos) y lo que estás pagando o invirtiendo (terreno, propiedad, carro, acciones, bitcoin).
+- **Nuevo compromiso**: nombre, tipo, entidad y, si tiene cuotas, el plan (N.º de cuotas, monto, día de vencimiento y mes de la cuota 1) más la categoría. Con «Crear las cuotas en Costos fijos» cada cuota queda como un costo fijo «17/48»: suma al mes y al presupuesto, sale en el calendario y en los avisos.
+- Cada tarjeta muestra la **cuota actual / total**, lo pagado, lo pendiente, las atrasadas, la próxima fecha y el monto de cancelación (lo editas tú, con su fecha). Se pasa a *Pagado* solo cuando todas las cuotas están pagadas.
+- Al abrirla: **Cuotas** (✓ marca una como pagada, 📎 abre sus archivos), **Aportes** (compras de una inversión sin cuotas: fecha, monto, cantidad y unidad; suman al total invertido) y **Archivos** (contrato y otros).
+- **Archivos**: en el menú ⋯ de cada gasto (Día a día, Costos fijos, Plataformas, Tarjetas) hay «Archivos» para adjuntar boleta, recibo o contrato: imágenes, PDF, Word, Excel o texto de hasta 15 MB. Se guardan en el almacenamiento (R2), no en la base, y se borran con el registro.
+- Si borras un compromiso, sus cuotas siguen en Costos fijos.
 
 ## Avisos
 
@@ -58,7 +67,7 @@ En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las captu
 
 ## La web
 
-- **Menú**: Inicio; **Registrar** (Mensajes, Reconocimiento / Importación, Borrador); Gastos; Préstamos y deudas; **Calendario**; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar). **Nuevo gasto** es el botón de cada página.
+- **Menú**: Inicio; **Registrar** (Mensajes, Reconocimiento / Importación, Borrador); Gastos; Cobros y deudas; **Préstamos e inversiones**; **Calendario**; Presupuesto (Grupos, Categorías, Ingresos) y Reportes. El número en Borrador es lo pendiente por revisar (con el grupo cerrado se ve en Registrar). **Nuevo gasto** es el botón de cada página.
 - **Filtros**: las páginas de gastos, tarjetas y deudas tienen buscador y filtros (persona —Yo por defecto—, categoría, medio de pago, estado, cuotas, compartidos…), guardados en la URL.
 - **Acciones (⋯)**: cada gasto de Día a día, Costos fijos, Plataformas y Tarjetas tiene un menú con Editar, Duplicar, Marcar como pagado, Estado, Pasar al mes siguiente y Eliminar (pide confirmación). El reparto de un gasto compartido se cambia desde el bot con /editar.
 - **Vistas**: cada lista se ve como tabla o como tarjetas (el botón junto a los filtros); la elección se recuerda por página.

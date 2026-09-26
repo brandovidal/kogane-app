@@ -95,6 +95,18 @@ export function ExpenseFilters({ fields, value, onChange, statuses, shown, total
           width={width}
         />
       )}
+      {has("currency") && (
+        <FilterSelect
+          label="Moneda"
+          value={value.currency}
+          options={[
+            { value: "PEN", label: "Soles (PEN)" },
+            { value: "USD", label: "Dólares (USD)" },
+          ]}
+          onChange={(next) => set("currency", next)}
+          width={width}
+        />
+      )}
       {has("status") && (
         <FilterSelect
           label="Estado"
@@ -111,18 +123,6 @@ export function ExpenseFilters({ fields, value, onChange, statuses, shown, total
           options={entriesOf(SUBSCRIPTION_PERIOD_LABELS)}
           onChange={(next) => set("period", next)}
           width={width}
-        />
-      )}
-      {has("installments") && (
-        <FilterSelect
-          label="Cuotas"
-          value={value.installments}
-          options={[
-            { value: "with", label: "En cuotas" },
-            { value: "without", label: "Sin cuotas" },
-          ]}
-          onChange={(next) => set("installments", next)}
-          width={width ?? "w-[130px]"}
         />
       )}
       {has("type") && (
@@ -172,6 +172,18 @@ export function ExpenseFilters({ fields, value, onChange, statuses, shown, total
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Buscar..." value={value.q ?? ""} onChange={(event) => set("q", event.target.value)} className="h-9 pl-9" />
         </div>
+      )}
+      {has("installments") && (
+        <FilterSelect
+          label="Cuota"
+          value={value.installments}
+          options={[
+            { value: "with", label: "Con cuota" },
+            { value: "without", label: "Sin cuota" },
+          ]}
+          onChange={(next) => set("installments", next)}
+          width="w-[145px]"
+        />
       )}
       {panel ? (
         <Sheet open={open} onOpenChange={setOpen}>

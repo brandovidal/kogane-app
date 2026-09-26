@@ -26,6 +26,8 @@ const MESSAGES: Record<string, string> = {
   EXPENSE_NOT_SAVEABLE: "Faltan datos para guardarlo.",
   EXPENSE_MOVE_BLOCKED: "No se puede mover todavía: revisa la categoría o termina la edición abierta en el bot.",
   PAYMENT_METHOD_INCOMPLETE: "A la tarjeta le faltan datos: una de crédito necesita código, cierre y pago; una de débito, su banco.",
+  ATTACHMENT_INVALID: "El archivo no se puede adjuntar: usa una imagen, PDF, Word, Excel o texto de hasta 15 MB.",
+  COMMITMENT_PLAN_INCOMPLETE: "Faltan datos del plan de cuotas (cantidad, monto, día, inicio o categoría).",
   API_KEY_REQUIRED: "La web no tiene la API key configurada.",
   API_KEY_INVALID: "La API key de la web no coincide con la de kogane-api.",
 };

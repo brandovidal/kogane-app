@@ -541,6 +541,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Files of one record, oldest first, each with a signed link */
+        get: operations["AttachmentsController_list_v1"];
+        put?: never;
+        /** Attach a file to a loan, an investment, an installment, a contribution or an expense */
+        post: operations["AttachmentsController_upload_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/attachments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a file; it leaves the bucket if nothing else uses it */
+        delete: operations["AttachmentsController_delete_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/people": {
         parameters: {
             query?: never;
@@ -954,6 +989,95 @@ export interface paths {
         patch: operations["StatementsController_updateRow_v1"];
         trace?: never;
     };
+    "/v1/commitments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Loans and investments with their progress (paid installments, current one, late) */
+        get: operations["CommitmentsController_list_v1"];
+        put?: never;
+        /** Create it; with a complete plan and a category every installment is created as a fixed cost */
+        post: operations["CommitmentsController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/commitments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One loan or investment with its installments and contributions */
+        get: operations["CommitmentsController_get_v1"];
+        put?: never;
+        post?: never;
+        /** Delete it and its contributions; its installments stay as fixed costs */
+        delete: operations["CommitmentsController_delete_v1"];
+        options?: never;
+        head?: never;
+        /** Edit it (cancellation amount, status…); installments that exist are not touched */
+        patch: operations["CommitmentsController_update_v1"];
+        trace?: never;
+    };
+    "/v1/commitments/{id}/installments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create the installments of the plan that do not exist yet as fixed costs */
+        post: operations["CommitmentsController_createInstallments_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/commitments/{id}/contributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register what you put into an investment (stocks, bitcoin…) */
+        post: operations["CommitmentsController_addContribution_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/commitments/{id}/contributions/{contributionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a contribution and its files */
+        delete: operations["CommitmentsController_deleteContribution_v1"];
+        options?: never;
+        head?: never;
+        /** Edit a contribution */
+        patch: operations["CommitmentsController_updateContribution_v1"];
+        trace?: never;
+    };
     "/v1/imports/notion": {
         parameters: {
             query?: never;
@@ -1164,9 +1288,15 @@ export interface components {
                 statementPersonId: string | null;
                 /** @description What the bank asks to pay */
                 statementTotal: number | null;
-                /** @description End of the card billing cycle */
+                /**
+                 * Format: date-time
+                 * @description End of the card billing cycle
+                 */
                 statementPeriodEnd: string | null;
-                /** @description Due date of the statement payment */
+                /**
+                 * Format: date-time
+                 * @description Due date of the statement payment
+                 */
                 statementDueDate: string | null;
                 /** @description Minimum payment on the statement */
                 minimumDue: number | null;
@@ -1189,7 +1319,6 @@ export interface components {
                     paid: number;
                     balance: number;
                 }[];
-                /** Confirmed payments posted during the statement month across all CMR debts */
                 periodPayments: {
                     personId: string;
                     name: string;
@@ -1207,11 +1336,13 @@ export interface components {
                 }[];
                 statementRows: {
                     id: string;
+                    /** Format: date-time */
                     date: string | null;
                     description: string;
                     label: string | null;
                     amount: number;
                     installment: string | null;
+                    /** @enum {string} */
                     result: "matched" | "new" | "created" | "ignored";
                     personId: string | null;
                     expenseId: string | null;
@@ -2468,6 +2599,50 @@ export interface components {
                 }[];
             };
         };
+        AttachmentListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** @enum {string} */
+                refType: "commitment" | "fixed_cost" | "contribution" | "expense";
+                refId: string;
+                /** @enum {string} */
+                kind: "boleta" | "recibo" | "contrato" | "otro";
+                name: string;
+                contentType: string;
+                sizeBytes: number | null;
+                /** @description Signed link, valid for a few minutes */
+                url: string | null;
+                /** Format: date-time */
+                createdAt: string;
+            }[];
+        };
+        AttachmentResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                /** @enum {string} */
+                refType: "commitment" | "fixed_cost" | "contribution" | "expense";
+                refId: string;
+                /** @enum {string} */
+                kind: "boleta" | "recibo" | "contrato" | "otro";
+                name: string;
+                contentType: string;
+                sizeBytes: number | null;
+                /** @description Signed link, valid for a few minutes */
+                url: string | null;
+                /** Format: date-time */
+                createdAt: string;
+            };
+        };
         PersonListResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -3237,6 +3412,260 @@ export interface components {
             label?: string | null;
             /** @description Who made it; null goes back to the statement's person */
             personId?: string | null;
+        };
+        CommitmentListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                name: string;
+                /** @enum {string} */
+                kind: "loan" | "investment";
+                /** @enum {string} */
+                subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
+                entity: string | null;
+                currency: string;
+                totalAmount: number | null;
+                installmentCount: number | null;
+                installmentAmount: number | null;
+                dueDay: number | null;
+                startMonth: number | null;
+                startYear: number | null;
+                cancellationAmount: number | null;
+                /** Format: date-time */
+                cancellationDate: string | null;
+                /**
+                 * @description active turns paid on its own when every installment is paid
+                 * @enum {string}
+                 */
+                status: "active" | "paid" | "cancelled";
+                personId: string;
+                categoryId: string | null;
+                notes: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                /** @description Null without an installments plan */
+                progress: {
+                    installmentCount: number;
+                    /** @description Installments that exist as fixed costs */
+                    createdCount: number;
+                    paidCount: number;
+                    remainingCount: number;
+                    /** @description The one of this month; 0 before the first */
+                    currentInstallment: number;
+                    paidAmount: number;
+                    pendingAmount: number;
+                    lateCount: number;
+                    nextDueDate: string | null;
+                } | null;
+                contributionCount: number;
+                /** @description What was put in, from its contributions */
+                contributedAmount: number;
+                attachmentCount: number;
+            }[];
+        };
+        CommitmentDetailResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                name: string;
+                /** @enum {string} */
+                kind: "loan" | "investment";
+                /** @enum {string} */
+                subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
+                entity: string | null;
+                currency: string;
+                totalAmount: number | null;
+                installmentCount: number | null;
+                installmentAmount: number | null;
+                dueDay: number | null;
+                startMonth: number | null;
+                startYear: number | null;
+                cancellationAmount: number | null;
+                /** Format: date-time */
+                cancellationDate: string | null;
+                /**
+                 * @description active turns paid on its own when every installment is paid
+                 * @enum {string}
+                 */
+                status: "active" | "paid" | "cancelled";
+                personId: string;
+                categoryId: string | null;
+                notes: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                /** @description Null without an installments plan */
+                progress: {
+                    installmentCount: number;
+                    /** @description Installments that exist as fixed costs */
+                    createdCount: number;
+                    paidCount: number;
+                    remainingCount: number;
+                    /** @description The one of this month; 0 before the first */
+                    currentInstallment: number;
+                    paidAmount: number;
+                    pendingAmount: number;
+                    lateCount: number;
+                    nextDueDate: string | null;
+                } | null;
+                contributionCount: number;
+                /** @description What was put in, from its contributions */
+                contributedAmount: number;
+                attachmentCount: number;
+                installments: {
+                    id: string;
+                    installment: string | null;
+                    paymentMonth: number;
+                    paymentYear: number;
+                    /** Format: date-time */
+                    dueDate: string | null;
+                    /** Format: date-time */
+                    paymentDate: string | null;
+                    amount: number;
+                    /** @enum {string} */
+                    paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+                    attachmentCount: number;
+                }[];
+                contributions: {
+                    id: string;
+                    commitmentId: string;
+                    /** Format: date-time */
+                    date: string;
+                    amount: number;
+                    currency: string;
+                    quantity: number | null;
+                    unit: string | null;
+                    notes: string | null;
+                    attachmentCount: number;
+                }[];
+            };
+        };
+        CreateCommitmentDto: {
+            name: string;
+            /** @enum {string} */
+            subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
+            entity?: string | null;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
+            /** @description What the asset costs; installmentCount × amount by default */
+            totalAmount?: number | null;
+            installmentCount?: number | null;
+            installmentAmount?: number | null;
+            dueDay?: number | null;
+            /** @description Month of installment 1 */
+            startMonth?: number | null;
+            startYear?: number | null;
+            /** @description What cancelling it costs today */
+            cancellationAmount?: number | null;
+            /**
+             * Format: date
+             * @description The day that amount was quoted
+             */
+            cancellationDate?: string | null;
+            /** @description The owner; you by default */
+            personId?: string;
+            /** @description Category of its installments (required to create them) */
+            categoryId?: string | null;
+            notes?: string | null;
+            /** @enum {string} */
+            kind: "loan" | "investment";
+            /** @description Create every installment as a fixed cost (true by default when the plan is complete) */
+            createInstallments?: boolean;
+        };
+        UpdateCommitmentDto: {
+            name?: string;
+            /** @enum {string} */
+            subtype?: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
+            entity?: string | null;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
+            /** @description What the asset costs; installmentCount × amount by default */
+            totalAmount?: number | null;
+            installmentCount?: number | null;
+            installmentAmount?: number | null;
+            dueDay?: number | null;
+            /** @description Month of installment 1 */
+            startMonth?: number | null;
+            startYear?: number | null;
+            /** @description What cancelling it costs today */
+            cancellationAmount?: number | null;
+            /**
+             * Format: date
+             * @description The day that amount was quoted
+             */
+            cancellationDate?: string | null;
+            /** @description The owner; you by default */
+            personId?: string;
+            /** @description Category of its installments (required to create them) */
+            categoryId?: string | null;
+            notes?: string | null;
+            /** @enum {string} */
+            status?: "active" | "paid" | "cancelled";
+        };
+        GeneratedInstallmentsResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @description Installments that were missing */
+                created: number;
+            };
+        };
+        ContributionDto: {
+            /** Format: date */
+            date: string;
+            amount: number;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
+            /** @description 0.0042 */
+            quantity?: number | null;
+            /** @description BTC · acciones */
+            unit?: string | null;
+            notes?: string | null;
+        };
+        ContributionResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                commitmentId: string;
+                /** Format: date-time */
+                date: string;
+                amount: number;
+                currency: string;
+                quantity: number | null;
+                unit: string | null;
+                notes: string | null;
+                attachmentCount: number;
+            };
+        };
+        UpdateContributionDto: {
+            /** Format: date */
+            date?: string;
+            amount?: number;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
+            /** @description 0.0042 */
+            quantity?: number | null;
+            /** @description BTC · acciones */
+            unit?: string | null;
+            notes?: string | null;
         };
         ImportDetailResponseDto: {
             /** @enum {boolean} */
@@ -4343,6 +4772,84 @@ export interface operations {
             };
         };
     };
+    AttachmentsController_list_v1: {
+        parameters: {
+            query: {
+                refType: "commitment" | "fixed_cost" | "contribution" | "expense";
+                refId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentListResponseDto"];
+                };
+            };
+        };
+    };
+    AttachmentsController_upload_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description Image, PDF, Word, Excel or text (≤ 15 MB)
+                     */
+                    file: string;
+                    /** @enum {string} */
+                    refType: "commitment" | "fixed_cost" | "contribution" | "expense";
+                    refId: string;
+                    /** @enum {string} */
+                    kind?: "boleta" | "recibo" | "contrato" | "otro";
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentResponseDto"];
+                };
+            };
+        };
+    };
+    AttachmentsController_delete_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
     PeopleController_findAll_v1: {
         parameters: {
             query?: never;
@@ -5213,6 +5720,212 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatementResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_list_v1: {
+        parameters: {
+            query?: {
+                kind?: "loan" | "investment";
+                status?: "active" | "paid" | "cancelled";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentListResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommitmentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentDetailResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentDetailResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_delete_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCommitmentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentDetailResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_createInstallments_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GeneratedInstallmentsResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_addContribution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContributionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_deleteContribution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                contributionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    CommitmentsController_updateContribution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                contributionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateContributionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionResponseDto"];
                 };
             };
         };

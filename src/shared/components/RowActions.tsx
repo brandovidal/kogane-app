@@ -1,4 +1,8 @@
-import { ArrowRightLeft, CalendarArrowUp, Check, Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowRightLeft, CalendarArrowUp, Check, Copy, MoreHorizontal, Paperclip, Pencil, Trash2 } from "lucide-react";
+
+import type { AttachmentRefType } from "@/shared/api/types";
+import { AttachmentsDialog } from "@/shared/components/AttachmentsPanel";
 
 import { PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { Button } from "@/ui/button";
@@ -24,16 +28,19 @@ interface RowActionsProps {
   onNextMonth?: () => void;
   onMove?: () => void; // "Pasar a…" (D106): Costos fijos ↔ Recurrentes ↔ Plataformas
   onDelete?: () => void;
+  files?: { refType: AttachmentRefType; refId: string }; // boleta, recibo, contrato (P27, D100)
   status?: { value: string; options: readonly string[]; onChange: (status: string) => void };
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
-export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, onDelete, status }: RowActionsProps) {
+export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, onDelete, files, status }: RowActionsProps) {
+  const [filesOpen, setFilesOpen] = useState(false);
   const confirmDelete = () => {
     if (window.confirm(`¿Eliminar «${label}»? No se puede deshacer.`)) onDelete?.();
   };
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Acciones de ${label}`}>
@@ -80,6 +87,11 @@ export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, on
             <ArrowRightLeft /> Pasar a…
           </DropdownMenuItem>
         )}
+        {files && (
+          <DropdownMenuItem onSelect={() => setFilesOpen(true)}>
+            <Paperclip /> Archivos
+          </DropdownMenuItem>
+        )}
         {onDelete && (
           <>
             <DropdownMenuSeparator />
@@ -90,5 +102,7 @@ export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, on
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+    {files && filesOpen && <AttachmentsDialog title={label} {...files} onClose={() => setFilesOpen(false)} />}
+    </>
   );
 }

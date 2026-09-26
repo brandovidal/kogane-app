@@ -59,3 +59,11 @@ export type ImportRows = DataOf<"ImportRowsResponseDto">;
 export type ImportRow = ImportRows["items"][number];
 export type ImportTab = NonNullable<NonNullable<operations["ImportsController_rows_v1"]["parameters"]["query"]>["tab"]>;
 export type ImportRowStatus = ImportRow["status"];
+
+// Loans, investments and their files (P27)
+export type Commitment = DataOf<"CommitmentListResponseDto">[number];
+export type CommitmentDetail = DataOf<"CommitmentDetailResponseDto">;
+export type CommitmentInstallment = CommitmentDetail["installments"][number];
+export type Contribution = DataOf<"ContributionResponseDto">;
+export type Attachment = DataOf<"AttachmentListResponseDto">[number];
+export type AttachmentRefType = Attachment["refType"];

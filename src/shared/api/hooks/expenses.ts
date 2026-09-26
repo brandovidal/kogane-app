@@ -38,6 +38,7 @@ const invalidateFor = (resource: ExpenseResource) => [
   expenseKeys.resource(resource),
   ["summary"],
   ...(resource === "credit-card-expenses" ? [["statements"] as const] : []),
+  ...(resource === "fixed-costs" ? [["commitments"] as const] : []), // the installments of a loan are fixed costs (P27)
 ];
 
 export const useSaveExpense = (resource: ExpenseResource) =>

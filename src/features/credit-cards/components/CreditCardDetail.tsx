@@ -12,12 +12,12 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
+import { DataView, useViewMode, type Column } from "@/shared/components/DataView";
 import {
   Select, SelectContent, SelectItem, SelectTrigger,
 } from "@/ui/select";
 import { useState } from "react";
-import { Plus, ArrowLeft } from "lucide-react";
+import { Plus, ArrowLeft, CircleDollarSign, LayoutGrid, Table2 } from "lucide-react";
 import { Switch } from "@/ui/switch";
 import { RowActions } from "@/shared/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
@@ -31,7 +31,7 @@ import { useNewExpense } from "@/shared/stores/new-expense.store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { StatementMinimumCard } from "./StatementMinimumCard";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "status", "installments", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
 
 interface CreditCardDetailProps {
   cardCode: string;
@@ -51,6 +51,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
+  const [currencyView, setCurrencyView] = useState(false);
   const [editing, setEditing] = useState<CreditCardExpense | undefined>();
   const [groupedByPerson, setGroupedByPerson] = useState(false);
 
@@ -64,6 +65,19 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   );
 
   const totals = totalsOf(cardExpenses);
+  const currencyGroups = [...cardExpenses.reduce((groups, expense) => {
+    const currency = expense.currency || "PEN";
+    const group = groups.get(currency) ?? [];
+    group.push(expense);
+    groups.set(currency, group);
+    return groups;
+  }, new Map<string, CreditCardExpense[]>())]
+    .map(([currency, items]) => ({
+      currency,
+      items,
+      total: items.reduce((sum, expense) => sum + expense.amount, 0),
+    }))
+    .sort((a, b) => a.currency.localeCompare(b.currency));
   const personMap = new Map(people.map((p) => [p.id, p.name]));
   const personGroups = groupedByPerson
     ? (() => {
@@ -137,6 +151,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       cell: (exp) => (
         <RowActions
           label={exp.description}
+          files={{ refType: "expense", refId: exp.id }}
           onEdit={() => setEditing(exp)}
           onDuplicate={() => saveExpense.mutate({ body: duplicateBody(EXPENSE_RESOURCES.creditCard, exp) })}
           onNextMonth={() => saveExpense.mutate({ id: exp.id, body: nextMonthBody(exp) })}
@@ -193,9 +208,13 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         />
         <div className="flex shrink-0 items-center gap-2">
           <label className="flex items-center gap-2 text-sm">
-            <Switch checked={groupedByPerson} onCheckedChange={setGroupedByPerson} /> Agrupar por persona
+            <Switch checked={groupedByPerson} onCheckedChange={(checked) => { setGroupedByPerson(checked); if (checked) setCurrencyView(false); }} /> Agrupar por persona
           </label>
-          <ViewToggle value={view} onChange={setView} />
+          <div className="flex items-center gap-1 rounded-lg border p-1">
+            <Button variant={!currencyView && view === "table" ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Vista de tabla" aria-pressed={!currencyView && view === "table"} onClick={() => { setView("table"); setCurrencyView(false); }}><Table2 className="h-4 w-4" /></Button>
+            <Button variant={!currencyView && view === "cards" ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Vista de tarjetas" aria-pressed={!currencyView && view === "cards"} onClick={() => { setView("cards"); setCurrencyView(false); }}><LayoutGrid className="h-4 w-4" /></Button>
+            <Button variant={currencyView ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Agrupar por moneda" title="Agrupar por moneda" aria-pressed={currencyView} onClick={() => { setGroupedByPerson(false); setCurrencyView(true); }}><CircleDollarSign className="h-4 w-4" /></Button>
+          </div>
           <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
             <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
           </Button>
@@ -206,6 +225,25 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         <EmptyState
           description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
         />
+      ) : currencyView ? (
+        <div className="space-y-4">
+          {currencyGroups.map((group) => (
+            <Card key={group.currency}>
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-base">{group.currency === "PEN" ? "Soles (PEN)" : group.currency === "USD" ? "Dólares (USD)" : group.currency}</CardTitle>
+                    <p className="mt-1 text-xs text-muted-foreground">{group.items.length} {group.items.length === 1 ? "gasto" : "gastos"}</p>
+                  </div>
+                  <strong className="text-right tabular-nums">{formatCurrency(group.total, group.currency)}</strong>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <DataView items={group.items} columns={columns} rowKey={(exp) => exp.id} view="table" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       ) : groupedByPerson ? (
         <div className="space-y-6">
           {personGroups?.map((group) => {

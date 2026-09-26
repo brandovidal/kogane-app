@@ -19,7 +19,8 @@ export type NavIcon =
   | "settings"
   | "wallet"
   | "calendar"
-  | "file-text";
+  | "file-text"
+  | "landmark";
 
 export interface NavLink {
   href: string;
@@ -64,7 +65,7 @@ export const NAV: NavEntry[] = [
   },
   {
     // Cobros (me deben) · Deudas (debo) · Resumen (D114)
-    label: "Préstamos y deudas",
+    label: "Cobros y deudas",
     icon: "hand-coins",
     children: [
       { href: "/cobros", label: "Cobros", icon: "hand-coins" },
@@ -72,6 +73,7 @@ export const NAV: NavEntry[] = [
       { href: "/resumen-deudas", label: "Resumen", icon: "file-text" },
     ],
   },
+  { href: "/compromisos", label: "Préstamos e inversiones", icon: "landmark" }, // installments are fixed costs (P27)
   { href: "/calendario", label: "Calendario", icon: "calendar" },
   {
     label: "Presupuesto",

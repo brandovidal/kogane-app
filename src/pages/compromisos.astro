@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { CommitmentsPage } from "@/features/commitments/components/CommitmentsPage";
+---
+
+<DashboardLayout title="Préstamos e inversiones">
+  <CommitmentsPage client:load />
+</DashboardLayout>

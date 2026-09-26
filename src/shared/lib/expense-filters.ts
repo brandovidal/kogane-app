@@ -5,6 +5,7 @@ export interface ExpenseFilterValues {
   q?: string; // concept, merchant or note
   category?: string;
   method?: string; // payment method id
+  currency?: string;
   type?: string; // essential · guilty_pleasure
   status?: string; // payment status
   period?: string; // subscriptions
@@ -35,6 +36,7 @@ export interface FilterableExpense {
   notes?: string | null;
   categoryId?: string | null;
   paymentMethodId?: string | null;
+  currency?: string | null;
   expenseType?: string | null;
   paymentStatus?: string | null;
   period?: string | null;
@@ -68,6 +70,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
       (!q || [record.description, record.merchant, record.notes].some((text) => text && fold(text).includes(q))) &&
       (!filters.category || record.categoryId === filters.category) &&
       (!filters.method || record.paymentMethodId === filters.method) &&
+      (!filters.currency || record.currency === filters.currency) &&
       (!filters.type || record.expenseType === filters.type) &&
       (!filters.status || record.paymentStatus === filters.status) &&
       (!filters.period || record.period === filters.period) &&
@@ -80,7 +83,7 @@ export const hasActiveFilters = (filters: ExpenseFilterValues) =>
   Object.values(filters).some((value) => value != null && value !== "");
 
 // Filters that live in the side panel (D98): everything but the search and the person, which stay on the bar
-export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = ["category", "method", "type", "status", "period", "installments", "shared"];
+export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = ["category", "method", "currency", "type", "status", "period", "shared"];
 
 // A page with more than 3 of those shows the search and the person on the bar, and the rest behind "Filtros (N)"
 export const usesPanel = (fields: ExpenseFilterKey[]) =>

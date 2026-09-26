@@ -120,6 +120,7 @@ function FixedCostTableView() {
       cell: (fc) => (
         <RowActions
           label={fc.description}
+          files={{ refType: "fixed_cost", refId: fc.id }}
           onEdit={() => { setEditingItem(fc); setDialogOpen(true); }}
           onDuplicate={() => saveFixedCost.mutate({ body: duplicateBody(EXPENSE_RESOURCES.fixedCost, fc) })}
           onNextMonth={() => saveFixedCost.mutate({ id: fc.id, body: nextMonthBody(fc) })}

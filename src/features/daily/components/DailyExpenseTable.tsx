@@ -78,6 +78,7 @@ function DailyExpenseTableView() {
       cell: (e) => (
         <RowActions
           label={e.description}
+          files={{ refType: "expense", refId: e.id }}
           onEdit={() => setEditing(e)}
           onDuplicate={() => saveExpense.mutate({ body: duplicateBody(EXPENSE_RESOURCES.daily, e) })}
           onDelete={() => deleteExpense.mutate(e.id)}
