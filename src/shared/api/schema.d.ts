@@ -3122,6 +3122,9 @@ export interface components {
                 dueDate: string | null;
                 totalDue: number | null;
                 minimumDue: number | null;
+                previousBalance: number | null;
+                previousPayments: number | null;
+                monthlyPayment: number | null;
                 currency: string;
                 /** @enum {string} */
                 source: "template" | "ai";
@@ -3144,6 +3147,7 @@ export interface components {
                     amount: number;
                     currency: string;
                     installment: string | null;
+                    locked: boolean;
                     /** @enum {string} */
                     result: "matched" | "new" | "created" | "ignored";
                     expenseId: string | null;
@@ -3190,6 +3194,9 @@ export interface components {
                 dueDate: string | null;
                 totalDue: number | null;
                 minimumDue: number | null;
+                previousBalance: number | null;
+                previousPayments: number | null;
+                monthlyPayment: number | null;
                 currency: string;
                 /** @enum {string} */
                 source: "template" | "ai";

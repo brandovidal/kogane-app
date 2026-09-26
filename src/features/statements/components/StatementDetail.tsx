@@ -3,6 +3,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import { useExpenses } from "@/shared/api/hooks/expenses";
+import { useStatements } from "@/shared/api/hooks/statements";
 import {
   useAssignStatementPerson,
   useAssignStatementRows,
@@ -64,7 +65,7 @@ function RowsTable({
   const [assignTo, setAssignTo] = useState<string | null>(null);
   const personName = nameById(usePeople().data);
   // Matched and created rows follow the person of their expense: only the others can be given to someone
-  const selectable = rows.filter((row) => row.result === "new" || row.result === "ignored");
+  const selectable = rows.filter((row) => (row.result === "new" || row.result === "ignored") && !row.locked);
   const allChecked = selectable.length > 0 && selectable.every((row) => selected.has(row.id));
   const toggle = (id: string, on: boolean) => {
     const next = new Set(selected);
@@ -124,7 +125,7 @@ function RowsTable({
                 <TableCell>
                   <Checkbox
                     aria-label="Seleccionar"
-                    disabled={row.result === "matched" || row.result === "created"}
+                    disabled={row.locked || row.result === "matched" || row.result === "created"}
                     checked={selected.has(row.id)}
                     onCheckedChange={(on) => toggle(row.id, on === true)}
                   />
@@ -195,6 +196,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   const [pending, setPending] = useState<PendingCreate | null>(null);
   const assignPerson = useAssignStatementPerson();
   const personName = nameById(usePeople().data);
+  const statementHistory = useStatements().data ?? [];
   const previousPeriod = statement.paymentMonth === 1
     ? { month: 12, year: statement.paymentYear - 1 }
     : { month: statement.paymentMonth - 1, year: statement.paymentYear };
@@ -211,6 +213,11 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   const newRows = rowsOf(statement, "new");
   const matchedRows = rowsOf(statement, "matched");
   const where = `${statement.cardName} · ${getMonthName(statement.paymentMonth)} ${statement.paymentYear}`;
+  const history = statementHistory
+    .filter((item) => item.paymentMethodId === statement.paymentMethodId &&
+      (item.paymentYear < statement.paymentYear || (item.paymentYear === statement.paymentYear && item.paymentMonth < statement.paymentMonth)))
+    .sort((a, b) => b.paymentYear - a.paymentYear || b.paymentMonth - a.paymentMonth)
+    .slice(0, 4);
 
   const collectFrom = (row: StatementRow) =>
     row.personId && row.personId !== statement.personId ? personName(row.personId) : undefined;
@@ -256,7 +263,44 @@ export function StatementDetail({ statement }: { statement: Statement }) {
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue={counts.new ? "new" : "matched"}>
+        {(statement.previousBalance != null || statement.monthlyPayment != null) && (
+          <div className="mb-4 grid gap-3 lg:grid-cols-2">
+            <div className="rounded-lg border bg-muted/20 p-3">
+              <p className="text-sm font-medium">Saldo del mes anterior</p>
+              <div className="mt-2 flex flex-wrap items-baseline gap-x-2 text-sm">
+                <span>{formatCurrency(statement.previousBalance ?? 0)}</span>
+                <span className="text-muted-foreground">− pagos {formatCurrency(statement.previousPayments ?? 0)} =</span>
+                <strong className="text-primary">{formatCurrency((statement.previousBalance ?? 0) - (statement.previousPayments ?? 0))}</strong>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">La tabla incluye solo el remanente neto para agregar.</p>
+            </div>
+            <div className="rounded-lg border bg-muted/20 p-3">
+              <p className="text-sm font-medium">Pago del mes</p>
+              <p className="mt-2 text-lg font-semibold tabular-nums">{statement.monthlyPayment != null ? formatCurrency(statement.monthlyPayment) : "—"}</p>
+              <p className="text-xs text-muted-foreground">Dato informativo tomado del estado de cuenta.</p>
+            </div>
+          </div>
+        )}
+        {history.length > 0 && (
+          <div className="mb-4 rounded-lg border p-3">
+            <p className="mb-2 text-sm font-medium">Cálculo de estados anteriores</p>
+            <div className="space-y-1.5">
+              {history.map((item) => (
+                <div key={item.id} className="flex flex-wrap justify-between gap-x-4 text-xs text-muted-foreground">
+                  {item.previousBalance == null && item.monthlyPayment == null ? (
+                    <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: desglose no disponible; vuelve a cargar ese estado</span>
+                  ) : (
+                    <>
+                      <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: {formatCurrency(item.previousBalance ?? 0)} − {formatCurrency(item.previousPayments ?? 0)} = {formatCurrency((item.previousBalance ?? 0) - (item.previousPayments ?? 0))}</span>
+                      <span>Pago del mes {item.monthlyPayment != null ? formatCurrency(item.monthlyPayment) : "—"}</span>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <Tabs defaultValue={counts.new || statement.rows.some((row) => row.locked) ? "new" : "matched"}>
           <TabsList>
             <TabsTrigger value="new">Nuevos ({counts.new})</TabsTrigger>
             <TabsTrigger value="matched">Coinciden ({counts.matched})</TabsTrigger>

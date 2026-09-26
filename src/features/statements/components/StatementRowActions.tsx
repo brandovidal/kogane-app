@@ -1,6 +1,7 @@
 import { Check, MoreHorizontal, Pencil, RotateCcw, X } from "lucide-react";
 
 import type { StatementRow } from "@/shared/api/types";
+import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
@@ -18,6 +19,8 @@ interface StatementRowActionsProps {
 // ⋯ of a statement row (Nuevos and Coinciden): edit your description, save it as an expense, ignore or bring it back
 export function StatementRowActions({ row, onEdit, onSave, onIgnore, onRestore, saving }: StatementRowActionsProps) {
   const created = row.result === "created";
+
+  if (row.locked) return <Badge variant="outline">Anulado · bloqueado</Badge>;
 
   return (
     <DropdownMenu>

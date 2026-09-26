@@ -3,7 +3,7 @@ import { createStore } from "zustand/vanilla";
 
 import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 
-// The month shown in every screen (D56: zustand only for the interface; the data comes from kogane-api)
+// The month shown by the active view (D56: zustand only for the interface; the data comes from kogane-api)
 interface PeriodState {
   month: number;
   year: number;

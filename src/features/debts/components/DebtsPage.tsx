@@ -1027,7 +1027,7 @@ function PeopleSummary({
   year: number;
 }) {
   const { data: debts = [], isLoading } = useDebts();
-  const defaults: DebtFilterValues = { month: "until", year: String(year) };
+  const defaults: DebtFilterValues = { month: String(month), year: String(year) };
   const [filters, setFilters] = useUrlFilters<DebtFilterValues>(
     DEBT_FILTER_KEYS,
     defaults,
@@ -1151,8 +1151,6 @@ function PeopleSummary({
       ].filter((expense) => expense.amount > 0)
     : [];
   const personalExpenseTotal = personalExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const cmrCard = paymentMethods.find((card) => /cmr|falabella/i.test(card.name));
-  const cmrCardId = filters.card && filters.card !== cmrCard?.id ? undefined : cmrCard?.id;
   const totalToPayBase = debtsIOwe.reduce((sum, debt) => sum + debt.balance, 0);
   const totalToPay = totalToPayBase + (summaryView === "consolidated" ? personalExpenseTotal : 0);
   const netTotal = totalToCollect - totalToPay;
@@ -1260,7 +1258,7 @@ function PeopleSummary({
           Neto {formatCurrency(netTotal)}<span className="font-normal text-muted-foreground">{netTotal > 0 ? " por cobrar" : netTotal < 0 ? " por pagar" : ""}</span>
         </span>
       </div>
-      {(!groups.length && !cmrCardId) || (!showCollections && !showDebts) ? (
+      {(!groups.length && !creditCards.length) || (!showCollections && !showDebts) ? (
         <EmptyState description={!showCollections && !showDebts ? "Activa Cobros (+), Deudas (−) o ambos en los filtros." : "No hay deudas con saldo para este período"} />
       ) : (
         <Tabs value={summaryView} onValueChange={setSummaryView} className="w-full">
@@ -1276,14 +1274,14 @@ function PeopleSummary({
           <TabsContent value={summaryView} className="mt-4 space-y-3">
           {summaryView === "minimum" ? (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Detalle del estado de cuenta CMR.</p>
+              <p className="text-sm text-muted-foreground">Estados de cuenta y pagos mínimos de tus tarjetas.</p>
               {!showCollections ? (
-                <Card><CardContent className="p-4 text-sm text-muted-foreground">El filtro está mostrando solo deudas. El pago mínimo de la tarjeta corresponde a cobros del estado de cuenta; selecciona Cobros (+) para verlo.</CardContent></Card>
+                <Card><CardContent className="p-4 text-sm text-muted-foreground">El filtro está mostrando solo deudas. El pago mínimo corresponde a cobros del estado de cuenta; selecciona Cobros (+) para verlo.</CardContent></Card>
               ) : (
                 <StatementMinimumEditor
-                  totalToCollect={totalToCollect}
-                  cmrCardId={cmrCardId}
-                  cmrExcludedByFilter={Boolean(filters.card && filters.card !== cmrCard?.id)}
+                  cards={creditCards.filter((_, index) => Boolean(statementChecks[index]?.data?.statementId))}
+                  isLoading={statementChecks.some((check) => check.isLoading)}
+                  hasCreditCards={creditCards.length > 0}
                   month={selectedMonth}
                   year={selectedYear}
                 />
@@ -1556,7 +1554,7 @@ function PeopleSummary({
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                       {check.expensesByPerson.map((person) => <span key={person.personId}>{person.name} <strong className="text-foreground tabular-nums">{formatCurrency(person.amount)}</strong></span>)}
                     </div>
-                    <p className="text-xs text-muted-foreground">La suma incluye intereses y cargos CMR del estado. Se compara con el mínimo una sola vez; no se vuelve a agregar a “Lo que debo”.</p>
+                    <p className="text-xs text-muted-foreground">La suma incluye los cargos e intereses de {card.name}. Se compara con el pago mínimo una sola vez y no se agrega a «Lo que debo».</p>
                   </CardContent>
                 </Card>
               );
@@ -1572,27 +1570,40 @@ function PeopleSummary({
 }
 
 function StatementMinimumEditor({
-  totalToCollect,
-  cmrCardId,
-  cmrExcludedByFilter,
+  cards,
+  isLoading,
+  hasCreditCards,
   month,
   year,
 }: {
-  totalToCollect: number;
-  cmrCardId?: string;
-  cmrExcludedByFilter: boolean;
+  cards: { id: string; name: string }[];
+  isLoading: boolean;
+  hasCreditCards: boolean;
   month: number;
   year: number;
 }) {
   return (
-    <StatementMinimumCard
-      paymentMethodId={cmrCardId}
-      cardName="CMR"
-      excludedByFilter={cmrExcludedByFilter}
-      totalToCollect={totalToCollect}
-      month={month}
-      year={year}
-    />
+    <div className="grid items-start gap-3">
+      {cards.map((card) => (
+        <StatementMinimumCard
+          key={card.id}
+          paymentMethodId={card.id}
+          cardName={card.name}
+          month={month}
+          year={year}
+        />
+      ))}
+      {isLoading && cards.length === 0 && (
+        <Card><CardContent className="p-4 text-sm text-muted-foreground">Buscando estados de cuenta…</CardContent></Card>
+      )}
+      {!isLoading && cards.length === 0 && (
+        <Card><CardContent className="p-4 text-sm text-muted-foreground">
+          {hasCreditCards
+            ? <>No hay estados de cuenta de tarjetas para {getMonthName(month)} {year}. <a className="underline underline-offset-4" href="/reconocimiento">Cargar estado de cuenta</a></>
+            : "No hay tarjetas de crédito incluidas en los filtros actuales."}
+        </CardContent></Card>
+      )}
+    </div>
   );
 }
 
