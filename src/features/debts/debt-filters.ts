@@ -111,3 +111,21 @@ export function groupByPerson<T extends Pick<Debt, "personId" | "balance"> & { p
   }
   return [...groups.values()].sort((a, b) => b.total - a.total);
 }
+
+// Debts grouped by credit card (D114), biggest balance first
+export function groupByPaymentMethod<T extends { paymentMethodId?: string | null; balance: number }>(
+  debts: T[],
+  cardNames: Map<string, string>,
+) {
+  const groups = new Map<string, { cardId: string | null; cardName: string; total: number; debts: T[] }>();
+  for (const debt of debts) {
+    const cardId = debt.paymentMethodId ?? null;
+    const name = cardId ? cardNames.get(cardId) ?? "Sin tarjeta" : "Sin tarjeta";
+    const key = cardId ?? "__no_card__";
+    const group = groups.get(key) ?? { cardId, cardName: name, total: 0, debts: [] };
+    group.total = Math.round((group.total + debt.balance) * 100) / 100;
+    group.debts.push(debt);
+    groups.set(key, group);
+  }
+  return [...groups.values()].sort((a, b) => b.total - a.total);
+}

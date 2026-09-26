@@ -22,7 +22,7 @@ function MobileNavView({ currentPath }: MobileNavProps) {
       </SheetTrigger>
       <SheetContent side="left" className="flex w-72 flex-col bg-sidebar p-0">
         <SheetTitle className="flex h-16 items-center gap-2 border-b px-6">
-          <img src="/kogane-mascot.png" alt="" className="h-9 w-9 shrink-0 object-contain" />
+          <img src="/kogane.webp" alt="" className="h-9 w-9 shrink-0 object-contain" />
           <span className="text-lg font-bold">Kogane</span>
         </SheetTitle>
         <NavTree currentPath={currentPath} />

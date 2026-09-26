@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { AlertCircle, FileSpreadsheet, FileText, HandCoins, MessageCircle, MoreHorizontal, Plus, Search, Trash2, Wallet, X } from "lucide-react";
+import { AlertCircle, CreditCard, FileSpreadsheet, FileText, HandCoins, MessageCircle, MoreHorizontal, Plus, Search, Trash2, Wallet, X } from "lucide-react";
 
 import { debtReportUrl, useDebts, useDeleteDebt } from "@/shared/api/hooks/debts";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
@@ -41,6 +41,7 @@ import {
   DEBT_STATE_LABELS,
   debtBadgeStatus,
   groupByPerson,
+  groupByPaymentMethod,
   type DebtFilterValues,
 } from "../debt-filters";
 import { CardCheckPanel } from "./CardCheckPanel";
@@ -114,6 +115,7 @@ function DebtList({
   const defaults: DebtFilterValues = { month: String(month), year: String(year) };
   const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS, defaults);
   const [grouped, setGrouped] = useState(false);
+  const [groupByCard, setGroupByCard] = useState(false);
   const [view, setView] = useViewMode("debts", "table");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [registering, setRegistering] = useState(false);
@@ -125,6 +127,8 @@ function DebtList({
   const card = filters.card ? cards.find((item) => item.id === filters.card) : undefined;
   const panelMonth = filters.month && filters.month !== "until" ? Number(filters.month) : null;
   const texts = TEXTS[direction];
+  const cardNames = new Map(cards.map((c) => [c.id, c.name]));
+  const cardGroups = groupByCard ? groupByPaymentMethod(shown, cardNames) : null;
 
   if (isLoading) return null;
 
@@ -162,6 +166,10 @@ function DebtList({
             <Switch checked={grouped} onCheckedChange={setGrouped} /> Resumen por persona
           </label>
           <ViewToggle value={view} onChange={setView} />
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={groupByCard} onCheckedChange={setGroupByCard} />
+            <CreditCard className="h-3.5 w-3.5" /> Agrupar por tarjeta
+          </label>
         </div>
       </div>
 
@@ -175,6 +183,23 @@ function DebtList({
         <EmptyState description={texts.empty} />
       ) : !shown.length ? (
         <EmptyState description="No hay cuotas con estos filtros" />
+      ) : cardGroups ? (
+        <div className="space-y-6">
+          {cardGroups.map((group) => {
+            const openDebts = group.debts.filter((debt) => debt.balance > 0);
+            return (
+              <section key={group.cardId ?? "__no_card__"} className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+                  <h3 className="font-semibold">
+                    {group.cardName} · {formatCurrency(group.total)}
+                  </h3>
+                  {direction === "owed_to_me" && <CollectButton name={group.cardName} debts={openDebts} />}
+                </div>
+                <DebtGrid debts={group.debts} view={view} onPay={onPay} selected={selected} onSelectedChange={setSelected} />
+              </section>
+            );
+          })}
+        </div>
       ) : grouped ? (
         <div className="space-y-6">
           {groupByPerson(shown).map((group) => (

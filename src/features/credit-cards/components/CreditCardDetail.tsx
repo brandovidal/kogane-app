@@ -5,6 +5,7 @@ import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hook
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type CreditCardExpense } from "@/shared/api/types";
 import { usePeriod } from "@/shared/stores/period.store";
+import { formatCurrency } from "@/shared/lib/currency";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -17,6 +18,7 @@ import {
 } from "@/ui/select";
 import { useState } from "react";
 import { Plus, ArrowLeft } from "lucide-react";
+import { Switch } from "@/ui/switch";
 import { RowActions } from "@/shared/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
@@ -48,10 +50,33 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
   const [editing, setEditing] = useState<CreditCardExpense | undefined>();
+  const [groupedByPerson, setGroupedByPerson] = useState(false);
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
+
+  const ofCard = expenses.filter((e) => e.paymentMethodId === card.id);
+  const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) =>
+    (b.processDate ?? "").localeCompare(a.processDate ?? ""),
+  );
+
+  const totals = totalsOf(cardExpenses);
+
+  const personMap = new Map(people.map((p) => [p.id, p.name]));
+  const personGroups = groupedByPerson
+    ? (() => {
+        const groups = new Map<string, { personId: string; name: string; total: number; expenses: CreditCardExpense[] }>();
+        for (const exp of cardExpenses) {
+          const name = personMap.get(exp.personId) ?? "Sin persona";
+          const group = groups.get(exp.personId) ?? { personId: exp.personId, name, total: 0, expenses: [] };
+          group.total += exp.amount;
+          group.expenses.push(exp);
+          groups.set(exp.personId, group);
+        }
+        return [...groups.values()].sort((a, b) => b.total - a.total);
+      })()
+    : null;
 
   const ofCard = expenses.filter((e) => e.paymentMethodId === card.id);
   const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) =>
@@ -167,6 +192,9 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           total={ofCard.length}
         />
         <div className="flex shrink-0 items-center gap-2">
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={groupedByPerson} onCheckedChange={setGroupedByPerson} /> Agrupar por persona
+          </label>
           <ViewToggle value={view} onChange={setView} />
           <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
             <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
@@ -178,6 +206,22 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         <EmptyState
           description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
         />
+      ) : groupedByPerson ? (
+        <div className="space-y-6">
+          {personGroups.map((group) => {
+            const gTotal = group.expenses.reduce((sum, e) => sum + e.amount, 0);
+            return (
+              <section key={group.personId} className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+                  <h3 className="font-semibold">
+                    {group.name} · {formatCurrency(gTotal)}
+                  </h3>
+                </div>
+                <DataView items={group.expenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
+              </section>
+            );
+          })}
+        </div>
       ) : (
         <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
       )}

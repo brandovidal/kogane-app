@@ -38,7 +38,7 @@ function SidebarView({ currentPath }: SidebarProps) {
     <aside className={cn("hidden md:flex md:flex-col border-r border-sidebar-border bg-sidebar transition-[width]", compact ? "md:w-16" : "md:w-64")}>
       <div className={cn("flex h-16 items-center border-b border-sidebar-border", compact ? "justify-center gap-1" : "justify-between px-4")}>
         <a href="/" aria-label="Kogane" title="Kogane" className="flex items-center gap-2">
-          <img src="/kogane-mascot.png" alt="" className={cn("shrink-0 object-contain", compact ? "h-7 w-7" : "h-10 w-10")} />
+          <img src="/kogane.webp" alt="" className={cn("shrink-0 object-contain", compact ? "h-7 w-7" : "h-10 w-10")} />
           {!compact && <span className="text-lg font-bold text-sidebar-foreground">Kogane</span>}
         </a>
         <Button variant="ghost" size="icon" className={cn("shrink-0", compact ? "h-7 w-7" : "h-8 w-8")} onClick={toggle} title={compact ? "Expandir menú" : "Compactar menú"}>
