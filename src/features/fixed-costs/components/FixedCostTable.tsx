@@ -24,13 +24,13 @@ import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { formatDate } from "@/shared/lib/dates";
 import { FIXED_COST_STATUSES as PAYMENT_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { FixedCostDialog } from "./FixedCostDialog";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
+import { GroupedDataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "status", "category", "method", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "status", "category", "method", "currency", "type", "shared"];
 
 function FixedCostTableView() {
   const selectedMonth = usePeriod((s) => s.month);
@@ -55,6 +55,7 @@ function FixedCostTableView() {
 
   const totals = totalsOf(filtered);
   const [view, setView] = useViewMode("fixed-costs", "table");
+  const [groupBy, setGroupBy] = useState("none");
 
   const columns: Column<FixedCost>[] = [
     {
@@ -146,6 +147,9 @@ function FixedCostTableView() {
           statuses={PAYMENT_STATUSES}
           shown={filtered.length}
           total={fixedCosts.length}
+          groupBy={groupBy}
+          onGroupByChange={setGroupBy}
+          groupByOptions={[{ value: "person", label: "Por persona" }, { value: "category", label: "Por categoría" }]}
         />
         <div className="flex shrink-0 items-center gap-2">
           <ViewToggle value={view} onChange={setView} />
@@ -158,11 +162,14 @@ function FixedCostTableView() {
       {filtered.length === 0 ? (
         <EmptyState description={fixedCosts.length ? "No hay costos fijos con estos filtros" : "No hay costos fijos en este mes"} />
       ) : (
-        <DataView
+        <GroupedDataView
           items={filtered}
           columns={columns}
           rowKey={(fc) => fc.id}
           view={view}
+          groupBy={groupBy}
+          groupKey={(row, key) => key === "person" ? row.personId ?? "none" : row.categoryId ?? "none"}
+          groupLabel={(key, field) => key === "none" ? "Sin asignar" : field === "person" ? personName(key) : categories.find((category) => category.id === key)?.name ?? "Sin categoría"}
           footer={
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{filtered.length} registros</span>

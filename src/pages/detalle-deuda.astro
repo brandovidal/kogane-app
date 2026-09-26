@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { DebtDetailPage } from "@/features/debts/components/DebtDetailPage";
+---
+
+<DashboardLayout title="Detalle de deuda">
+  <DebtDetailPage client:load />
+</DashboardLayout>

@@ -17,8 +17,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger,
 } from "@/ui/select";
 import { useState } from "react";
-import { Plus, ArrowLeft, CircleDollarSign, LayoutGrid, Table2 } from "lucide-react";
-import { Switch } from "@/ui/switch";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Plus, ArrowLeft, CircleDollarSign, LayoutGrid, Table2, Users, ChevronDown, HandCoins } from "lucide-react";
 import { RowActions } from "@/shared/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
@@ -30,6 +31,12 @@ import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } 
 import { useNewExpense } from "@/shared/stores/new-expense.store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { StatementMinimumCard } from "./StatementMinimumCard";
+import { StatementTotalCard } from "./StatementTotalCard";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/ui/alert-dialog";
+import { api, unwrap } from "@/shared/api/client";
+import { expenseKeys } from "@/shared/api/hooks/expenses";
+import { isPaidStatus } from "@/shared/lib/expense-actions";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
 
@@ -47,6 +54,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const personName = nameById(people);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.creditCard);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.creditCard);
+  const queryClient = useQueryClient();
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const me = useMe();
@@ -54,6 +62,9 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [currencyView, setCurrencyView] = useState(false);
   const [editing, setEditing] = useState<CreditCardExpense | undefined>();
   const [groupedByPerson, setGroupedByPerson] = useState(false);
+  const [selectedExpenses, setSelectedExpenses] = useState<Set<string>>(() => new Set());
+  const [confirmPayment, setConfirmPayment] = useState(false);
+  const [payingSelected, setPayingSelected] = useState(false);
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   if (isLoading) return null;
@@ -63,6 +74,29 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) =>
     (b.processDate ?? "").localeCompare(a.processDate ?? ""),
   );
+  const selectedPending = cardExpenses.filter((expense) => selectedExpenses.has(expense.id) && !isPaidStatus(expense.paymentStatus));
+  const registerSelectedPayment = async () => {
+    if (!selectedPending.length) return;
+    setPayingSelected(true);
+    const results = await Promise.allSettled(selectedPending.map((expense) =>
+      unwrap(api.PATCH("/v1/expenses/{resource}/{id}", {
+        params: { path: { resource: EXPENSE_RESOURCES.creditCard, id: expense.id } },
+        body: { paymentStatus: "paid" } as never,
+      })),
+    ));
+    const completed = results.filter((result) => result.status === "fulfilled").length;
+    const failed = results.length - completed;
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: expenseKeys.resource(EXPENSE_RESOURCES.creditCard) }),
+      queryClient.invalidateQueries({ queryKey: ["summary"] }),
+      queryClient.invalidateQueries({ queryKey: ["statements"] }),
+    ]);
+    if (completed) toast.success(`${completed} ${completed === 1 ? "pago registrado" : "pagos registrados"}`);
+    if (failed) toast.error(`${failed} ${failed === 1 ? "gasto no pudo marcarse" : "gastos no pudieron marcarse"} como pagado`);
+    setSelectedExpenses(new Set());
+    setConfirmPayment(false);
+    setPayingSelected(false);
+  };
 
   const totals = totalsOf(cardExpenses);
   const currencyGroups = [...cardExpenses.reduce((groups, expense) => {
@@ -195,6 +229,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       <TabsList>
         <TabsTrigger value="expenses">Gastos de la tarjeta</TabsTrigger>
         <TabsTrigger value="minimum">Pago mínimo</TabsTrigger>
+        <TabsTrigger value="total">Pago total</TabsTrigger>
       </TabsList>
       <TabsContent value="expenses" className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -207,16 +242,33 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           total={ofCard.length}
         />
         <div className="flex shrink-0 items-center gap-2">
-          <label className="flex items-center gap-2 text-sm">
-            <Switch checked={groupedByPerson} onCheckedChange={(checked) => { setGroupedByPerson(checked); if (checked) setCurrencyView(false); }} /> Agrupar por persona
-          </label>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant={groupedByPerson || currencyView ? "secondary" : "outline"} size="sm">
+                Agrupar{groupedByPerson ? ": Persona" : currencyView ? ": Moneda" : ""}<ChevronDown className="ml-1 h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuCheckboxItem checked={!groupedByPerson && !currencyView} onCheckedChange={() => { setGroupedByPerson(false); setCurrencyView(false); }}>
+                Sin agrupar
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={groupedByPerson} onCheckedChange={(checked) => { setGroupedByPerson(checked); if (checked) setCurrencyView(false); }}>
+                <Users className="h-4 w-4" /> Por persona
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={currencyView} onCheckedChange={(checked) => { setCurrencyView(checked); if (checked) setGroupedByPerson(false); }}>
+                <CircleDollarSign className="h-4 w-4" /> Por moneda
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="flex items-center gap-1 rounded-lg border p-1">
             <Button variant={!currencyView && view === "table" ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Vista de tabla" aria-pressed={!currencyView && view === "table"} onClick={() => { setView("table"); setCurrencyView(false); }}><Table2 className="h-4 w-4" /></Button>
             <Button variant={!currencyView && view === "cards" ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Vista de tarjetas" aria-pressed={!currencyView && view === "cards"} onClick={() => { setView("cards"); setCurrencyView(false); }}><LayoutGrid className="h-4 w-4" /></Button>
-            <Button variant={currencyView ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Agrupar por moneda" title="Agrupar por moneda" aria-pressed={currencyView} onClick={() => { setGroupedByPerson(false); setCurrencyView(true); }}><CircleDollarSign className="h-4 w-4" /></Button>
           </div>
           <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
             <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
+          </Button>
+          <Button variant="outline" size="sm" disabled={selectedPending.length === 0} onClick={() => setConfirmPayment(true)}>
+            <HandCoins className="mr-1 h-4 w-4" /> Registrar pago{selectedPending.length ? ` (${selectedPending.length})` : ""}
           </Button>
         </div>
       </div>
@@ -239,7 +291,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
                 </div>
               </CardHeader>
               <CardContent>
-                <DataView items={group.items} columns={columns} rowKey={(exp) => exp.id} view="table" />
+                <DataView items={group.items} columns={columns} rowKey={(exp) => exp.id} view="table" selected={selectedExpenses} onSelectedChange={setSelectedExpenses} />
               </CardContent>
             </Card>
           ))}
@@ -255,18 +307,22 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
                     {group.name} · {formatCurrency(gTotal)}
                   </h3>
                 </div>
-                <DataView items={group.expenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
+                <DataView items={group.expenses} columns={columns} rowKey={(exp) => exp.id} view={view} selected={selectedExpenses} onSelectedChange={setSelectedExpenses} />
               </section>
             );
           })}
         </div>
       ) : (
-        <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} />
+        <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} selected={selectedExpenses} onSelectedChange={setSelectedExpenses} />
       )}
       </TabsContent>
       <TabsContent value="minimum" className="space-y-4">
         <p className="text-sm text-muted-foreground">Detalle del estado de cuenta {card.name}.</p>
         <StatementMinimumCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
+      </TabsContent>
+      <TabsContent value="total" className="space-y-4">
+        <p className="text-sm text-muted-foreground">Consulta cuánto del total del estado está cubierto por los pagos registrados.</p>
+        <StatementTotalCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
       </TabsContent>
       </Tabs>
 
@@ -276,6 +332,23 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         resource={EXPENSE_RESOURCES.creditCard}
         expense={editing}
       />
+
+      <AlertDialog open={confirmPayment} onOpenChange={setConfirmPayment}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Registrar pago</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se marcarán como pagados {selectedPending.length} {selectedPending.length === 1 ? "gasto seleccionado" : "gastos seleccionados"} de {card.name}. Puedes registrar un gasto individual desde su menú de acciones.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={payingSelected}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction disabled={payingSelected || selectedPending.length === 0} onClick={(event) => { event.preventDefault(); void registerSelectedPayment(); }}>
+              {payingSelected ? "Guardando…" : "Confirmar pago"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );

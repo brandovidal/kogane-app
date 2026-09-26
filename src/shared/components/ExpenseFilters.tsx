@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, Layers, Search, SlidersHorizontal, X } from "lucide-react";
 
 import { useCategories, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
 import { EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS, SUBSCRIPTION_PERIOD_LABELS } from "@/shared/labels";
@@ -15,9 +15,10 @@ import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
 const ALL = "__all__";
-const ME = "__me__"; // the person filter is empty: Yo
+const ME = "__me__";
 
 interface ExpenseFiltersProps {
   fields: ExpenseFilterKey[];
@@ -26,6 +27,9 @@ interface ExpenseFiltersProps {
   statuses?: string[]; // the payment statuses of that table
   shown: number;
   total: number;
+  groupBy?: string;
+  onGroupByChange?: (value: string) => void;
+  groupByOptions?: { value: string; label: string }[];
 }
 
 function FilterSelect({
@@ -63,7 +67,7 @@ const entriesOf = (labels: Record<string, string>, keys?: string[]) =>
 
 // Filter bar of the expense pages (D79); the person and the month live in the header. With more than 3 filters
 // (D98) the bar keeps the person and the search and the rest go in a side panel ("Filtros (N)"); they stay in the URL
-export function ExpenseFilters({ fields, value, onChange, statuses, shown, total }: ExpenseFiltersProps) {
+export function ExpenseFilters({ fields, value, onChange, statuses, shown, total, groupBy, onGroupByChange, groupByOptions }: ExpenseFiltersProps) {
   const categories = useCategories().data ?? [];
   const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
   const others = usePeople().data?.filter((person) => person.isActive && !person.isDefault) ?? [];
@@ -152,7 +156,7 @@ export function ExpenseFilters({ fields, value, onChange, statuses, shown, total
   return (
     <div className="flex flex-wrap items-center gap-2">
       {has("person") && (
-        <Select value={value.person ?? ME} onValueChange={(next) => set("person", next === ME ? undefined : next)}>
+        <Select value={value.person ?? PERSON_ALL} onValueChange={(next) => set("person", next)}>
           <SelectTrigger className="h-9 w-[150px]" aria-label="Persona">
             <SelectValue />
           </SelectTrigger>
@@ -184,6 +188,27 @@ export function ExpenseFilters({ fields, value, onChange, statuses, shown, total
           onChange={(next) => set("installments", next)}
           width="w-[145px]"
         />
+      )}
+      {groupByOptions && onGroupByChange && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant={groupBy && groupBy !== "none" ? "secondary" : "outline"} size="sm" className="h-9">
+              <Layers className="mr-1.5 h-3.5 w-3.5" />
+              {groupBy && groupBy !== "none" ? groupByOptions.find((option) => option.value === groupBy)?.label ?? "Agrupar" : "Agrupar"}
+              <ChevronDown className="ml-1 h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuCheckboxItem checked={!groupBy || groupBy === "none"} onCheckedChange={() => onGroupByChange("none")}>
+              Sin agrupar
+            </DropdownMenuCheckboxItem>
+            {groupByOptions.map((option) => (
+              <DropdownMenuCheckboxItem key={option.value} checked={groupBy === option.value} onCheckedChange={(checked) => onGroupByChange(checked ? option.value : "none")}>
+                {option.label}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
       {panel ? (
         <Sheet open={open} onOpenChange={setOpen}>

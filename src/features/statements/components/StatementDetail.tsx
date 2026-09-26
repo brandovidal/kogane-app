@@ -36,6 +36,7 @@ import { EditRowDialog } from "./EditRowDialog";
 import { StatementRowActions } from "./StatementRowActions";
 import { MissingExpenseActions } from "./MissingExpenseActions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
+import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
 
 interface PendingCreate {
   rowIds?: string[];
@@ -263,6 +264,15 @@ export function StatementDetail({ statement }: { statement: Statement }) {
         </div>
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <StatementTotalCard
+            paymentMethodId={statement.paymentMethodId}
+            cardName={statement.cardName}
+            month={statement.paymentMonth}
+            year={statement.paymentYear}
+            compact
+          />
+        </div>
         {(statement.previousBalance != null || statement.monthlyPayment != null) && (
           <div className="mb-4 grid gap-3 lg:grid-cols-2">
             <div className="rounded-lg border bg-muted/20 p-3">

@@ -1,5 +1,5 @@
 import { cardHref } from "@/shared/lib/card-links";
-import { ArrowRight, Calendar, CreditCard } from "lucide-react";
+import { ArrowRight, Calendar, CreditCard, Plus } from "lucide-react";
 
 import { useCreditCards, useMe } from "@/shared/api/hooks/catalogs";
 import { useExpenses } from "@/shared/api/hooks/expenses";
@@ -16,9 +16,11 @@ import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } 
 import { totalsOf } from "@/shared/lib/shared-expense";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Card, CardContent } from "@/ui/card";
+import { Button } from "@/ui/button";
+import { useNewExpense } from "@/shared/stores/new-expense.store";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "status", "installments", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
 
 interface CardRow {
   id: string;
@@ -42,6 +44,7 @@ function CreditCardOverviewView() {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("cards-overview", "cards");
   const me = useMe();
+  const openNewExpense = useNewExpense((state) => state.openWith);
 
   const filtered = applyExpenseFilters(expenses, filters, me);
   const rows: CardRow[] = creditCards.map((card) => {
@@ -116,38 +119,7 @@ function CreditCardOverviewView() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Total tarjetas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-3xl font-bold tabular-nums">{formatCurrency(totals.paid)}</span>
-            <OwnPart {...totals} />
-            <p className="mt-1 text-xs text-muted-foreground">{filtered.length} movimientos</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Próximos vencimientos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {!upcoming.length && <p className="text-sm text-muted-foreground">Nada por pagar este mes</p>}
-            {upcoming.map((row) => (
-              <div key={row.id} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" /> Día {row.paymentDueDay}
-                </span>
-                <span className="font-medium">
-                  {row.name} · {formatCurrency(row.paid)}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <ExpenseFilters
           fields={FILTERS}
           value={filters}
@@ -156,7 +128,38 @@ function CreditCardOverviewView() {
           shown={filtered.length}
           total={expenses.length}
         />
-        <ViewToggle value={view} onChange={setView} />
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <ViewToggle value={view} onChange={setView} />
+          <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card" })}>
+            <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-[minmax(220px,0.8fr)_minmax(0,2fr)]">
+        <Card>
+          <CardContent className="flex h-full min-h-20 items-center justify-between gap-3 px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Total tarjetas · {filtered.length} movimientos</p>
+              <span className="text-2xl font-bold tabular-nums">{formatCurrency(totals.paid)}</span>
+              <OwnPart {...totals} />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex min-h-20 flex-wrap items-center gap-2 px-4 py-3">
+            <span className="mr-1 text-xs font-medium text-muted-foreground">Próximos pagos</span>
+            {!upcoming.length && <span className="text-sm text-muted-foreground">Nada por pagar este mes</span>}
+            {upcoming.map((row) => (
+              <div key={row.id} className="flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm" style={{ borderColor: row.color ?? "var(--border)" }}>
+                <Calendar className="h-3.5 w-3.5" style={{ color: row.color ?? "var(--muted-foreground)" }} />
+                <span className="text-muted-foreground">Día {row.paymentDueDay}</span>
+                <span className="font-medium">{row.name}</span>
+                <span className="font-semibold tabular-nums" style={{ color: row.color ?? undefined }}>{formatCurrency(row.paid)}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
 
       {rows.length === 0 ? (

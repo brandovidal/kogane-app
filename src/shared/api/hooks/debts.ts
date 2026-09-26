@@ -22,6 +22,13 @@ export const useDebts = (filter: DebtFilter = {}) =>
     queryFn: () => unwrap(api.GET("/v1/debts", { params: { query: filter } })),
   });
 
+export const useDebt = (id: string | null) =>
+  useQuery({
+    queryKey: ["debts", "detail", id ?? ""],
+    queryFn: () => unwrap(api.GET("/v1/debts/{id}", { params: { path: { id: id! } } })),
+    enabled: !!id,
+  });
+
 // Contraste con la tarjeta (D114): only when a card and a month are chosen
 export const useCardCheck = (query: CardCheckQuery | null) =>
   useQuery({
@@ -48,6 +55,13 @@ export const useCreateDebt = () =>
     invalidate,
     success: "Deuda guardada",
   });
+
+export const useUpdateDebt = () =>
+  useApiMutation(
+    ({ id, body }: { id: string; body: Schemas["UpdateDebtDto"] }) =>
+      unwrap(api.PATCH("/v1/debts/{id}", { params: { path: { id } }, body })),
+    { invalidate, success: "Deuda actualizada" },
+  );
 
 export const useDeleteDebt = () =>
   useApiMutation((id: string) => unwrap(api.DELETE("/v1/debts/{id}", { params: { path: { id } } })), {

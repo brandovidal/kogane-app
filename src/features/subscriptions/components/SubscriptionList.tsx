@@ -17,14 +17,14 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Plus } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
+import { GroupedDataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
 import { SUBSCRIPTION_STATUSES } from "@/shared/labels";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "status", "period", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "status", "period", "currency", "shared"];
 
 const PERIOD_COLORS: Record<string, string> = {
   biweekly: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
@@ -72,6 +72,7 @@ function SubscriptionListView({ group = "platform" }: { group?: SubscriptionGrou
 
   const totals = totalsOf(current);
   const [view, setView] = useViewMode(group === "recurring" ? "recurring" : "subscriptions", group === "recurring" ? "table" : "cards");
+  const [groupBy, setGroupBy] = useState("none");
 
   const columns: Column<Subscription>[] = [
     { key: "description", header: texts.name, role: "title", cell: (sub) => <span className="font-medium">{sub.description}</span> },
@@ -117,13 +118,27 @@ function SubscriptionListView({ group = "platform" }: { group?: SubscriptionGrou
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div>
         <div>
           <p className="text-sm text-muted-foreground">{current.length} {texts.count}</p>
           <p className="text-2xl font-bold">S/ {totals.paid.toFixed(2)} <span className="text-sm font-normal text-muted-foreground">/mes</span></p>
           <OwnPart {...totals} />
         </div>
-        <div className="flex items-center gap-2">
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <ExpenseFilters
+          fields={FILTERS}
+          value={filters}
+          onChange={setFilters}
+          statuses={SUBSCRIPTION_STATUSES}
+          shown={current.length}
+          total={all.length}
+          groupBy={groupBy}
+          onGroupByChange={setGroupBy}
+          groupByOptions={[{ value: "person", label: "Por persona" }, { value: "period", label: "Por período" }]}
+        />
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <ViewToggle value={view} onChange={setView} />
           <Button size="sm" onClick={newPlatform}>
             <Plus className="mr-1 h-4 w-4" /> {texts.add}
@@ -131,23 +146,17 @@ function SubscriptionListView({ group = "platform" }: { group?: SubscriptionGrou
         </div>
       </div>
 
-      <ExpenseFilters
-        fields={FILTERS}
-        value={filters}
-        onChange={setFilters}
-        statuses={SUBSCRIPTION_STATUSES}
-        shown={current.length}
-        total={all.length}
-      />
-
       {current.length === 0 ? (
         <EmptyState description={all.length ? texts.empty : texts.none} />
       ) : (
-        <DataView
+        <GroupedDataView
           items={current}
           columns={columns}
           rowKey={(sub) => sub.id}
           view={view}
+          groupBy={groupBy}
+          groupKey={(row, key) => key === "person" ? row.personId ?? "none" : row.period}
+          groupLabel={(key, field) => key === "none" ? "Sin persona" : field === "person" ? personName(key) : PERIOD_LABELS[key] ?? key}
           extraCard={
             <button
               type="button"

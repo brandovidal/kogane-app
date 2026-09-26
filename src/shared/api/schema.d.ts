@@ -2746,6 +2746,8 @@ export interface components {
                 showInBot: boolean;
                 billingCloseDay: number | null;
                 paymentDueDay: number | null;
+                supportsAmortization: boolean;
+                supportsCashback: boolean;
                 bank: string | null;
                 color: string | null;
             }[];
@@ -2760,6 +2762,8 @@ export interface components {
             showInBot?: boolean;
             billingCloseDay?: number | null;
             paymentDueDay?: number | null;
+            supportsAmortization?: boolean;
+            supportsCashback?: boolean;
             bank?: string | null;
             color?: string | null;
         };
@@ -2784,6 +2788,8 @@ export interface components {
                 showInBot: boolean;
                 billingCloseDay: number | null;
                 paymentDueDay: number | null;
+                supportsAmortization: boolean;
+                supportsCashback: boolean;
                 bank: string | null;
                 color: string | null;
             };
@@ -2798,6 +2804,8 @@ export interface components {
             showInBot?: boolean;
             billingCloseDay?: number | null;
             paymentDueDay?: number | null;
+            supportsAmortization?: boolean;
+            supportsCashback?: boolean;
             bank?: string | null;
             color?: string | null;
         };

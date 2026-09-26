@@ -6,7 +6,7 @@ import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hook
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type DailyExpense } from "@/shared/api/types";
 import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
+import { GroupedDataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { OwnPart } from "@/shared/components/OwnPart";
@@ -24,7 +24,7 @@ import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "method", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "method", "currency", "type", "shared"];
 
 // Día a día ("gastos sin culpa", exp_daily_expenses): what the bot saves most. New ones come from Nuevo gasto or the chat
 function DailyExpenseTableView() {
@@ -40,6 +40,7 @@ function DailyExpenseTableView() {
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("daily", "table");
+  const [groupBy, setGroupBy] = useState("none");
   const me = useMe();
 
   const sorted = applyExpenseFilters(expenses, filters, me).sort((a, b) => b.spentAt.localeCompare(a.spentAt));
@@ -91,13 +92,17 @@ function DailyExpenseTableView() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div>
         <div>
           <p className="text-sm text-muted-foreground">{sorted.length} gastos</p>
           <p className="text-2xl font-bold">{formatCurrency(totals.paid)}</p>
           <OwnPart {...totals} />
         </div>
-        <div className="flex items-center gap-2">
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <ExpenseFilters fields={FILTERS} value={filters} onChange={setFilters} shown={sorted.length} total={expenses.length} groupBy={groupBy} onGroupByChange={setGroupBy} groupByOptions={[{ value: "person", label: "Por persona" }, { value: "category", label: "Por categoría" }]} />
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <ViewToggle value={view} onChange={setView} />
           <Button size="sm" onClick={() => openNewExpense({ destination: "daily" })}>
             <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
@@ -105,12 +110,10 @@ function DailyExpenseTableView() {
         </div>
       </div>
 
-      <ExpenseFilters fields={FILTERS} value={filters} onChange={setFilters} shown={sorted.length} total={expenses.length} />
-
       {sorted.length === 0 ? (
         <EmptyState description={expenses.length ? "No hay gastos con estos filtros" : "No hay gastos del día a día en este mes"} />
       ) : (
-        <DataView items={sorted} columns={columns} rowKey={(e) => e.id} view={view} />
+        <GroupedDataView items={sorted} columns={columns} rowKey={(e) => e.id} view={view} groupBy={groupBy} groupKey={(e, key) => key === "person" ? e.personId ?? "none" : e.categoryId ?? "none"} groupLabel={(key, field) => key === "none" ? "Sin asignar" : field === "person" ? personName(key) : categoryName(key)} />
       )}
 
       <ExpenseEditDialog

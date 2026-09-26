@@ -4,11 +4,14 @@ import {
   AlertCircle,
   ChevronRight,
   CreditCard,
+  ChevronDown,
+  Eye,
   FileSpreadsheet,
   FileText,
   HandCoins,
   MessageCircle,
   MoreHorizontal,
+  Pencil,
   Plus,
   RotateCcw,
   Search,
@@ -152,10 +155,10 @@ function DebtsPageView({ mode }: { mode: DebtsMode }) {
     <div className="space-y-4">
       <DebtList
         direction={direction}
+        splitGroupingSheet={mode === "collect"}
         onPay={setPaying}
         actions={
           <>
-            <ReportLinks filter={{ direction, month, year }} />
             <Button size="sm" onClick={() => setDialogOpen(true)}>
               <Plus className="mr-1 h-4 w-4" /> Nueva
             </Button>
@@ -177,10 +180,12 @@ function DebtsPageView({ mode }: { mode: DebtsMode }) {
 
 function DebtList({
   direction,
+  splitGroupingSheet,
   onPay,
   actions,
 }: {
   direction: Direction;
+  splitGroupingSheet: boolean;
   onPay: (debt: Debt) => void;
   actions: React.ReactNode;
 }) {
@@ -201,6 +206,7 @@ function DebtList({
   const [view, setView] = useViewMode("debts", "table");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [registering, setRegistering] = useState(false);
+  const [editingDebt, setEditingDebt] = useState<Debt | undefined>();
 
   const shown = applyDebtFilters(debts, filters, { month, year });
   const total = shown.reduce((sum, debt) => sum + debt.balance, 0);
@@ -226,7 +232,7 @@ function DebtList({
 
   return (
       <div className="min-w-0 space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm text-muted-foreground">{texts.total}</p>
             <p className="text-2xl font-bold">{formatCurrency(total)}</p>
@@ -234,7 +240,8 @@ function DebtList({
               {shown.length} cuotas · pagado {formatCurrency(paid)}
             </p>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+            <div className="flex flex-wrap items-center gap-2">
             <DebtFilterSheet
               value={filters}
               onChange={(next) => (setFilters(next), setSelected(new Set()))}
@@ -245,7 +252,9 @@ function DebtList({
               year={year}
               defaults={defaults}
               description="Filtra por persona, estado, período, tarjeta u origen."
+              resultLabel={direction === "owed_to_me" ? "cobros" : "deudas"}
             >
+              {!splitGroupingSheet && (
               <div className="space-y-3 border-t pt-4">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Agrupar resultados</p>
                 <label className="flex items-center justify-between gap-3 text-sm">
@@ -260,29 +269,46 @@ function DebtList({
                   {groupedByPerson && groupedByCard ? "Una tabla por persona; tarjetas y plataformas se despliegan dentro." : groupedByPerson ? "Los cobros se agrupan por persona." : groupedByCard ? "Los cobros se agrupan por tarjeta." : "Activa uno o ambos para organizar los cobros."}
                 </p>
               </div>
+              )}
             </DebtFilterSheet>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setRegistering(true)}
-            >
-              <Wallet className="mr-1 h-4 w-4" /> Registrar pago
-            </Button>
+            {splitGroupingSheet && (
+              <DebtGroupingSheet
+                groupedByPerson={groupedByPerson}
+                groupedByCard={groupedByCard}
+                onPersonChange={setGroupedByPerson}
+                onCardChange={setGroupedByCard}
+              />
+            )}
+            {splitGroupingSheet && <span aria-hidden="true" className="hidden h-5 border-l sm:inline-block" />}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <ReportLinks filter={{ direction, month, year }} />
+              <Button size="sm" variant="outline" onClick={() => setRegistering(true)}>
+                <Wallet className="mr-1 h-4 w-4" /> Registrar pago
+              </Button>
             {actions}
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <ViewToggle value={view} onChange={setView} />
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <ActiveDebtFilterChips
+            value={filters}
+            onChange={(next) => (setFilters(next), setSelected(new Set()))}
+            debts={debts}
+            cards={cards}
+            monthLabel={`${getMonthName(month)} ${year}`}
+            defaults={defaults}
+            grouping={splitGroupingSheet ? {
+              byPerson: groupedByPerson,
+              byCard: groupedByCard,
+              onToggle: (key) => key === "person"
+                ? setGroupedByPerson((current) => !current)
+                : setGroupedByCard((current) => !current),
+            } : undefined}
+          />
+          <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
         </div>
-        <ActiveDebtFilterChips
-          value={filters}
-          onChange={(next) => (setFilters(next), setSelected(new Set()))}
-          debts={debts}
-          cards={cards}
-          monthLabel={`${getMonthName(month)} ${year}`}
-          defaults={defaults}
-        />
 
         {card && panelMonth && filters.year && (
           <CardCheckPanel
@@ -310,6 +336,7 @@ function DebtList({
                 direction={direction}
                 view={view}
                 onPay={onPay}
+                onEdit={setEditingDebt}
                 selected={selected}
                 onSelectedChange={setSelected}
                 groupTypes
@@ -329,6 +356,7 @@ function DebtList({
                 direction={direction}
                 view={view}
                 onPay={onPay}
+                onEdit={setEditingDebt}
                 selected={selected}
                 onSelectedChange={setSelected}
                 cardNames={cardNames}
@@ -346,6 +374,7 @@ function DebtList({
                 direction={direction}
                 view={view}
                 onPay={onPay}
+                onEdit={setEditingDebt}
                 selected={selected}
                 onSelectedChange={setSelected}
                 cardNames={cardNames}
@@ -358,6 +387,7 @@ function DebtList({
             debts={shown}
             view={view}
             onPay={onPay}
+            onEdit={setEditingDebt}
             selected={selected}
             onSelectedChange={setSelected}
           />
@@ -369,6 +399,7 @@ function DebtList({
           debts={debts}
           period={{ month, year }}
         />
+        <DebtDialog open={!!editingDebt} onOpenChange={(open) => !open && setEditingDebt(undefined)} direction={direction} debt={editingDebt} />
       </div>
   );
 }
@@ -380,6 +411,7 @@ function CollapsibleDebtGroup({
   direction,
   view,
   onPay,
+  onEdit,
   selected,
   onSelectedChange,
   groupTypes = false,
@@ -392,6 +424,7 @@ function CollapsibleDebtGroup({
   direction: Direction;
   view: ViewMode;
   onPay: (debt: Debt) => void;
+  onEdit: (debt: Debt) => void;
   selected: Set<string>;
   onSelectedChange: (selected: Set<string>) => void;
   groupTypes?: boolean;
@@ -400,19 +433,11 @@ function CollapsibleDebtGroup({
 }) {
   const content = (
       <div className="space-y-3 border-t p-3">
-        {direction === "owed_to_me" && (
-          <div className="flex justify-end">
-            <CollectButton
-              name={title}
-              debts={debts.filter((debt) => debt.balance > 0)}
-              cardNames={cardNames ?? new Map()}
-            />
-          </div>
-        )}
         <DebtGrid
           debts={debts}
           view={view}
           onPay={onPay}
+          onEdit={onEdit}
           selected={selected}
           onSelectedChange={onSelectedChange}
           groupTypes={groupTypes && view === "table"}
@@ -421,13 +446,20 @@ function CollapsibleDebtGroup({
       </div>
   );
   const heading = (
-    <>
+    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
       <span className="min-w-0 flex-1 truncate font-medium">{title}</span>
       <span className="shrink-0 text-xs text-muted-foreground">
         {debts.length} {debts.length === 1 ? "cobro" : "cobros"}
       </span>
       <span className="shrink-0 font-semibold tabular-nums">{formatCurrency(total)}</span>
-    </>
+      {direction === "owed_to_me" && (
+        <CollectButton
+          name={title}
+          debts={debts.filter((debt) => debt.balance > 0)}
+          cardNames={cardNames ?? new Map()}
+        />
+      )}
+    </div>
   );
 
   if (!collapsible) {
@@ -456,7 +488,6 @@ function DebtFilters({
   debts,
   cards,
   monthLabel,
-  shown,
   year,
   defaults,
   hideDirection = false,
@@ -468,7 +499,6 @@ function DebtFilters({
   debts: Debt[];
   cards: { id: string; name: string }[];
   monthLabel: string;
-  shown: number;
   year: number;
   defaults: DebtFilterValues;
   hideDirection?: boolean;
@@ -521,12 +551,7 @@ function DebtFilters({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-1">
-        <h2 className="font-semibold">Filtros</h2>
-        <p className="text-xs text-muted-foreground">
-          {shown} de {debts.length} cobros
-        </p>
-      </div>
+      <h2 className="font-semibold">Filtros</h2>
       <details open className="group rounded-md border px-3">
         <summary className="cursor-pointer list-none py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
           <span className="flex items-center justify-between">Filtros generales<ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" /></span>
@@ -604,7 +629,7 @@ function getActiveDebtFilterChips(
     origin: value.origin ? `Origen: ${value.origin === "shared" ? "Compartido" : "Préstamo"}` : undefined,
   };
   return (Object.keys(labels) as (keyof DebtFilterValues)[])
-    .filter((key) => value[key] && value[key] !== defaults[key])
+    .filter((key) => value[key] && (key === "month" || key === "year" || value[key] !== defaults[key]))
     .map((key) => ({ key, label: labels[key]! }));
 }
 
@@ -618,6 +643,7 @@ function DebtFilterSheet({
   year,
   defaults,
   description,
+  resultLabel,
   directionFilterEnabled = false,
   hideDirection = false,
   extraActive = false,
@@ -633,6 +659,7 @@ function DebtFilterSheet({
   year: number;
   defaults: DebtFilterValues;
   description: string;
+  resultLabel?: string;
   directionFilterEnabled?: boolean;
   hideDirection?: boolean;
   extraActive?: boolean;
@@ -652,6 +679,7 @@ function DebtFilterSheet({
         <SheetHeader className="px-5 pt-6">
           <SheetTitle>Filtros</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
+          <p className="text-xs text-muted-foreground">{shown} de {debts.length} {resultLabel ?? "registros"}</p>
         </SheetHeader>
         <div className="space-y-5 overflow-y-auto px-5 pb-6">
           <DebtFilters
@@ -660,7 +688,6 @@ function DebtFilterSheet({
             debts={debts}
             cards={cards}
             monthLabel={monthLabel}
-            shown={shown}
             year={year}
             defaults={defaults}
             hideDirection={hideDirection}
@@ -668,6 +695,90 @@ function DebtFilterSheet({
             onResetExtra={onResetExtra}
           />
           {children}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function DebtGroupingSheet({
+  groupedByPerson,
+  groupedByCard,
+  onPersonChange,
+  onCardChange,
+}: {
+  groupedByPerson: boolean;
+  groupedByCard: boolean;
+  onPersonChange: (checked: boolean) => void;
+  onCardChange: (checked: boolean) => void;
+}) {
+  const activeCount = Number(groupedByPerson) + Number(groupedByCard);
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm">
+          Agrupar
+          {activeCount > 0 && <Badge variant="secondary" className="ml-1">{activeCount}</Badge>}
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto">
+        <SheetHeader className="px-5 pt-6">
+          <SheetTitle>Agrupar cobros</SheetTitle>
+          <SheetDescription>Organiza los resultados por persona, por tarjeta o por ambos.</SheetDescription>
+        </SheetHeader>
+        <div className="space-y-4 px-5 pb-6">
+          <label className="flex items-center justify-between gap-3 text-sm">
+            <span>Por persona</span>
+            <Switch checked={groupedByPerson} onCheckedChange={onPersonChange} />
+          </label>
+          <label className="flex items-center justify-between gap-3 text-sm">
+            <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-muted-foreground" /> Por tarjeta</span>
+            <Switch checked={groupedByCard} onCheckedChange={onCardChange} />
+          </label>
+          <p className="text-xs text-muted-foreground">
+            {groupedByPerson && groupedByCard
+              ? "Una tabla por persona; las tarjetas y plataformas se muestran dentro de cada grupo."
+              : groupedByPerson
+                ? "Los cobros se agrupan por persona."
+                : groupedByCard
+                  ? "Los cobros se agrupan por tarjeta."
+                  : "Activa una o ambas opciones para organizar los cobros."}
+          </p>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function DebtMovementTypeSheet({
+  showCollections,
+  showDebts,
+  onCollectionsChange,
+  onDebtsChange,
+  onReset,
+}: {
+  showCollections: boolean;
+  showDebts: boolean;
+  onCollectionsChange: (checked: boolean) => void;
+  onDebtsChange: (checked: boolean) => void;
+  onReset: () => void;
+}) {
+  const activeCount = Number(!showCollections) + Number(!showDebts);
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm" aria-label="Agrupar por tipo de movimiento">Agrupar{activeCount > 0 && <Badge variant="secondary" className="ml-1">{activeCount}</Badge>}</Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto">
+        <SheetHeader className="px-5 pt-6">
+          <SheetTitle>Tipo de movimiento</SheetTitle>
+          <SheetDescription>Elige si el resumen incluye cobros, deudas o ambos.</SheetDescription>
+        </SheetHeader>
+        <div className="space-y-4 px-5 pb-6">
+          <label className="flex items-center justify-between gap-3 text-sm"><span>Cobros (+)</span><Switch checked={showCollections} onCheckedChange={onCollectionsChange} /></label>
+          <label className="flex items-center justify-between gap-3 text-sm"><span>Deudas (−)</span><Switch checked={showDebts} onCheckedChange={onDebtsChange} /></label>
+          <p className="text-xs text-muted-foreground">Activa ambos para ver el consolidado completo.</p>
+          {activeCount > 0 && <Button variant="ghost" size="sm" className="w-full justify-start" onClick={onReset}><X className="mr-1 h-3.5 w-3.5" /> Restablecer tipo de movimiento</Button>}
         </div>
       </SheetContent>
     </Sheet>
@@ -683,6 +794,7 @@ function ActiveDebtFilterChips({
   defaults,
   directionFilterEnabled = false,
   onDirectionFilterClear,
+  grouping,
 }: {
   value: DebtFilterValues;
   onChange: (value: DebtFilterValues) => void;
@@ -692,11 +804,24 @@ function ActiveDebtFilterChips({
   defaults: DebtFilterValues;
   directionFilterEnabled?: boolean;
   onDirectionFilterClear?: () => void;
+  grouping?: {
+    byPerson: boolean;
+    byCard: boolean;
+    onToggle: (key: "person" | "card") => void;
+    movement?: { showCollections: boolean; showDebts: boolean; onReset: () => void };
+  };
 }) {
   const chips = getActiveDebtFilterChips(value, defaults, debts, cards, monthLabel, directionFilterEnabled);
-  if (!chips.length) return null;
+  const groupingChips = [
+    ...(grouping?.byPerson ? [{ key: "person" as const, label: "Agrupar: Persona" }] : []),
+    ...(grouping?.byCard ? [{ key: "card" as const, label: "Agrupar: Tarjeta" }] : []),
+  ];
+  const movementChip = grouping?.movement && !(grouping.movement.showCollections && grouping.movement.showDebts)
+    ? [{ label: grouping.movement.showCollections ? "Tipo: Cobros (+)" : grouping.movement.showDebts ? "Tipo: Deudas (−)" : "Tipo: ninguno" }]
+    : [];
+  if (!chips.length && !groupingChips.length && !movementChip.length) return null;
   return (
-    <div className="flex min-w-0 items-center gap-2 overflow-x-auto whitespace-nowrap py-0.5" aria-label="Filtros activos">
+    <div className="flex min-w-0 items-center gap-2 overflow-x-auto whitespace-nowrap py-0.5" aria-label="Filtros y agrupación activos">
       {chips.map(({ key, label }) => (
         <Button
           key={key}
@@ -704,7 +829,10 @@ function ActiveDebtFilterChips({
           size="xs"
           className="max-w-56"
           onClick={() => {
-            onChange({ ...value, [key]: defaults[key] });
+            onChange({
+              ...value,
+              [key]: key === "month" || key === "year" ? undefined : defaults[key],
+            });
             if (key === "direction") onDirectionFilterClear?.();
           }}
           aria-label={`Quitar filtro ${label}`}
@@ -713,6 +841,28 @@ function ActiveDebtFilterChips({
           <span className="truncate">{label}</span><X />
         </Button>
       ))}
+      {chips.length > 0 && groupingChips.length > 0 && <span aria-hidden="true" className="mx-1 h-5 border-l" />}
+      {groupingChips.map(({ key, label }) => (
+        <Button
+          key={`group-${key}`}
+          variant="outline"
+          size="xs"
+          className="max-w-56"
+          onClick={() => grouping?.onToggle(key)}
+          aria-label={`Quitar ${label.toLowerCase()}`}
+          title={label}
+        >
+          <span className="truncate">{label}</span><X />
+        </Button>
+      ))}
+      {movementChip.length > 0 && (
+        <>
+          {(chips.length > 0 || groupingChips.length > 0) && <span aria-hidden="true" className="mx-1 h-5 border-l" />}
+          <Button variant="outline" size="xs" onClick={() => grouping?.movement?.onReset()} aria-label="Restablecer tipo de movimiento">
+            <span className="truncate">{movementChip[0].label}</span><X />
+          </Button>
+        </>
+      )}
     </div>
   );
 }
@@ -745,7 +895,7 @@ function CollectButton({
   };
   if (!debts.length && !additionalCharges.length && !summaryDebts?.length && !personalExpenses.length) return null;
   return (
-    <Button variant="outline" size="sm" onClick={copy}>
+    <Button variant="outline" size="sm" onClick={(event) => { event.preventDefault(); event.stopPropagation(); void copy(); }}>
       <MessageCircle className="mr-1 h-4 w-4" /> Cobrar
     </Button>
   );
@@ -755,6 +905,7 @@ function DebtGrid({
   debts,
   view,
   onPay,
+  onEdit,
   selected,
   onSelectedChange,
   groupTypes = false,
@@ -763,6 +914,7 @@ function DebtGrid({
   debts: Debt[];
   view: ViewMode;
   onPay: (debt: Debt) => void;
+  onEdit: (debt: Debt) => void;
   selected: Set<string>;
   onSelectedChange: (selected: Set<string>) => void;
   groupTypes?: boolean;
@@ -863,6 +1015,13 @@ function DebtGrid({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem asChild>
+              <a href={`/detalle-deuda?id=${encodeURIComponent(debt.id)}&from=${debt.direction === "owed_to_me" ? "cobros" : "deudas"}`}><Eye /> Ver detalle</a>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onEdit(debt)}>
+              <Pencil /> Editar datos
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={() => onPay(debt)}
               disabled={debt.balance <= 0}
@@ -1214,48 +1373,30 @@ function PeopleSummary({
           year={year}
           defaults={defaults}
           description="Filtra el resumen por persona, estado, período, tarjeta u origen."
+          resultLabel="cobros"
           hideDirection
-          extraActive={!showCollections || !showDebts}
-          onResetExtra={() => { setShowCollections(true); setShowDebts(true); }}
-        >
-          <details open className="group rounded-md border px-3">
-            <summary className="cursor-pointer list-none py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-              <span className="flex items-center justify-between">Tipo de movimiento<ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" /></span>
-            </summary>
-            <div className="space-y-3 border-t py-3">
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>Cobros (+)</span>
-                <Switch checked={showCollections} onCheckedChange={setShowCollections} />
-              </label>
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>Deudas (−)</span>
-                <Switch checked={showDebts} onCheckedChange={setShowDebts} />
-              </label>
-              <p className="text-xs text-muted-foreground">Activa ambos para ver el consolidado completo.</p>
-            </div>
-          </details>
-        </DebtFilterSheet>
+        />
+        <DebtMovementTypeSheet showCollections={showCollections} showDebts={showDebts} onCollectionsChange={setShowCollections} onDebtsChange={setShowDebts} onReset={() => { setShowCollections(true); setShowDebts(true); }} />
         <ReportLinks filter={reportFilter} />
       </div>
-      <div className="flex justify-end">
-        <ViewToggle value={view} onChange={setView} />
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <ActiveDebtFilterChips
+          value={filters}
+          onChange={setFilters}
+          debts={open}
+          cards={paymentMethods}
+          monthLabel={`${getMonthName(month)} ${year}`}
+          defaults={defaults}
+          directionFilterEnabled={false}
+          grouping={{ byPerson: false, byCard: false, onToggle: () => {}, movement: { showCollections, showDebts, onReset: () => { setShowCollections(true); setShowDebts(true); } } }}
+        />
+        <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
       </div>
-      <ActiveDebtFilterChips
-        value={filters}
-        onChange={setFilters}
-        debts={open}
-        cards={paymentMethods}
-        monthLabel={`${getMonthName(month)} ${year}`}
-        defaults={defaults}
-        directionFilterEnabled={false}
-      />
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 rounded-md border border-violet-400/25 bg-violet-500/5 px-3 py-2 text-sm">
-        <span><span className="text-muted-foreground">Cobro</span> <strong className="font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</strong></span>
+      {showDebts && <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-violet-400/25 bg-violet-500/5 px-3 py-2 text-sm">
+        {showCollections && <span><span className="text-muted-foreground">Cobros</span> <strong className="font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</strong></span>}
         <span><span className="text-muted-foreground">Lo que debo</span> <strong className="font-medium tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</strong></span>
-        <span className="ml-auto font-semibold text-violet-200">
-          Neto {formatCurrency(netTotal)}<span className="font-normal text-muted-foreground">{netTotal > 0 ? " por cobrar" : netTotal < 0 ? " por pagar" : ""}</span>
-        </span>
-      </div>
+        <span className="font-semibold text-violet-200">{netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"} {formatCurrency(Math.abs(netTotal))}</span>
+      </div>}
       {(!groups.length && !creditCards.length) || (!showCollections && !showDebts) ? (
         <EmptyState description={!showCollections && !showDebts ? "Activa Cobros (+), Deudas (−) o ambos en los filtros." : "No hay deudas con saldo para este período"} />
       ) : (
@@ -1305,6 +1446,8 @@ function PeopleSummary({
               const totalOwe = owe.reduce((sum, debt) => sum + debt.balance, 0);
               const personalExpensesForPerson = personalExpenses.filter((item) => item.personId === group.personId);
               const personalExpenseForPerson = personalExpensesForPerson.reduce((sum, item) => sum + item.amount, 0);
+              const balanceForPerson = totalOwed + statementAdjustmentForPerson - totalOwe - personalExpenseForPerson;
+              const balanceLabel = balanceForPerson > 0 ? "Por cobrar" : balanceForPerson < 0 ? "Por pagar" : "Saldo";
               const sourceGroups = new Map<
                 string,
                 { key: string; name: string; direction: Direction; debts: Debt[]; total: number; owed: number; owe: number; collapsible: boolean; adjustments: typeof statementAdjustmentsForPerson; personalExpenses: typeof personalExpenses }
@@ -1409,17 +1552,12 @@ function PeopleSummary({
                     <div>
                       <h3 className="font-semibold">{group.name}</h3>
                       <p className="text-xs text-muted-foreground">
-                        <span className="text-muted-foreground">Me debe <strong className="font-medium text-amber-300">{formatCurrency(totalOwed + statementAdjustmentForPerson)}</strong></span>
-                        {" · "}
-                        <span className="text-muted-foreground">Le debo <strong className="font-medium">{formatCurrency(totalOwe + personalExpenseForPerson)}</strong></span>
+                        {showCollections && <span className="text-muted-foreground">Me debe <strong className="font-medium text-amber-300">{formatCurrency(totalOwed + statementAdjustmentForPerson)}</strong></span>}
+                        {showCollections && showDebts && " · "}
+                        {showDebts && <span className="text-muted-foreground">Le debo <strong className="font-medium">{formatCurrency(totalOwe + personalExpenseForPerson)}</strong></span>}
                       </p>
                       <p className="text-sm font-semibold text-violet-200">
-                        Neto {formatCurrency(totalOwed + statementAdjustmentForPerson - totalOwe - personalExpenseForPerson)}
-                        {totalOwed + statementAdjustmentForPerson !== totalOwe + personalExpenseForPerson && (
-                          <span className="ml-1 text-xs font-normal text-muted-foreground">
-                            {totalOwed + statementAdjustmentForPerson > totalOwe + personalExpenseForPerson ? "por cobrar" : "por pagar"}
-                          </span>
-                        )}
+                        {balanceLabel} {formatCurrency(Math.abs(balanceForPerson))}
                       </p>
                     </div>
                     <div className="space-y-2">
@@ -1456,12 +1594,12 @@ function PeopleSummary({
                         <div key={sourceGroup.key}>{sourceSummaryLine(sourceGroup)}</div>
                       ))}
                       <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t-2 pt-2 text-sm font-semibold">
-                        <span>Total registros</span>
+                        <span>{balanceLabel}</span>
                         <span className="text-right text-xs font-normal text-muted-foreground">
                           {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length} {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length === 1 ? "registro" : "registros"}
                         </span>
                         <span className="text-right font-bold tabular-nums text-violet-200">
-                          {formatCurrency(totalOwed + statementAdjustmentForPerson - totalOwe - personalExpenseForPerson)}
+                          {formatCurrency(Math.abs(balanceForPerson))}
                         </span>
                       </div>
                     </div>
@@ -1491,7 +1629,7 @@ function PeopleSummary({
                   <TableHead>Mes / concepto</TableHead>
                   <TableHead className="text-right">Me debe</TableHead>
                   <TableHead className="text-right">Le debo</TableHead>
-                  <TableHead className="text-right text-violet-200">Neto</TableHead>
+                  <TableHead className="text-right text-violet-200">Por cobrar / pagar</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1613,17 +1751,26 @@ function ReportLinks({
   filter?: DebtReportFilter;
 }) {
   return (
-    <div className="flex items-center gap-1">
-      <Button asChild variant="outline" size="sm">
-        <a href={debtReportUrl("xlsx", personId, filter)} download>
-          <FileSpreadsheet className="mr-1 h-4 w-4" /> Excel
-        </a>
-      </Button>
-      <Button asChild variant="outline" size="sm">
-        <a href={debtReportUrl("pdf", personId, filter)} download>
-          <FileText className="mr-1 h-4 w-4" /> PDF
-        </a>
-      </Button>
+    <div role="group" aria-label="Exportar" className="inline-flex items-center">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2">
+            Exportar <ChevronDown className="h-3.5 w-3.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <a href={debtReportUrl("xlsx", personId, filter)} download>
+              <FileSpreadsheet /> Exportar a Excel
+            </a>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a href={debtReportUrl("pdf", personId, filter)} download>
+              <FileText /> Exportar a PDF
+            </a>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

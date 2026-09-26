@@ -41,6 +41,9 @@ export function AccountsTable() {
         </Button>
       </CardHeader>
       <CardContent>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Activa amortización o cashback solo en tarjetas que ofrecen esos movimientos. IO viene habilitada inicialmente; puedes ajustar cada tarjeta aquí.
+        </p>
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -51,6 +54,8 @@ export function AccountsTable() {
                 <TableHead>En el bot</TableHead>
                 <TableHead>Cierre</TableHead>
                 <TableHead>Pago</TableHead>
+                <TableHead title="Permitir pagos adelantados para esta tarjeta">Amortización</TableHead>
+                <TableHead title="Permitir registrar devoluciones para esta tarjeta">Cashback</TableHead>
                 <TableHead>Personas</TableHead>
               </TableRow>
             </TableHeader>
@@ -99,6 +104,20 @@ export function AccountsTable() {
                         />
                       </TableCell>
                       <TableCell>
+                        <Switch
+                          checked={method.supportsAmortization}
+                          aria-label={`Permitir amortización en ${method.name}`}
+                          onCheckedChange={(supportsAmortization) => update(method.id, method.name, method.type, { supportsAmortization })}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={method.supportsCashback}
+                          aria-label={`Permitir cashback en ${method.name}`}
+                          onCheckedChange={(supportsCashback) => update(method.id, method.name, method.type, { supportsCashback })}
+                        />
+                      </TableCell>
+                      <TableCell>
                         <Button variant="outline" size="sm" onClick={() => setHoldersOf({ id: method.id, name: method.name })}>
                           <Users className="mr-1 h-3.5 w-3.5" /> Titular y adicionales
                         </Button>
@@ -106,6 +125,8 @@ export function AccountsTable() {
                     </>
                   ) : (
                     <>
+                      <TableCell className="text-muted-foreground">—</TableCell>
+                      <TableCell className="text-muted-foreground">—</TableCell>
                       <TableCell className="text-muted-foreground">—</TableCell>
                       <TableCell className="text-muted-foreground">—</TableCell>
                       <TableCell className="text-muted-foreground">—</TableCell>

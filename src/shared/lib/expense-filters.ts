@@ -1,7 +1,7 @@
 // Filters of the expense pages (D79): a pure function over the month already loaded, so totals follow what is shown
 
 export interface ExpenseFilterValues {
-  person?: string; // D71, D80: empty = the default person ("Yo"), "all" = everyone, or one person's id
+  person?: string; // Empty or "all" = everyone, "__me__" = default person, or one person's id
   q?: string; // concept, merchant or note
   category?: string;
   method?: string; // payment method id
@@ -51,7 +51,9 @@ export function applyExpenseFilters<T extends FilterableExpense>(
   me?: string,
 ): T[] {
   const q = filters.q?.trim() ? fold(filters.q.trim()) : null;
-  const person = filters.person === PERSON_ALL ? null : (filters.person ?? me ?? null);
+  const person = !filters.person || filters.person === PERSON_ALL
+    ? null
+    : filters.person === "__me__" ? me ?? null : filters.person;
   return records.filter(
     (record) =>
       (!person || record.personId === person) &&
