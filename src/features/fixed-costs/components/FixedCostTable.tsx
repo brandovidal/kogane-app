@@ -122,6 +122,7 @@ function FixedCostTableView() {
         <RowActions
           label={fc.description}
           files={{ refType: "fixed_cost", refId: fc.id }}
+          history={{ entity: "exp_fixed_costs", id: fc.id }}
           onEdit={() => { setEditingItem(fc); setDialogOpen(true); }}
           onDuplicate={() => saveFixedCost.mutate({ body: duplicateBody(EXPENSE_RESOURCES.fixedCost, fc) })}
           onNextMonth={() => saveFixedCost.mutate({ id: fc.id, body: nextMonthBody(fc) })}

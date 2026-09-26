@@ -3,7 +3,8 @@ import { totalsOf } from "@/shared/lib/shared-expense";
 import { nameById, useCreditCards, usePeople, useMe } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
-import { EXPENSE_RESOURCES, type CreditCardExpense } from "@/shared/api/types";
+import { EXPENSE_RESOURCES, type Attachment, type CreditCardExpense } from "@/shared/api/types";
+import { useUploadAttachment } from "@/shared/api/hooks/commitments";
 import { usePeriod } from "@/shared/stores/period.store";
 import { formatCurrency } from "@/shared/lib/currency";
 import { StatusBadge } from "@/shared/components/StatusBadge";
@@ -12,9 +13,10 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Input } from "@/ui/input";
 import { DataView, useViewMode, type Column } from "@/shared/components/DataView";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/ui/select";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,7 +26,7 @@ import { RowActions } from "@/shared/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { formatDate } from "@/shared/lib/dates";
-import { CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
+import { ATTACHMENT_KIND_LABELS, CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
@@ -54,6 +56,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const personName = nameById(people);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.creditCard);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.creditCard);
+  const uploadAttachment = useUploadAttachment({ quiet: true });
   const queryClient = useQueryClient();
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
@@ -65,6 +68,8 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [selectedExpenses, setSelectedExpenses] = useState<Set<string>>(() => new Set());
   const [confirmPayment, setConfirmPayment] = useState(false);
   const [payingSelected, setPayingSelected] = useState(false);
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+  const [paymentProofKind, setPaymentProofKind] = useState<Attachment["kind"]>("boleta");
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   if (isLoading) return null;
@@ -84,16 +89,29 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         body: { paymentStatus: "paid" } as never,
       })),
     ));
-    const completed = results.filter((result) => result.status === "fulfilled").length;
+    const completedExpenses = selectedPending.filter((_, index) => results[index]?.status === "fulfilled");
+    const completed = completedExpenses.length;
     const failed = results.length - completed;
+    let attached = 0;
+    let attachmentFailed = 0;
+    if (paymentProof && completedExpenses.length) {
+      const files = await Promise.allSettled(completedExpenses.map((expense) =>
+        uploadAttachment.mutateAsync({ file: paymentProof, refType: "expense", refId: expense.id, kind: paymentProofKind }),
+      ));
+      attached = files.filter((result) => result.status === "fulfilled").length;
+      attachmentFailed = files.length - attached;
+    }
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: expenseKeys.resource(EXPENSE_RESOURCES.creditCard) }),
       queryClient.invalidateQueries({ queryKey: ["summary"] }),
       queryClient.invalidateQueries({ queryKey: ["statements"] }),
     ]);
-    if (completed) toast.success(`${completed} ${completed === 1 ? "pago registrado" : "pagos registrados"}`);
+    if (completed) toast.success(`${completed} ${completed === 1 ? "pago registrado" : "pagos registrados"}${paymentProof ? ` · comprobante adjuntado a ${attached} gasto(s)` : ""}`);
     if (failed) toast.error(`${failed} ${failed === 1 ? "gasto no pudo marcarse" : "gastos no pudieron marcarse"} como pagado`);
+    if (attachmentFailed) toast.error(`No se pudo adjuntar el comprobante a ${attachmentFailed} gasto(s)`);
     setSelectedExpenses(new Set());
+    setPaymentProof(null);
+    setPaymentProofKind("boleta");
     setConfirmPayment(false);
     setPayingSelected(false);
   };
@@ -186,6 +204,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         <RowActions
           label={exp.description}
           files={{ refType: "expense", refId: exp.id }}
+          history={{ entity: "exp_credit_card_expenses", id: exp.id }}
           onEdit={() => setEditing(exp)}
           onDuplicate={() => saveExpense.mutate({ body: duplicateBody(EXPENSE_RESOURCES.creditCard, exp) })}
           onNextMonth={() => saveExpense.mutate({ id: exp.id, body: nextMonthBody(exp) })}
@@ -333,18 +352,57 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         expense={editing}
       />
 
-      <AlertDialog open={confirmPayment} onOpenChange={setConfirmPayment}>
+      <AlertDialog open={confirmPayment} onOpenChange={(open) => {
+        setConfirmPayment(open);
+        if (!open && !payingSelected) {
+          setPaymentProof(null);
+          setPaymentProofKind("boleta");
+        }
+      }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Registrar pago</AlertDialogTitle>
             <AlertDialogDescription>
-              Se marcarán como pagados {selectedPending.length} {selectedPending.length === 1 ? "gasto seleccionado" : "gastos seleccionados"} de {card.name}. Puedes registrar un gasto individual desde su menú de acciones.
+              Se marcarán como pagados {selectedPending.length} {selectedPending.length === 1 ? "gasto seleccionado" : "gastos seleccionados"} de {card.name}. El comprobante es opcional.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="space-y-2">
+            <label className="space-y-1.5 text-sm">
+              <span>Tipo de comprobante</span>
+              <Select value={paymentProofKind} onValueChange={(value) => setPaymentProofKind(value as Attachment["kind"])}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(ATTACHMENT_KIND_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </label>
+            <label className="block space-y-1.5 text-sm">
+              <span>Boleta, captura o archivo</span>
+              <Input
+                type="file"
+                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                onChange={(event) => {
+                  const file = event.currentTarget.files?.[0] ?? null;
+                  event.currentTarget.value = "";
+                  if (file && file.size > 15 * 1024 * 1024) {
+                    setPaymentProof(null);
+                    toast.error("El archivo no puede superar 15 MB");
+                    return;
+                  }
+                  setPaymentProof(file);
+                }}
+              />
+              <span className="block text-xs text-muted-foreground">
+                {paymentProof ? `${paymentProof.name} · se adjuntará a cada gasto pagado` : "Opcional · imagen, PDF o documento de hasta 15 MB. Se adjuntará a cada gasto pagado."}
+              </span>
+            </label>
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={payingSelected}>Cancelar</AlertDialogCancel>
             <AlertDialogAction disabled={payingSelected || selectedPending.length === 0} onClick={(event) => { event.preventDefault(); void registerSelectedPayment(); }}>
-              {payingSelected ? "Guardando…" : "Confirmar pago"}
+              {payingSelected ? paymentProof ? "Guardando y adjuntando…" : "Guardando…" : "Confirmar pago"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -109,7 +109,7 @@ export interface AttachmentUpload {
 }
 
 // Multipart through the /api proxy (≤ 15 MB, images and documents)
-export function useUploadAttachment() {
+export function useUploadAttachment({ quiet = false }: { quiet?: boolean } = {}) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ file, refType, refId, kind }: AttachmentUpload): Promise<Attachment> => {
@@ -127,9 +127,9 @@ export function useUploadAttachment() {
     },
     onSuccess: async () => {
       await Promise.all([attachmentKeys.all, commitmentKeys.all, ["expenses"]].map((queryKey) => queryClient.invalidateQueries({ queryKey })));
-      toast.success("Archivo adjuntado");
+      if (!quiet) toast.success("Archivo adjuntado");
     },
-    onError: (error) => toast.error(errorMessage(error)),
+    onError: (error) => { if (!quiet) toast.error(errorMessage(error)); },
   });
 }
 

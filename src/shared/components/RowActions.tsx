@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ArrowRightLeft, CalendarArrowUp, Check, Copy, MoreHorizontal, Paperclip, Pencil, Trash2 } from "lucide-react";
+import { ArrowRightLeft, CalendarArrowUp, Check, Copy, History, MoreHorizontal, Paperclip, Pencil, Trash2 } from "lucide-react";
 
 import type { AttachmentRefType } from "@/shared/api/types";
+import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import { AttachmentsDialog } from "@/shared/components/AttachmentsPanel";
 
 import { PAYMENT_STATUS_LABELS } from "@/shared/labels";
@@ -29,11 +30,13 @@ interface RowActionsProps {
   onMove?: () => void; // "Pasar a…" (D106): Costos fijos ↔ Recurrentes ↔ Plataformas
   onDelete?: () => void;
   files?: { refType: AttachmentRefType; refId: string }; // boleta, recibo, contrato (P27, D100)
+  history?: { entity: string; id: string }; // the table (exp_fixed_costs) and the row (P29)
   status?: { value: string; options: readonly string[]; onChange: (status: string) => void };
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
-export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, onDelete, files, status }: RowActionsProps) {
+export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, onDelete, files, history, status }: RowActionsProps) {
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
   const confirmDelete = () => {
     if (window.confirm(`¿Eliminar «${label}»? No se puede deshacer.`)) onDelete?.();
@@ -92,6 +95,11 @@ export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, on
             <Paperclip /> Archivos
           </DropdownMenuItem>
         )}
+        {history && (
+          <DropdownMenuItem onSelect={() => setHistoryOpen(true)}>
+            <History /> Historial
+          </DropdownMenuItem>
+        )}
         {onDelete && (
           <>
             <DropdownMenuSeparator />
@@ -102,6 +110,7 @@ export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, on
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+    {history && historyOpen && <HistoryDialog title={label} {...history} onClose={() => setHistoryOpen(false)} />}
     {files && filesOpen && <AttachmentsDialog title={label} {...files} onClose={() => setFilesOpen(false)} />}
     </>
   );

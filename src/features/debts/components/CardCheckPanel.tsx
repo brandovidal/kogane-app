@@ -1,14 +1,18 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 
 import { useCardCheck } from "@/shared/api/hooks/debts";
+import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
+import { Checkbox } from "@/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 
 // Contraste con la tarjeta (D114): what others owe of this card and month next to what the bank billed. The
 // "sin explicar" is what the statement asks beyond the card expenses registered: interest, fees or a missing charge
 export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: string; cardName: string; month: number; year: number }) {
   const { data: check } = useCardCheck({ paymentMethodId: cardId, month, year });
+  const [showTotalCalculation, setShowTotalCalculation] = useState(false);
   if (!check) return null;
   const unexplained = check.unexplained ?? 0;
 
@@ -80,6 +84,18 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
                 <span className="tabular-nums">{formatCurrency(line.amount)}</span>
               </p>
             ))}
+          </div>
+        )}
+
+        {check.statementId && (
+          <div className="space-y-3 border-t pt-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <Checkbox checked={showTotalCalculation} onCheckedChange={(checked) => setShowTotalCalculation(checked === true)} />
+              Mostrar cálculo visual del pago total
+            </label>
+            {showTotalCalculation && (
+              <StatementTotalCard paymentMethodId={cardId} cardName={cardName} month={month} year={year} compact />
+            )}
           </div>
         )}
       </CardContent>

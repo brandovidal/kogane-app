@@ -101,6 +101,7 @@ function SubscriptionListView({ group = "platform" }: { group?: SubscriptionGrou
         <RowActions
           label={sub.description}
           files={{ refType: "expense", refId: sub.id }}
+          history={{ entity: "exp_subscriptions", id: sub.id }}
           onEdit={() => { setEditingSub(sub); setDialogOpen(true); }}
           onDuplicate={() => saveSubscription.mutate({ body: duplicateBody(EXPENSE_RESOURCES.subscription, sub) })}
           onNextMonth={() => saveSubscription.mutate({ id: sub.id, body: nextMonthBody(sub) })}

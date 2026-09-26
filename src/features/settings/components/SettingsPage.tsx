@@ -13,6 +13,7 @@ import { Save, DollarSign, PieChart, Palette } from "lucide-react";
 import { AccountsTable } from "./AccountsTable";
 import { PeopleTable } from "./PeopleTable";
 import { NotificationSettingsCard } from "./NotificationSettingsCard";
+import { HistoryPanel } from "@/features/history/components/HistoryPanel";
 import { formatCurrency } from "@/shared/lib/currency";
 
 const TABS = [
@@ -21,6 +22,7 @@ const TABS = [
   ["personas", "Personas"],
   ["cuentas", "Cuentas y tarjetas"],
   ["notificaciones", "Notificaciones"],
+  ["historial", "Historial"],
 ] as const;
 type SettingsTab = (typeof TABS)[number][0];
 
@@ -220,6 +222,10 @@ function SettingsPageView() {
 
         <TabsContent value="notificaciones" className="mt-4">
           <NotificationSettingsCard />
+        </TabsContent>
+
+        <TabsContent value="historial" className="mt-4">
+          <HistoryPanel />
         </TabsContent>
       </Tabs>
     </div>

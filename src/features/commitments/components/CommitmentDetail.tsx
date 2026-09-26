@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Paperclip, Pencil, Plus, Trash2 } from "lucide-react";
+import { Check, History, Paperclip, Pencil, Plus, Trash2 } from "lucide-react";
 
 import {
   useCommitment,
@@ -11,6 +11,7 @@ import {
 } from "@/shared/api/hooks/commitments";
 import { useSaveExpense } from "@/shared/api/hooks/expenses";
 import type { Commitment, CommitmentInstallment, Contribution } from "@/shared/api/types";
+import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import { AttachmentsDialog, AttachmentsPanel } from "@/shared/components/AttachmentsPanel";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
 import { StatusBadge } from "@/shared/components/StatusBadge";
@@ -41,6 +42,7 @@ export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDeta
   const progress = detail?.progress ?? commitment.progress;
   const hasInstallments = !!commitment.installmentCount;
   const [tab, setTab] = useState(hasInstallments ? "installments" : "contributions");
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const remove = () => {
     if (!window.confirm(`¿Eliminar «${commitment.name}»? Sus cuotas siguen en Costos fijos; se borran sus aportes y archivos.`)) return;
@@ -72,6 +74,9 @@ export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDeta
                 <Plus className="mr-1.5 h-3.5 w-3.5" /> Crear {progress.installmentCount - progress.createdCount} cuotas que faltan
               </Button>
             )}
+            <Button size="sm" variant="outline" onClick={() => setHistoryOpen(true)}>
+              <History className="mr-1.5 h-3.5 w-3.5" /> Historial
+            </Button>
             <Button size="sm" variant="outline" className="text-destructive" disabled={deleteCommitment.isPending} onClick={remove}>
               <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Eliminar
             </Button>
@@ -108,6 +113,7 @@ export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDeta
           </Tabs>
         </div>
       </SheetContent>
+      {historyOpen && <HistoryDialog title={commitment.name} entity="exp_commitments" id={commitment.id} onClose={() => setHistoryOpen(false)} />}
     </Sheet>
   );
 }

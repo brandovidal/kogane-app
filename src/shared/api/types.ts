@@ -59,3 +59,7 @@ export type CommitmentInstallment = CommitmentDetail["installments"][number];
 export type Contribution = DataOf<"ContributionResponseDto">;
 export type Attachment = DataOf<"AttachmentListResponseDto">[number];
 export type AttachmentRefType = Attachment["refType"];
+
+// History of changes (P29)
+export type HistoryPage = DataOf<"HistoryPageResponseDto">;
+export type HistoryEntry = HistoryPage["items"][number];

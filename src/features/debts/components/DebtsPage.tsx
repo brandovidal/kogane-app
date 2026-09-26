@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import { toast } from "sonner";
 import {
   AlertCircle,
@@ -6,6 +7,7 @@ import {
   CreditCard,
   ChevronDown,
   Eye,
+  History,
   FileSpreadsheet,
   FileText,
   HandCoins,
@@ -923,6 +925,7 @@ function DebtGrid({
   const deleteDebt = useDeleteDebt();
   const [deleting, setDeleting] = useState<Debt | null>(null);
   const [resetting, setResetting] = useState<Debt | null>(null);
+  const [historyOf, setHistoryOf] = useState<Debt | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const columns: Column<Debt>[] = [
     {
@@ -1033,6 +1036,9 @@ function DebtGrid({
                 <RotateCcw /> Corregir estado
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem onSelect={() => setHistoryOf(debt)}>
+              <History /> Historial
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
@@ -1102,6 +1108,7 @@ function DebtGrid({
           <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>¿Borrar «{deleting?.description}»?</AlertDialogTitle><AlertDialogDescription>{deleting && deleting.paidAmount > 0 ? `Tiene ${formatCurrency(deleting.paidAmount)} pagados: se borran con ella. No se puede deshacer.` : "No se puede deshacer."}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => deleting && deleteDebt.mutate(deleting.id, { onSuccess: () => setDeleting(null) })}>Borrar</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
         </AlertDialog>
         <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
+      {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
       </>
     );
   }
@@ -1146,6 +1153,7 @@ function DebtGrid({
         </AlertDialogContent>
       </AlertDialog>
       <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
+      {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
     </>
   );
 }

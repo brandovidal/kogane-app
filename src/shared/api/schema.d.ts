@@ -1078,6 +1078,40 @@ export interface paths {
         patch: operations["CommitmentsController_updateContribution_v1"];
         trace?: never;
     };
+    "/v1/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every change, newest first, filtered by table, record, source and dates (30 per page) */
+        get: operations["HistoryController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/history/{entity}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Timeline of one record: what changed, when and from where */
+        get: operations["HistoryController_timeline_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/imports/notion": {
         parameters: {
             query?: never;
@@ -3675,6 +3709,44 @@ export interface components {
             unit?: string | null;
             notes?: string | null;
         };
+        HistoryPageResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                items: {
+                    id: string;
+                    entity: string;
+                    entityId: string;
+                    /** @enum {string} */
+                    action: "create" | "update" | "delete" | "restore";
+                    /** @enum {string} */
+                    source: "web" | "bot" | "import" | "scheduler" | "cli";
+                    actorId: string | null;
+                    batchId: string | null;
+                    /** Format: date-time */
+                    createdAt: string;
+                    /** @description What the record is called (its name or description), if it is known */
+                    title: string | null;
+                    changes: {
+                        field: string;
+                        /** @description null on a create */
+                        before: unknown;
+                        /** @description null on a delete */
+                        after: unknown;
+                    }[];
+                }[];
+                total: number;
+                page: number;
+                pageSize: number;
+                /** @description id → name of the people, cards, categories… the changes mention */
+                labels: {
+                    [key: string]: string;
+                };
+            };
+        };
         ImportDetailResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -3686,7 +3758,7 @@ export interface components {
                 source: string;
                 sourceDir: string;
                 /** @enum {string} */
-                status: "preview" | "applied" | "discarded";
+                status: "preview" | "applied";
                 files: number;
                 /** @description New rows (on a preview: to create) */
                 created: number;
@@ -3736,7 +3808,7 @@ export interface components {
                 source: string;
                 sourceDir: string;
                 /** @enum {string} */
-                status: "preview" | "applied" | "discarded";
+                status: "preview" | "applied";
                 files: number;
                 /** @description New rows (on a preview: to create) */
                 created: number;
@@ -5934,6 +6006,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ContributionResponseDto"];
+                };
+            };
+        };
+    };
+    HistoryController_list_v1: {
+        parameters: {
+            query?: {
+                /** @description The table: exp_fixed_costs, cat_people… */
+                entity?: string;
+                /** @description One record (with entity) */
+                id?: string;
+                source?: "web" | "bot" | "import" | "scheduler" | "cli";
+                from?: string;
+                /** @description Inclusive: the whole day */
+                to?: string;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryPageResponseDto"];
+                };
+            };
+        };
+    };
+    HistoryController_timeline_v1: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path: {
+                entity: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryPageResponseDto"];
                 };
             };
         };
