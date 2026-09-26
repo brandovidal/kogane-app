@@ -100,6 +100,33 @@ export function buildCollectMessage(name: string, debts: Pick<Debt, "description
   ].join("\n");
 }
 
+// Cobrar from a grouped person row: own debts stay itemized while each card/platform is summarized once.
+export function buildCollectSummaryMessage(name: string, debts: Debt[], cardNames: Map<string, string>): string {
+  const groups = groupByPersonAndType(debts, cardNames);
+  const lines = groups.flatMap((group) => {
+    if (group.type === "Deuda propia") {
+      return group.debts.map(
+        (debt) =>
+          `• ${debt.description}${debt.installment ? ` (cuota ${debt.installment})` : ""}, ${MONTHS[debt.paymentMonth - 1]} ${debt.paymentYear}: ${soles(debt.balance)}`,
+      );
+    }
+    const label = /cmr|falabella/i.test(group.type) ? "CMR (Falabella)" : group.type === "Plataformas" ? "Plataformas · Stream" : group.type;
+    const singular = group.debts.length === 1;
+    const countLabel = group.type === "Plataformas"
+      ? singular ? "cargo" : "cargos"
+      : singular ? "cuota" : "cuotas";
+    return [`• ${label} · ${group.debts.length} ${countLabel}: ${soles(group.total)}`];
+  });
+  const total = Math.round(debts.reduce((sum, debt) => sum + debt.balance, 0) * 100) / 100;
+  return [
+    `Hola ${name} 👋, te paso el resumen de lo pendiente:`,
+    ...lines,
+    "",
+    `Total: ${soles(total)}`,
+    "¡Gracias! 🙌",
+  ].join("\n");
+}
+
 // Installments grouped by person, biggest balance first
 export function groupByPerson<T extends Pick<Debt, "personId" | "balance"> & { person: { name: string } }>(debts: T[]) {
   const groups = new Map<string, { personId: string; name: string; total: number; debts: T[] }>();
