@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { ApiError, api, unwrap } from "../client";
+import { ApiError, api, apiFetch, unwrap } from "../client";
 import type { ImportDetail, ImportRowStatus, ImportTab } from "../types";
 import { useApiMutation } from "./use-api-mutation";
 
@@ -48,7 +48,7 @@ export function useUploadNotion() {
     mutationFn: async (files: File[]): Promise<ImportDetail> => {
       const form = new FormData();
       files.forEach((file) => form.append("files", file));
-      const response = await fetch("/api/v1/imports/notion", { method: "POST", body: form, headers: { accept: "application/json" } });
+      const response = await apiFetch("/api/v1/imports/notion", { method: "POST", body: form, headers: { accept: "application/json" } });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new ApiError(response.status, body.code ?? "UNKNOWN_ERROR", body.message ?? response.statusText, body.details);

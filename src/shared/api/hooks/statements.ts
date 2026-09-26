@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { ApiError, api, unwrap } from "../client";
+import { ApiError, api, apiFetch, unwrap } from "../client";
 import type { Statement } from "../types";
 import { useApiMutation } from "./use-api-mutation";
 
@@ -44,7 +44,7 @@ export function useUploadStatement() {
       if (paymentMethodId) form.set("paymentMethodId", paymentMethodId);
       if (personId) form.set("personId", personId);
       if (password && savePassword) form.set("savePassword", "true");
-      const response = await fetch("/api/v1/statements", { method: "POST", body: form, headers: { accept: "application/json" } });
+      const response = await apiFetch("/api/v1/statements", { method: "POST", body: form, headers: { accept: "application/json" } });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new ApiError(response.status, body.code ?? "UNKNOWN_ERROR", body.message ?? response.statusText, body.details);

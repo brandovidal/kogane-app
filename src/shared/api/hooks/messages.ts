@@ -1,4 +1,4 @@
-import { ApiError, api, unwrap, type Schemas } from "../client";
+import { ApiError, api, apiFetch, unwrap, type Schemas } from "../client";
 
 export type ConversationResult = NonNullable<Schemas["ConversationResultResponseDto"]["data"]>;
 export type BotReply = ConversationResult["replies"][number];
@@ -19,7 +19,7 @@ export async function sendMessage({ messageId, text, file, durationSeconds }: Ou
   if (file) form.set("file", file);
   if (durationSeconds != null) form.set("durationSeconds", String(Math.round(durationSeconds)));
 
-  const response = await fetch("/api/v1/messages", { method: "POST", body: form, headers: { accept: "application/json" } });
+  const response = await apiFetch("/api/v1/messages", { method: "POST", body: form, headers: { accept: "application/json" } });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new ApiError(response.status, body.code ?? "UNKNOWN_ERROR", body.message ?? response.statusText, body.details);

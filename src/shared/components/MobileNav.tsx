@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Coins, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/ui/sheet";
 import { withQuery } from "@/shared/api/query";
@@ -22,7 +22,7 @@ function MobileNavView({ currentPath }: MobileNavProps) {
       </SheetTrigger>
       <SheetContent side="left" className="flex w-72 flex-col bg-sidebar p-0">
         <SheetTitle className="flex h-16 items-center gap-2 border-b px-6">
-          <Coins className="h-6 w-6" />
+          <img src="/kogane-mascot.png" alt="" className="h-9 w-9 shrink-0 object-contain" />
           <span className="text-lg font-bold">Kogane</span>
         </SheetTitle>
         <NavTree currentPath={currentPath} />

@@ -45,3 +45,9 @@ export function toProxyResponse(response: Response): Response {
 
 export const notFoundResponse = () =>
   Response.json({ success: false, code: 'NOT_FOUND', message: 'Not found' }, { status: 404 })
+
+export const apiUnavailableResponse = () =>
+  Response.json(
+    { success: false, code: 'API_UNAVAILABLE', message: 'La API no está disponible. Intenta de nuevo en unos momentos.' },
+    { status: 503, headers: { 'cache-control': 'no-store', 'retry-after': '5' } },
+  )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Coins, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/ui/button";
 import { withQuery } from "@/shared/api/query";
 import { cn } from "@/shared/lib/utils";
@@ -36,14 +36,12 @@ function SidebarView({ currentPath }: SidebarProps) {
 
   return (
     <aside className={cn("hidden md:flex md:flex-col border-r border-sidebar-border bg-sidebar transition-[width]", compact ? "md:w-16" : "md:w-64")}>
-      <div className={cn("flex h-16 items-center border-b border-sidebar-border", compact ? "justify-center" : "justify-between px-4")}>
-        {!compact && (
-          <a href="/" className="flex items-center gap-2">
-            <Coins className="h-6 w-6 text-sidebar-primary" />
-            <span className="text-lg font-bold text-sidebar-foreground">Kogane</span>
-          </a>
-        )}
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggle} title={compact ? "Expandir menú" : "Compactar menú"}>
+      <div className={cn("flex h-16 items-center border-b border-sidebar-border", compact ? "justify-center gap-1" : "justify-between px-4")}>
+        <a href="/" aria-label="Kogane" title="Kogane" className="flex items-center gap-2">
+          <img src="/kogane-mascot.png" alt="" className={cn("shrink-0 object-contain", compact ? "h-7 w-7" : "h-10 w-10")} />
+          {!compact && <span className="text-lg font-bold text-sidebar-foreground">Kogane</span>}
+        </a>
+        <Button variant="ghost" size="icon" className={cn("shrink-0", compact ? "h-7 w-7" : "h-8 w-8")} onClick={toggle} title={compact ? "Expandir menú" : "Compactar menú"}>
           {compact ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
         </Button>
       </div>

@@ -17,6 +17,7 @@ const adapter = isProduction
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
+  server: { port: 4000 },
   integrations: [react()],
   // Estados de cuenta joined Reconocimiento / Importación (D104)
   redirects: { '/estados-de-cuenta': '/reconocimiento' },
