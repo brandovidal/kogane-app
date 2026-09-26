@@ -2,6 +2,8 @@ import { OwnPart } from "@/shared/components/OwnPart";
 import { totalsOf } from "@/shared/lib/shared-expense";
 import { nameById, useCreditCards, usePeople, useMe } from "@/shared/api/hooks/catalogs";
 import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useCardCheck } from "@/shared/api/hooks/debts";
+import { useStatements } from "@/shared/api/hooks/statements";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type Attachment, type CreditCardExpense } from "@/shared/api/types";
 import { useUploadAttachment } from "@/shared/api/hooks/commitments";
@@ -21,11 +23,11 @@ import {
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, ArrowLeft, CircleDollarSign, LayoutGrid, Table2, Users, ChevronDown, HandCoins } from "lucide-react";
+import { Plus, ArrowLeft, CircleDollarSign, LayoutGrid, Table2, Users, ChevronDown, HandCoins, CalendarDays, Clock3, FileText } from "lucide-react";
 import { RowActions } from "@/shared/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
-import { formatDate } from "@/shared/lib/dates";
+import { formatDate, getMonthName } from "@/shared/lib/dates";
 import { ATTACHMENT_KIND_LABELS, CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
@@ -72,6 +74,8 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [paymentProofKind, setPaymentProofKind] = useState<Attachment["kind"]>("boleta");
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
+  const cardCheck = useCardCheck(card ? { paymentMethodId: card.id, month: selectedMonth, year: selectedYear } : null).data;
+  const statements = useStatements().data ?? [];
   if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
 
@@ -80,6 +84,14 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     (b.processDate ?? "").localeCompare(a.processDate ?? ""),
   );
   const selectedPending = cardExpenses.filter((expense) => selectedExpenses.has(expense.id) && !isPaidStatus(expense.paymentStatus));
+  const statement = statements.find((item) => item.id === cardCheck?.statementId);
+  const monthlyByCurrency = new Map<string, number>();
+  for (const expense of ofCard) {
+    const currency = expense.currency || "PEN";
+    monthlyByCurrency.set(currency, (monthlyByCurrency.get(currency) ?? 0) + expense.amount);
+  }
+  if (statement?.currency && !monthlyByCurrency.has(statement.currency)) monthlyByCurrency.set(statement.currency, 0);
+  const currencySummary = [...monthlyByCurrency.entries()].sort(([a], [b]) => a.localeCompare(b));
   const registerSelectedPayment = async () => {
     if (!selectedPending.length) return;
     setPayingSelected(true);
@@ -221,28 +233,83 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <a href="/tarjetas">
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+        <a href="/tarjetas" aria-label="Volver a tarjetas">
+          <Button variant="outline" size="icon" className="rounded-full"><ArrowLeft className="h-4 w-4" /></Button>
         </a>
-        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: card.color ?? "#6B7280" }} />
-        <div>
-          <h2 className="text-xl font-bold">{card.name}</h2>
-          <p className="text-sm text-muted-foreground">
-            {card.billingCloseDay ? `Cierre: día ${card.billingCloseDay} | Pago: día ${card.paymentDueDay}` : "Sin días de cierre y pago"}
-          </p>
+        <div className="flex min-w-0 items-center justify-center gap-2">
+          <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: card.color ?? "#6B7280" }} />
+          <h2 className="truncate text-center text-xl font-semibold sm:text-2xl">Pago de tarjeta · {card.name}</h2>
         </div>
+        <span className="w-9" aria-hidden="true" />
       </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm text-muted-foreground">Total del mes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <span className="text-3xl font-bold">{`S/ ${totals.paid.toFixed(2)}`}</span>
-          <OwnPart {...totals} />
+      <Card className="overflow-hidden">
+        <CardContent className="space-y-4 p-4 sm:p-6">
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span className={`h-2.5 w-2.5 rounded-full ${statement ? "bg-emerald-500" : "bg-muted-foreground"}`} />
+            {statement ? "Estado de cuenta cargado" : "Consumo registrado"}
+            <span className="ml-auto text-xs">{getMonthName(selectedMonth)} {selectedYear}</span>
+          </div>
+          <div className="grid gap-5 md:grid-cols-[minmax(0,1.2fr)_minmax(220px,0.8fr)] md:items-end">
+            <div>
+              <p className="text-sm text-muted-foreground">{statement ? "Pago total del estado" : "Total registrado del mes (en soles)"}</p>
+              <p className="mt-1 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
+                {formatCurrency(statement?.totalDue ?? totals.paid, statement?.currency ?? "PEN")}
+              </p>
+              {!statement && <OwnPart {...totals} />}
+            </div>
+            <div className="space-y-2 border-t pt-3 text-sm md:border-l md:border-t-0 md:pl-5 md:pt-0">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Consumo del mes</p>
+              {currencySummary.length ? currencySummary.map(([currency, amount]) => (
+                <div key={currency} className="flex items-center justify-between gap-3">
+                  <span className="flex items-center gap-2 text-muted-foreground"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: currency === "USD" ? "#38bdf8" : card.color ?? "#818cf8" }} />{currency === "USD" ? "Consumo dólares" : currency === "PEN" ? "Consumo soles" : `Consumo ${currency}`}</span>
+                  <strong className="tabular-nums">{formatCurrency(amount, currency)}</strong>
+                </div>
+              )) : <p className="text-muted-foreground">Sin consumos en este período</p>}
+            </div>
+          </div>
         </CardContent>
       </Card>
+
+      <a href="/reconocimiento" className="flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-primary/10 px-4 py-4 text-center font-semibold text-foreground transition-colors hover:bg-primary/15">
+        <FileText className="h-5 w-5" /> Ver estados de cuenta
+      </a>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Card><CardContent className="flex min-h-24 items-center justify-between gap-3 p-4">
+          <div><p className="text-sm text-muted-foreground">Cierre de facturación</p><p className="mt-1 text-lg font-semibold">{statement?.periodEnd ? formatDate(statement.periodEnd) : card.billingCloseDay ? `Día ${card.billingCloseDay}` : "Sin fecha"}</p></div>
+          <CalendarDays className="h-8 w-8 text-muted-foreground/35" />
+        </CardContent></Card>
+        <Card><CardContent className="flex min-h-24 items-center justify-between gap-3 p-4">
+          <div><p className="text-sm text-muted-foreground">Último día de pago</p><p className="mt-1 text-lg font-semibold">{statement?.dueDate ? formatDate(statement.dueDate) : card.paymentDueDay ? `Día ${card.paymentDueDay}` : "Sin fecha"}</p></div>
+          <Clock3 className="h-8 w-8 text-muted-foreground/35" />
+        </CardContent></Card>
+      </div>
+
+      <section className="space-y-3">
+        <h3 className="text-xl font-semibold">Resumen de pago de <span className="text-primary">{getMonthName(selectedMonth).toLowerCase()}</span></h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {currencySummary.map(([currency, amount]) => {
+            const minimumForCurrency = statement?.currency === currency ? statement.minimumDue : null;
+            return (
+              <Card key={currency} className="bg-primary/[0.04]">
+                <CardContent className="grid grid-cols-2 gap-4 p-4 sm:p-5">
+                  <div className="space-y-3 border-r pr-4">
+                    <h4 className="font-semibold">{currency === "USD" ? "Dólares" : currency === "PEN" ? "Soles" : currency}</h4>
+                    <div><p className="text-sm text-muted-foreground">Pago total mes</p><p className="mt-1 text-lg font-bold tabular-nums">{formatCurrency(amount, currency)}</p></div>
+                  </div>
+                  <div className="space-y-3">
+                    <h4 className="font-semibold">Pago mínimo</h4>
+                    <div><p className="text-sm text-muted-foreground">Del estado de cuenta</p><p className="mt-1 text-lg font-bold tabular-nums">{minimumForCurrency == null ? "—" : formatCurrency(minimumForCurrency, currency)}</p></div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+          {!currencySummary.length && <Card><CardContent className="p-4 text-sm text-muted-foreground">No hay movimientos registrados para este mes.</CardContent></Card>}
+        </div>
+      </section>
 
       <Tabs defaultValue="expenses" className="space-y-4">
       <TabsList>

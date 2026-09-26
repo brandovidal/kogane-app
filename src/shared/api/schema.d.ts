@@ -1112,6 +1112,329 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What the sign-in page offers (Google only when it is set up) */
+        get: operations["AuthController_config_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign in with email or mobile and password (5 failures lock that identifier for 15 minutes) */
+        post: operations["AuthController_login_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign out: the session is deleted and the cookie cleared */
+        post: operations["AuthController_logout_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The signed-in user (401 SESSION_REQUIRED without a session) */
+        get: operations["AuthController_me_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/impersonation/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A superadmin who entered as another user goes back to their own account */
+        post: operations["AuthController_stopImpersonation_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/invite/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whose invitation it is (410 INVITE_INVALID when it expired or was used) */
+        get: operations["AuthController_invite_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/accept-invite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Open an invitation with a password: the email is proven by the link; they are signed in */
+        post: operations["AuthController_acceptInvite_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set or change the password (the current one is required when there is one) */
+        post: operations["AuthController_password_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where to send the browser to sign in with Google (keeps a state cookie, one use) */
+        get: operations["AuthController_google_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/google/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Start linking Google to the signed-in account; the Google email must match */
+        get: operations["AuthController_googleLink_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/google/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where Google sends the browser back: signs in and redirects to the web (a browser route) */
+        get: operations["AuthController_googleCallback_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/telegram-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A t.me link that links a Telegram chat to this user (15 minutes, one use) */
+        post: operations["AuthController_telegramLink_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/telegram": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Unlink the Telegram chat of this user */
+        delete: operations["AuthController_unlinkTelegram_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The users and the invitations still open */
+        get: operations["UsersController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/users/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invite an email: emails it when the mail is set up and returns the link either way (shown once, valid for 7 days) */
+        post: operations["UsersController_invite_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/users/invites/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Cancel an invitation */
+        delete: operations["UsersController_revoke_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/users/{id}/impersonate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Superadmin: enter as another user for a few hours (the history records the superadmin as the actor) */
+        post: operations["UsersController_impersonate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Give admin or member, or activate / disable (disabling closes their sessions) */
+        patch: operations["UsersController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/superadmins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create or promote a superadmin (backdoor): returns the link to define a password */
+        post: operations["AdminController_createSuperadmin_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/imports/notion": {
         parameters: {
             query?: never;
@@ -3747,6 +4070,215 @@ export interface components {
                 };
             };
         };
+        AuthConfigResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @description Google sign-in is set up */
+                google: boolean;
+                /** @description Invitations can be emailed */
+                mail: boolean;
+            };
+        };
+        LoginDto: {
+            /** @description The email, or the mobile an admin registered (9 digits) */
+            identifier: string;
+            password: string;
+        };
+        SessionUserResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                name: string;
+                email: string;
+                phone: string | null;
+                /** @enum {string} */
+                role: "superadmin" | "admin" | "member";
+                /** @enum {string} */
+                status: "invited" | "active" | "disabled";
+                hasPassword: boolean;
+                googleLinked: boolean;
+                telegramLinked: boolean;
+                /** Format: date-time */
+                lastLoginAt: string | null;
+                /** @description A superadmin who entered as this user (the backdoor): the web shows a banner to go back */
+                impersonatedBy: {
+                    id: string;
+                    name: string;
+                } | null;
+            };
+        };
+        InvitePreviewResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                email: string;
+                /** @enum {string} */
+                role: "superadmin" | "admin" | "member";
+            };
+        };
+        AcceptInviteDto: {
+            token: string;
+            /** @description Their name; the part of the email before @ by default */
+            name?: string;
+            password: string;
+        };
+        ChangePasswordDto: {
+            /** @description Required when the account already has a password */
+            current?: string;
+            next: string;
+        };
+        GoogleStartResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @description Where to send the browser to sign in */
+                url: string;
+            };
+        };
+        TelegramLinkResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                /** @description t.me link that opens the bot with the code */
+                url: string;
+                /** Format: date-time */
+                expiresAt: string;
+            };
+        };
+        UsersListResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                users: {
+                    id: string;
+                    name: string;
+                    email: string;
+                    phone: string | null;
+                    /** @enum {string} */
+                    role: "superadmin" | "admin" | "member";
+                    /** @enum {string} */
+                    status: "invited" | "active" | "disabled";
+                    hasPassword: boolean;
+                    googleLinked: boolean;
+                    telegramLinked: boolean;
+                    /** Format: date-time */
+                    lastLoginAt: string | null;
+                    /** @description A superadmin who entered as this user (the backdoor): the web shows a banner to go back */
+                    impersonatedBy: {
+                        id: string;
+                        name: string;
+                    } | null;
+                }[];
+                invites: {
+                    id: string;
+                    email: string;
+                    /** @enum {string} */
+                    role: "superadmin" | "admin" | "member";
+                    /** Format: date-time */
+                    expiresAt: string;
+                    /** Format: date-time */
+                    createdAt: string;
+                }[];
+            };
+        };
+        CreateInviteDto: {
+            email: string;
+            /**
+             * @default member
+             * @enum {string}
+             */
+            role: "admin" | "member";
+            /**
+             * @description Also email the invitation (only when the mail is set up)
+             * @default true
+             */
+            send: boolean;
+        };
+        CreatedInviteResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                id: string;
+                email: string;
+                /** @enum {string} */
+                role: "superadmin" | "admin" | "member";
+                /** Format: date-time */
+                expiresAt: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** @description The link to hand over: shown once, only its hash is kept */
+                url: string;
+                /** @description The invitation went out by email too */
+                emailed: boolean;
+            };
+        };
+        UpdateUserDto: {
+            /** @enum {string} */
+            role?: "admin" | "member";
+            /** @enum {string} */
+            status?: "active" | "disabled";
+        };
+        CreateSuperadminDto: {
+            email: string;
+            name?: string;
+            phone?: string;
+            /** @description DNI: goes to their Yo (D94), never back in the clear */
+            documentNumber?: string;
+        };
+        SuperadminCreatedResponseDto: {
+            /** @enum {boolean} */
+            success: true;
+            code: string;
+            status: number;
+            message: string;
+            data: {
+                user: {
+                    id: string;
+                    name: string;
+                    email: string;
+                    phone: string | null;
+                    /** @enum {string} */
+                    role: "superadmin" | "admin" | "member";
+                    /** @enum {string} */
+                    status: "invited" | "active" | "disabled";
+                    hasPassword: boolean;
+                    googleLinked: boolean;
+                    telegramLinked: boolean;
+                    /** Format: date-time */
+                    lastLoginAt: string | null;
+                    /** @description A superadmin who entered as this user (the backdoor): the web shows a banner to go back */
+                    impersonatedBy: {
+                        id: string;
+                        name: string;
+                    } | null;
+                };
+                /** @description The link to define a password (7 days, one use); Google needs nothing */
+                url: string;
+            };
+        };
         ImportDetailResponseDto: {
             /** @enum {boolean} */
             success: true;
@@ -6013,6 +6545,8 @@ export interface operations {
     HistoryController_list_v1: {
         parameters: {
             query?: {
+                /** @description A group of screens in the app */
+                module?: "expenses" | "debts" | "commitments" | "budget" | "settings" | "imports";
                 /** @description The table: exp_fixed_costs, cat_people… */
                 entity?: string;
                 /** @description One record (with entity) */
@@ -6059,6 +6593,410 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HistoryPageResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_config_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthConfigResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_login_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_logout_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_me_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_stopImpersonation_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_invite_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitePreviewResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_acceptInvite_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptInviteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_password_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_google_v1: {
+        parameters: {
+            query?: {
+                /** @description A path of the web to go back to after signing in */
+                returnTo?: string;
+                /** @description The token of an invitation, when they came from its link */
+                invite?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleStartResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_googleLink_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleStartResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_googleCallback_v1: {
+        parameters: {
+            query?: {
+                code?: string;
+                state?: string;
+                error?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Redirect to the web: the page asked for, or /entrar?error=… */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_telegramLink_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TelegramLinkResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_unlinkTelegram_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    UsersController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsersListResponseDto"];
+                };
+            };
+        };
+    };
+    UsersController_invite_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInviteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedInviteResponseDto"];
+                };
+            };
+        };
+    };
+    UsersController_revoke_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmptyResponseDto"];
+                };
+            };
+        };
+    };
+    UsersController_impersonate_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserResponseDto"];
+                };
+            };
+        };
+    };
+    UsersController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserResponseDto"];
+                };
+            };
+        };
+    };
+    AdminController_createSuperadmin_v1: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ADMIN_BOOTSTRAP_KEY */
+                "x-admin-key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSuperadminDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuperadminCreatedResponseDto"];
                 };
             };
         };

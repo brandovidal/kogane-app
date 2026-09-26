@@ -38,6 +38,15 @@ Todo lo que no se guardó: lo que mandaste a 📝 Borrador, lo que quedó abiert
 
 En Telegram, `/borrador` muestra lo mismo con *Retomar* y *Descartar*. Las capturas y audios se guardan 7 días mientras están en Borrador; si guardas el gasto, se conservan.
 
+## Entrar y usuarios
+
+- **Entrar**: `/entrar` con tu correo (o el celular que registró un administrador) y contraseña, o con Google. Nadie se registra solo: un administrador te manda un **enlace de invitación** (7 días, un solo uso); al abrirlo eliges una contraseña o entras con Google usando ese correo.
+- Cada usuario ve solo lo suyo: gastos, deudas, presupuesto, categorías, personas y tarjetas. Una cuenta nueva empieza con sus grupos de presupuesto, categorías y su «Yo».
+- **Perfil** (menú de arriba a la derecha): cambiar o definir la contraseña y **Vincular Telegram**: abre el bot con tu código; desde ese momento lo que mandes al bot se guarda en tu cuenta.
+- **Configuración ▸ Usuarios** (admin): invitar (si el correo está configurado, la invitación también sale por correo; siempre te da el enlace por si acaso), dar admin o miembro, activar o desactivar (desactivar cierra sus sesiones al instante).
+- **Superadmin** (solo se crea con `make superadmin` o la puerta trasera): puede todo lo que hacen los demás roles y, en Usuarios, **Entrar como** otro usuario unas horas, para ver lo que ve o arreglar algo. Se nota (aviso «Viendo como…») y el historial anota que fue el superadmin.
+- Si tu sesión vence, cualquier pantalla te lleva a Entrar y vuelves a donde estabas.
+
 ## Cobros y deudas
 
 - *le presté 100 a dany* o *dany me prestó 50* registra la deuda; *iphone 1200 en 3 cuotas para dany* crea las 3 cuotas, una por mes.

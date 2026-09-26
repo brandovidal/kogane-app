@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/shared/components/ThemeToggle";
 import { MonthNavigator } from "@/shared/components/MonthNavigator";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
 import { SalaryEditor } from "@/shared/components/SalaryEditor";
+import { UserMenu } from "@/features/auth/components/UserMenu";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { Toaster } from "@/ui/sonner";
 
@@ -47,6 +48,7 @@ const hasLocalPeriodControl = [
           <SalaryEditor client:idle />
           <NotificationBell client:idle currentPath={currentPath} />
           <ThemeToggle client:idle />
+          <UserMenu client:load />
         </div>
       </header>
 

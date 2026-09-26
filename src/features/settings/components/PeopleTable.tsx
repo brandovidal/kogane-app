@@ -6,7 +6,7 @@ import { usePeople, useSavePerson } from "@/shared/api/hooks/catalogs";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
@@ -22,10 +22,13 @@ export function PeopleTable() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Users className="h-4 w-4" /> Personas
-        </CardTitle>
+      <CardHeader className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+        <div className="space-y-1">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Users className="h-4 w-4" /> Personas
+          </CardTitle>
+          <CardDescription>Esta lista pertenece a tu cuenta; cada usuario administra sus propias personas y alias.</CardDescription>
+        </div>
         <Button size="sm" onClick={() => setEditing(null)}>
           <Plus className="mr-1 h-4 w-4" /> Nueva persona
         </Button>

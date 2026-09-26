@@ -44,7 +44,11 @@ Workers & Pages → `kogane-app` → **Configuración → Compilación**:
 
 (Las "variables de compilación" solo existen durante el build; `API_URL` y `API_KEY` van como secretos del Worker.)
 
-## 2. Login con Cloudflare Access (D53)
+## 2. Login
+
+Desde P23 la web tiene login propio (`/entrar`: correo o celular + contraseña, o Google, solo con invitación); ver `kogane-api/docs/deploy.md` sección 5c para crear al dueño y al superadmin. La cookie de sesión la reenvía el proxy `/api`; no hay variables nuevas en el Worker. Cloudflare Access queda opcional (segunda capa).
+
+### Cloudflare Access (D53, opcional)
 
 1. Workers & Pages → `kogane-app` → **Settings → Domains & Routes** → activar **Cloudflare Access** en `workers.dev` (un clic; también protege las URLs de preview).
 2. En la política, **Include → Emails →** tu correo. Método de ingreso: **One-time PIN** (código al correo).

@@ -1,0 +1,12 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { LoginPage } from "@/features/auth/components/LoginPage";
+import { Toaster } from "@/ui/sonner";
+
+export const prerender = true;
+---
+
+<Layout title="Entrar">
+  <LoginPage client:load />
+  <Toaster client:idle />
+</Layout>

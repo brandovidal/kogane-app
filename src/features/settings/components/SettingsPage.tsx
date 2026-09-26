@@ -13,7 +13,9 @@ import { Save, DollarSign, PieChart, Palette } from "lucide-react";
 import { AccountsTable } from "./AccountsTable";
 import { PeopleTable } from "./PeopleTable";
 import { NotificationSettingsCard } from "./NotificationSettingsCard";
+import { UsersPanel } from "@/features/auth/components/UsersPanel";
 import { HistoryPanel } from "@/features/history/components/HistoryPanel";
+import { useMe } from "@/shared/api/hooks/auth";
 import { formatCurrency } from "@/shared/lib/currency";
 
 const TABS = [
@@ -23,6 +25,7 @@ const TABS = [
   ["cuentas", "Cuentas y tarjetas"],
   ["notificaciones", "Notificaciones"],
   ["historial", "Historial"],
+  ["usuarios", "Usuarios"], // admins only (P23)
 ] as const;
 type SettingsTab = (typeof TABS)[number][0];
 
@@ -80,6 +83,8 @@ function BudgetSwitches() {
 // Salary and limit are per month (bud_monthly_budgets): this edits the month on screen
 function SettingsPageView() {
   const [tab, setTab] = useTabInUrl();
+  const { data: me } = useMe();
+  const isAdmin = me?.role === "admin" || me?.role === "superadmin";
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const summary = useSummary(month, year).data;
@@ -107,7 +112,7 @@ function SettingsPageView() {
     <div className="max-w-4xl">
       <Tabs value={tab} onValueChange={(value) => setTab(value as SettingsTab)}>
         <TabsList className="flex h-auto flex-wrap">
-          {TABS.map(([key, label]) => (
+          {TABS.filter(([key]) => key !== "usuarios" || isAdmin).map(([key, label]) => (
             <TabsTrigger key={key} value={key}>
               {label}
             </TabsTrigger>
@@ -227,6 +232,12 @@ function SettingsPageView() {
         <TabsContent value="historial" className="mt-4">
           <HistoryPanel />
         </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="usuarios" className="mt-4">
+            <UsersPanel />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

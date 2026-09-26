@@ -7,7 +7,12 @@ const config = { apiUrl: 'https://kogane-api.up.railway.app', apiKey: 'secret-ke
 describe('/api proxy', () => {
   it('should forward to kogane-api with the API key and the query string', () => {
     const request = new Request('https://kogane-app.dev/api/v1/debts?personId=p1', {
-      headers: { accept: 'application/json', cookie: 'CF_Authorization=abc', 'x-api-key': 'from-browser' },
+      headers: {
+        accept: 'application/json',
+        cookie: 'CF_Authorization=abc; kogane_session=tok; other=1',
+        'x-api-key': 'from-browser',
+        'x-admin-key': 'from-browser',
+      },
     })
 
     const upstream = buildProxyRequest('v1/debts', request, config)
@@ -16,8 +21,10 @@ describe('/api proxy', () => {
     expect(upstream?.method).toBe('GET')
     expect(upstream?.headers.get('x-api-key')).toBe('secret-key')
     expect(upstream?.headers.get('accept')).toBe('application/json')
-    // Access cookies and whatever the browser sends stay in Astro
-    expect(upstream?.headers.get('cookie')).toBeNull()
+    // Only the cookie of the session goes along (P23); Access cookies and whatever else the browser sends stay in Astro
+    expect(upstream?.headers.get('cookie')).toBe('kogane_session=tok')
+    expect(upstream?.headers.get('x-admin-key')).toBeNull() // the backdoor is not for the web
+    expect(upstream?.redirect).toBe('manual')
   })
 
   it('should forward the body and content type of writes', async () => {
@@ -50,6 +57,19 @@ describe('/api proxy', () => {
     expect(response.headers.get('content-type')).toContain('application/json')
     expect(response.headers.get('set-cookie')).toBeNull()
     await expect(response.json()).resolves.toEqual({ success: false, code: 'DEBT_NOT_FOUND' })
+  })
+
+  it('should hand the browser the session cookie and the redirect of a sign-in, and no other cookie', () => {
+    const upstream = new Response(null, { status: 302, headers: { location: 'https://kogane-app.dev/' } })
+    upstream.headers.append('set-cookie', 'kogane_session=abc; Path=/; HttpOnly')
+    upstream.headers.append('set-cookie', 'kogane_oauth=; Path=/; Max-Age=0')
+    upstream.headers.append('set-cookie', 'tracking=1')
+
+    const response = toProxyResponse(upstream)
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe('https://kogane-app.dev/')
+    expect(response.headers.getSetCookie()).toEqual(['kogane_session=abc; Path=/; HttpOnly', 'kogane_oauth=; Path=/; Max-Age=0'])
   })
 
   it('should keep the file name of a download (Excel / PDF)', async () => {

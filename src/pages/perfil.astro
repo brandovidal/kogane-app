@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { ProfilePage } from "@/features/auth/components/ProfilePage";
+---
+
+<DashboardLayout title="Perfil">
+  <ProfilePage client:load />
+</DashboardLayout>

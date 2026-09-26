@@ -13,9 +13,16 @@ import { ENTITY_LABELS, SOURCE_LABELS } from "../history-view";
 import { HistoryTimeline } from "./HistoryTimeline";
 
 const ALL = "__all__";
-// Only what the triggers watch (and the events of the imports)
 const ENTITIES = Object.keys(ENTITY_LABELS);
-const KEYS = ["entity", "source", "from", "to", "page"] as const;
+const MODULES = [
+  { key: "expenses", label: "Gastos", entities: ["exp_daily_expenses", "exp_fixed_costs", "exp_subscriptions", "exp_credit_card_expenses", "exp_recurring_expenses"] },
+  { key: "debts", label: "Cobros y deudas", entities: ["exp_debts", "exp_debt_payments"] },
+  { key: "commitments", label: "Préstamos e inversiones", entities: ["exp_commitments", "exp_contributions"] },
+  { key: "budget", label: "Presupuesto", entities: ["bud_monthly_budgets", "bud_budget_groups", "bud_category_budgets", "bud_incomes", "bud_settings"] },
+  { key: "settings", label: "Configuración", entities: ["cat_people", "cat_payment_methods", "cat_card_holders", "cat_categories", "ntf_settings"] },
+  { key: "imports", label: "Reconocimiento / importación", entities: ["imp_batches", "imp_statements"] },
+] as const;
+const KEYS = ["module", "entity", "source", "from", "to", "page"] as const;
 type HistoryFilters = Partial<Record<(typeof KEYS)[number], string>>;
 
 // Configuración ▸ Historial: every change, paginated; the filters go in a side panel and stay in the URL (D98)
@@ -24,6 +31,7 @@ export function HistoryPanel() {
   const [open, setOpen] = useState(false);
   const page = Math.max(Number(filters.page) || 1, 1);
   const query: HistoryFilter = {
+    module: filters.module as HistoryFilter["module"],
     entity: filters.entity,
     source: filters.source as HistoryFilter["source"],
     from: filters.from,
@@ -31,9 +39,11 @@ export function HistoryPanel() {
     page,
   };
   const { data, isLoading, isError } = useHistory(query);
-  const active = ["entity", "source", "from", "to"].filter((key) => filters[key as keyof HistoryFilters]).length;
+  const active = Number(Boolean(filters.module || filters.entity)) + ["source", "from", "to"].filter((key) => filters[key as keyof HistoryFilters]).length;
   const set = (key: keyof HistoryFilters, value: string | undefined) => setFilters({ ...filters, [key]: value || undefined, page: undefined });
   const pages = data ? Math.max(Math.ceil(data.total / data.pageSize), 1) : 1;
+  const selectedModule = MODULES.find((module) => module.key === filters.module);
+  const screens = selectedModule?.entities ?? ENTITIES;
 
   return (
     <div className="space-y-4">
@@ -47,19 +57,25 @@ export function HistoryPanel() {
           <SheetContent className="w-full max-w-sm">
             <SheetHeader>
               <SheetTitle>Filtros</SheetTitle>
-              <SheetDescription>Se aplican al momento y quedan en la dirección de la página.</SheetDescription>
-            </SheetHeader>
-            <div className="flex flex-col gap-3 px-4">
-              <Select value={filters.entity ?? ALL} onValueChange={(value) => set("entity", value === ALL ? undefined : value)}>
-                <SelectTrigger aria-label="Qué cambió" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
+            <SheetDescription>Revisa todo el historial o filtra por módulo y pantalla. Los filtros quedan en la dirección de la página.</SheetDescription>
+          </SheetHeader>
+          <div className="flex flex-col gap-3 px-4">
+              <Select
+                value={filters.module ?? ALL}
+                onValueChange={(value) => setFilters({ ...filters, module: value === ALL ? undefined : value, entity: undefined, page: undefined })}
+              >
+                <SelectTrigger aria-label="Módulo" className="w-full"><SelectValue placeholder="Módulo: todos" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={ALL}>Qué cambió: todo</SelectItem>
-                  {ENTITIES.map((entity) => (
-                    <SelectItem key={entity} value={entity}>
-                      {ENTITY_LABELS[entity]}
-                    </SelectItem>
+                  <SelectItem value={ALL}>Módulo: todos</SelectItem>
+                  {MODULES.map((module) => <SelectItem key={module.key} value={module.key}>{module.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={filters.entity ?? ALL} onValueChange={(value) => set("entity", value === ALL ? undefined : value)}>
+                <SelectTrigger aria-label="Pantalla" className="w-full"><SelectValue placeholder="Pantalla: todas" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL}>Pantalla: todas</SelectItem>
+                  {screens.map((entity) => (
+                    <SelectItem key={entity} value={entity}>{ENTITY_LABELS[entity] ?? entity}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

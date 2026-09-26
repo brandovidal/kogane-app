@@ -1,5 +1,6 @@
 import createClient from 'openapi-fetch'
 
+import { loginUrl } from '../lib/auth-redirect'
 import type { components, paths } from './schema'
 
 // Typed client of kogane-api through the Astro proxy (D56). Types: `pnpm api:types` with kogane-api running.
@@ -21,6 +22,14 @@ export const apiFetch: typeof fetch = async (input, init) => {
 
   try {
     const response = await fetch(input, init)
+    // No session (or it expired): sign in, and come back to this page (P23)
+    if (response.status === 401 && !window.location.pathname.startsWith('/entrar')) {
+      const body = (await response.clone().json().catch(() => null)) as { code?: string } | null
+      if (body?.code === 'SESSION_REQUIRED') {
+        window.location.replace(loginUrl(`${window.location.pathname}${window.location.search}`))
+        return response
+      }
+    }
     if (response.status === 503) {
       const body = (await response.clone().json().catch(() => null)) as { code?: string } | null
       if (body?.code === 'API_UNAVAILABLE') recoveryPageUrl()
