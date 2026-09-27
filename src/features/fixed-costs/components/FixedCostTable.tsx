@@ -21,8 +21,14 @@ import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/ui/select";
-import { Plus } from "lucide-react";
+import { ChevronDown, FileSpreadsheet, FileText, Plus } from "lucide-react";
 import { RowActions } from "@/shared/components/RowActions";
 import {
   MoveSeriesDialog,
@@ -49,6 +55,9 @@ import {
   type ExpenseFilterValues,
 } from "@/shared/lib/expense-filters";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
+import { ActiveExpenseFilterChips } from "@/shared/components/ActiveExpenseFilterChips";
+import { downloadCsv } from "@/shared/lib/export-csv";
+import { EXPENSE_TYPE_LABELS } from "@/shared/labels";
 
 const FILTERS: ExpenseFilterKey[] = [
   "person",
@@ -88,6 +97,44 @@ function FixedCostTableView() {
   const totals = totalsOf(filtered);
   const [view, setView] = useViewMode("fixed-costs", "table");
   const [groupBy, setGroupBy] = useState("none");
+  const groupLabel = groupBy === "none" ? "" : groupBy === "person" ? "Por persona" : "Por categoría";
+
+  const csvHeaders = ["Descripción", "Categoría", "Monto", "Moneda", "Estado", "Tipo", "Persona", "Vencimiento", "Cuenta", "Cuota"];
+  const csvRows = filtered.map((fc) => [
+    fc.description,
+    categories.find((category) => category.id === fc.categoryId)?.name ?? "",
+    fc.amount,
+    fc.currency,
+    PAYMENT_STATUS_LABELS[fc.paymentStatus] ?? fc.paymentStatus,
+    EXPENSE_TYPE_LABELS[fc.expenseType] ?? fc.expenseType,
+    personName(fc.personId),
+    fc.dueDate ? formatDate(fc.dueDate) : "",
+    accountName(fc.paymentMethodId),
+    fc.installment ?? "",
+  ]);
+  const exportFileName = `costos-fijos-${selectedYear}-${String(selectedMonth).padStart(2, "0")}`;
+  const exportActions = (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="h-9">
+            Exportar <ChevronDown className="h-3.5 w-3.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onSelect={() => downloadCsv(`${exportFileName}-excel.csv`, csvHeaders, csvRows, { delimiter: ";" })}>
+            <FileSpreadsheet /> Exportar para Excel (.csv)
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => downloadCsv(`${exportFileName}.csv`, csvHeaders, csvRows)}>
+            <FileText /> Exportar CSV
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button size="sm" onClick={() => openNewExpense({ destination: "fixed_cost" })}>
+        <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
+      </Button>
+    </>
+  );
 
   const columns: Column<FixedCost>[] = [
     {
@@ -223,7 +270,7 @@ function FixedCostTableView() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="space-y-2">
         <ExpenseFilters
           fields={FILTERS}
           value={filters}
@@ -231,7 +278,18 @@ function FixedCostTableView() {
           statuses={PAYMENT_STATUSES}
           personInPanel
           description="Filtra por persona, categoría, medio de pago, moneda, estado, tipo o costos compartidos."
+          fieldDescriptions={{
+            person: "Elige una persona o muestra los costos de todos.",
+            category: "Muestra solo los costos de una categoría.",
+            method: "Filtra por la cuenta o medio de pago utilizado.",
+            currency: "Limita los resultados a una moneda.",
+            status: "Separa costos pendientes, pagados u otros estados.",
+            type: "Distingue entre gastos necesarios y gustos.",
+            shared: "Muestra costos compartidos o solo los tuyos.",
+          }}
           countLabel="costos fijos"
+          rightActions={exportActions}
+          showActiveSummary={false}
           shown={filtered.length}
           total={fixedCosts.length}
           groupBy={groupBy}
@@ -241,14 +299,17 @@ function FixedCostTableView() {
             { value: "category", label: "Por categoría" },
           ]}
         />
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <ActiveExpenseFilterChips
+            fields={FILTERS}
+            value={filters}
+            onChange={setFilters}
+            me={me}
+            groupBy={groupBy}
+            onGroupByChange={setGroupBy}
+            groupByLabel={groupLabel}
+          />
           <ViewToggle value={view} onChange={setView} />
-          <Button
-            size="sm"
-            onClick={() => openNewExpense({ destination: "fixed_cost" })}
-          >
-            <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
-          </Button>
         </div>
       </div>
 
