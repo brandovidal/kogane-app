@@ -22,7 +22,11 @@ import type { MonthlyPeriod } from "@/shared/types/period";
 import { Button } from "@/ui/button";
 
 function IncomesPageView() {
-  useUrlPeriod({ minYear: PERIOD_YEAR_MIN, maxYear: PERIOD_YEAR_MAX });
+  useUrlPeriod({
+    minYear: PERIOD_YEAR_MIN,
+    maxYear: PERIOD_YEAR_MAX,
+    defaultToCurrent: true,
+  });
   const month = usePeriod((state) => state.month);
   const year = usePeriod((state) => state.year);
   const setPeriod = usePeriod((state) => state.setPeriod);

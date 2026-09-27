@@ -10,9 +10,13 @@ import { periodStore } from "@/shared/stores/period.store";
 export function useUrlPeriod({
   minYear = 1,
   maxYear = 9999,
-}: { minYear?: number; maxYear?: number } = {}) {
+  defaultToCurrent = false,
+}: { minYear?: number; maxYear?: number; defaultToCurrent?: boolean } = {}) {
   useEffect(() => {
-    const initial = periodStore.getState();
+    const today = new Date();
+    const initial = defaultToCurrent
+      ? { month: today.getMonth() + 1, year: today.getFullYear() }
+      : periodStore.getState();
     const write = () => {
       const { month, year } = periodStore.getState();
       replaceUrlValues(URL_PERIOD_KEYS, {
@@ -46,5 +50,5 @@ export function useUrlPeriod({
       window.removeEventListener("popstate", restore);
       window.removeEventListener(URL_STATE_CHANGE_EVENT, restore);
     };
-  }, [minYear, maxYear]);
+  }, [minYear, maxYear, defaultToCurrent]);
 }

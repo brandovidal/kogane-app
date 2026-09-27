@@ -11,3 +11,4 @@ export { FixedCostScheduleSection } from "./FixedCostScheduleSection";
 export { getFixedCostColumns } from "./fixed-cost-columns";
 export { FixedCostBulkActionsSection } from "./FixedCostBulkActionsSection";
 export { FixedCostDetailHistorySection } from "./FixedCostDetailHistorySection";
+export type { FixedCostDetailHistorySectionProps } from "./FixedCostDetailHistorySection";

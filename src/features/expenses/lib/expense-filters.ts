@@ -78,6 +78,19 @@ export function applyExpenseFilters<T extends FilterableExpense>(
 export const hasActiveFilters = (filters: ExpenseFilterValues) =>
   Object.values(filters).some((value) => value != null && value !== "");
 
+export function countActiveExpenseFilters(
+  filters: ExpenseFilterValues,
+  fields: readonly ExpenseFilterKey[],
+) {
+  return fields.filter((key) => {
+    const value = filters[key];
+    if (value == null || value === "") return false;
+    if (key === "q") return !!value.trim();
+    if (key === "person") return value !== PERSON_ALL;
+    return true;
+  }).length;
+}
+
 // Larger sets of filters use the sheet instead of inline controls.
 export const usesPanel = (fields: ExpenseFilterKey[]) =>
   fields.filter((key) => PANEL_FILTER_KEYS.includes(key)).length >

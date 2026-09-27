@@ -81,7 +81,7 @@ export function FilterSelect({
   const hasSearchTerms = options.some((option) => option.searchTerms?.length);
 
   return (
-    <div className="block space-y-1.5">
+    <div className="block min-w-0 space-y-1.5">
       <div className={labelClassName}>
         <FieldLabel icon={icon}>{label}</FieldLabel>
       </div>
@@ -102,7 +102,9 @@ export function FilterSelect({
         >
           <ComboboxTrigger aria-label={label} className={cn(width)}>
             {selectedOption?.decoration}
-            <ComboboxValue placeholder={allLabel} />
+            <span className="min-w-0 flex-1 truncate text-left">
+              <ComboboxValue placeholder={allLabel} />
+            </span>
             <ChevronDown className="size-4 shrink-0 opacity-50" />
           </ComboboxTrigger>
           <ComboboxContent

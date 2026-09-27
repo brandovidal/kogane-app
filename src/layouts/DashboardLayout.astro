@@ -8,6 +8,7 @@ import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDi
 import { UserMenu } from "@/features/auth/components/UserMenu";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { Toaster } from "@/ui/sonner";
+import NavTooltipLayer from "@/layouts/components/navigation/NavTooltipLayer.astro";
 
 interface Props {
   title?: string;
@@ -59,4 +60,5 @@ const hasLocalPeriodControl = [
     </div>
   </div>
   <Toaster client:idle />
+  <NavTooltipLayer />
 </Layout>

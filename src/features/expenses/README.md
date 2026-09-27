@@ -9,7 +9,8 @@ desde `ui`. Las reglas específicas de gastos permanecen en esta feature.
 - `types/expense-filters.ts`: contratos de los valores, campos y registros filtrables. Los valores de cuotas y compartidos derivan de sus constantes.
 - `hooks/useExpensePersonOptions.ts`: prepara «Yo» y las demás personas activas, sin duplicar la persona predeterminada. Permite encontrar «Yo» por su nombre registrado (por ejemplo, Brando) y sus alias; las demás personas también se buscan por sus alias.
 - `components/filters/ExpenseFilters.tsx`: compone la barra y el sheet; actualiza el objeto de filtros.
-- `components/filters/ExpenseFilterFields.tsx`: presenta los campos usando `FilterSelect` directamente, incluido Persona.
+- `components/filters/ExpenseFilterFields.tsx`: presenta los campos usando `FilterSelect` directamente, incluido Persona. En el sheet, Período, Persona, Categoría y Estado forman una cuadrícula de filtros principales. Medio de pago, Moneda, Tipo, Compartidos, periodicidad y Vencimiento se agrupan en «Ver más filtros». Solo aparecen los campos disponibles de cada vista.
+- `shared/components/filters/MoreFilters.tsx`: sección reutilizable con Collapsible y Marker. El contador indica filtros adicionales activos aun cuando estén plegados; plegarlos conserva sus valores y sus parámetros en la URL.
 - `lib/expense-filters.ts`: aplica las reglas a los registros. Reexporta los contratos anteriores para conservar compatibilidad con consumidores existentes.
 
 «Todos» se representa como ausencia de filtro; se conserva `PERSON_ALL = "all"`

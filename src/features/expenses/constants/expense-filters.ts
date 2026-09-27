@@ -35,3 +35,11 @@ export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = [
   "year",
 ];
 export const PANEL_FILTER_THRESHOLD = 3;
+
+export const PRIMARY_PANEL_FILTER_KEYS: readonly ExpenseFilterKey[] = [
+  "month",
+  "year",
+  "person",
+  "category",
+  "status",
+];

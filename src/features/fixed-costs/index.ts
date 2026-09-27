@@ -46,6 +46,7 @@ export { useFixedCostTable } from "./hooks/useFixedCostTable";
 export { useFixedCostBulkActions } from "./hooks/useFixedCostBulkActions";
 export { FixedCostBulkActionsSection } from "./sections/FixedCostBulkActionsSection";
 export { FixedCostDetailHistorySection } from "./sections/FixedCostDetailHistorySection";
+export type { FixedCostDetailHistorySectionProps } from "./sections/FixedCostDetailHistorySection";
 export { FIXED_COST_BULK_LABELS } from "./constants/bulk-actions";
 export type {
   FixedCostBulkAction,

@@ -21,6 +21,11 @@ Las secciones del formulario necesitan el `FormProvider` que coloca `FixedCostDi
 Las cuotas usan `InstallmentFields` de `features/expenses`: dos entradas numéricas
 con `InputGroup`, guardadas en el formato `n/m` que espera la API.
 La pestaña de notas permite gestionar archivos cuando el registro ya existe.
+El detalle muestra Observación completa, con saltos de línea y enlaces HTTP(S)
+clicables, y una galería de adjuntos con miniaturas y visor de imágenes/PDF.
+El historial puede ocultarse desde su cabecera o desde el detalle. En escritorio
+cada columna tiene su propio scroll; en móvil se apilan en un sheet de ancho
+completo. El botón de ampliar permite ocupar todo el ancho en escritorio.
 El estado del listado usa `StatusBadge` de `features/expenses`, basado en `src/ui/badge`.
 Se modifica desde el menú de acciones o el formulario de edición.
 

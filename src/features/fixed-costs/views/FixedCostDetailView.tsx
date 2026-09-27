@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { History, Pencil } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { History, Maximize2, Minimize2, Pencil } from "lucide-react";
 import type { FixedCost } from "@/shared/api/types";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { getMonthName } from "@/shared/lib/dates";
@@ -33,8 +33,15 @@ export function FixedCostDetailView({
   onEdit,
 }: FixedCostDetailViewProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const historyTrigger = useRef<HTMLButtonElement>(null);
+  const collapseHistory = () => {
+    setHistoryOpen(false);
+    requestAnimationFrame(() => historyTrigger.current?.focus());
+  };
   useEffect(() => {
     setHistoryOpen(false);
+    setExpanded(false);
   }, [fixedCost?.id]);
   return (
     <Sheet open={!!fixedCost} onOpenChange={(open) => !open && onClose()}>
@@ -42,28 +49,61 @@ export function FixedCostDetailView({
         <SheetContent
           side="right"
           className={cn(
-            "w-full overflow-y-auto",
-            historyOpen ? "sm:max-w-4xl" : "sm:max-w-lg",
+            "w-full gap-0 overflow-hidden",
+            expanded
+              ? "sm:max-w-none"
+              : historyOpen
+                ? "sm:max-w-6xl"
+                : "sm:max-w-xl",
           )}
         >
-          <SheetHeader className="shrink-0 border-b pb-4 pr-12">
-            <SheetTitle className="flex flex-wrap items-center gap-2 text-left">
-              {fixedCost.description}
+          <SheetHeader className="min-w-0 shrink-0 border-b pb-4 pr-12 sm:pr-24">
+            <SheetTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left">
+              <span className="min-w-0 wrap-anywhere">
+                {fixedCost.description}
+              </span>
               <StatusBadge status={fixedCost.paymentStatus} />
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="wrap-anywhere">
               {categoryName} · {getMonthName(fixedCost.paymentMonth)}{" "}
               {fixedCost.paymentYear}
             </SheetDescription>
           </SheetHeader>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="absolute top-2.5 right-12 hidden sm:inline-flex"
+            aria-label={
+              expanded
+                ? "Reducir detalle"
+                : "Ampliar detalle a pantalla completa"
+            }
+            aria-pressed={expanded}
+            onClick={() => setExpanded((current) => !current)}
+          >
+            {expanded ? (
+              <Minimize2 aria-hidden="true" />
+            ) : (
+              <Maximize2 aria-hidden="true" />
+            )}
+          </Button>
           <div
-            className={cn("shrink-0", historyOpen && "md:grid md:grid-cols-2")}
+            className={cn(
+              "min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain",
+              historyOpen && "lg:grid lg:grid-cols-2 lg:overflow-hidden",
+            )}
           >
             <FixedCostDetailOverviewSection
               fixedCost={fixedCost}
               categoryName={categoryName}
               personName={personName}
               accountName={accountName}
+              className={
+                historyOpen
+                  ? "lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain"
+                  : undefined
+              }
               actions={
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Button size="sm" onClick={onEdit}>
@@ -71,6 +111,7 @@ export function FixedCostDetailView({
                     Editar costo fijo
                   </Button>
                   <Button
+                    ref={historyTrigger}
                     type="button"
                     variant={historyOpen ? "secondary" : "ghost"}
                     size="sm"
@@ -79,12 +120,17 @@ export function FixedCostDetailView({
                     onClick={() => setHistoryOpen((open) => !open)}
                   >
                     <History aria-hidden="true" className="size-4" />
-                    Historial
+                    {historyOpen ? "Ocultar historial" : "Ver historial"}
                   </Button>
                 </div>
               }
             />
-            {historyOpen && <FixedCostDetailHistorySection id={fixedCost.id} />}
+            {historyOpen && (
+              <FixedCostDetailHistorySection
+                id={fixedCost.id}
+                onCollapse={collapseHistory}
+              />
+            )}
           </div>
         </SheetContent>
       )}

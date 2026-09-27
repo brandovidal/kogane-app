@@ -1,6 +1,10 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { PeriodFields, type PeriodFieldsProps } from "./forms/PeriodFields";
 export { DataView } from "./data-display/DataView";
+export {
+  LinkifiedText,
+  type LinkifiedTextProps,
+} from "./data-display/LinkifiedText";
 export type { EmptyStateProps } from "./data-display/EmptyState";
 export { EmptyState } from "./data-display/EmptyState";
 export { GroupedDataView } from "./data-display/GroupedDataView";
@@ -17,6 +21,7 @@ export type {
   FilterSelectProps,
 } from "./filters/FilterSelect";
 export { FilterSelect } from "./filters/FilterSelect";
+export { MoreFilters, type MoreFiltersProps } from "./filters/MoreFilters";
 export type { SearchFieldProps } from "./filters/SearchField";
 export { SearchField } from "./filters/SearchField";
 export { CatalogSelectOptions } from "./forms/CatalogSelect";

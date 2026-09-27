@@ -25,6 +25,7 @@ export type NavIcon =
 export interface NavLink {
   href: string;
   label: string;
+  description?: string;
   icon: NavIcon;
   badge?: "drafts"; // counter of Borrador
   cards?: boolean; // one sub-item per credit card (from the catalog)
@@ -33,6 +34,7 @@ export interface NavLink {
 
 export interface NavGroup {
   label: string;
+  description?: string;
   icon: NavIcon;
   children: NavLink[];
 }

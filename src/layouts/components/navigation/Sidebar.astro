@@ -17,16 +17,19 @@ const { currentPath } = Astro.props;
   data-compact="false"
   class="group/sb hidden border-r border-sidebar-border bg-sidebar transition-[width] md:flex md:w-64 md:flex-col data-[compact=true]:md:w-16"
 >
-  <div class="flex h-16 items-center justify-between border-b border-sidebar-border px-4 group-data-[compact=true]/sb:justify-center group-data-[compact=true]/sb:gap-1 group-data-[compact=true]/sb:px-0">
-    <a href="/" aria-label="Kogane" title="Kogane" class="flex items-center gap-2">
-      <img src="/kogane.webp" alt="" class="h-10 w-10 shrink-0 object-contain group-data-[compact=true]/sb:h-7 group-data-[compact=true]/sb:w-7" />
+  <div class="flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4 group-data-[compact=true]/sb:justify-center group-data-[compact=true]/sb:gap-1 group-data-[compact=true]/sb:px-0">
+    <a href="/" aria-label="Kogane · Inicio" data-nav-tooltip-label="Kogane" data-nav-tooltip-description="Volver a Inicio." class="flex items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <img src="/kogane.webp" alt="" class="h-10 w-10 shrink-0 object-contain group-data-[compact=true]/sb:hidden" />
+      <span aria-hidden="true" class="hidden size-9 items-center justify-center rounded-lg border border-sidebar-border bg-sidebar-accent text-xl font-bold tracking-tight text-sidebar-accent-foreground group-data-[compact=true]/sb:flex">K</span>
       <span class="text-lg font-bold text-sidebar-foreground group-data-[compact=true]/sb:hidden">Kogane</span>
     </a>
     <button
       type="button"
       data-sidebar-toggle
-      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md hover:bg-sidebar-accent group-data-[compact=true]/sb:h-7 group-data-[compact=true]/sb:w-7"
-      title="Compactar menú"
+      data-sidebar-collapse
+      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md outline-none hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring group-data-[compact=true]/sb:hidden"
+      data-nav-tooltip-label="Compactar menú"
+      data-nav-tooltip-description="Mostrar solo los iconos de navegación."
       aria-label="Compactar o expandir el menú"
     >
       <PanelLeftClose className="h-4 w-4 group-data-[compact=true]/sb:hidden" />
@@ -34,6 +37,9 @@ const { currentPath } = Astro.props;
     </button>
   </div>
   <NavMenu currentPath={currentPath} />
+  <div class="hidden shrink-0 border-t border-sidebar-border p-2 group-data-[compact=true]/sb:flex group-data-[compact=true]/sb:justify-center">
+    <button type="button" data-sidebar-toggle data-sidebar-expand aria-label="Expandir menú" data-nav-tooltip-label="Expandir menú" class="inline-flex size-9 items-center justify-center rounded-lg text-sidebar-foreground/70 outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"><PanelLeftOpen className="size-4" /></button>
+  </div>
   <p class="border-t border-sidebar-border px-4 py-2 text-xs text-sidebar-foreground/60 group-data-[compact=true]/sb:hidden">
     <kbd class="rounded border px-1">Ctrl</kbd> + <kbd class="rounded border px-1">K</kbd> para buscar
   </p>
@@ -71,6 +77,10 @@ const { currentPath } = Astro.props;
     // A compact menu shows every link (icons only); leaving it brings the remembered groups back
     var apply = function (compact) {
       aside.dataset.compact = compact ? "true" : "false";
+      aside.querySelectorAll("[data-sidebar-toggle]").forEach(function (button) {
+        button.setAttribute("aria-label", compact ? "Expandir menú" : "Compactar menú");
+        button.setAttribute("aria-expanded", compact ? "false" : "true");
+      });
       groups.forEach(function (group) { group.open = compact || openGroups.indexOf(group.dataset.group) >= 0; });
     };
     apply(read(COMPACT_KEY) === "1");
@@ -85,13 +95,14 @@ const { currentPath } = Astro.props;
       });
     });
 
-    var toggle = aside.querySelector("[data-sidebar-toggle]");
-    if (toggle) {
+    aside.querySelectorAll("[data-sidebar-toggle]").forEach(function (toggle) {
       toggle.addEventListener("click", function () {
         var compact = aside.dataset.compact !== "true";
         write(COMPACT_KEY, compact ? "1" : "0");
         apply(compact);
+        var visibleToggle = aside.querySelector(compact ? "[data-sidebar-expand]" : "[data-sidebar-collapse]");
+        if (visibleToggle) visibleToggle.focus();
       });
-    }
+    });
   })();
 </script>

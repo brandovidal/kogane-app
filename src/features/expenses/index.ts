@@ -52,6 +52,7 @@ export {
   hasActiveFilters,
   usesPanel,
   activePanelCount,
+  countActiveExpenseFilters,
 } from "./lib/expense-filters";
 export { paidAndOwn, totalsOf, shareParts } from "./lib/shared-expense";
 export type { ExpenseShare } from "./lib/shared-expense";

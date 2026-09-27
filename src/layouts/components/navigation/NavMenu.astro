@@ -33,7 +33,7 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
       if (!isGroup(entry)) {
         const Icon = NAV_ICONS[entry.icon];
         return (
-          <a href={entry.href} title={entry.label} class={linkClass(isCurrent(entry))} aria-current={isCurrent(entry) ? "page" : undefined}>
+          <a href={entry.href} aria-label={entry.label} data-nav-tooltip-label={entry.label} data-nav-tooltip-description={entry.description} class={linkClass(isCurrent(entry))} aria-current={isCurrent(entry) ? "page" : undefined}>
             <span class="relative"><Icon className="h-4 w-4" /></span>
             <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{entry.label}</span>
           </a>
@@ -46,7 +46,7 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
       const hasDrafts = entry.children.some((child) => child.badge === "drafts");
       return (
         <details class="nav-group" data-group={entry.label} data-current={holdsCurrent ? "true" : undefined} open={open}>
-          <summary class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}>
+          <summary aria-label={entry.label} data-nav-tooltip-label={entry.label} data-nav-tooltip-description={entry.description} class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}>
             <GroupIcon className="h-4 w-4" />
             <span class="nav-label flex-1 text-left">{entry.label}</span>
             {/* a closed group keeps the counter of Borrador in sight */}
@@ -57,7 +57,7 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
             {entry.children.map((child) => {
               const Icon = NAV_ICONS[child.icon];
               return (
-                <a href={child.href} title={child.label} class={linkClass(isCurrent(child))} aria-current={isCurrent(child) ? "page" : undefined}>
+                <a href={child.href} aria-label={child.label} data-nav-tooltip-label={child.label} data-nav-tooltip-description={child.description} class={linkClass(isCurrent(child))} aria-current={isCurrent(child) ? "page" : undefined}>
                   <span class="relative">
                     <Icon className="h-4 w-4" />
                     {child.badge === "drafts" && <DraftCount dot client:idle />}
@@ -77,7 +77,7 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
       (() => {
         const Icon = NAV_ICONS[SETTINGS_NAV.icon];
         return (
-          <a href={SETTINGS_NAV.href} title={SETTINGS_NAV.label} class={linkClass(isCurrent(SETTINGS_NAV))} aria-current={isCurrent(SETTINGS_NAV) ? "page" : undefined}>
+          <a href={SETTINGS_NAV.href} aria-label={SETTINGS_NAV.label} data-nav-tooltip-label={SETTINGS_NAV.label} data-nav-tooltip-description={SETTINGS_NAV.description} class={linkClass(isCurrent(SETTINGS_NAV))} aria-current={isCurrent(SETTINGS_NAV) ? "page" : undefined}>
             <span class="relative"><Icon className="h-4 w-4" /></span>
             <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{SETTINGS_NAV.label}</span>
           </a>

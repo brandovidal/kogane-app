@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { ListOrdered, SlidersHorizontal, UserRound, X } from "lucide-react";
-import { hasActiveFilters, usesPanel } from "../../lib/expense-filters";
+import {
+  countActiveExpenseFilters,
+  hasActiveFilters,
+  usesPanel,
+} from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
-import { PERSON_ALL, PERSON_FILTER_LABELS, INSTALLMENT_FILTER_OPTIONS } from "../../constants/expense-filters";
+import {
+  PERSON_ALL,
+  PERSON_FILTER_LABELS,
+  INSTALLMENT_FILTER_OPTIONS,
+} from "../../constants/expense-filters";
 import { useExpensePersonOptions } from "../../hooks/useExpensePersonOptions";
 import type { ExpenseFiltersProps } from "../../types/expense-filter-props";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
@@ -11,7 +19,15 @@ import { Button } from "@/ui/button";
 import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
 import { GroupingMenu } from "@/shared/components/toolbar/GroupingMenu";
 import { CountedToolbarButton } from "@/shared/components/toolbar/CountedToolbarButton";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/ui/sheet";
 import { ExpenseFilterFields } from "./ExpenseFilterFields";
 
 export function ExpenseFilters({
@@ -38,13 +54,7 @@ export function ExpenseFilters({
     onChange({ ...value, [key]: next || undefined });
   const has = (key: ExpenseFilterKey) => fields.includes(key);
   const panel = usesPanel(fields);
-  const count = fields.filter((key) => {
-    const filterValue = value[key];
-    if (filterValue == null || filterValue === "") return false;
-    if (key === "q") return typeof filterValue === "string" && !!filterValue.trim();
-    if (key === "person") return filterValue !== PERSON_ALL;
-    return true;
-  }).length;
+  const count = countActiveExpenseFilters(value, fields);
   const width = panel ? "w-full" : undefined;
 
   const personControl = has("person") && (
@@ -62,7 +72,16 @@ export function ExpenseFilters({
     />
   );
 
-  const controls = <ExpenseFilterFields fields={fields} value={value} onChange={onChange} statuses={statuses} personInPanel={personInPanel} panel={panel} />;
+  const controls = (
+    <ExpenseFilterFields
+      fields={fields}
+      value={value}
+      onChange={onChange}
+      statuses={statuses}
+      personInPanel={personInPanel}
+      panel={panel}
+    />
+  );
 
   const search = has("q") && (
     <SearchField
@@ -133,7 +152,11 @@ export function ExpenseFilters({
         controls
       )}
       {groupByOptions && onGroupByChange && (
-        <GroupingMenu value={groupBy} onChange={onGroupByChange} options={groupByOptions} />
+        <GroupingMenu
+          value={groupBy}
+          onChange={onGroupByChange}
+          options={groupByOptions}
+        />
       )}
       {rightActions}
       {showActiveSummary && hasActiveFilters(value) && (

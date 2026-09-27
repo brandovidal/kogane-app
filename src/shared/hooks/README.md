@@ -6,6 +6,8 @@ La URL es la fuente para restaurar los filtros y agrupaciones al recargar, abrir
 - `useUrlGrouping(allowed, fallback)`: usa `group`, valida los modos permitidos y elimina el parámetro al volver al modo predeterminado.
 - `useUrlPeriod()`: conecta el store del navegador de meses con `month` y `year`. Es optativo para vistas cuyo periodo controla la consulta; costos fijos y cobros/deudas ya poseen estos parámetros dentro de sus filtros y no deben usar este hook.
 
+En Ingresos se usa `defaultToCurrent: true`: sin un período válido en la URL se toma el mes y año actuales, aunque el store tenga otro período seleccionado. Los parámetros válidos del enlace tienen prioridad. El nuevo ingreso y el editor de sueldo toman el período de la página; editar un ingreso conserva su mes y año registrados.
+
 Los defaults explícitos viajan también en el enlace. Si un filtro con default se limpia, se conserva un parámetro vacío (`month=`) para distinguir «todos los meses» de «usar el mes predeterminado». Así recargar no reaplica un filtro que el usuario había quitado.
 
 ## Ejemplos

@@ -1,5 +1,6 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { DataView } from "./DataView";
+export { LinkifiedText, type LinkifiedTextProps } from "./LinkifiedText";
 export type { EmptyStateProps } from "./EmptyState";
 export { EmptyState } from "./EmptyState";
 export { GroupedDataView } from "./GroupedDataView";
