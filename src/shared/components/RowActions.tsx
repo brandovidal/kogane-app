@@ -4,8 +4,8 @@ import { ArrowRightLeft, CalendarArrowUp, Check, Copy, History, MoreHorizontal, 
 import type { AttachmentRefType } from "@/shared/api/types";
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import { AttachmentsDialog } from "@/shared/components/AttachmentsPanel";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 
-import { PAYMENT_STATUS_LABELS } from "@/shared/labels";
 import { Button } from "@/ui/button";
 import {
   DropdownMenu,
@@ -68,12 +68,17 @@ export function RowActions({ label, onEdit, onDuplicate, onNextMonth, onMove, on
         )}
         {status && (
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Estado: {PAYMENT_STATUS_LABELS[status.value] ?? status.value}</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger>
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="text-muted-foreground">Estado</span>
+                <StatusBadge status={status.value} />
+              </span>
+            </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
               <DropdownMenuRadioGroup value={status.value} onValueChange={status.onChange}>
                 {status.options.map((option) => (
                   <DropdownMenuRadioItem key={option} value={option}>
-                    {PAYMENT_STATUS_LABELS[option] ?? option}
+                    <StatusBadge status={option} />
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>

@@ -21,14 +21,8 @@ import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/ui/select";
-import { ChevronDown, FileSpreadsheet, FileText, Plus } from "lucide-react";
+import { ArrowUpRight, FileSpreadsheet, FileText, Plus } from "lucide-react";
 import { RowActions } from "@/shared/components/RowActions";
 import {
   MoveSeriesDialog,
@@ -41,6 +35,7 @@ import {
   PAYMENT_STATUS_LABELS,
 } from "@/shared/labels";
 import { FixedCostDialog } from "./FixedCostDialog";
+import { FixedCostDetail } from "./FixedCostDetail";
 import {
   GroupedDataView,
   useViewMode,
@@ -56,8 +51,10 @@ import {
 } from "@/shared/lib/expense-filters";
 import { useNewExpense } from "@/shared/stores/new-expense.store";
 import { ActiveExpenseFilterChips } from "@/shared/components/ActiveExpenseFilterChips";
+import { ExportMenu } from "@/shared/components/ExportMenu";
 import { downloadCsv } from "@/shared/lib/export-csv";
 import { EXPENSE_TYPE_LABELS } from "@/shared/labels";
+import { CategoryLabel } from "@/shared/components/CategoryIcon";
 
 const FILTERS: ExpenseFilterKey[] = [
   "person",
@@ -90,6 +87,7 @@ function FixedCostTableView() {
   const me = useMe();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FixedCost | undefined>();
+  const [openedItem, setOpenedItem] = useState<FixedCost | undefined>();
   const [moving, setMoving] = useState<MoveSource | null>(null);
 
   const filtered = applyExpenseFilters(fixedCosts, filters, me);
@@ -115,22 +113,11 @@ function FixedCostTableView() {
   const exportFileName = `costos-fijos-${selectedYear}-${String(selectedMonth).padStart(2, "0")}`;
   const exportActions = (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9">
-            Exportar <ChevronDown className="h-3.5 w-3.5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => downloadCsv(`${exportFileName}-excel.csv`, csvHeaders, csvRows, { delimiter: ";" })}>
-            <FileSpreadsheet /> Exportar para Excel (.csv)
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => downloadCsv(`${exportFileName}.csv`, csvHeaders, csvRows)}>
-            <FileText /> Exportar CSV
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <Button size="sm" onClick={() => openNewExpense({ destination: "fixed_cost" })}>
+      <ExportMenu items={[
+        { label: "Exportar para Excel (.csv)", icon: <FileSpreadsheet />, onSelect: () => downloadCsv(`${exportFileName}-excel.csv`, csvHeaders, csvRows, { delimiter: ";" }) },
+        { label: "Exportar CSV", icon: <FileText />, onSelect: () => downloadCsv(`${exportFileName}.csv`, csvHeaders, csvRows) },
+      ]} />
+      <Button size="sm" className="h-9" onClick={() => openNewExpense({ destination: "fixed_cost" })}>
         <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
       </Button>
     </>
@@ -143,7 +130,15 @@ function FixedCostTableView() {
       role: "title",
       cell: (fc) => (
         <div>
-          <span className="font-medium">{fc.description}</span>
+          <button
+            type="button"
+            className="group inline-flex items-center gap-1 text-left font-medium hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label={`Ver detalle de ${fc.description}`}
+            onClick={() => setOpenedItem(fc)}
+          >
+            {fc.description}
+            <ArrowUpRight aria-hidden="true" className="size-3.5 opacity-0 transition-opacity group-hover:opacity-70 group-focus-visible:opacity-70" />
+          </button>
           {fc.installment && (
             <Badge variant="outline" className="ml-2 text-xs">
               {fc.installment}
@@ -158,13 +153,7 @@ function FixedCostTableView() {
       cell: (fc) => {
         const cat = categories.find((c) => c.id === fc.categoryId);
         return cat ? (
-          <span className="inline-flex items-center gap-2 text-sm">
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: cat.color }}
-            />
-            {cat.name}
-          </span>
+          <CategoryLabel name={cat.name} icon={cat.icon} color={cat.color} className="text-sm" />
         ) : (
           "—"
         );
@@ -199,7 +188,7 @@ function FixedCostTableView() {
           <SelectContent>
             {PAYMENT_STATUSES.map((status) => (
               <SelectItem key={status} value={status}>
-                {PAYMENT_STATUS_LABELS[status]}
+                <StatusBadge status={status} />
               </SelectItem>
             ))}
           </SelectContent>
@@ -289,6 +278,18 @@ function FixedCostTableView() {
           }}
           countLabel="costos fijos"
           rightActions={exportActions}
+          appliedFilters={
+            <ActiveExpenseFilterChips
+              fields={FILTERS}
+              value={filters}
+              onChange={setFilters}
+              me={me}
+              groupBy={groupBy}
+              onGroupByChange={setGroupBy}
+              groupByLabel={groupLabel}
+            />
+          }
+          viewToggle={<ViewToggle value={view} onChange={setView} />}
           showActiveSummary={false}
           shown={filtered.length}
           total={fixedCosts.length}
@@ -299,18 +300,6 @@ function FixedCostTableView() {
             { value: "category", label: "Por categoría" },
           ]}
         />
-        <div className="flex min-w-0 items-center justify-between gap-2">
-          <ActiveExpenseFilterChips
-            fields={FILTERS}
-            value={filters}
-            onChange={setFilters}
-            me={me}
-            groupBy={groupBy}
-            onGroupByChange={setGroupBy}
-            groupByLabel={groupLabel}
-          />
-          <ViewToggle value={view} onChange={setView} />
-        </div>
       </div>
 
       {filtered.length === 0 ? (
@@ -361,6 +350,20 @@ function FixedCostTableView() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         fixedCost={editingItem}
+      />
+
+      <FixedCostDetail
+        fixedCost={openedItem}
+        categoryName={categories.find((category) => category.id === openedItem?.categoryId)?.name ?? "Sin categoría"}
+        personName={personName(openedItem?.personId)}
+        accountName={accountName(openedItem?.paymentMethodId)}
+        onClose={() => setOpenedItem(undefined)}
+        onEdit={() => {
+          if (!openedItem) return;
+          setEditingItem(openedItem);
+          setOpenedItem(undefined);
+          setDialogOpen(true);
+        }}
       />
 
       {moving && (

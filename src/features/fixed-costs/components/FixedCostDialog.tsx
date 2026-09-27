@@ -2,15 +2,18 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Banknote, CalendarDays, CircleCheck, CreditCard, FileText, StickyNote, Tags, UserRound } from "lucide-react";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { FieldLabel } from "@/shared/components/FieldLabel";
 import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Switch } from "@/ui/switch";
 import { useSaveExpense } from "@/shared/api/hooks/expenses";
 import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
-import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES, FIXED_COST_STATUSES, PAYMENT_STATUS_LABELS } from "@/shared/labels";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES, FIXED_COST_STATUSES } from "@/shared/labels";
 import { toIsoDate } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 
@@ -117,6 +120,7 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
       open={open}
       onOpenChange={onOpenChange}
       title={isEdit ? "Editar gasto fijo" : "Nuevo gasto fijo"}
+      icon={<FileText className="size-4 text-primary" />}
       description={isEdit ? "Modifica los datos del gasto" : "Agrega un nuevo costo fijo"}
       footer={
         <>
@@ -129,14 +133,14 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
     >
       <form className="space-y-4 py-2" onSubmit={onSubmit}>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Descripción *</label>
+          <label className="text-sm font-medium"><FieldLabel icon={FileText}>Descripción *</FieldLabel></label>
           <Input {...register("description")} placeholder="Ej: Luz, Agua, Gas..." />
           {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Monto *</label>
+            <label className="text-sm font-medium"><FieldLabel icon={Banknote}>Monto *</FieldLabel></label>
             <Input type="number" step="0.01" {...register("amount", { valueAsNumber: true })} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
@@ -174,12 +178,12 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Estado</label>
+            <label className="text-sm font-medium"><FieldLabel icon={CircleCheck}>Estado</FieldLabel></label>
             <Select value={watch("paymentStatus")} onValueChange={(v) => setValue("paymentStatus", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {FIXED_COST_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>
+                  <SelectItem key={s} value={s}><StatusBadge status={s} /></SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -188,18 +192,18 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Persona *</label>
+            <label className="text-sm font-medium"><FieldLabel icon={UserRound}>Persona *</FieldLabel></label>
             <PersonSelect value={watch("personId")} onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })} />
             {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Cuenta</label>
+            <label className="text-sm font-medium"><FieldLabel icon={CreditCard}>Cuenta</FieldLabel></label>
             <PaymentMethodSelect allowEmpty value={watch("paymentMethodId")} onChange={(id) => setValue("paymentMethodId", id)} />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Categoría *</label>
+          <label className="text-sm font-medium"><FieldLabel icon={Tags}>Categoría *</FieldLabel></label>
           <CategorySelect
             value={watch("categoryId")}
             onChange={(id) => setValue("categoryId", id ?? "", { shouldValidate: true })}
@@ -209,7 +213,7 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Fecha vencimiento</label>
+          <label className="text-sm font-medium"><FieldLabel icon={CalendarDays}>Fecha vencimiento</FieldLabel></label>
           <Input type="date" {...register("dueDate")} />
         </div>
 
@@ -257,7 +261,7 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Observación</label>
+          <label className="text-sm font-medium"><FieldLabel icon={StickyNote}>Observación</FieldLabel></label>
           <Input {...register("notes")} placeholder="Nota adicional..." />
         </div>
       </form>

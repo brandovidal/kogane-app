@@ -91,8 +91,8 @@ function LoginPageView() {
             <span className="text-lg font-semibold tracking-tight">Kogane</span>
           </div>
           <div className="relative max-w-md">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-300/20 bg-indigo-300/10 text-indigo-200"><Sparkles className="h-5 w-5" /></div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-indigo-200/80">Tu espacio financiero</p>
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary"><Sparkles className="h-5 w-5" /></div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-primary/80">Tu espacio financiero</p>
             <h1 className="text-4xl font-semibold leading-tight tracking-tight">Todo tu dinero, <span className="text-white/50">con más claridad.</span></h1>
             <p className="mt-5 max-w-sm text-sm leading-6 text-white/55">Organiza gastos, tarjetas y pagos en un solo lugar. Entra de forma segura para continuar.</p>
           </div>
@@ -107,7 +107,7 @@ function LoginPageView() {
             </div>
             <Card className="border-0 bg-transparent text-white shadow-none">
               <CardHeader className="space-y-2 p-0 pb-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-200/75">Bienvenido</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">Bienvenido</p>
                 <CardTitle className="text-3xl font-semibold tracking-tight">{inviteEmail ? "Te invitaron a Kogane" : "Entrar a Kogane"}</CardTitle>
                 <p className="text-sm leading-6 text-white/55">{inviteEmail ? `Completa tu acceso para ${inviteEmail}.` : "Ingresa a tu cuenta para ver tus finanzas."}</p>
               </CardHeader>

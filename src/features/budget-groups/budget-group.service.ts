@@ -7,7 +7,7 @@ export interface BudgetGroupSummary {
   assignedAmount: number;
   spentAmount: number;
   categoryIds: string[];
-  categories: Array<{ id: string; name: string; color: string; spent: number }>;
+  categories: Array<{ id: string; name: string; color: string; icon: string | null; spent: number }>;
 }
 
 interface Spending {
@@ -33,7 +33,7 @@ export function buildBudgetGroupSummaries(
     .map((group) => {
       const groupCategories = categories
         .filter((category) => category.budgetGroupId === group.id)
-        .map((category) => ({ id: category.id, name: category.name, color: category.color, spent: spentBy(category.id) }));
+        .map((category) => ({ id: category.id, name: category.name, color: category.color, icon: category.icon, spent: spentBy(category.id) }));
 
       return {
         group,

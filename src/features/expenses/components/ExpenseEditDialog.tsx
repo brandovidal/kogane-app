@@ -2,21 +2,23 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Banknote, CalendarDays, CircleCheck, CreditCard, FileText, Tags, UserRound } from "lucide-react";
 
 import { useSaveExpense } from "@/shared/api/hooks/expenses";
 import { EXPENSE_RESOURCES, type CreditCardExpense, type DailyExpense } from "@/shared/api/types";
 import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { FieldLabel } from "@/shared/components/FieldLabel";
 import {
   CREDIT_CARD_STATUSES,
   CURRENCIES,
   EXPENSE_TYPE_LABELS,
   EXPENSE_TYPES,
-  PAYMENT_STATUS_LABELS,
 } from "@/shared/labels";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 const optionalText = z.string().trim().transform((value) => value || null);
@@ -142,6 +144,7 @@ export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: Exp
       open={open}
       onOpenChange={onOpenChange}
       title={isCard ? "Editar gasto de tarjeta" : "Editar gasto"}
+      icon={<FileText className="size-4 text-primary" />}
       description={shared ? "Es un gasto compartido: el reparto se cambia desde el bot con /editar." : "Modifica los datos del gasto"}
       footer={
         <>
@@ -156,14 +159,14 @@ export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: Exp
     >
       <form className="space-y-4 py-2" onSubmit={onSubmit}>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Descripción *</label>
+          <label className="text-sm font-medium"><FieldLabel icon={FileText}>Descripción *</FieldLabel></label>
           <Input {...register("description")} />
           {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Monto *</label>
+            <label className="text-sm font-medium"><FieldLabel icon={Banknote}>Monto *</FieldLabel></label>
             <Input type="number" step="0.01" {...register("amount", { valueAsNumber: true })} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
@@ -197,11 +200,11 @@ export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: Exp
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">{isCard ? "Fecha de proceso" : "Fecha *"}</label>
+            <label className="text-sm font-medium"><FieldLabel icon={CalendarDays}>{isCard ? "Fecha de proceso" : "Fecha *"}</FieldLabel></label>
             <Input type="date" {...register("date")} />
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">{isCard ? "Tarjeta *" : "Medio de pago *"}</label>
+            <label className="text-sm font-medium"><FieldLabel icon={CreditCard}>{isCard ? "Tarjeta *" : "Medio de pago *"}</FieldLabel></label>
             <PaymentMethodSelect
               type={isCard ? "credit_card" : undefined}
               value={watch("paymentMethodId")}
@@ -245,12 +248,12 @@ export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: Exp
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Persona *</label>
+            <label className="text-sm font-medium"><FieldLabel icon={UserRound}>Persona *</FieldLabel></label>
             <PersonSelect value={watch("personId")} onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })} />
             {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Categoría</label>
+            <label className="text-sm font-medium"><FieldLabel icon={Tags}>Categoría</FieldLabel></label>
             <CategorySelect allowEmpty value={watch("categoryId")} onChange={(id) => setValue("categoryId", id)} />
           </div>
         </div>
@@ -273,7 +276,7 @@ export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: Exp
           </div>
           {isCard ? (
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Estado</label>
+              <label className="text-sm font-medium"><FieldLabel icon={CircleCheck}>Estado</FieldLabel></label>
               <Select value={watch("paymentStatus")} onValueChange={(value) => setValue("paymentStatus", value)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -281,7 +284,7 @@ export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: Exp
                 <SelectContent>
                   {CREDIT_CARD_STATUSES.map((status) => (
                     <SelectItem key={status} value={status}>
-                      {PAYMENT_STATUS_LABELS[status]}
+                      <StatusBadge status={status} />
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -1,6 +1,4 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { LayoutGrid, Table2 } from "lucide-react";
-
 import { Card, CardContent } from "@/ui/card";
 import { Checkbox } from "@/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
@@ -194,23 +192,4 @@ export function useViewMode(page: string, initial: ViewMode): [ViewMode, (mode: 
   return [mode, update];
 }
 
-export function ViewToggle({ value, onChange }: { value: ViewMode; onChange: (mode: ViewMode) => void }) {
-  const option = (mode: ViewMode, label: string, Icon: typeof Table2) => (
-    <button
-      type="button"
-      aria-pressed={value === mode}
-      aria-label={label}
-      title={label}
-      onClick={() => onChange(mode)}
-      className={`rounded px-2 py-1 ${value === mode ? "bg-muted text-foreground" : "text-muted-foreground"}`}
-    >
-      <Icon className="h-4 w-4" />
-    </button>
-  );
-  return (
-    <div className="flex rounded-md border p-0.5">
-      {option("table", "Tabla", Table2)}
-      {option("cards", "Tarjetas", LayoutGrid)}
-    </div>
-  );
-}
+export { ViewToggle } from "./ViewToggle";

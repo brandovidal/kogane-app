@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/utils";
 import { useIsDesktop } from "@/shared/hooks/useMediaQuery";
 import {
   Dialog,
@@ -21,6 +22,7 @@ interface ResponsiveDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
+  icon?: ReactNode;
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -30,6 +32,7 @@ export function ResponsiveDialog({
   open,
   onOpenChange,
   title,
+  icon,
   description,
   children,
   footer,
@@ -41,7 +44,10 @@ export function ResponsiveDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle className={cn(icon && "flex items-center gap-2")}>
+              {icon}
+              {title}
+            </DialogTitle>
             {description && <DialogDescription>{description}</DialogDescription>}
           </DialogHeader>
           {children}
@@ -55,7 +61,10 @@ export function ResponsiveDialog({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-lg">
         <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
+          <SheetTitle className={cn(icon && "flex items-center gap-2")}>
+            {icon}
+            {title}
+          </SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
         <div className="px-4">{children}</div>

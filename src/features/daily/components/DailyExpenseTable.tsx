@@ -23,6 +23,7 @@ import { useNewExpense } from "@/shared/stores/new-expense.store";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
+import { CategoryLabel } from "@/shared/components/CategoryIcon";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "method", "currency", "type", "shared"];
 
@@ -33,7 +34,7 @@ function DailyExpenseTableView() {
   const { data: expenses = [], isLoading } = useExpenses(EXPENSE_RESOURCES.daily, { month, year });
   const personName = nameById(usePeople().data);
   const methodName = nameById(usePaymentMethods().data);
-  const categoryName = nameById(useCategories().data);
+  const categories = useCategories().data ?? [];
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.daily);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.daily);
   const [editing, setEditing] = useState<DailyExpense | undefined>();
@@ -69,7 +70,16 @@ function DailyExpenseTableView() {
       cell: (e) => <CurrencyDisplay amount={e.amount} currency={e.currency} amountInPEN={e.amountInPen} othersShare={e.othersShare} />,
     },
     { key: "method", header: "Medio de pago", cell: (e) => <span className="text-sm">{methodName(e.paymentMethodId)}</span> },
-    { key: "category", header: "Categoría", cell: (e) => <span className="text-sm">{e.categoryId ? categoryName(e.categoryId) : "—"}</span> },
+    {
+      key: "category",
+      header: "Categoría",
+      cell: (e) => {
+        const category = categories.find((item) => item.id === e.categoryId);
+        return category ? (
+          <CategoryLabel name={category.name} icon={category.icon} color={category.color} className="text-sm" />
+        ) : "—";
+      },
+    },
     { key: "person", header: "Persona", cell: (e) => <span className="text-sm">{personName(e.personId)}</span> },
     {
       key: "actions",

@@ -16,6 +16,7 @@ import { Plus, Trash2, Calendar, CalendarPlus } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { RecurringDialog } from "./RecurringDialog";
+import { CategoryLabel } from "@/shared/components/CategoryIcon";
 
 // Recurring templates (D88): kogane-api creates their pending rows on day 1 at 06:00; "Generar" does it now for the
 // month on screen, never twice
@@ -103,7 +104,7 @@ function RecurringListView() {
                   )}
                   {cat && (
                     <Badge style={{ backgroundColor: `${cat.color}20`, color: cat.color }}>
-                      {cat.name}
+                      <CategoryLabel name={cat.name} icon={cat.icon} color={cat.color} className="gap-1.5" />
                     </Badge>
                   )}
                   {rec.paymentMethodId && <Badge variant="secondary">{accountName(rec.paymentMethodId)}</Badge>}

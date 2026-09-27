@@ -28,7 +28,7 @@ import { RowActions } from "@/shared/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
-import { ATTACHMENT_KIND_LABELS, CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
+import { ATTACHMENT_KIND_LABELS, CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS } from "@/shared/labels";
 import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
@@ -186,7 +186,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           </SelectTrigger>
           <SelectContent>
             {CREDIT_CARD_STATUSES.map((status) => (
-              <SelectItem key={status} value={status}>{PAYMENT_STATUS_LABELS[status]}</SelectItem>
+              <SelectItem key={status} value={status}><StatusBadge status={status} /></SelectItem>
             ))}
           </SelectContent>
         </Select>

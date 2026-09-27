@@ -6,6 +6,7 @@ import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
 import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { useSaveExpense } from "@/shared/api/hooks/expenses";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
@@ -13,7 +14,6 @@ import {
   CURRENCIES,
   EXPENSE_TYPE_LABELS,
   EXPENSE_TYPES,
-  PAYMENT_STATUS_LABELS,
   SUBSCRIPTION_PERIOD_LABELS,
   SUBSCRIPTION_PERIODS,
   SUBSCRIPTION_STATUSES,
@@ -194,7 +194,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
             <Select value={watch("paymentStatus")} onValueChange={(v) => setValue("paymentStatus", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {SUBSCRIPTION_STATUSES.map((s) => <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>)}
+                {SUBSCRIPTION_STATUSES.map((s) => <SelectItem key={s} value={s}><StatusBadge status={s} /></SelectItem>)}
               </SelectContent>
             </Select>
           </div>

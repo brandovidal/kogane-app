@@ -2,7 +2,6 @@ import { useState, type ReactNode } from "react";
 import {
   ChevronDown,
   Layers,
-  Search,
   SlidersHorizontal,
   X,
 } from "lucide-react";
@@ -24,16 +23,11 @@ import {
   type ExpenseFilterKey,
   type ExpenseFilterValues,
 } from "@/shared/lib/expense-filters";
+import { FilterSelect } from "@/shared/components/FilterSelect";
+import { SearchField } from "@/shared/components/SearchField";
 import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
-import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { RecordListToolbar } from "@/shared/components/RecordListToolbar";
+import { CountedToolbarButton } from "@/shared/components/CountedToolbarButton";
 import {
   Sheet,
   SheetContent,
@@ -50,7 +44,6 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-const ALL = "__all__";
 const ME = "__me__";
 
 interface ExpenseFiltersProps {
@@ -68,53 +61,9 @@ interface ExpenseFiltersProps {
   countLabel?: string;
   fieldDescriptions?: Partial<Record<ExpenseFilterKey, string>>;
   rightActions?: ReactNode;
+  appliedFilters?: ReactNode;
+  viewToggle?: ReactNode;
   showActiveSummary?: boolean;
-}
-
-function FilterSelect({
-  label,
-  value,
-  options,
-  onChange,
-  width = "w-[150px]",
-  description,
-}: {
-  label: string;
-  value: string | undefined;
-  options: { value: string; label: string }[];
-  onChange: (value: string | undefined) => void;
-  width?: string;
-  description?: string;
-}) {
-  const select = (
-    <Select
-      value={value ?? ALL}
-      onValueChange={(next) => onChange(next === ALL ? undefined : next)}
-    >
-      <SelectTrigger className={`h-9 ${width}`} aria-label={label}>
-        <SelectValue placeholder={label} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={ALL}>Todos</SelectItem>
-        {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-  return label ? (
-    <div className="space-y-1.5">
-      <div className="text-sm font-medium">{label}</div>
-      {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
-      )}
-      {select}
-    </div>
-  ) : (
-    select
-  );
 }
 
 const entriesOf = (labels: Record<string, string>, keys?: string[]) =>
@@ -138,6 +87,8 @@ export function ExpenseFilters({
   countLabel,
   fieldDescriptions,
   rightActions,
+  appliedFilters,
+  viewToggle,
   showActiveSummary = true,
 }: ExpenseFiltersProps) {
   const categories = useCategories().data ?? [];
@@ -165,34 +116,21 @@ export function ExpenseFilters({
   const personControl =
     has("person") &&
     (() => {
-      const select = (
-        <Select
-          value={value.person ?? PERSON_ALL}
-          onValueChange={(next) => set("person", next)}
-        >
-          <SelectTrigger
-            className={`h-9 ${width ?? "w-37.5"}`}
-            aria-label="Persona"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ME}>Yo</SelectItem>
-            <SelectItem value={PERSON_ALL}>Todos</SelectItem>
-            {others.map((person) => (
-              <SelectItem key={person.id} value={person.id}>
-                {person.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      );
       return (
-        <div className="space-y-1.5">
-          <div className="text-sm font-medium">Persona</div>
-          {fieldDescriptions?.person && <p className="text-xs text-muted-foreground">{fieldDescriptions.person}</p>}
-          {select}
-        </div>
+        <FilterSelect
+          label="Persona"
+          value={value.person ?? PERSON_ALL}
+          options={[
+            { value: ME, label: "Yo" },
+            ...others.map((person) => ({ value: person.id, label: person.name })),
+          ]}
+          onChange={(next) => set("person", next)}
+          width={width ?? "w-37.5"}
+          allValue={PERSON_ALL}
+          searchable={panel && personInPanel}
+          description={fieldDescriptions?.person}
+          labelClassName="text-sm font-medium"
+        />
       );
     })();
 
@@ -206,10 +144,14 @@ export function ExpenseFilters({
           options={categories.map((category) => ({
             value: category.id,
             label: category.name,
+            icon: category.icon,
+            color: category.color,
           }))}
           onChange={(next) => set("category", next)}
           width={width}
+          searchable={panel}
           description={fieldDescriptions?.category}
+          labelClassName="text-sm font-medium"
         />
       )}
       {has("method") && (
@@ -222,7 +164,9 @@ export function ExpenseFilters({
           }))}
           onChange={(next) => set("method", next)}
           width={width}
+          searchable={panel}
           description={fieldDescriptions?.method}
+          labelClassName="text-sm font-medium"
         />
       )}
       {has("currency") && (
@@ -235,7 +179,9 @@ export function ExpenseFilters({
           ]}
           onChange={(next) => set("currency", next)}
           width={width}
+          searchable={panel}
           description={fieldDescriptions?.currency}
+          labelClassName="text-sm font-medium"
         />
       )}
       {has("status") && (
@@ -245,7 +191,9 @@ export function ExpenseFilters({
           options={entriesOf(PAYMENT_STATUS_LABELS, statuses)}
           onChange={(next) => set("status", next)}
           width={width}
+          searchable={panel}
           description={fieldDescriptions?.status}
+          labelClassName="text-sm font-medium"
         />
       )}
       {has("period") && (
@@ -255,7 +203,9 @@ export function ExpenseFilters({
           options={entriesOf(SUBSCRIPTION_PERIOD_LABELS)}
           onChange={(next) => set("period", next)}
           width={width}
+          searchable={panel}
           description={fieldDescriptions?.period}
+          labelClassName="text-sm font-medium"
         />
       )}
       {has("type") && (
@@ -265,7 +215,9 @@ export function ExpenseFilters({
           options={entriesOf(EXPENSE_TYPE_LABELS)}
           onChange={(next) => set("type", next)}
           width={width ?? "w-[130px]"}
+          searchable={panel}
           description={fieldDescriptions?.type}
+          labelClassName="text-sm font-medium"
         />
       )}
       {has("shared") && (
@@ -278,95 +230,135 @@ export function ExpenseFilters({
           ]}
           onChange={(next) => set("shared", next)}
           width={width ?? "w-[180px]"}
+          searchable={panel}
           description={fieldDescriptions?.shared}
+          labelClassName="text-sm font-medium"
         />
       )}
     </>
   );
 
-  return (
-    <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      {has("q") && (
-        <div className="relative w-full sm:w-56 sm:shrink-0">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar..."
-            value={value.q ?? ""}
-            onChange={(event) => set("q", event.target.value)}
-            className="h-9 pl-9"
-          />
-        </div>
+  const search = has("q") && (
+    <SearchField
+      className="w-full sm:w-56 sm:shrink-0"
+      placeholder="Buscar..."
+      value={value.q ?? ""}
+      onChange={(next) => set("q", next)}
+    />
+  );
+  const actions = (
+    <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:justify-end">
+      {has("person") && !personInPanel && personControl}
+      {has("installments") && (
+        <FilterSelect
+          label="Cuota"
+          value={value.installments}
+          options={[
+            { value: "with", label: "Con cuota" },
+            { value: "without", label: "Sin cuota" },
+          ]}
+          onChange={(next) => set("installments", next)}
+          width="w-[145px]"
+          labelClassName="text-sm font-medium"
+        />
       )}
-      <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:justify-end">
-        {has("person") && !personInPanel && personControl}
-        {has("installments") && (
-          <FilterSelect
-            label="Cuota"
-            value={value.installments}
-            options={[
-              { value: "with", label: "Con cuota" },
-              { value: "without", label: "Sin cuota" },
-            ]}
-            onChange={(next) => set("installments", next)}
-            width="w-[145px]"
-          />
-        )}
-        {panel ? (
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9">
-                <SlidersHorizontal className="mr-1.5 h-3.5 w-3.5" /> Filtros
-                {count > 0 && <Badge variant="secondary" className="ml-1">{count}</Badge>}
+      {panel ? (
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <CountedToolbarButton
+              label="Filtros"
+              icon={<SlidersHorizontal className="h-4 w-4" />}
+              count={count}
+            />
+          </SheetTrigger>
+          <SheetContent
+            side="right"
+            className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto"
+          >
+            <SheetHeader>
+              <SheetTitle>Filtros</SheetTitle>
+              <SheetDescription>
+                {description ??
+                  "Filtra los registros y conserva tus opciones en la dirección de la página."}
+                {countLabel && (
+                  <span className="mt-1 block">
+                    {shown} de {total} {countLabel}
+                  </span>
+                )}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="flex flex-col gap-3 px-4">{controls}</div>
+            <SheetFooter>
+              <Button
+                variant="outline"
+                disabled={count === 0}
+                onClick={() =>
+                  onChange(
+                    personInPanel
+                      ? { q: value.q }
+                      : { person: value.person, q: value.q },
+                  )
+                }
+              >
+                Limpiar filtros
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto">
-              <SheetHeader>
-                <SheetTitle>Filtros</SheetTitle>
-                <SheetDescription>
-                  {description ?? "Filtra los registros y conserva tus opciones en la dirección de la página."}
-                  {countLabel && <span className="mt-1 block">{shown} de {total} {countLabel}</span>}
-                </SheetDescription>
-              </SheetHeader>
-              <div className="flex flex-col gap-3 px-4">{controls}</div>
-              <SheetFooter>
-                <Button variant="outline" disabled={count === 0} onClick={() => onChange(personInPanel ? { q: value.q } : { person: value.person, q: value.q })}>
-                  Limpiar filtros
-                </Button>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
-        ) : controls}
-        {groupByOptions && onGroupByChange && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={groupCount ? "secondary" : "outline"} size="sm" className="h-9">
-                <Layers className="mr-1.5 h-3.5 w-3.5" /> Agrupar
-                {groupCount > 0 && <Badge variant="secondary" className="ml-1">{groupCount}</Badge>}
-                <ChevronDown className="ml-1 h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuCheckboxItem checked={!groupBy || groupBy === "none"} onCheckedChange={() => onGroupByChange("none")}>
-                Sin agrupar
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        controls
+      )}
+      {groupByOptions && onGroupByChange && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <CountedToolbarButton
+              label="Agrupar"
+              icon={<Layers className="h-4 w-4" />}
+              count={groupCount}
+              trailingIcon={<ChevronDown className="h-3.5 w-3.5" />}
+              variant={groupCount > 0 ? "secondary" : "outline"}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuCheckboxItem
+              checked={!groupBy || groupBy === "none"}
+              onCheckedChange={() => onGroupByChange("none")}
+            >
+              Sin agrupar
+            </DropdownMenuCheckboxItem>
+            {groupByOptions.map((option) => (
+              <DropdownMenuCheckboxItem
+                key={option.value}
+                checked={groupBy === option.value}
+                onCheckedChange={(checked) =>
+                  onGroupByChange(checked ? option.value : "none")
+                }
+              >
+                {option.label}
               </DropdownMenuCheckboxItem>
-              {groupByOptions.map((option) => (
-                <DropdownMenuCheckboxItem key={option.value} checked={groupBy === option.value} onCheckedChange={(checked) => onGroupByChange(checked ? option.value : "none")}>
-                  {option.label}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-        {rightActions}
-        {showActiveSummary && hasActiveFilters(value) && (
-          <>
-            <Button variant="ghost" size="sm" onClick={() => onChange({})}>
-              <X className="mr-1 h-3.5 w-3.5" /> Limpiar
-            </Button>
-            <span className="text-xs text-muted-foreground">{shown} de {total}</span>
-          </>
-        )}
-      </div>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      {rightActions}
+      {showActiveSummary && hasActiveFilters(value) && (
+        <>
+          <Button variant="ghost" size="sm" onClick={() => onChange({})}>
+            <X className="mr-1 h-3.5 w-3.5" /> Limpiar
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            {shown} de {total}
+          </span>
+        </>
+      )}
     </div>
+  );
+  return (
+    <RecordListToolbar
+      primary={search}
+      actions={actions}
+      applied={appliedFilters}
+      view={viewToggle}
+    />
   );
 }

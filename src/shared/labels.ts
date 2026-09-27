@@ -11,7 +11,7 @@ export const EXPENSE_TYPES = Object.keys(EXPENSE_TYPE_LABELS);
 export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   not_started: "No iniciado",
   pending: "Pendiente",
-  partially_paid: "Parcial",
+  partially_paid: "Parcialmente pagado",
   deposited: "Abonado",
   waived: "Exonerado",
   paid: "Pagado",
@@ -24,17 +24,33 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 export const PAYMENT_STATUS_COLORS: Record<string, string> = {
-  not_started: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  partially_paid: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-  partial: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-  deposited: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-  waived: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-  paid: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  amortized: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300",
-  prepaid: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300",
-  cashback: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300",
-  skipped: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+  not_started: "bg-slate-500/10 text-slate-700 dark:bg-slate-400/10 dark:text-slate-300",
+  pending: "bg-amber-500/12 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300",
+  partially_paid: "bg-orange-500/12 text-orange-800 dark:bg-orange-400/15 dark:text-orange-300",
+  partial: "bg-emerald-500/12 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300",
+  deposited: "bg-emerald-500/12 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300",
+  waived: "bg-slate-500/10 text-slate-700 dark:bg-slate-400/10 dark:text-slate-300",
+  paid: "bg-blue-500/12 text-blue-800 dark:bg-blue-400/15 dark:text-blue-300",
+  amortized: "bg-violet-500/12 text-violet-800 dark:bg-violet-400/15 dark:text-violet-300",
+  prepaid: "bg-violet-500/12 text-violet-800 dark:bg-violet-400/15 dark:text-violet-300",
+  cashback: "bg-cyan-500/12 text-cyan-800 dark:bg-cyan-400/15 dark:text-cyan-300",
+  skipped: "bg-slate-500/10 text-slate-700 dark:bg-slate-400/10 dark:text-slate-300",
+  late: "bg-red-500/12 text-red-800 dark:bg-red-400/15 dark:text-red-300",
+};
+
+export const PAYMENT_STATUS_DOT_COLORS: Record<string, string> = {
+  not_started: "bg-slate-500",
+  pending: "bg-amber-500",
+  partially_paid: "bg-orange-500",
+  partial: "bg-emerald-500",
+  deposited: "bg-emerald-500",
+  waived: "bg-slate-400",
+  paid: "bg-blue-500",
+  amortized: "bg-violet-500",
+  prepaid: "bg-violet-500",
+  cashback: "bg-cyan-500",
+  skipped: "bg-slate-500",
+  late: "bg-red-500",
 };
 
 // Allowed statuses per table, the same lists as kogane-api (expense.constant.ts)
