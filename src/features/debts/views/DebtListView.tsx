@@ -14,14 +14,28 @@ import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
 import { Switch } from "@/ui/switch";
-import { applyDebtFilters, DEBT_FILTER_KEYS, groupByPaymentMethod, groupByPerson, groupByPersonAndType, type DebtFilterValues, type Direction } from "@/features/debts/lib/debt-filters";
+import {
+  applyDebtFilters,
+  DEBT_FILTER_KEYS,
+  groupByPaymentMethod,
+  groupByPerson,
+  groupByPersonAndType,
+  type DebtFilterValues,
+  type Direction,
+} from "@/features/debts/lib/debt-filters";
 import { CardCheckPanel } from "../sections/CardCheckPanel";
 import { DebtBulkBar } from "../sections/DebtBulkBar";
-import { ActiveDebtFilterChips, DebtFilterSheet, DebtGroupingSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";
+import {
+  ActiveDebtFilterChips,
+  DebtFilterSheet,
+  DebtGroupingSheet,
+  DebtReportLinks as ReportLinks,
+} from "../sections/DebtListControls";
 import { CollapsibleDebtGroup } from "../sections/DebtGroupsSection";
 import { DebtGridSection } from "../sections/DebtGridSection";
 import { DebtDialog } from "../components/dialogs/DebtDialog";
 import { RegisterPaymentDialog } from "../components/dialogs/RegisterPaymentDialog";
+import { useDebtGrouping } from "../hooks/useDebtGrouping";
 
 const TEXTS: Record<Direction, { total: string; empty: string }> = {
   owed_to_me: { total: "Por cobrar", empty: "Nadie te debe nada" },
@@ -51,8 +65,12 @@ export function DebtListView({
     DEBT_FILTER_KEYS,
     defaults,
   );
-  const [groupedByPerson, setGroupedByPerson] = useState(false);
-  const [groupedByCard, setGroupedByCard] = useState(false);
+  const {
+    groupedByPerson,
+    groupedByCard,
+    setGroupedByPerson,
+    setGroupedByCard,
+  } = useDebtGrouping();
   const [view, setView] = useViewMode("debts", "table");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [registering, setRegistering] = useState(false);
@@ -114,13 +132,20 @@ export function DebtListView({
                     </p>
                     <label className="flex items-center justify-between gap-3 text-sm">
                       <span>Por persona</span>
-                      <Switch checked={groupedByPerson} onCheckedChange={setGroupedByPerson} />
+                      <Switch
+                        checked={groupedByPerson}
+                        onCheckedChange={setGroupedByPerson}
+                      />
                     </label>
                     <label className="flex items-center justify-between gap-3 text-sm">
                       <span className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4 text-muted-foreground" /> Por tarjeta
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />{" "}
+                        Por tarjeta
                       </span>
-                      <Switch checked={groupedByCard} onCheckedChange={setGroupedByCard} />
+                      <Switch
+                        checked={groupedByCard}
+                        onCheckedChange={setGroupedByCard}
+                      />
                     </label>
                     <p className="text-xs text-muted-foreground">
                       {groupedByPerson && groupedByCard
@@ -143,12 +168,20 @@ export function DebtListView({
                 />
               )}
               {splitGroupingSheet && (
-                <span aria-hidden="true" className="hidden h-5 border-l sm:inline-block" />
+                <span
+                  aria-hidden="true"
+                  className="hidden h-5 border-l sm:inline-block"
+                />
               )}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <ReportLinks filter={{ direction, month, year }} />
-              <Button size="sm" variant="outline" className="h-9" onClick={() => setRegistering(true)}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-9"
+                onClick={() => setRegistering(true)}
+              >
                 <Wallet className="mr-1 h-4 w-4" /> Registrar pago
               </Button>
               {actions}
@@ -269,7 +302,12 @@ export function DebtListView({
         debts={debts}
         period={{ month, year }}
       />
-      <DebtDialog open={!!editingDebt} onOpenChange={(open) => !open && setEditingDebt(undefined)} direction={direction} debt={editingDebt} />
+      <DebtDialog
+        open={!!editingDebt}
+        onOpenChange={(open) => !open && setEditingDebt(undefined)}
+        direction={direction}
+        debt={editingDebt}
+      />
     </div>
   );
 }

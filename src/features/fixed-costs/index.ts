@@ -51,3 +51,4 @@ export type {
   FixedCostBulkAction,
   FixedCostBulkFailure,
 } from "./types/fixed-cost-types";
+export { FIXED_COST_GROUP_VALUES } from "./constants/grouping";

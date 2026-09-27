@@ -11,3 +11,4 @@ export type { PaymentMethodLabelProps } from "./PaymentMethodLabel";
 export { PeopleTable } from "./PeopleTable";
 export { PersonSelect } from "./PersonSelect";
 export { SettingsPage } from "./SettingsPage";
+export { SettingsMenuItems } from "./SettingsMenuItems";

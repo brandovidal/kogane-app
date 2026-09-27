@@ -13,9 +13,6 @@ import {
   ComboboxValue,
   createComboboxItems,
 } from "@/ui/combobox";
-import { cn } from "@/shared/utils/cn";
-import { normalize } from "@/shared/lib/text";
-import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import {
   Select,
   SelectContent,
@@ -23,6 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
+
+import { FieldLabel } from "@/shared/components/forms/FieldLabel";
+
+import { cn } from "@/shared/utils/cn";
+import { normalize } from "@/shared/lib/text";
 
 export interface FilterSelectOption {
   value: string;
@@ -49,8 +51,9 @@ const ALL = "__all__";
 
 function matchesOption(option: FilterSelectOption, query: string) {
   const normalizedQuery = normalize(query);
-  return [option.label, ...(option.searchTerms ?? [])]
-    .some((text) => normalize(text).includes(normalizedQuery));
+  return [option.label, ...(option.searchTerms ?? [])].some((text) =>
+    normalize(text).includes(normalizedQuery),
+  );
 }
 
 export function FilterSelect({
@@ -68,13 +71,10 @@ export function FilterSelect({
 }: FilterSelectProps) {
   const items = useMemo(
     () =>
-      createComboboxItems(
-        [{ value: allValue, label: allLabel }, ...options],
-        {
-          getValue: (option) => option.value,
-          getLabel: (option) => option.label,
-        },
-      ),
+      createComboboxItems([{ value: allValue, label: allLabel }, ...options], {
+        getValue: (option) => option.value,
+        getLabel: (option) => option.label,
+      }),
     [allLabel, allValue, options],
   );
   const selectedOption = options.find((option) => option.value === value);
@@ -82,15 +82,21 @@ export function FilterSelect({
 
   return (
     <div className="block space-y-1.5">
-      <div className={labelClassName}><FieldLabel icon={icon}>{label}</FieldLabel></div>
-      {description && <p className="text-xs text-muted-foreground">{description}</p>}
+      <div className={labelClassName}>
+        <FieldLabel icon={icon}>{label}</FieldLabel>
+      </div>
+      {description && (
+        <p className="text-xs text-muted-foreground">{description}</p>
+      )}
       {searchable ? (
         <Combobox
           items={items}
           filter={hasSearchTerms ? matchesOption : undefined}
           value={value ?? allValue}
           onValueChange={(next) =>
-            onChange(next == null || next === allValue ? undefined : String(next))
+            onChange(
+              next == null || next === allValue ? undefined : String(next),
+            )
           }
           autoHighlight
         >
@@ -99,7 +105,9 @@ export function FilterSelect({
             <ComboboxValue placeholder={allLabel} />
             <ChevronDown className="size-4 shrink-0 opacity-50" />
           </ComboboxTrigger>
-          <ComboboxContent aria-label={`Opciones de ${label.toLocaleLowerCase()}`}>
+          <ComboboxContent
+            aria-label={`Opciones de ${label.toLocaleLowerCase()}`}
+          >
             <div className="border-b p-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -130,7 +138,9 @@ export function FilterSelect({
       ) : (
         <Select
           value={value ?? allValue}
-          onValueChange={(next) => onChange(next === allValue ? undefined : next)}
+          onValueChange={(next) =>
+            onChange(next === allValue ? undefined : next)
+          }
         >
           <SelectTrigger className={`h-9 ${width}`} aria-label={label}>
             {selectedOption?.decoration}

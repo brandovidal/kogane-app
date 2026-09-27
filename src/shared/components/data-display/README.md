@@ -12,7 +12,9 @@ La base sigue el patrón de [shadcn Data Table](https://ui.shadcn.com/docs/compo
 
 ## Estado actual de costos fijos
 
-El endpoint existente devuelve un listado por periodo. La búsqueda, los filtros y la paginación se aplican localmente; el rango de vencimiento sigue consultando todos los meses. Exportación y totales usan todo el resultado filtrado, mientras la selección del encabezado abarca únicamente la página visible. Se conservan las selecciones al cambiar de página o modo de vista; cambiar el periodo o los filtros las limpia.
+El endpoint existente devuelve un listado por periodo. Mes y Año están dentro del sheet de filtros, con opción «Todos»; si ambos están seleccionados se envían a la API. Si falta uno o ambos, se consulta el listado completo y se aplica la restricción restante localmente. La búsqueda, los demás filtros y la paginación se aplican localmente. El rango de vencimiento se combina con el período seleccionado. Exportación y totales usan todo el resultado filtrado, mientras la selección del encabezado abarca únicamente la página visible. Se conservan las selecciones al cambiar de página o modo de vista; cambiar el periodo o los filtros las limpia.
+
+Los filtros, `group`, `month` y `year` quedan en la URL para restaurar o compartir el listado. Los hooks comunes y sus reglas de persistencia están documentados en `src/shared/hooks/README.md`.
 
 Las acciones por lote usan los endpoints individuales, con un máximo de cinco escrituras simultáneas. Los éxitos se desmarcan y los fallos conservan su selección. No se presupone una transacción de lote en la API.
 

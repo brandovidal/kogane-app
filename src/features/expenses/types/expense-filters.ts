@@ -1,7 +1,12 @@
-import type { INSTALLMENT_FILTER, SHARED_FILTER } from "../constants/expense-filters";
+import type {
+  INSTALLMENT_FILTER,
+  SHARED_FILTER,
+} from "../constants/expense-filters";
 
-export type InstallmentFilterValue = (typeof INSTALLMENT_FILTER)[keyof typeof INSTALLMENT_FILTER];
-export type SharedFilterValue = (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
+export type InstallmentFilterValue =
+  (typeof INSTALLMENT_FILTER)[keyof typeof INSTALLMENT_FILTER];
+export type SharedFilterValue =
+  (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
 
 export interface ExpenseFilterValues {
   person?: string; // Empty or PERSON_ALL = everyone, PERSON_ME = default person, or a person's id.
@@ -16,6 +21,8 @@ export interface ExpenseFilterValues {
   shared?: SharedFilterValue;
   dueFrom?: string;
   dueTo?: string;
+  month?: string;
+  year?: string;
 }
 
 export type ExpenseFilterKey = keyof ExpenseFilterValues;
@@ -34,4 +41,6 @@ export interface FilterableExpense {
   installment?: string | null;
   othersShare?: number | null;
   dueDate?: string | null;
+  paymentMonth?: number | null;
+  paymentYear?: number | null;
 }

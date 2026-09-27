@@ -8,9 +8,14 @@ export { PaymentMethodIcon } from "./components/PaymentMethodIcon";
 export type { PaymentMethodIconProps } from "./components/PaymentMethodIcon";
 export { PaymentMethodLabel } from "./components/PaymentMethodLabel";
 export type { PaymentMethodLabelProps } from "./components/PaymentMethodLabel";
-export { PAYMENT_METHOD_ICONS, PAYMENT_METHOD_TYPE_LABELS } from "./constants/payment-methods";
+export {
+  PAYMENT_METHOD_ICONS,
+  PAYMENT_METHOD_TYPE_LABELS,
+} from "./constants/payment-methods";
 export { PeopleTable } from "./components/PeopleTable";
 export { PersonSelect } from "./components/PersonSelect";
 export { SettingsPage } from "./components/SettingsPage";
+export { SettingsMenuItems } from "./components/SettingsMenuItems";
+export { SETTINGS_MENU_LINKS } from "./constants/menu";
 export type { CardForm } from "./lib/card-form";
 export { emptyCardForm, cardErrors, cardBody } from "./lib/card-form";

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   nameById,
   useCategories,
@@ -14,23 +14,31 @@ import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
-import { usePeriod } from "@/shared/stores/period.store";
+import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 import { buildFixedCostExport } from "@/features/fixed-costs/lib/fixed-cost-export";
 import { FIXED_COST_FILTER_KEYS } from "@/features/fixed-costs/lib/fixed-cost-filters";
-import type { FixedCostGroupBy } from "@/features/fixed-costs/types/fixed-cost-types";
+import { useUrlGrouping } from "@/shared/hooks/useUrlGrouping";
+import { FIXED_COST_GROUP_VALUES } from "../constants/grouping";
 
 const EMPTY_COSTS: FixedCost[] = [];
 
 export function useFixedCostList() {
-  const month = usePeriod((state) => state.month);
-  const year = usePeriod((state) => state.year);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(
     FIXED_COST_FILTER_KEYS,
+    { month: String(getCurrentMonth()), year: String(getCurrentYear()) },
   );
-  const hasDueDateRange = !!(filters.dueFrom || filters.dueTo);
+  const month = Number(filters.month);
+  const year = Number(filters.year);
+  const hasPeriod =
+    Number.isInteger(month) &&
+    month >= 1 &&
+    month <= 12 &&
+    Number.isInteger(year) &&
+    year >= 1 &&
+    year <= 9999;
   const query = useExpenses(
     EXPENSE_RESOURCES.fixedCost,
-    hasDueDateRange ? undefined : { month, year },
+    hasPeriod ? { month, year } : undefined,
   );
   const fixedCosts = query.data ?? EMPTY_COSTS;
   const categories = useCategories().data ?? [];
@@ -42,7 +50,7 @@ export function useFixedCostList() {
     [fixedCosts, filters, me],
   );
   const [view, setView] = useViewMode("fixed-costs", "table");
-  const [groupBy, setGroupBy] = useState<FixedCostGroupBy>("none");
+  const [groupBy, setGroupBy] = useUrlGrouping(FIXED_COST_GROUP_VALUES, "none");
   const csvExport = useCsvExport(
     buildFixedCostExport({
       items: filtered,
@@ -50,8 +58,6 @@ export function useFixedCostList() {
       personName,
       accountName,
       filters,
-      month,
-      year,
     }),
   );
 
@@ -72,6 +78,6 @@ export function useFixedCostList() {
     exportItems: csvExport.items,
     loading: query.isLoading,
     error: query.isError,
-    scopeKey: JSON.stringify([month, year, filters]),
+    scopeKey: JSON.stringify(filters),
   };
 }

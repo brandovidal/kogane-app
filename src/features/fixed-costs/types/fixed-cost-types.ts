@@ -1,4 +1,5 @@
 import type { FixedCost } from "@/shared/api/types";
+import type { FIXED_COST_GROUP_VALUES } from "../constants/grouping";
 
 export type FixedCostBulkAction = "duplicate" | "delete" | "status";
 export interface FixedCostBulkFailure {
@@ -7,7 +8,7 @@ export interface FixedCostBulkFailure {
   message: string;
 }
 
-export type FixedCostGroupBy = "none" | "person" | "category";
+export type FixedCostGroupBy = (typeof FIXED_COST_GROUP_VALUES)[number];
 export type CatalogName = (id?: string | null) => string;
 
 export interface FixedCostActions {

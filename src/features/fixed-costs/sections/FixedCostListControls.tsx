@@ -59,7 +59,7 @@ export function FixedCostListControls({
         value={filters}
         onChange={onFiltersChange}
         personInPanel
-        description="Filtra costos fijos por persona, categoría, pago o vencimiento. Las fechas abarcan todos los meses."
+        description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y un rango de vencimiento."
         countLabel="costos fijos"
         statuses={FIXED_COST_STATUSES}
         shown={shown}

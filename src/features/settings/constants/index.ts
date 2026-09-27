@@ -1,1 +1,5 @@
-export { PAYMENT_METHOD_ICONS, PAYMENT_METHOD_TYPE_LABELS } from "./payment-methods";
+export {
+  PAYMENT_METHOD_ICONS,
+  PAYMENT_METHOD_TYPE_LABELS,
+} from "./payment-methods";
+export { SETTINGS_MENU_LINKS } from "./menu";

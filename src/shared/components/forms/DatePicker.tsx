@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CalendarDays, X } from "lucide-react";
 
 import { Button, buttonVariants } from "@/ui/button";
@@ -18,15 +18,23 @@ export interface DatePickerProps {
 
 const parseDate = (value?: string | null) => {
   if (!value) return undefined;
-  const parsed = new Date(`${value.slice(0, 10)}T12:00:00`);
-  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  const key = value.slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return undefined;
+  const parsed = new Date(`${key}T12:00:00`);
+  return Number.isNaN(parsed.getTime()) || dateKey(parsed) !== key
+    ? undefined
+    : parsed;
 };
 
 const dateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 const displayDate = (date: Date) =>
-  date.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
+  date.toLocaleDateString("es-PE", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
 export function DatePicker({
   value,
@@ -38,7 +46,9 @@ export function DatePicker({
   className,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
-  const date = parseDate(value);
+  const date = useMemo(() => parseDate(value), [value]);
+  const minimum = useMemo(() => parseDate(minDate), [minDate]);
+  const maximum = useMemo(() => parseDate(maxDate), [maxDate]);
 
   return (
     <div className="flex min-w-0 gap-1">
@@ -54,7 +64,9 @@ export function DatePicker({
           )}
         >
           <CalendarDays className="size-4" />
-          <span className="min-w-0 flex-1 truncate">{date ? displayDate(date) : placeholder}</span>
+          <span className="min-w-0 flex-1 truncate">
+            {date ? displayDate(date) : placeholder}
+          </span>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-3">
           <Calendar
@@ -63,13 +75,20 @@ export function DatePicker({
               onChange(dateKey(next));
               setOpen(false);
             }}
-            minDate={parseDate(minDate)}
-            maxDate={parseDate(maxDate)}
+            minDate={minimum}
+            maxDate={maximum}
           />
         </PopoverContent>
       </Popover>
       {date && (
-        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" aria-label={`Limpiar ${ariaLabel.toLocaleLowerCase()}`} onClick={() => onChange("")}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 shrink-0"
+          aria-label={`Limpiar ${ariaLabel.toLocaleLowerCase()}`}
+          onClick={() => onChange("")}
+        >
           <X className="size-4" />
         </Button>
       )}

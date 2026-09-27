@@ -1,4 +1,5 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
+export { PeriodFields, type PeriodFieldsProps } from "./forms/PeriodFields";
 export { DataView } from "./data-display/DataView";
 export type { EmptyStateProps } from "./data-display/EmptyState";
 export { EmptyState } from "./data-display/EmptyState";
@@ -27,6 +28,7 @@ export type { FormFieldProps } from "./forms/FormField";
 export { FormField } from "./forms/FormField";
 export { MonthNavigator } from "./navigation/MonthNavigator";
 export { ThemeToggle } from "./theme/ThemeToggle";
+export { ThemeMenuItems } from "./theme/ThemeMenuItems";
 export type { CountedToolbarButtonProps } from "./toolbar/CountedToolbarButton";
 export { CountedToolbarButton } from "./toolbar/CountedToolbarButton";
 export type { ExportMenuItem } from "./toolbar/ExportMenu";

@@ -14,7 +14,8 @@ export type IncomeBody = Schemas["CreateIncomeDto"];
 export const useIncomes = (month: number, year: number) =>
   useQuery({
     queryKey: budgetKeys.incomes(month, year),
-    queryFn: () => unwrap(api.GET("/v1/incomes", { params: { query: { month, year } } })),
+    queryFn: () =>
+      unwrap(api.GET("/v1/incomes", { params: { query: { month, year } } })),
   });
 
 // An income moves the surplus of the month too
@@ -24,14 +25,19 @@ export const useSaveIncome = () =>
   useApiMutation(
     ({ id, body }: { id?: string; body: IncomeBody }) =>
       id
-        ? unwrap(api.PATCH("/v1/incomes/{id}", { params: { path: { id } }, body }))
+        ? unwrap(
+            api.PATCH("/v1/incomes/{id}", { params: { path: { id } }, body }),
+          )
         : unwrap(api.POST("/v1/incomes", { body })),
     { invalidate: afterIncome, success: "Ingreso guardado" },
   );
 
 export const useDeleteIncome = () =>
-  useApiMutation((id: string) => unwrap(api.DELETE("/v1/incomes/{id}", { params: { path: { id } } })), {
-    invalidate: afterIncome,
-    success: "Ingreso borrado",
-  });
-
+  useApiMutation(
+    (id: string) =>
+      unwrap(api.DELETE("/v1/incomes/{id}", { params: { path: { id } } })),
+    {
+      invalidate: afterIncome,
+      success: "Ingreso borrado",
+    },
+  );

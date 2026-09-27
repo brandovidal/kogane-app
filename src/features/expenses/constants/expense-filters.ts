@@ -22,6 +22,16 @@ export const CURRENCY_FILTER_OPTIONS = [
 
 // Person placement is configured separately through personInPanel.
 export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = [
-  "category", "method", "currency", "type", "status", "period", "shared", "dueFrom", "dueTo",
+  "category",
+  "method",
+  "currency",
+  "type",
+  "status",
+  "period",
+  "shared",
+  "dueFrom",
+  "dueTo",
+  "month",
+  "year",
 ];
 export const PANEL_FILTER_THRESHOLD = 3;
