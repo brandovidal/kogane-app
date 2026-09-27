@@ -82,7 +82,7 @@ export function StatementMinimumCard({
             <h3 className="font-semibold">{cardName} · {getMonthName(month)} {year}</h3>
             <p className="text-xs text-muted-foreground">El mínimo se compara con cargos asignados a las personas; el total del estado es solo referencia.</p>
           </div>
-          {check?.statementId && <a href="/reconocimiento" className="text-xs text-muted-foreground underline underline-offset-4">Ver estado de cuenta</a>}
+          {check?.statementId && <a href="/importacion" className="text-xs text-muted-foreground underline underline-offset-4">Ver estado de cuenta</a>}
         </div>
         {check?.statementId ? (
           <>
@@ -165,7 +165,7 @@ export function StatementMinimumCard({
           </>
         ) : (
           <p className="text-sm text-muted-foreground">
-            {isLoading ? `Cargando el estado de cuenta ${cardName}…` : excludedByFilter ? `El filtro actual no incluye ${cardName}.` : <>No hay estado de cuenta {cardName} para este período.{totalToCollect != null && <> Total de cobros con los filtros aplicados: <strong className="text-amber-300">{formatCurrency(totalToCollect)}</strong>.</>} <a className="underline underline-offset-4" href="/reconocimiento">Cargar estado de cuenta</a></>}
+            {isLoading ? `Cargando el estado de cuenta ${cardName}…` : excludedByFilter ? `El filtro actual no incluye ${cardName}.` : <>No hay estado de cuenta {cardName} para este período.{totalToCollect != null && <> Total de cobros con los filtros aplicados: <strong className="text-amber-300">{formatCurrency(totalToCollect)}</strong>.</>} <a className="underline underline-offset-4" href="/importacion">Cargar estado de cuenta</a></>}
           </p>
         )}
       </CardContent>

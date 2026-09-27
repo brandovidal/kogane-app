@@ -1,67 +1,10 @@
 import type {
   ImportBatch,
-  ImportRowStatus,
-  ImportTab,
   StatementSummary,
+  ImportRow,
 } from "@/shared/api/types";
-
-export type ImportSource = "notion" | "statement";
-
-export const SOURCE_LABELS: Record<ImportSource, string> = {
-  notion: "Notion (ZIP o CSV)",
-  statement: "Estado de cuenta (PDF)",
-};
-
-export const TAB_LABELS: Record<ImportTab, string> = {
-  cards: "Tarjetas",
-  fixed_costs: "Costos fijos",
-  platforms: "Plataformas",
-  debts: "Deudas",
-  budget: "Presupuesto",
-  issues: "Avisos",
-};
-
-export const TAB_ORDER: ImportTab[] = [
-  "cards",
-  "fixed_costs",
-  "platforms",
-  "debts",
-  "budget",
-  "issues",
-];
-
-export const ROW_STATUS: Record<
-  ImportRowStatus,
-  {
-    label: string;
-    variant: "default" | "secondary" | "destructive" | "outline";
-  }
-> = {
-  new: { label: "Nueva", variant: "default" },
-  changed: { label: "Cambió", variant: "outline" },
-  unchanged: { label: "Igual", variant: "secondary" },
-  blocked: { label: "Bloqueada", variant: "destructive" },
-  warning: { label: "Aviso", variant: "outline" },
-};
-
-export const BATCH_STATUS: Record<string, string> = {
-  preview: "Previsualización",
-  applied: "Importado",
-  discarded: "Descartado",
-  review: "Revisar",
-  done: "Listo",
-};
-
-export interface HistoryItem {
-  key: string; // "notion:<id>" | "statement:<id>"
-  source: ImportSource;
-  id: string;
-  title: string;
-  detail: string;
-  status: string;
-  pending: boolean; // still waiting for a decision
-  createdAt: string;
-}
+import type { HistoryItem } from "../types/import-types";
+import { formatCurrency } from "@/shared/lib/currency";
 
 // One list, newest first: the Notion imports and the statements read
 export function historyOf(
@@ -69,30 +12,26 @@ export function historyOf(
   statements: StatementSummary[],
   monthName: (month: number) => string,
 ): HistoryItem[] {
-  const notion = batches.map(
-    (batch): HistoryItem => ({
-      key: `notion:${batch.id}`,
-      source: "notion",
-      id: batch.id,
-      title: "Notion",
-      detail: `${batch.created} nuevas · ${batch.updated} cambiaron · ${batch.unchanged} iguales`,
-      status: batch.status,
-      pending: batch.status === "preview",
-      createdAt: batch.createdAt,
-    }),
-  );
-  const read = statements.map(
-    (statement): HistoryItem => ({
-      key: `statement:${statement.id}`,
-      source: "statement",
-      id: statement.id,
-      title: `${statement.cardName} · ${monthName(statement.paymentMonth)} ${statement.paymentYear}`,
-      detail: `${statement.counts.matched + statement.counts.created} coinciden · ${statement.counts.new} nuevos`,
-      status: statement.status,
-      pending: statement.status === "review",
-      createdAt: statement.createdAt,
-    }),
-  );
+  const notion = batches.map((batch): HistoryItem => ({
+    key: `notion:${batch.id}`,
+    source: "notion",
+    id: batch.id,
+    title: "Notion",
+    detail: `${batch.created} nuevas · ${batch.updated} cambiaron · ${batch.unchanged} iguales`,
+    status: batch.status,
+    pending: batch.status === "preview",
+    createdAt: batch.createdAt,
+  }));
+  const read = statements.map((statement): HistoryItem => ({
+    key: `statement:${statement.id}`,
+    source: "statement",
+    id: statement.id,
+    title: `${statement.cardName} · ${monthName(statement.paymentMonth)} ${statement.paymentYear}`,
+    detail: `${statement.counts.matched + statement.counts.created} coinciden · ${statement.counts.new} nuevos`,
+    status: statement.status,
+    pending: statement.status === "review",
+    createdAt: statement.createdAt,
+  }));
   return [...notion, ...read].sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),
   );
@@ -108,3 +47,13 @@ export const monthMatches = (month: {
 }) =>
   month.notionSpent != null &&
   Math.abs(month.linked - month.notionSpent) < 0.01;
+
+export const amountOf = (row: ImportRow) =>
+  row.amount == null
+    ? "—"
+    : row.kind === "group"
+      ? `${row.amount} %`
+      : formatCurrency(row.amount, row.currency ?? "PEN");
+
+export const importRowFileName = (file: string) =>
+  file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "");

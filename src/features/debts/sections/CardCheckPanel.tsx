@@ -27,8 +27,8 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
         {!check.statementId ? (
           <p className="text-muted-foreground">
             Todavía no subes el estado de cuenta de este mes.{" "}
-            <a className="underline" href="/reconocimiento">
-              Súbelo en Reconocimiento
+            <a className="underline" href="/importacion">
+              Súbelo en Importación
             </a>{" "}
             para contrastarlo.
           </p>

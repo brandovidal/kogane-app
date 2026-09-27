@@ -277,7 +277,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         </CardContent>
       </Card>
 
-      <a href="/reconocimiento" className="flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-primary/10 px-4 py-4 text-center font-semibold text-foreground transition-colors hover:bg-primary/15">
+      <a href="/importacion" className="flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-primary/10 px-4 py-4 text-center font-semibold text-foreground transition-colors hover:bg-primary/15">
         <FileText className="h-5 w-5" /> Ver estados de cuenta
       </a>
 

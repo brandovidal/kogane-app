@@ -1,30 +1,30 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { importKeys } from "../constants/import-keys";
+export { importKeys } from "../constants/import-keys";
+import type { ImportRowsParams } from "../types/import-types";
+export type { ImportRowsParams } from "../types/import-types";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { ApiError, api, apiFetch, unwrap } from "@/shared/api/client";
-import type { ImportDetail, ImportRowStatus, ImportTab } from "@/shared/api/types";
+import type { ImportDetail } from "@/shared/api/types";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
 
-export const importKeys = {
-  all: ["imports"] as const,
-  list: ["imports", "list"] as const,
-  detail: (id: string) => ["imports", "detail", id] as const,
-  rows: (id: string, params: ImportRowsParams) => ["imports", "rows", id, params] as const,
-};
-
-export interface ImportRowsParams {
-  tab: ImportTab;
-  status?: ImportRowStatus;
-  q?: string;
-  page: number;
-}
-
-export const useImports = () => useQuery({ queryKey: importKeys.list, queryFn: () => unwrap(api.GET("/v1/imports")) });
+export const useImports = () =>
+  useQuery({
+    queryKey: importKeys.list,
+    queryFn: () => unwrap(api.GET("/v1/imports")),
+  });
 
 export const useImport = (id: string | null) =>
   useQuery({
     queryKey: importKeys.detail(id ?? ""),
-    queryFn: () => unwrap(api.GET("/v1/imports/{id}", { params: { path: { id: id! } } })),
+    queryFn: () =>
+      unwrap(api.GET("/v1/imports/{id}", { params: { path: { id: id! } } })),
     enabled: !!id,
   });
 
@@ -35,7 +35,10 @@ export const useImportRows = (id: string, params: ImportRowsParams) =>
     queryFn: () =>
       unwrap(
         api.GET("/v1/imports/{id}/rows", {
-          params: { path: { id }, query: { ...params, q: params.q || undefined } },
+          params: {
+            path: { id },
+            query: { ...params, q: params.q || undefined },
+          },
         }),
       ),
     placeholderData: keepPreviousData,
@@ -48,10 +51,19 @@ export function useUploadNotion() {
     mutationFn: async (files: File[]): Promise<ImportDetail> => {
       const form = new FormData();
       files.forEach((file) => form.append("files", file));
-      const response = await apiFetch("/api/v1/imports/notion", { method: "POST", body: form, headers: { accept: "application/json" } });
+      const response = await apiFetch("/api/v1/imports/notion", {
+        method: "POST",
+        body: form,
+        headers: { accept: "application/json" },
+      });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new ApiError(response.status, body.code ?? "UNKNOWN_ERROR", body.message ?? response.statusText, body.details);
+        throw new ApiError(
+          response.status,
+          body.code ?? "UNKNOWN_ERROR",
+          body.message ?? response.statusText,
+          body.details,
+        );
       }
       return body.data as ImportDetail;
     },
@@ -64,13 +76,28 @@ export function useUploadNotion() {
 
 // Applying writes expenses, debts, the budget and the calendar
 export const useApplyImport = () =>
-  useApiMutation((id: string) => unwrap(api.POST("/v1/imports/{id}/apply", { params: { path: { id } } })), {
-    invalidate: [importKeys.all, ["expenses"], ["debts"], ["budget"], ["summary"], ["calendar"]],
-    success: "Importado",
-  });
+  useApiMutation(
+    (id: string) =>
+      unwrap(api.POST("/v1/imports/{id}/apply", { params: { path: { id } } })),
+    {
+      invalidate: [
+        importKeys.all,
+        ["expenses"],
+        ["debts"],
+        ["budget"],
+        ["summary"],
+        ["calendar"],
+      ],
+      success: "Importado",
+    },
+  );
 
 export const useDiscardImport = () =>
-  useApiMutation((id: string) => unwrap(api.DELETE("/v1/imports/{id}", { params: { path: { id } } })), {
-    invalidate: [importKeys.all],
-    success: "Previsualización descartada",
-  });
+  useApiMutation(
+    (id: string) =>
+      unwrap(api.DELETE("/v1/imports/{id}", { params: { path: { id } } })),
+    {
+      invalidate: [importKeys.all],
+      success: "Previsualización descartada",
+    },
+  );

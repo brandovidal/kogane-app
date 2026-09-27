@@ -32,7 +32,7 @@ export function StatementMinimumSection({
       {!isLoading && cards.length === 0 && (
         <Card><CardContent className="p-4 text-sm text-muted-foreground">
           {hasCreditCards
-            ? <>No hay estados de cuenta de tarjetas para {getMonthName(month)} {year}. <a className="underline underline-offset-4" href="/reconocimiento">Cargar estado de cuenta</a></>
+            ? <>No hay estados de cuenta de tarjetas para {getMonthName(month)} {year}. <a className="underline underline-offset-4" href="/importacion">Cargar estado de cuenta</a></>
             : "No hay tarjetas de crédito incluidas en los filtros actuales."}
         </CardContent></Card>
       )}

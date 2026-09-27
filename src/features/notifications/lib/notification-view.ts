@@ -23,7 +23,7 @@ const LINK_BY_REF: Record<string, string> = {
   daily_expense: "/dia-a-dia",
   debt: "/cobros", // debt notices are what others owe (due, late)
   category: "/categorias",
-  statement: "/reconocimiento",
+  statement: "/importacion",
 };
 
 const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {

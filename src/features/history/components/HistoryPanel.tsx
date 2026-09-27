@@ -81,7 +81,7 @@ const MODULES = [
   },
   {
     key: "imports",
-    label: "Reconocimiento",
+    label: "Importación",
     entities: ["imp_batches", "imp_statements"],
   },
 ] as const;

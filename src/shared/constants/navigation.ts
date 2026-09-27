@@ -19,9 +19,9 @@ export const NAV: NavEntry[] = [
         icon: "message-circle",
       },
       {
-        href: "/reconocimiento",
-        label: "Reconocimiento",
-        description: "Reconoce comprobantes e importa movimientos.",
+        href: "/importacion",
+        label: "Importación",
+        description: "Importa archivos de Notion y reconoce estados de cuenta en PDF.",
         icon: "scan-text",
       },
       {

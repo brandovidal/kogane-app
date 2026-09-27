@@ -35,7 +35,7 @@ export function StatementTotalCard({
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Cargando el estado de cuenta {cardName}…</p>;
   if (!check?.statementId) {
-    return <p className="text-sm text-muted-foreground">No hay estado de cuenta {cardName} para {getMonthName(month)} {year}. Cárgalo desde <a className="underline underline-offset-4" href="/reconocimiento">Reconocimiento</a>.</p>;
+    return <p className="text-sm text-muted-foreground">No hay estado de cuenta {cardName} para {getMonthName(month)} {year}. Cárgalo desde <a className="underline underline-offset-4" href="/importacion">Importación</a>.</p>;
   }
 
   const total = check.statementTotal;
@@ -51,7 +51,7 @@ export function StatementTotalCard({
             <h3 className="font-semibold">Pago total · {cardName} · {getMonthName(month)} {year}</h3>
             <p className="text-xs text-muted-foreground">Pago total menos el pago actual considerado equivale al pago restante.</p>
           </div>
-          <a href="/reconocimiento" className="text-xs text-muted-foreground underline underline-offset-4">Ver estado de cuenta</a>
+          <a href="/importacion" className="text-xs text-muted-foreground underline underline-offset-4">Ver estado de cuenta</a>
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm lg:grid-cols-3">
           <div className="rounded-md bg-muted/40 p-2"><p className="text-xs text-muted-foreground">Pago total</p><p className="font-semibold tabular-nums">{total == null ? "—" : formatCurrency(total)}</p></div>

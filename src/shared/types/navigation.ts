@@ -1,4 +1,4 @@
-// Menu of the web (D41, D80): Inicio, then Registrar (Mensajes · Reconocimiento · Borrador; Nuevo gasto is the button
+// Menu of the web (D41, D80): Inicio, then Registrar (Mensajes · Importación · Borrador; Nuevo gasto is the button
 // of each page, D79) and the
 // screens grouped. API labels live in domain constants (D62).
 export type NavIcon =

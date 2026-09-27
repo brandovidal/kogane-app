@@ -37,7 +37,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/resumen-deudas": "Resumen de deudas",
   "/categorias": "Categorías",
   "/recurrentes": "Recurrentes",
-  "/reconocimiento": "Reconocimiento",
+  "/importacion": "Importación",
 };
 
 const SHOWN = 8;

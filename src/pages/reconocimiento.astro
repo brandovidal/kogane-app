@@ -1,8 +1,4 @@
 ---
-import DashboardLayout from "@/layouts/DashboardLayout.astro";
-import { ImportsPage } from "@/features/imports/components/ImportsPage";
+export const prerender = false;
+return Astro.redirect(`/importacion${Astro.url.search}`, 301);
 ---
-
-<DashboardLayout title="Reconocimiento">
-  <ImportsPage client:load />
-</DashboardLayout>
