@@ -54,7 +54,7 @@ export function FixedCostResultsSection({
       </div>
     </div>
   );
-  if (view === "table" && groupBy === "none")
+  if (view === "table" && groupBy.length === 0)
     return (
       <DataTableComplex
         table={dataTable.table}

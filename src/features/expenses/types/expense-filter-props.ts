@@ -14,6 +14,7 @@ export interface ExpenseFiltersProps {
   personInPanel?: boolean;
   description?: string;
   countLabel?: string;
+  primaryControls?: ReactNode;
   rightActions?: ReactNode;
   appliedFilters?: ReactNode;
   viewToggle?: ReactNode;

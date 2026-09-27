@@ -5,15 +5,25 @@ import { formatCurrency } from "@/shared/lib/currency";
 
 export type StatementTab = "new" | "matched" | "missing";
 
-export function rowsOf(statement: Statement, tab: Exclude<StatementTab, "missing">): StatementRow[] {
-  if (tab === "new") return statement.rows.filter((row) => row.result === "new" || row.result === "ignored");
-  return statement.rows.filter((row) => row.result === "matched" || row.result === "created");
+export function rowsOf(
+  statement: Statement,
+  tab: Exclude<StatementTab, "missing">,
+): StatementRow[] {
+  if (tab === "new")
+    return statement.rows.filter(
+      (row) => row.result === "new" || row.result === "ignored",
+    );
+  return statement.rows.filter(
+    (row) => row.result === "matched" || row.result === "created",
+  );
 }
 
 export function countsOf(statement: Statement) {
   return {
     new: statement.rows.filter((row) => row.result === "new").length,
-    matched: statement.rows.filter((row) => row.result === "matched" || row.result === "created").length,
+    matched: statement.rows.filter(
+      (row) => row.result === "matched" || row.result === "created",
+    ).length,
     missing: statement.missing.length,
   };
 }
@@ -30,7 +40,10 @@ export function uploadErrorText(code: string, reason?: string): string {
       : "La contraseña no abrió el PDF. Escribe la correcta.";
   }
   if (code === "STATEMENT_UNREADABLE") {
-    if (reason?.startsWith("card not found")) return "No se pudo identificar la tarjeta del PDF. Selecciónala y vuelve a previsualizar; el archivo sigue cargado.";
+    if (reason?.startsWith("card not found"))
+      return "No se pudo identificar la tarjeta del PDF. Selecciónala y vuelve a previsualizar; el archivo sigue cargado.";
+    if (reason?.includes("currency"))
+      return "No pude separar con seguridad los saldos en soles y dólares. Usa el PDF original del banco y vuelve a previsualizar.";
     return "No pude leer movimientos en ese PDF.";
   }
   return "No se pudo subir el estado de cuenta.";
@@ -44,7 +57,8 @@ export const ROW_RESULT_LABELS: Record<StatementRow["result"], string> = {
 };
 
 // Your description when you gave one, else the text of the bank
-export const rowName = (row: Pick<StatementRow, "label" | "description">) => row.label || row.description;
+export const rowName = (row: Pick<StatementRow, "label" | "description">) =>
+  row.label || row.description;
 
 // What the confirmation says before saving one row: a matched one warns that it may already be registered
 // collectFrom: the person whose purchase it is, when it also becomes their cobro (D116)
@@ -54,7 +68,9 @@ export function confirmCreateText(
   collectFrom?: string,
 ): { title: string; description: string } {
   const what = `${rowName(row)} · ${formatCurrency(row.amount, row.currency)}`;
-  const collect = collectFrom ? ` A nombre de ${collectFrom}, con su cobro en Cobros por el mismo monto.` : "";
+  const collect = collectFrom
+    ? ` A nombre de ${collectFrom}, con su cobro en Cobros por el mismo monto.`
+    : "";
   if (row.result === "matched") {
     return {
       title: "¿Guardarlo de todas formas?",

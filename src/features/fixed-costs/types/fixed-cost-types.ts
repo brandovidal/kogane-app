@@ -8,7 +8,8 @@ export interface FixedCostBulkFailure {
   message: string;
 }
 
-export type FixedCostGroupBy = (typeof FIXED_COST_GROUP_VALUES)[number];
+export type FixedCostGroupField = (typeof FIXED_COST_GROUP_VALUES)[number];
+export type FixedCostGroupBy = FixedCostGroupField[];
 export type CatalogName = (id?: string | null) => string;
 
 export interface FixedCostActions {

@@ -8,3 +8,6 @@ export { statementKeys, useStatements, useStatement, useUploadStatement, useCrea
 export type { StatementUploadInput } from "./hooks/statements";
 export type { StatementTab } from "./lib/statement-view";
 export { rowsOf, countsOf, totalsMatch, uploadErrorText, ROW_RESULT_LABELS, rowName, confirmCreateText } from "./lib/statement-view";
+
+export { StatementMatchDialog } from "./components/StatementMatchDialog";
+export type { StatementMatchDialogProps } from "./components/StatementMatchDialog";

@@ -7,6 +7,7 @@ import { FilterSelect } from "./FilterSelect";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 
 export interface PeriodFilterFieldsProps {
+  compact?: boolean;
   month?: string;
   year?: string;
   showMonth?: boolean;
@@ -16,6 +17,7 @@ export interface PeriodFilterFieldsProps {
 }
 
 export function PeriodFilterFields({
+  compact = false,
   month,
   year,
   showMonth = true,
@@ -31,12 +33,14 @@ export function PeriodFilterFields({
 
   return (
     <section
-      className="space-y-3 rounded-lg border p-3"
+      className={compact ? "min-w-0" : "space-y-3 rounded-lg border p-3"}
       aria-label="Período del registro"
     >
-      <div className="text-sm font-medium">
-        <FieldLabel icon={CalendarRange}>Período del registro</FieldLabel>
-      </div>
+      {!compact && (
+        <div className="text-sm font-medium">
+          <FieldLabel icon={CalendarRange}>Período del registro</FieldLabel>
+        </div>
+      )}
       <div
         className={
           showMonth && showYear
@@ -53,7 +57,11 @@ export function PeriodFilterFields({
             onChange={onMonthChange}
             width="w-full"
             searchable
-            labelClassName="text-sm font-medium"
+            labelClassName={
+              compact
+                ? "text-xs font-medium text-muted-foreground"
+                : "text-sm font-medium"
+            }
           />
         )}
         {showYear && (
@@ -65,7 +73,11 @@ export function PeriodFilterFields({
             onChange={onYearChange}
             width="w-full"
             searchable
-            labelClassName="text-sm font-medium"
+            labelClassName={
+              compact
+                ? "text-xs font-medium text-muted-foreground"
+                : "text-sm font-medium"
+            }
           />
         )}
       </div>

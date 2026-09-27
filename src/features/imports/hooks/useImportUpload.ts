@@ -18,12 +18,9 @@ export function useImportUpload(onRead: (key: string) => void) {
   const reason = (error?.details as { reason?: string } | undefined)?.reason;
   const needsPassword =
     source === "statement" && error?.code === "STATEMENT_PASSWORD";
-
-  const needsCard =
-    source === "statement" &&
-    error?.code === "STATEMENT_UNREADABLE" &&
-    reason?.startsWith("card not found") === true;
+  const needsCard = source === "statement";
   const cardMissing = needsCard && !cardId;
+  const passwordMissing = source === "statement" && !password.trim();
 
   const reset = () => {
     setFiles([]);
@@ -35,7 +32,7 @@ export function useImportUpload(onRead: (key: string) => void) {
   };
 
   const send = () => {
-    if (!files.length || upload.isPending || cardMissing) return;
+    if (!files.length || upload.isPending || cardMissing || passwordMissing) return;
     if (source === "notion") {
       notion.mutate(files, {
         onSuccess: (batch) => (reset(), onRead(`notion:${batch.id}`)),
@@ -82,6 +79,7 @@ export function useImportUpload(onRead: (key: string) => void) {
     needsPassword,
     needsCard,
     cardMissing,
+    passwordMissing,
     send,
   };
 }

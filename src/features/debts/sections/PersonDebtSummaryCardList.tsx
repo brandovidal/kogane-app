@@ -1,8 +1,8 @@
-import { ChevronRight } from "lucide-react";
+import { CalendarClock, ChevronRight } from "lucide-react";
 import { type DebtReportFilter } from "@/features/debts/lib/debt-report";
 import type { Debt } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
+import { formatDate, formatDayMonth, getMonthName } from "@/shared/lib/dates";
 import { Card, CardContent } from "@/ui/card";
 import type { Direction } from "@/features/debts/lib/debt-filters";
 import { CollectButton } from "./CollectButton";
@@ -26,6 +26,7 @@ export type PersonalDebtSummaryExpense = {
   description: string;
   amount: number;
   source: string;
+  paymentMethodId?: string | null;
 };
 
 export function PersonDebtSummaryCardList({
@@ -33,6 +34,7 @@ export function PersonDebtSummaryCardList({
   statementAdjustments: statementChargeAdjustments,
   personalExpenses,
   cardNames,
+  cardDueDates,
   reportFilter,
   showCollections,
   showDebts,
@@ -41,6 +43,7 @@ export function PersonDebtSummaryCardList({
   statementAdjustments: StatementChargeAdjustment[];
   personalExpenses: PersonalDebtSummaryExpense[];
   cardNames: Map<string, string>;
+  cardDueDates: Map<string, string>;
   reportFilter: DebtReportFilter;
   showCollections: boolean;
   showDebts: boolean;
@@ -148,11 +151,25 @@ export function PersonDebtSummaryCardList({
                         sourceGroups.set(key, sourceGroup);
                       }
                       const summaryGroups = [...sourceGroups.values()];
-                      const sourceSummaryLine = (sourceGroup: (typeof summaryGroups)[number], expandable = false) => (
+                      const sourceSummaryLine = (sourceGroup: (typeof summaryGroups)[number], expandable = false) => {
+                        const cardId = sourceGroup.debts.find((debt) => debt.paymentMethodId)?.paymentMethodId
+                          ?? sourceGroup.adjustments[0]?.cardId
+                          ?? sourceGroup.personalExpenses.find((expense) => expense.paymentMethodId)?.paymentMethodId
+                          ?? [...cardNames].find(([, name]) => name.toLowerCase() === sourceGroup.name.toLowerCase())?.[0];
+                        const dueDate = cardId ? cardDueDates.get(cardId) : undefined;
+                        return (
                         <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t pt-2 text-sm">
-                          <span className="flex min-w-0 items-center gap-2 truncate font-medium">
+                          <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-medium">
                             {expandable && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />}
-                            {sourceGroup.name}
+                            <span className="min-w-0 truncate">{sourceGroup.name}</span>
+                            {dueDate && (
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded bg-muted/60 px-1.5 py-0.5 text-xs font-normal tabular-nums text-muted-foreground"
+                                title={`Fecha límite de pago: ${formatDate(dueDate)}`}
+                                aria-label={`Fecha límite de pago: ${formatDate(dueDate)}`}>
+                                <CalendarClock aria-hidden="true" className="size-3" />
+                                <time dateTime={dueDate.slice(0, 10)}>{formatDayMonth(dueDate)}</time>
+                              </span>
+                            )}
                           </span>
                           <span className="text-right text-xs text-muted-foreground">
                             {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0)} {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0) === 1 ? "registro" : "registros"}
@@ -163,6 +180,7 @@ export function PersonDebtSummaryCardList({
                           </span>
                         </div>
                       );
+                      };
                       return (
                         <Card key={group.personId}>
                           <CardContent className="space-y-3 pt-5">

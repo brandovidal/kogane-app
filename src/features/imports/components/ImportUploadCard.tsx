@@ -38,6 +38,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
     needsPassword,
     needsCard,
     cardMissing,
+    passwordMissing,
     send,
   } = useImportUpload(onRead);
 
@@ -111,30 +112,30 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="statement-card" className="text-sm font-medium">
-                Tarjeta {needsCard ? "*" : ""}
+                Tarjeta *
               </label>
               <PaymentMethodSelect
                 id="statement-card"
                 type="credit_card"
-                allowEmpty={!needsCard}
+                allowEmpty={false}
                 aria-required={needsCard}
                 aria-invalid={cardMissing}
                 aria-describedby="statement-card-help"
                 className={cardMissing ? "border-destructive" : undefined}
                 value={cardId}
                 onChange={setCardId}
-                placeholder={
-                  needsCard ? "Selecciona la tarjeta" : "Detectar en el PDF"
-                }
+                placeholder="Selecciona la tarjeta"
               />
               <p
                 id="statement-card-help"
                 role={cardMissing ? "alert" : undefined}
                 className={`text-xs ${cardMissing ? "text-destructive" : "text-muted-foreground"}`}
               >
-                {needsCard
-                  ? "No se pudo identificar la tarjeta del PDF. Selecciónala para previsualizar."
-                  : ""}
+                {cardMissing
+                  ? "Selecciona la tarjeta para continuar."
+                  : needsCard && reason?.startsWith("card not found")
+                    ? "No se pudo reconocer la tarjeta del PDF. Verifica la seleccionada."
+                    : ""}
               </p>
             </div>
             <div className="space-y-1.5">
@@ -151,16 +152,20 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
         {source === "statement" && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
-              Contraseña del PDF {needsPassword ? "*" : "(opcional)"}
+              Contraseña del PDF *
             </label>
             <Input
               type="password"
-              placeholder="Se prueban los N.º de documento guardados"
+              placeholder="Escribe la contraseña del PDF"
               autoComplete="off"
+              required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              aria-invalid={needsPassword}
+              aria-invalid={needsPassword || passwordMissing}
             />
+            {passwordMissing && (
+              <p className="text-xs text-muted-foreground">La contraseña es necesaria para previsualizar el estado de cuenta.</p>
+            )}
             {password && (
               <label className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Switch
@@ -186,7 +191,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
         )}
         <Button
           onClick={send}
-          disabled={!files.length || upload.isPending || cardMissing}
+          disabled={!files.length || upload.isPending || cardMissing || passwordMissing}
         >
           <FileUp className="mr-1 h-4 w-4" />{" "}
           {upload.isPending ? "Leyendo…" : "Previsualizar"}

@@ -44,6 +44,7 @@ export function DebtSummaryView({
   const {
     paymentMethods,
     cardNames,
+    cardDueDates,
     open,
     shown,
     reportFilter,
@@ -137,6 +138,7 @@ export function DebtSummaryView({
                       statementAdjustments={statementChargeAdjustments}
                       personalExpenses={personalExpenses}
                       cardNames={cardNames}
+                      cardDueDates={cardDueDates}
                       reportFilter={reportFilter}
                       showCollections={showCollections}
                       showDebts={showDebts}

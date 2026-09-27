@@ -25,17 +25,17 @@ import {
 } from "@/shared/components/filters/AppliedFilterChips";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 
-export interface ActiveExpenseFilterChipsProps {
+export interface ActiveExpenseFilterChipsProps<T extends string | string[] = string> {
   fields: ExpenseFilterKey[];
   value: ExpenseFilterValues;
   onChange: (value: ExpenseFilterValues) => void;
   me?: string;
-  groupBy?: string;
-  onGroupByChange?: (value: string) => void;
+  groupBy?: T;
+  onGroupByChange?: (value: T) => void;
   groupByLabel?: string;
 }
 
-export function ActiveExpenseFilterChips({
+export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   fields,
   value,
   onChange,
@@ -43,7 +43,7 @@ export function ActiveExpenseFilterChips({
   groupBy,
   onGroupByChange,
   groupByLabel,
-}: ActiveExpenseFilterChipsProps) {
+}: ActiveExpenseFilterChipsProps<T>) {
   const categories = useCategories().data ?? [];
   const methods = usePaymentMethods().data ?? [];
   const people = usePeople().data ?? [];
@@ -91,13 +91,16 @@ export function ActiveExpenseFilterChips({
       label: labels[key]!,
       onRemove: () => onChange({ ...value, [key]: undefined }),
     }));
-  const hasGrouping = groupBy && groupBy !== "none" && onGroupByChange;
+  const isGrouped = Array.isArray(groupBy)
+    ? groupBy.length > 0
+    : !!groupBy && groupBy !== "none";
+  const hasGrouping = isGrouped && onGroupByChange;
   if (!chips.length && !hasGrouping) return null;
   if (hasGrouping)
     chips.push({
       key: "group-by",
       label: `Agrupar: ${groupByLabel ?? groupBy}`,
-      onRemove: () => onGroupByChange("none"),
+      onRemove: () => onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T),
       kind: "group",
     });
   return (

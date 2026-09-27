@@ -43,6 +43,7 @@ export function ExpenseFilters({
   personInPanel = false,
   description,
   countLabel,
+  primaryControls,
   rightActions,
   appliedFilters,
   viewToggle,
@@ -153,7 +154,7 @@ export function ExpenseFilters({
       )}
       {groupByOptions && onGroupByChange && (
         <GroupingMenu
-          value={groupBy}
+          value={groupBy ?? "none"}
           onChange={onGroupByChange}
           options={groupByOptions}
         />
@@ -173,7 +174,19 @@ export function ExpenseFilters({
   );
   return (
     <RecordListToolbar
-      primary={search}
+      primary={
+        primaryControls ? (
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
+            {search}
+            <div className="w-full min-w-0 sm:w-64">{primaryControls}</div>
+          </div>
+        ) : (
+          search
+        )
+      }
+      primaryClassName={
+        primaryControls ? "sm:min-w-[min(100%,32rem)]" : undefined
+      }
       actions={actions}
       applied={appliedFilters}
       view={viewToggle}

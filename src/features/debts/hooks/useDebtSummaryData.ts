@@ -56,6 +56,12 @@ export function useDebtSummaryData({
     method.type === "credit_card" && (!filters.card || filters.card === method.id),
   );
   const statementChecks = useCardChecks(creditCards.map((card) => card.id), selectedMonth, selectedYear);
+  const cardDueDates = new Map<string, string>();
+  for (const [index, query] of statementChecks.entries()) {
+    const date = query.data?.statementDueDate;
+    const card = creditCards[index];
+    if (card && date) cardDueDates.set(card.id, date);
+  }
   const minimumCoverage = creditCards.flatMap((card, index) => {
     const check = statementChecks[index]?.data;
     if (!check?.statementId || check.minimumDue == null) return [];
@@ -90,10 +96,11 @@ export function useDebtSummaryData({
       if (filters.q && !normalizeSearch(`${card.name} ${description} ${personName}`).includes(normalizeSearch(filters.q))) return [];
 
       const target = normalizeCharge(description);
-      const debt = (row.debtId ? debts.find((item) => item.id === row.debtId && !matchedStatementDebtIds.has(item.id)) : undefined) ?? debts.find((item) =>
+      const debt = (row.debtId ? debts.find((item) => item.id === row.debtId && item.currency === check.currency && !matchedStatementDebtIds.has(item.id)) : undefined) ?? debts.find((item) =>
         !matchedStatementDebtIds.has(item.id) &&
         item.direction === "owed_to_me" &&
         item.paymentMethodId === card.id &&
+        item.currency === check.currency &&
         item.personId === personId &&
         item.paymentMonth === selectedMonth &&
         item.paymentYear === selectedYear &&
@@ -212,6 +219,7 @@ export function useDebtSummaryData({
     debts,
     paymentMethods,
     cardNames,
+    cardDueDates,
     open,
     shown,
     reportFilter,

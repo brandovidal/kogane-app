@@ -1,4 +1,5 @@
-import { Plus } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFields";
 import type { ReactNode } from "react";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
@@ -17,6 +18,8 @@ import {
   FIXED_COST_GROUP_OPTIONS,
 } from "@/features/fixed-costs/lib/fixed-cost-filters";
 import type { FixedCostGroupBy } from "@/features/fixed-costs/types/fixed-cost-types";
+import { GroupingMenu } from "@/shared/components/toolbar/GroupingMenu";
+import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 
 export interface FixedCostListControlsProps {
   filters: ExpenseFilterValues;
@@ -47,9 +50,20 @@ export function FixedCostListControls({
   onCreate,
   columnSelector,
 }: FixedCostListControlsProps) {
-  const changeGrouping = (value: string) => {
-    if (value === "none" || value === "person" || value === "category")
-      onGroupByChange(value);
+  const month = Number(filters.month) || getCurrentMonth();
+  const year = Number(filters.year) || getCurrentYear();
+  const currentMonth = getCurrentMonth();
+  const currentYear = getCurrentYear();
+  const isCurrentPeriod = month === currentMonth && year === currentYear;
+  const changePeriod = (delta: number) => {
+    const index = year * 12 + month - 1 + delta;
+    const nextMonth = (index % 12) + 1;
+    const nextYear = Math.floor(index / 12);
+    onFiltersChange({
+      ...filters,
+      month: String(nextMonth),
+      year: String(nextYear),
+    });
   };
 
   return (
@@ -59,17 +73,76 @@ export function FixedCostListControls({
         value={filters}
         onChange={onFiltersChange}
         personInPanel
+        primaryControls={
+          <div className="space-y-1.5">
+            <PeriodFilterFields
+              compact
+              month={filters.month}
+              year={filters.year}
+              onMonthChange={(month) => onFiltersChange({ ...filters, month })}
+              onYearChange={(year) => onFiltersChange({ ...filters, year })}
+            />
+            <div
+              className="flex items-center gap-1"
+              role="group"
+              aria-label="Navegación mensual"
+            >
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                aria-label="Mes anterior"
+                title="Mes anterior"
+                onClick={() => changePeriod(-1)}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                disabled={isCurrentPeriod}
+                onClick={() =>
+                  onFiltersChange({
+                    ...filters,
+                    month: String(currentMonth),
+                    year: String(currentYear),
+                  })
+                }
+              >
+                <CalendarDays className="mr-1 size-3.5" />
+                Mes actual
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                aria-label="Mes siguiente"
+                title="Mes siguiente"
+                onClick={() => changePeriod(1)}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </div>
+        }
         description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y un rango de vencimiento."
         countLabel="costos fijos"
         statuses={FIXED_COST_STATUSES}
         shown={shown}
         total={total}
-        groupBy={groupBy}
-        onGroupByChange={changeGrouping}
-        groupByOptions={FIXED_COST_GROUP_OPTIONS}
         showActiveSummary={false}
         viewToggle={
           <div className="flex items-center gap-1">
+            <GroupingMenu
+              value={groupBy}
+              onChange={onGroupByChange}
+              options={FIXED_COST_GROUP_OPTIONS}
+              multiple
+            />
             {columnSelector}
             <ViewToggle value={view} onChange={onViewChange} />
           </div>
@@ -81,8 +154,8 @@ export function FixedCostListControls({
             onChange={onFiltersChange}
             me={me}
             groupBy={groupBy}
-            onGroupByChange={changeGrouping}
-            groupByLabel={FIXED_COST_GROUP_LABELS[groupBy]}
+            onGroupByChange={(next) => onGroupByChange(next)}
+            groupByLabel={groupBy.map((field) => FIXED_COST_GROUP_LABELS[field]).join(" → ")}
           />
         }
         rightActions={

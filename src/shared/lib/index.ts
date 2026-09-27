@@ -7,6 +7,7 @@ export {
   getCurrentMonth,
   getCurrentYear,
   formatDate,
+  formatDayMonth,
   toIsoDate,
 } from "./dates";
 export type { CsvOptions } from "./export-csv";

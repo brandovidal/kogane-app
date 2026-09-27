@@ -1,8 +1,11 @@
+import { StatementBalanceSummary } from "./StatementBalanceSummary";
+import { StatementPaymentSummary } from "./StatementPaymentSummary";
+import { StatementBalanceHistory } from "./StatementBalanceHistory";
 import { useState } from "react";
-import { CheckCircle2, CirclePlus, ListFilter, Wallet, XCircle } from "lucide-react";
+import { CheckCircle2, CirclePlus, ListFilter, Wallet } from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
-import { useExpenses } from "@/features/expenses/hooks/expenses";
+import { useExpense } from "@/features/expenses/hooks/expenses";
 import { useStatements } from "@/features/statements/hooks/statements";
 import {
   useAssignStatementCard,
@@ -13,7 +16,11 @@ import {
 } from "@/features/statements/hooks/statements";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { EXPENSE_RESOURCES, type CreditCardExpense, type Statement, type StatementRow } from "@/shared/api/types";
+import {
+  EXPENSE_RESOURCES,
+  type Statement,
+  type StatementRow,
+} from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import {
@@ -30,12 +37,26 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Checkbox } from "@/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
-import { confirmCreateText, countsOf, ROW_RESULT_LABELS, rowName, rowsOf, totalsMatch } from "@/features/statements/lib/statement-view";
+import {
+  confirmCreateText,
+  countsOf,
+  ROW_RESULT_LABELS,
+  rowName,
+  rowsOf,
+} from "@/features/statements/lib/statement-view";
 import { EditRowDialog } from "./EditRowDialog";
 import { StatementRowActions } from "./StatementRowActions";
+import { StatementMatchDialog } from "./StatementMatchDialog";
 import { MissingExpenseActions } from "./MissingExpenseActions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
@@ -48,18 +69,24 @@ interface PendingCreate {
 
 // A purchase of someone else on the owner's card becomes their cobro when it is saved (D116)
 const isCollect = (row: StatementRow, statementPersonId: string | null) =>
-  !!row.debtId || (row.result !== "matched" && row.result !== "created" && !!row.personId && row.personId !== statementPersonId);
+  !!row.debtId ||
+  (row.result !== "matched" &&
+    row.result !== "created" &&
+    !!row.personId &&
+    row.personId !== statementPersonId);
 
 function RowsTable({
   statementId,
   statementPersonId,
   rows,
   onCreate,
+  onReview,
 }: {
   statementId: string;
   statementPersonId: string | null;
   rows: StatementRow[];
   onCreate: (row: StatementRow) => void;
+  onReview: (row: StatementRow) => void;
 }) {
   const update = useUpdateStatementRow();
   const assignRows = useAssignStatementRows();
@@ -68,8 +95,11 @@ function RowsTable({
   const [assignTo, setAssignTo] = useState<string | null>(null);
   const personName = nameById(usePeople().data);
   // Matched and created rows follow the person of their expense: only the others can be given to someone
-  const selectable = rows.filter((row) => (row.result === "new" || row.result === "ignored") && !row.locked);
-  const allChecked = selectable.length > 0 && selectable.every((row) => selected.has(row.id));
+  const selectable = rows.filter(
+    (row) => (row.result === "new" || row.result === "ignored") && !row.locked,
+  );
+  const allChecked =
+    selectable.length > 0 && selectable.every((row) => selected.has(row.id));
   const toggle = (id: string, on: boolean) => {
     const next = new Set(selected);
     if (on) next.add(id);
@@ -86,14 +116,28 @@ function RowsTable({
     <>
       {selected.size > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/40 p-2 text-sm">
-          <span className="px-1 font-medium">{selected.size} seleccionadas · Asignar a</span>
+          <span className="px-1 font-medium">
+            {selected.size} seleccionadas · Asignar a
+          </span>
           <div className="w-48">
-            <PersonSelect value={assignTo} onChange={setAssignTo} placeholder="Elige la persona" />
+            <PersonSelect
+              value={assignTo}
+              onChange={setAssignTo}
+              placeholder="Elige la persona"
+            />
           </div>
-          <Button size="sm" onClick={assign} disabled={!assignTo || assignRows.isPending}>
+          <Button
+            size="sm"
+            onClick={assign}
+            disabled={!assignTo || assignRows.isPending}
+          >
             Asignar
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setSelected(new Set())}
+          >
             Quitar selección
           </Button>
         </div>
@@ -106,8 +150,16 @@ function RowsTable({
                 <Checkbox
                   aria-label="Seleccionar todas"
                   disabled={!selectable.length}
-                  checked={allChecked ? true : selected.size ? "indeterminate" : false}
-                  onCheckedChange={(on) => setSelected(on === true ? new Set(selectable.map((row) => row.id)) : new Set())}
+                  checked={
+                    allChecked ? true : selected.size ? "indeterminate" : false
+                  }
+                  onCheckedChange={(on) =>
+                    setSelected(
+                      on === true
+                        ? new Set(selectable.map((row) => row.id))
+                        : new Set(),
+                    )
+                  }
                 />
               </TableHead>
               <TableHead>Fecha</TableHead>
@@ -128,7 +180,11 @@ function RowsTable({
                 <TableCell>
                   <Checkbox
                     aria-label="Seleccionar"
-                    disabled={row.locked || row.result === "matched" || row.result === "created"}
+                    disabled={
+                      row.locked ||
+                      row.result === "matched" ||
+                      row.result === "created"
+                    }
                     checked={selected.has(row.id)}
                     onCheckedChange={(on) => toggle(row.id, on === true)}
                   />
@@ -138,9 +194,28 @@ function RowsTable({
                 </TableCell>
                 <TableCell className="min-w-56">
                   <div>
-                    <span>{rowName(row)}</span>
-                    {row.installment && <Badge variant="outline" className="ml-2">{row.installment}</Badge>}
-                    {row.label && <p className="text-xs text-muted-foreground">Banco: {row.description}</p>}
+                    {row.expenseId ? (
+                      <button
+                        type="button"
+                        className="text-left font-medium underline decoration-muted-foreground/40 underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label={`Revisar registro de ${rowName(row)}`}
+                        onClick={() => onReview(row)}
+                      >
+                        {rowName(row)}
+                      </button>
+                    ) : (
+                      <span>{rowName(row)}</span>
+                    )}
+                    {row.installment && (
+                      <Badge variant="outline" className="ml-2">
+                        {row.installment}
+                      </Badge>
+                    )}
+                    {row.label && (
+                      <p className="text-xs text-muted-foreground">
+                        Banco: {row.description}
+                      </p>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
@@ -149,7 +224,11 @@ function RowsTable({
                 <TableCell className="whitespace-nowrap text-sm">
                   {row.personId ? personName(row.personId) : "—"}
                   {isCollect(row, statementPersonId) && (
-                    <Badge variant="outline" className="ml-2 text-[10px]" title="Al guardarlo se crea su cobro">
+                    <Badge
+                      variant="outline"
+                      className="ml-2 text-[10px]"
+                      title="Al guardarlo se crea su cobro"
+                    >
                       {row.debtId ? "cobro creado" : "se cobra"}
                     </Badge>
                   )}
@@ -161,12 +240,25 @@ function RowsTable({
                   <StatementRowActions
                     row={row}
                     onEdit={() => setEditingRow(row)}
-                    onSave={() => onCreate(row)}
+                    onSave={() =>
+                      row.expenseId && row.result === "matched"
+                        ? onReview(row)
+                        : onCreate(row)
+                    }
+                    onReview={row.expenseId ? () => onReview(row) : undefined}
                     onIgnore={() =>
-                      update.mutate({ id: statementId, rowId: row.id, result: "ignored" })
+                      update.mutate({
+                        id: statementId,
+                        rowId: row.id,
+                        result: "ignored",
+                      })
                     }
                     onRestore={() =>
-                      update.mutate({ id: statementId, rowId: row.id, result: "new" })
+                      update.mutate({
+                        id: statementId,
+                        rowId: row.id,
+                        result: "new",
+                      })
                     }
                     saving={update.isPending}
                   />
@@ -183,7 +275,10 @@ function RowsTable({
           row={editingRow}
           onClose={() => setEditingRow(null)}
           onSave={(changes) =>
-            update.mutate({ id: statementId, rowId: editingRow.id, ...changes }, { onSuccess: () => setEditingRow(null) })
+            update.mutate(
+              { id: statementId, rowId: editingRow.id, ...changes },
+              { onSuccess: () => setEditingRow(null) },
+            )
           }
           saving={update.isPending}
         />
@@ -201,47 +296,63 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   const assignCard = useAssignStatementCard();
   const personName = nameById(usePeople().data);
   const statementHistory = useStatements().data ?? [];
-  const previousPeriod = statement.paymentMonth === 1
-    ? { month: 12, year: statement.paymentYear - 1 }
-    : { month: statement.paymentMonth - 1, year: statement.paymentYear };
-  const { data: currentCardExpenses = [] } = useExpenses(EXPENSE_RESOURCES.creditCard, {
-    month: statement.paymentMonth,
-    year: statement.paymentYear,
-  });
-  const { data: previousCardExpenses = [] } = useExpenses(EXPENSE_RESOURCES.creditCard, previousPeriod);
   const [editingExpenseId, setEditingExpenseId] = useState<string>();
-  const editingExpense: CreditCardExpense | undefined = [...currentCardExpenses, ...previousCardExpenses]
-    .find((expense) => expense.id === editingExpenseId);
+  const { data: editingExpense } = useExpense(
+    EXPENSE_RESOURCES.creditCard,
+    editingExpenseId,
+  );
+  const [reviewingRowId, setReviewingRowId] = useState<string | null>(null);
+  const reviewingRow = statement.rows.find((row) => row.id === reviewingRowId);
+  const reviewRow = (row: StatementRow) => setReviewingRowId(row.id);
   const openExpense = (expenseId: string) => setEditingExpenseId(expenseId);
   const counts = countsOf(statement);
   const newRows = rowsOf(statement, "new");
   const matchedRows = rowsOf(statement, "matched");
   const where = `${statement.cardName} · ${getMonthName(statement.paymentMonth)} ${statement.paymentYear}`;
   const history = statementHistory
-    .filter((item) => item.paymentMethodId === statement.paymentMethodId &&
-      (item.paymentYear < statement.paymentYear || (item.paymentYear === statement.paymentYear && item.paymentMonth < statement.paymentMonth)))
-    .sort((a, b) => b.paymentYear - a.paymentYear || b.paymentMonth - a.paymentMonth)
+    .filter(
+      (item) =>
+        item.paymentMethodId === statement.paymentMethodId &&
+        (item.paymentYear < statement.paymentYear ||
+          (item.paymentYear === statement.paymentYear &&
+            item.paymentMonth < statement.paymentMonth)),
+    )
+    .sort(
+      (a, b) =>
+        b.paymentYear - a.paymentYear || b.paymentMonth - a.paymentMonth,
+    )
     .slice(0, 4);
 
   const collectFrom = (row: StatementRow) =>
-    row.personId && row.personId !== statement.personId ? personName(row.personId) : undefined;
+    row.personId && row.personId !== statement.personId
+      ? personName(row.personId)
+      : undefined;
   const askCreate = (row: StatementRow) =>
-    setPending({ rowIds: [row.id], ...confirmCreateText(row, where, collectFrom(row)) });
-  const newCollects = newRows.filter((row) => row.result === "new" && collectFrom(row)).length;
+    setPending({
+      rowIds: [row.id],
+      ...confirmCreateText(row, where, collectFrom(row)),
+    });
+  const newCollects = newRows.filter(
+    (row) => row.result === "new" && collectFrom(row),
+  ).length;
 
   return (
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex flex-wrap items-center gap-2 text-base">
           {where}
-          <Badge variant="outline">{statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}</Badge>
+          <Badge variant="outline">
+            {statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}
+          </Badge>
         </CardTitle>
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex max-w-sm items-center gap-2 text-sm">
             <span className="shrink-0 text-muted-foreground">Persona</span>
             <PersonSelect
               value={statement.personId}
-              onChange={(personId) => personId && assignPerson.mutate({ id: statement.id, personId })}
+              onChange={(personId) =>
+                personId && assignPerson.mutate({ id: statement.id, personId })
+              }
               placeholder="Sin asignar"
             />
           </div>
@@ -250,59 +361,69 @@ export function StatementDetail({ statement }: { statement: Statement }) {
             <PaymentMethodSelect
               type="credit_card"
               value={statement.paymentMethodId}
-              onChange={(paymentMethodId) => paymentMethodId && assignCard.mutate({ id: statement.id, paymentMethodId })}
+              onChange={(paymentMethodId) =>
+                paymentMethodId &&
+                assignCard.mutate({ id: statement.id, paymentMethodId })
+              }
               placeholder="Elige la tarjeta"
             />
           </div>
         </div>
         <p className="text-xs text-muted-foreground">
-          ¿La tarjeta no es la correcta? Cámbiala aquí: los movimientos que aún no creaste se comparan de nuevo con esa tarjeta.
+          ¿La tarjeta no es la correcta? Cámbiala aquí: los movimientos que aún
+          no creaste se comparan de nuevo con esa tarjeta.
         </p>
-        <div className="grid gap-2 pt-2 text-sm sm:grid-cols-4">
-          <div>
-            <p className="text-muted-foreground">Total del banco</p>
-            <p className="font-semibold tabular-nums">{statement.totalDue != null ? formatCurrency(statement.totalDue) : "—"}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Registrado en Kogane</p>
-            <p className="font-semibold tabular-nums">{formatCurrency(statement.koganeTotal)}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Diferencia</p>
-            <p className={`flex items-center gap-1 font-semibold tabular-nums ${totalsMatch(statement) ? "text-emerald-600" : "text-amber-600"}`}>
-              {totalsMatch(statement) ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
-              {statement.difference != null ? formatCurrency(statement.difference) : "—"}
-            </p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Pagar hasta</p>
-            <p className="font-semibold">{statement.dueDate ? formatDate(statement.dueDate) : "—"}</p>
-          </div>
-        </div>
+        <StatementBalanceSummary statement={statement} />
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue={counts.new || statement.rows.some((row) => row.locked) ? "new" : "matched"}>
+        <Tabs
+          defaultValue={
+            counts.new || statement.rows.some((row) => row.locked)
+              ? "new"
+              : "matched"
+          }
+        >
           <TabsList
             aria-label="Revisión del estado de cuenta"
             className="grid w-full grid-cols-2 group-data-[orientation=horizontal]/tabs:h-auto sm:flex sm:w-fit"
           >
-            <TabsTrigger value="new" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+            <TabsTrigger
+              value="new"
+              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
+            >
               <CirclePlus aria-hidden="true" /> Nuevos ({counts.new})
             </TabsTrigger>
-            <TabsTrigger value="matched" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+            <TabsTrigger
+              value="matched"
+              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
+            >
               <CheckCircle2 aria-hidden="true" /> Coinciden ({counts.matched})
             </TabsTrigger>
-            <TabsTrigger value="missing" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
-              <ListFilter aria-hidden="true" /> Solo en Kogane ({counts.missing})
+            <TabsTrigger
+              value="missing"
+              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
+            >
+              <ListFilter aria-hidden="true" /> Solo en Kogane ({counts.missing}
+              )
             </TabsTrigger>
-            <TabsTrigger value="total" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+            <TabsTrigger
+              value="total"
+              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
+            >
               <Wallet aria-hidden="true" /> Pago total
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="total" forceMount className="mt-3 data-[state=inactive]:hidden">
+          <TabsContent
+            value="total"
+            forceMount
+            className="mt-3 data-[state=inactive]:hidden"
+          >
+            <StatementPaymentSummary statement={statement} />
             <div className="mb-4">
               <StatementTotalCard
+                key={statement.id}
+                initialCurrency={statement.currency === "USD" ? "USD" : "PEN"}
                 paymentMethodId={statement.paymentMethodId}
                 cardName={statement.cardName}
                 month={statement.paymentMonth}
@@ -310,43 +431,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                 compact
               />
             </div>
-            {(statement.previousBalance != null || statement.monthlyPayment != null) && (
-              <div className="mb-4 grid gap-3 lg:grid-cols-2">
-                <div className="rounded-lg border bg-muted/20 p-3">
-                  <p className="text-sm font-medium">Saldo del mes anterior</p>
-                  <div className="mt-2 flex flex-wrap items-baseline gap-x-2 text-sm">
-                    <span>{formatCurrency(statement.previousBalance ?? 0)}</span>
-                    <span className="text-muted-foreground">− pagos {formatCurrency(statement.previousPayments ?? 0)} =</span>
-                    <strong className="text-primary">{formatCurrency((statement.previousBalance ?? 0) - (statement.previousPayments ?? 0))}</strong>
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">La tabla incluye solo el remanente neto para agregar.</p>
-                </div>
-                <div className="rounded-lg border bg-muted/20 p-3">
-                  <p className="text-sm font-medium">Pago del mes</p>
-                  <p className="mt-2 text-lg font-semibold tabular-nums">{statement.monthlyPayment != null ? formatCurrency(statement.monthlyPayment) : "—"}</p>
-                  <p className="text-xs text-muted-foreground">Dato informativo tomado del estado de cuenta.</p>
-                </div>
-              </div>
-            )}
-            {history.length > 0 && (
-              <div className="mb-4 rounded-lg border p-3">
-                <p className="mb-2 text-sm font-medium">Cálculo de estados anteriores</p>
-                <div className="space-y-1.5">
-                  {history.map((item) => (
-                    <div key={item.id} className="flex flex-wrap justify-between gap-x-4 text-xs text-muted-foreground">
-                      {item.previousBalance == null && item.monthlyPayment == null ? (
-                        <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: desglose no disponible; vuelve a cargar ese estado</span>
-                      ) : (
-                        <>
-                          <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: {formatCurrency(item.previousBalance ?? 0)} − {formatCurrency(item.previousPayments ?? 0)} = {formatCurrency((item.previousBalance ?? 0) - (item.previousPayments ?? 0))}</span>
-                          <span>Pago del mes {item.monthlyPayment != null ? formatCurrency(item.monthlyPayment) : "—"}</span>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <StatementBalanceHistory statement={statement} history={history} />
           </TabsContent>
 
           <TabsContent value="new" className="mt-3 space-y-3">
@@ -365,34 +450,59 @@ export function StatementDetail({ statement }: { statement: Statement }) {
               </Button>
             )}
             {newRows.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Todo lo del estado de cuenta ya está registrado.</p>
+              <p className="text-sm text-muted-foreground">
+                Todo lo del estado de cuenta ya está registrado.
+              </p>
             ) : (
-              <RowsTable statementId={statement.id} statementPersonId={statement.personId} rows={newRows} onCreate={askCreate} />
+              <RowsTable
+                statementId={statement.id}
+                statementPersonId={statement.personId}
+                rows={newRows}
+                onCreate={askCreate}
+                onReview={reviewRow}
+              />
             )}
           </TabsContent>
 
           <TabsContent value="matched" className="mt-3 space-y-2">
             {matchedRows.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nada coincidió todavía.</p>
+              <p className="text-sm text-muted-foreground">
+                Nada coincidió todavía.
+              </p>
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Coinciden por monto y fecha cercana o cuota. Si uno se llama igual pero es de otro mes u otra tarjeta, guárdalo de todas
-                  formas o ignóralo.
+                  Movimientos del PDF vinculados a un gasto existente o creado
+                  desde este estado. La comparación considera la misma tarjeta y
+                  moneda, en el mes del estado y el anterior. Pulsa la
+                  descripción o «Revisar coincidencia» para comparar el mes de
+                  pago, la fecha y la cuota antes de crear otro gasto.
                 </p>
-                <RowsTable statementId={statement.id} statementPersonId={statement.personId} rows={matchedRows} onCreate={askCreate} />
+                <RowsTable
+                  statementId={statement.id}
+                  statementPersonId={statement.personId}
+                  rows={matchedRows}
+                  onCreate={askCreate}
+                  onReview={reviewRow}
+                />
               </>
             )}
           </TabsContent>
 
           <TabsContent value="missing" className="mt-3">
             {statement.missing.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Todo lo registrado para esta tarjeta y mes está en el estado de cuenta.</p>
+              <p className="text-sm text-muted-foreground">
+                Todo lo registrado para esta tarjeta y mes está en el estado de
+                cuenta.
+              </p>
             ) : (
               <>
                 <p className="mb-2 text-sm text-muted-foreground">
-                  Registrados en Kogane pero no aparecen en el estado: pueden ser de otro mes o de otra tarjeta. Si uno es el mismo que un
-                  nuevo con otro nombre, ignora el nuevo; para corregirlo ábrelo en Tarjetas.
+                  Gastos de esta tarjeta y del mes de pago del estado que no
+                  están vinculados a ningún movimiento del PDF. Si reconoces uno
+                  entre los nuevos con otro nombre, revísalo antes de guardar
+                  para evitar duplicarlo. Desde sus acciones puedes editar el
+                  gasto existente.
                 </p>
                 <div className="overflow-x-auto">
                   <Table>
@@ -408,14 +518,30 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                     <TableBody>
                       {statement.missing.map((expense) => (
                         <TableRow key={expense.id}>
-                          <TableCell className="text-sm text-muted-foreground">{expense.processDate ? formatDate(expense.processDate) : "—"}</TableCell>
-                          <TableCell>
-                            {expense.description} {expense.installment && <Badge variant="outline">{expense.installment}</Badge>}
+                          <TableCell className="text-sm text-muted-foreground">
+                            {expense.processDate
+                              ? formatDate(expense.processDate)
+                              : "—"}
                           </TableCell>
-                          <TableCell className="text-right tabular-nums">{formatCurrency(expense.amount)}</TableCell>
-                          <TableCell className="text-sm">{personName(expense.personId)}</TableCell>
+                          <TableCell>
+                            {expense.description}{" "}
+                            {expense.installment && (
+                              <Badge variant="outline">
+                                {expense.installment}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {formatCurrency(expense.amount, expense.currency)}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {personName(expense.personId)}
+                          </TableCell>
                           <TableCell className="text-right">
-                            <MissingExpenseActions expenseName={expense.description} onEdit={() => openExpense(expense.id)} />
+                            <MissingExpenseActions
+                              expenseName={expense.description}
+                              onEdit={() => openExpense(expense.id)}
+                            />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -428,17 +554,26 @@ export function StatementDetail({ statement }: { statement: Statement }) {
         </Tabs>
       </CardContent>
 
-      <AlertDialog open={!!pending} onOpenChange={(open) => !open && setPending(null)}>
+      <AlertDialog
+        open={!!pending}
+        onOpenChange={(open) => !open && setPending(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{pending?.title}</AlertDialogTitle>
-            <AlertDialogDescription>{pending?.description}</AlertDialogDescription>
+            <AlertDialogDescription>
+              {pending?.description}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (pending) createRows.mutate({ id: statement.id, rowIds: pending.rowIds });
+                if (pending)
+                  createRows.mutate({
+                    id: statement.id,
+                    rowIds: pending.rowIds,
+                  });
                 setPending(null);
               }}
             >
@@ -447,6 +582,16 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {reviewingRow && (
+        <StatementMatchDialog
+          key={reviewingRow.id}
+          statement={statement}
+          row={reviewingRow}
+          onClose={() => setReviewingRowId(null)}
+          onEdit={openExpense}
+          onCreate={askCreate}
+        />
+      )}
       <ExpenseEditDialog
         open={!!editingExpense}
         onOpenChange={(open) => !open && setEditingExpenseId(undefined)}

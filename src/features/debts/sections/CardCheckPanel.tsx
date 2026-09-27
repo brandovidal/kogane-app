@@ -1,3 +1,5 @@
+import { CurrencySelect } from "@/shared/components/forms/CurrencySelect";
+import type { CurrencyCode } from "@/shared/constants/currency";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
@@ -10,8 +12,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 
 // Contraste con la tarjeta (D114): what others owe of this card and month next to what the bank billed. The
 // "sin explicar" is what the statement asks beyond the card expenses registered: interest, fees or a missing charge
-export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: string; cardName: string; month: number; year: number }) {
-  const { data: check } = useCardCheck({ paymentMethodId: cardId, month, year });
+export function CardCheckPanel({
+  cardId,
+  cardName,
+  month,
+  year,
+}: {
+  cardId: string;
+  cardName: string;
+  month: number;
+  year: number;
+}) {
+  const [currency, setCurrency] = useState<CurrencyCode>("PEN");
+  const money = (amount: number) => formatCurrency(amount, currency);
+  const { data: check } = useCardCheck({
+    paymentMethodId: cardId,
+    month,
+    year,
+    currency,
+  });
   const [showTotalCalculation, setShowTotalCalculation] = useState(false);
   if (!check) return null;
   const unexplained = check.unexplained ?? 0;
@@ -24,6 +43,12 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
+        <CurrencySelect value={currency} onChange={setCurrency} />
+        {check.currencyReviewRequired && (
+          <p className="text-xs text-amber-600">
+            Vuelve a cargar este PDF para reconocer los saldos por moneda.
+          </p>
+        )}
         {!check.statementId ? (
           <p className="text-muted-foreground">
             Todavía no subes el estado de cuenta de este mes.{" "}
@@ -36,26 +61,38 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
           <div className="grid gap-2 sm:grid-cols-4">
             <div>
               <p className="text-muted-foreground">Total del banco</p>
-              <p className="font-semibold tabular-nums">{formatCurrency(check.statementTotal ?? 0)}</p>
+              <p className="font-semibold tabular-nums">
+                {check.statementTotal == null
+                  ? "—"
+                  : money(check.statementTotal)}
+              </p>
             </div>
             <div>
               <p className="text-muted-foreground">Registrado en Kogane</p>
-              <p className="font-semibold tabular-nums">{formatCurrency(check.koganeTotal)}</p>
+              <p className="font-semibold tabular-nums">
+                {money(check.koganeTotal)}
+              </p>
             </div>
             <div>
               <p className="text-muted-foreground">Sin explicar</p>
               <p
                 className={`flex items-center gap-1 font-semibold tabular-nums ${Math.abs(unexplained) < 0.01 ? "text-emerald-600" : "text-amber-600"}`}
               >
-                {Math.abs(unexplained) < 0.01 ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
-                {formatCurrency(unexplained)}
+                {Math.abs(unexplained) < 0.01 ? (
+                  <CheckCircle2 className="h-4 w-4" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4" />
+                )}
+                {check.unexplained == null ? "—" : money(unexplained)}
               </p>
             </div>
             <div>
               <p className="text-muted-foreground">Te deben de esta tarjeta</p>
               <p className="font-semibold tabular-nums">
-                {formatCurrency(check.othersOwed - check.othersPaid)}{" "}
-                <span className="text-xs font-normal text-muted-foreground">de {formatCurrency(check.othersOwed)}</span>
+                {money(check.othersOwed - check.othersPaid)}{" "}
+                <span className="text-xs font-normal text-muted-foreground">
+                  de {money(check.othersOwed)}
+                </span>
               </p>
             </div>
           </div>
@@ -67,8 +104,14 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
               <div key={person.personId} className="flex justify-between gap-2">
                 <span>{person.name}</span>
                 <span className="tabular-nums text-muted-foreground">
-                  pagó {formatCurrency(person.paid)} de {formatCurrency(person.owed)} ·{" "}
-                  <span className={person.balance > 0 ? "font-medium text-foreground" : ""}>saldo {formatCurrency(person.balance)}</span>
+                  pagó {money(person.paid)} de {money(person.owed)} ·{" "}
+                  <span
+                    className={
+                      person.balance > 0 ? "font-medium text-foreground" : ""
+                    }
+                  >
+                    saldo {money(person.balance)}
+                  </span>
                 </span>
               </div>
             ))}
@@ -81,7 +124,7 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
             {check.possibleInterest.map((line, index) => (
               <p key={index} className="flex justify-between gap-2">
                 <span>{line.description}</span>
-                <span className="tabular-nums">{formatCurrency(line.amount)}</span>
+                <span className="tabular-nums">{money(line.amount)}</span>
               </p>
             ))}
           </div>
@@ -90,11 +133,22 @@ export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: stri
         {check.statementId && (
           <div className="space-y-3 border-t pt-3">
             <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <Checkbox checked={showTotalCalculation} onCheckedChange={(checked) => setShowTotalCalculation(checked === true)} />
+              <Checkbox
+                checked={showTotalCalculation}
+                onCheckedChange={(checked) =>
+                  setShowTotalCalculation(checked === true)
+                }
+              />
               Mostrar cálculo visual del pago total
             </label>
             {showTotalCalculation && (
-              <StatementTotalCard paymentMethodId={cardId} cardName={cardName} month={month} year={year} compact />
+              <StatementTotalCard
+                paymentMethodId={cardId}
+                cardName={cardName}
+                month={month}
+                year={year}
+                compact
+              />
             )}
           </div>
         )}

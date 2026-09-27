@@ -4,3 +4,6 @@ export { EditRowDialog } from "./EditRowDialog";
 export { MissingExpenseActions } from "./MissingExpenseActions";
 export { StatementDetail } from "./StatementDetail";
 export { StatementRowActions } from "./StatementRowActions";
+
+export { StatementMatchDialog } from "./StatementMatchDialog";
+export type { StatementMatchDialogProps } from "./StatementMatchDialog";

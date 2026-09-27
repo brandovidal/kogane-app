@@ -17,7 +17,6 @@ import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 import { buildFixedCostExport } from "@/features/fixed-costs/lib/fixed-cost-export";
 import { FIXED_COST_FILTER_KEYS } from "@/features/fixed-costs/lib/fixed-cost-filters";
-import { useUrlGrouping } from "@/shared/hooks/useUrlGrouping";
 import { FIXED_COST_GROUP_VALUES } from "../constants/grouping";
 
 const EMPTY_COSTS: FixedCost[] = [];
@@ -50,7 +49,19 @@ export function useFixedCostList() {
     [fixedCosts, filters, me],
   );
   const [view, setView] = useViewMode("fixed-costs", "table");
-  const [groupBy, setGroupBy] = useUrlGrouping(FIXED_COST_GROUP_VALUES, "none");
+  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
+  const groupBy = (groupParams.group?.split(",") ?? []).filter(
+    (field, index, fields): field is (typeof FIXED_COST_GROUP_VALUES)[number] =>
+      FIXED_COST_GROUP_VALUES.includes(field as (typeof FIXED_COST_GROUP_VALUES)[number]) &&
+      fields.indexOf(field) === index,
+  );
+  const setGroupBy = (fields: typeof groupBy) => {
+    const next = fields.filter(
+      (field, index) =>
+        FIXED_COST_GROUP_VALUES.includes(field) && fields.indexOf(field) === index,
+    );
+    setGroupParams(next.length ? { group: next.join(",") } : {});
+  };
   const csvExport = useCsvExport(
     buildFixedCostExport({
       items: filtered,

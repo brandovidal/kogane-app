@@ -12,15 +12,25 @@ export const statementKeys = {
 };
 
 // A statement changes card expenses, the calendar and the month summary
-const invalidate = [statementKeys.all, ["expenses"], ["calendar"], ["summary"]];
+const invalidate = [
+  statementKeys.all,
+  ["expenses"],
+  ["debts"],
+  ["calendar"],
+  ["summary"],
+];
 
 export const useStatements = () =>
-  useQuery({ queryKey: statementKeys.list, queryFn: () => unwrap(api.GET("/v1/statements")) });
+  useQuery({
+    queryKey: statementKeys.list,
+    queryFn: () => unwrap(api.GET("/v1/statements")),
+  });
 
 export const useStatement = (id: string | null) =>
   useQuery({
     queryKey: statementKeys.detail(id ?? ""),
-    queryFn: () => unwrap(api.GET("/v1/statements/{id}", { params: { path: { id: id! } } })),
+    queryFn: () =>
+      unwrap(api.GET("/v1/statements/{id}", { params: { path: { id: id! } } })),
     enabled: !!id,
   });
 
@@ -37,22 +47,41 @@ export interface StatementUploadInput {
 export function useUploadStatement() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ file, password, paymentMethodId, personId, savePassword }: StatementUploadInput): Promise<Statement> => {
+    mutationFn: async ({
+      file,
+      password,
+      paymentMethodId,
+      personId,
+      savePassword,
+    }: StatementUploadInput): Promise<Statement> => {
       const form = new FormData();
       form.set("file", file);
       if (password) form.set("password", password);
       if (paymentMethodId) form.set("paymentMethodId", paymentMethodId);
       if (personId) form.set("personId", personId);
       if (password && savePassword) form.set("savePassword", "true");
-      const response = await apiFetch("/api/v1/statements", { method: "POST", body: form, headers: { accept: "application/json" } });
+      const response = await apiFetch("/api/v1/statements", {
+        method: "POST",
+        body: form,
+        headers: { accept: "application/json" },
+      });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new ApiError(response.status, body.code ?? "UNKNOWN_ERROR", body.message ?? response.statusText, body.details);
+        throw new ApiError(
+          response.status,
+          body.code ?? "UNKNOWN_ERROR",
+          body.message ?? response.statusText,
+          body.details,
+        );
       }
       return body.data as Statement;
     },
     onSuccess: async () => {
-      await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
+      await Promise.all(
+        invalidate.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      );
       toast.success("Estado de cuenta leído");
     },
   });
@@ -61,7 +90,12 @@ export function useUploadStatement() {
 export const useCreateStatementRows = () =>
   useApiMutation(
     ({ id, rowIds }: { id: string; rowIds?: string[] }) =>
-      unwrap(api.POST("/v1/statements/{id}/create-new", { params: { path: { id } }, body: { rowIds } })),
+      unwrap(
+        api.POST("/v1/statements/{id}/create-new", {
+          params: { path: { id } },
+          body: { rowIds },
+        }),
+      ),
     { invalidate, success: "Gastos creados" },
   );
 
@@ -79,24 +113,47 @@ export const useUpdateStatementRow = () =>
       label?: string | null;
       personId?: string | null; // who made the purchase (D113); null = the statement's person
     }) =>
-      unwrap(api.PATCH("/v1/statements/{id}/rows/{rowId}", { params: { path: { id, rowId } }, body })),
-    { invalidate: [statementKeys.all] },
+      unwrap(
+        api.PATCH("/v1/statements/{id}/rows/{rowId}", {
+          params: { path: { id, rowId } },
+          body,
+        }),
+      ),
+    { invalidate },
   );
 
 // Selección múltiple (D116): several purchases to a person (the additional card or who pays it); null = the statement's
 export const useAssignStatementRows = () =>
   useApiMutation(
-    ({ id, rowIds, personId }: { id: string; rowIds: string[]; personId: string | null }) =>
-      unwrap(api.POST("/v1/statements/{id}/rows/assign", { params: { path: { id } }, body: { rowIds, personId } })),
-    { invalidate: [statementKeys.all], success: "Persona asignada" },
+    ({
+      id,
+      rowIds,
+      personId,
+    }: {
+      id: string;
+      rowIds: string[];
+      personId: string | null;
+    }) =>
+      unwrap(
+        api.POST("/v1/statements/{id}/rows/assign", {
+          params: { path: { id } },
+          body: { rowIds, personId },
+        }),
+      ),
+    { invalidate, success: "Persona asignada" },
   );
 
 // Whose statement it is, when the PDF did not say or said someone else
 export const useAssignStatementPerson = () =>
   useApiMutation(
     ({ id, personId }: { id: string; personId: string }) =>
-      unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body: { personId } })),
-    { invalidate: [statementKeys.all], success: "Persona asignada" },
+      unwrap(
+        api.PATCH("/v1/statements/{id}", {
+          params: { path: { id } },
+          body: { personId },
+        }),
+      ),
+    { invalidate, success: "Persona asignada" },
   );
 
 // Corrects the card (Oh Pay / IO / CMR…) when it was not identified right, without re-uploading the PDF: re-reconciles
@@ -104,19 +161,38 @@ export const useAssignStatementPerson = () =>
 export const useAssignStatementCard = () =>
   useApiMutation(
     ({ id, paymentMethodId }: { id: string; paymentMethodId: string }) =>
-      unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body: { paymentMethodId } })),
-    { invalidate: [statementKeys.all, ["expenses"], ["calendar"]], success: "Tarjeta corregida" },
+      unwrap(
+        api.PATCH("/v1/statements/{id}", {
+          params: { path: { id } },
+          body: { paymentMethodId },
+        }),
+      ),
+    { invalidate, success: "Tarjeta corregida" },
   );
 
 export const useUpdateStatementMinimum = () =>
   useApiMutation(
-    ({ id, ...body }: { id: string; minimumDue?: number | null; minimumAllocations?: Record<string, number> | null }) =>
-      unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body })),
-    { invalidate: [statementKeys.all, ["debts"]], success: "Pago mínimo actualizado" },
+    ({
+      id,
+      ...body
+    }: {
+      id: string;
+      currency?: "PEN" | "USD";
+      minimumDue?: number | null;
+      minimumAllocations?: Record<string, number> | null;
+    }) =>
+      unwrap(
+        api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body }),
+      ),
+    {
+      invalidate: [statementKeys.all, ["debts"]],
+      success: "Pago mínimo actualizado",
+    },
   );
 
 export const useDeleteStatement = () =>
   useApiMutation(
-    (id: string) => unwrap(api.DELETE("/v1/statements/{id}", { params: { path: { id } } })),
-    { invalidate: [statementKeys.all, ["calendar"]], success: "Estado de cuenta eliminado" },
+    (id: string) =>
+      unwrap(api.DELETE("/v1/statements/{id}", { params: { path: { id } } })),
+    { invalidate, success: "Estado de cuenta eliminado" },
   );

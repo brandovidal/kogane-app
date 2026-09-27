@@ -1,3 +1,4 @@
+import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
 import type { ExpenseFilterKey } from "../types/expense-filters";
 
 export const PERSON_ALL = "all";
@@ -15,10 +16,7 @@ export const SHARED_FILTER_OPTIONS = [
   { value: SHARED_FILTER.SHARED, label: "Compartidos" },
   { value: SHARED_FILTER.OWN, label: "Solo míos" },
 ];
-export const CURRENCY_FILTER_OPTIONS = [
-  { value: "PEN", label: "Soles (PEN)" },
-  { value: "USD", label: "Dólares (USD)" },
-];
+export const CURRENCY_FILTER_OPTIONS = [...CURRENCY_OPTIONS];
 
 // Person placement is configured separately through personInPanel.
 export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = [
