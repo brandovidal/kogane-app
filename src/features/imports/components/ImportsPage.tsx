@@ -1,13 +1,39 @@
 import { useState } from "react";
-import { CheckCircle2, ChevronLeft, ChevronRight, FileUp, Search, Trash2, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  FileUp,
+  Search,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 
 import { ApiError } from "@/shared/api/client";
-import { useApplyImport, useDiscardImport, useImport, useImportRows, useImports, useUploadNotion } from "@/features/imports/hooks/imports";
-import { useDeleteStatement, useStatement, useStatements, useUploadStatement } from "@/features/statements/hooks/statements";
+import {
+  useApplyImport,
+  useDiscardImport,
+  useImport,
+  useImportRows,
+  useImports,
+  useUploadNotion,
+} from "@/features/imports/hooks/imports";
+import {
+  useDeleteStatement,
+  useStatement,
+  useStatements,
+  useUploadStatement,
+} from "@/features/statements/hooks/statements";
 import { withQuery } from "@/shared/api/query";
-import type { ImportDetail, ImportRow, ImportRowStatus, ImportTab } from "@/shared/api/types";
+import type {
+  ImportDetail,
+  ImportRow,
+  ImportRowStatus,
+  ImportTab,
+} from "@/shared/api/types";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
@@ -15,9 +41,22 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 import { Switch } from "@/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
 import { StatementDetail } from "@/features/statements/components/StatementDetail";
@@ -50,7 +89,13 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
   const upload = source === "notion" ? notion : statement;
   const error = upload.error instanceof ApiError ? upload.error : null;
   const reason = (error?.details as { reason?: string } | undefined)?.reason;
-  const needsPassword = source === "statement" && error?.code === "STATEMENT_PASSWORD";
+  const needsPassword =
+    source === "statement" && error?.code === "STATEMENT_PASSWORD";
+
+  const needsCard = source === "statement" &&
+    error?.code === "STATEMENT_UNREADABLE" &&
+    reason?.startsWith("card not found") === true;
+  const cardMissing = needsCard && !cardId;
 
   const reset = () => {
     setFiles([]);
@@ -62,9 +107,11 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
   };
 
   const send = () => {
-    if (!files.length) return;
+    if (!files.length || upload.isPending || cardMissing) return;
     if (source === "notion") {
-      notion.mutate(files, { onSuccess: (batch) => (reset(), onRead(`notion:${batch.id}`)) });
+      notion.mutate(files, {
+        onSuccess: (batch) => (reset(), onRead(`notion:${batch.id}`)),
+      });
       return;
     }
     statement.mutate(
@@ -84,7 +131,8 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
       <CardHeader className="pb-2">
         <CardTitle className="text-base">Subir para revisar</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Nada se guarda en tus gastos hasta que lo apruebes. Las capturas siguen entrando por{" "}
+          Nada se guarda en tus gastos hasta que lo apruebes. Las capturas
+          siguen entrando por{" "}
           <a className="underline" href="/mensajes">
             Mensajes
           </a>
@@ -115,17 +163,26 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">{source === "notion" ? "El ZIP que exporta Notion o sus CSV" : "El PDF del banco"}</label>
+          <label className="text-sm font-medium">
+            {source === "notion"
+              ? "El ZIP que exporta Notion o sus CSV"
+              : "El PDF del banco"}
+          </label>
           <Input
             key={source}
             type="file"
             multiple={source === "notion"}
             accept={source === "notion" ? ".zip,.csv" : "application/pdf"}
-            onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
+            onChange={(event) => {
+              setFiles(Array.from(event.target.files ?? []));
+              notion.reset();
+              statement.reset();
+            }}
           />
           {source === "notion" && (
             <p className="text-xs text-muted-foreground">
-              Exporta "Seguimiento financiero" en Markdown y CSV. Se leen solo los *_all.csv de las 9 bases.
+              Exporta "Seguimiento financiero" en Markdown y CSV. Se leen solo
+              los *_all.csv de las 9 bases.
             </p>
           )}
         </div>
@@ -133,19 +190,44 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
         {source === "statement" && (
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Tarjeta (opcional)</label>
-              <PaymentMethodSelect type="credit_card" allowEmpty value={cardId} onChange={setCardId} placeholder="La reconoce del PDF" />
+              <label htmlFor="statement-card" className="text-sm font-medium">
+                Tarjeta {needsCard ? "*" : "(detección automática)"}
+              </label>
+              <PaymentMethodSelect
+                id="statement-card"
+                type="credit_card"
+                allowEmpty={!needsCard}
+                aria-required={needsCard}
+                aria-invalid={cardMissing}
+                aria-describedby="statement-card-help"
+                className={cardMissing ? "border-destructive" : undefined}
+                value={cardId}
+                onChange={setCardId}
+                placeholder={needsCard ? "Selecciona la tarjeta" : "Detectar en el PDF"}
+              />
+              <p id="statement-card-help" role={cardMissing ? "alert" : undefined}
+                className={`text-xs ${cardMissing ? "text-destructive" : "text-muted-foreground"}`}>
+                {needsCard
+                  ? "No se pudo identificar la tarjeta del PDF. Selecciónala para previsualizar."
+                  : "Se identifica en el PDF; también puedes elegirla manualmente."}
+              </p>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Persona (opcional)</label>
-              <PersonSelect allowEmpty value={personId} onChange={setPersonId} placeholder="Detectar en el PDF" />
-              <p className="text-xs text-muted-foreground">Si no la eliges, se busca el titular en el PDF; si no aparece, se usa tu persona predeterminada.</p>
+              <PersonSelect
+                allowEmpty
+                value={personId}
+                onChange={setPersonId}
+                placeholder="Detectar en el PDF"
+              />
             </div>
           </div>
         )}
         {source === "statement" && (
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Contraseña del PDF {needsPassword ? "*" : "(opcional)"}</label>
+            <label className="text-sm font-medium">
+              Contraseña del PDF {needsPassword ? "*" : "(opcional)"}
+            </label>
             <Input
               type="password"
               placeholder="Se prueban los N.º de documento guardados"
@@ -156,35 +238,56 @@ function UploadCard({ onRead }: { onRead: (key: string) => void }) {
             />
             {password && (
               <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Switch checked={savePassword} onCheckedChange={setSavePassword} />
-                Guardarla como N.º de documento de la persona del estado de cuenta (si abre el PDF)
+                <Switch
+                  checked={savePassword}
+                  onCheckedChange={setSavePassword}
+                />
+                Guardarla como N.º de documento de la persona del estado de
+                cuenta (si abre el PDF)
               </label>
             )}
           </div>
         )}
 
         {error && (
-          <p className="text-sm text-destructive">{source === "statement" ? uploadErrorText(error.code, reason) : error.message}</p>
+          <p className="text-sm text-destructive">
+            {source === "statement"
+              ? uploadErrorText(error.code, reason)
+              : error.message}
+          </p>
         )}
-        {!error && upload.isError && <p className="text-sm text-destructive">No se pudo subir.</p>}
-        <Button onClick={send} disabled={!files.length || upload.isPending}>
-          <FileUp className="mr-1 h-4 w-4" /> {upload.isPending ? "Leyendo…" : "Previsualizar"}
+        {!error && upload.isError && (
+          <p className="text-sm text-destructive">No se pudo subir.</p>
+        )}
+        <Button onClick={send} disabled={!files.length || upload.isPending || cardMissing}>
+          <FileUp className="mr-1 h-4 w-4" />{" "}
+          {upload.isPending ? "Leyendo…" : "Previsualizar"}
         </Button>
       </CardContent>
     </Card>
   );
 }
 
-function HistoryCard({ items, current, onSelect }: { items: HistoryItem[]; current: string | null; onSelect: (key: string) => void }) {
+function HistoryCard({
+  items,
+  current,
+  onSelect,
+}: {
+  items: HistoryItem[];
+  current: string | null;
+  onSelect: (key: string) => void;
+}) {
   const discard = useDiscardImport();
   const removeStatement = useDeleteStatement();
 
-  const remove = (item: HistoryItem) => {
-    if (item.source === "notion") {
-      if (window.confirm("¿Descartar esta previsualización? No se importa nada.")) discard.mutate(item.id);
-    } else if (window.confirm("¿Eliminar este estado de cuenta? Los gastos que creó se quedan.")) {
-      removeStatement.mutate(item.id);
-    }
+  const [deletingItem, setDeletingItem] = useState<HistoryItem | null>(null);
+  const deleting = discard.isPending || removeStatement.isPending;
+  const confirmRemove = () => {
+    if (!deletingItem || deleting) return;
+    const mutation = deletingItem.source === "notion" ? discard : removeStatement;
+    mutation.mutate(deletingItem.id, {
+      onSuccess: () => setDeletingItem(null),
+    });
   };
 
   return (
@@ -193,26 +296,63 @@ function HistoryCard({ items, current, onSelect }: { items: HistoryItem[]; curre
         <CardTitle className="text-base">Historial</CardTitle>
       </CardHeader>
       <CardContent className="space-y-1">
-        {items.length === 0 && <p className="text-sm text-muted-foreground">Todavía no subiste nada.</p>}
+        {items.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            Todavía no subiste nada.
+          </p>
+        )}
         {items.map((item) => (
           <div
             key={item.key}
             className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm ${item.key === current ? "bg-muted" : ""}`}
           >
-            <button type="button" className="min-w-0 flex-1 text-left" onClick={() => onSelect(item.key)}>
+            <button
+              type="button"
+              className="min-w-0 flex-1 text-left"
+              onClick={() => onSelect(item.key)}
+            >
               <span className="font-medium">{item.title}</span>
-              <span className="text-muted-foreground"> · {formatDate(item.createdAt)}</span>
-              <span className="block truncate text-xs text-muted-foreground">{item.detail}</span>
+              <span className="text-muted-foreground">
+                {" "}
+                · {formatDate(item.createdAt)}
+              </span>
+              <span className="block truncate text-xs text-muted-foreground">
+                {item.detail}
+              </span>
             </button>
-            <Badge variant={item.pending ? "default" : "secondary"}>{BATCH_STATUS[item.status] ?? item.status}</Badge>
+            <Badge variant={item.pending ? "default" : "secondary"}>
+              {BATCH_STATUS[item.status] ?? item.status}
+            </Badge>
             {(item.source === "statement" || item.pending) && (
-              <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Eliminar" onClick={() => remove(item)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                aria-label={`Eliminar ${item.title}`}
+                disabled={deleting}
+                onClick={() => setDeletingItem(item)}
+              >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
         ))}
       </CardContent>
+      <DeleteConfirmationDialog
+        open={deletingItem !== null}
+        onOpenChange={(open) => !open && setDeletingItem(null)}
+        title={deletingItem?.source === "notion" ? "¿Descartar previsualización?" : "¿Eliminar estado de cuenta?"}
+        description={
+          <>
+            {deletingItem?.source === "notion"
+              ? `Se descartará la previsualización «${deletingItem.title}». No se importará ningún registro.`
+              : `Se eliminará del historial el estado de cuenta «${deletingItem?.title ?? ""}». Los gastos que creó se conservarán.`}
+            {" "}Esta acción no se puede deshacer.
+          </>
+        }
+        pending={deleting}
+        onConfirm={confirmRemove}
+      />
     </Card>
   );
 }
@@ -223,10 +363,22 @@ function RowStatusBadge({ status }: { status: ImportRowStatus }) {
 }
 
 const amountOf = (row: ImportRow) =>
-  row.amount == null ? "—" : row.kind === "group" ? `${row.amount} %` : formatCurrency(row.amount, row.currency ?? "PEN");
+  row.amount == null
+    ? "—"
+    : row.kind === "group"
+      ? `${row.amount} %`
+      : formatCurrency(row.amount, row.currency ?? "PEN");
 
 // One tab of the preview: search, status filter, a table (cards on the phone) and pages of 50
-function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; applied: boolean }) {
+function RowsTab({
+  batchId,
+  tab,
+  applied,
+}: {
+  batchId: string;
+  tab: ImportTab;
+  applied: boolean;
+}) {
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<ImportRowStatus | undefined>();
@@ -234,7 +386,9 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
   const data = query.data;
   const pages = pageCount(data?.total ?? 0, data?.pageSize ?? 50);
   const issues = tab === "issues";
-  const statuses: ImportRowStatus[] = issues ? ["blocked", "warning"] : ["new", "changed", "unchanged"];
+  const statuses: ImportRowStatus[] = issues
+    ? ["blocked", "warning"]
+    : ["new", "changed", "unchanged"];
 
   return (
     <div className="space-y-3">
@@ -272,7 +426,9 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
         </Select>
       </div>
 
-      {data && data.items.length === 0 && <p className="text-sm text-muted-foreground">Nada que mostrar.</p>}
+      {data && data.items.length === 0 && (
+        <p className="text-sm text-muted-foreground">Nada que mostrar.</p>
+      )}
 
       {data && data.items.length > 0 && (
         <>
@@ -282,8 +438,14 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
                 <TableRow>
                   <TableHead>Estado</TableHead>
                   <TableHead>{issues ? "Mensaje" : "Descripción"}</TableHead>
-                  {!issues && <TableHead className="text-right">Monto</TableHead>}
-                  {!issues && <TableHead>{applied ? "Guardado en" : "Se guardará en"}</TableHead>}
+                  {!issues && (
+                    <TableHead className="text-right">Monto</TableHead>
+                  )}
+                  {!issues && (
+                    <TableHead>
+                      {applied ? "Guardado en" : "Se guardará en"}
+                    </TableHead>
+                  )}
                   <TableHead>Origen</TableHead>
                 </TableRow>
               </TableHeader>
@@ -293,11 +455,25 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
                     <TableCell>
                       <RowStatusBadge status={row.status} />
                     </TableCell>
-                    <TableCell className="max-w-md">{issues ? row.message : row.description}</TableCell>
-                    {!issues && <TableCell className="text-right tabular-nums">{amountOf(row)}</TableCell>}
-                    {!issues && <TableCell className="text-sm">{row.destination}</TableCell>}
-                    <TableCell className="max-w-48 truncate text-xs text-muted-foreground" title={`${row.file}:${row.line}`}>
-                      {row.file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "")}:{row.line}
+                    <TableCell className="max-w-md">
+                      {issues ? row.message : row.description}
+                    </TableCell>
+                    {!issues && (
+                      <TableCell className="text-right tabular-nums">
+                        {amountOf(row)}
+                      </TableCell>
+                    )}
+                    {!issues && (
+                      <TableCell className="text-sm">
+                        {row.destination}
+                      </TableCell>
+                    )}
+                    <TableCell
+                      className="max-w-48 truncate text-xs text-muted-foreground"
+                      title={`${row.file}:${row.line}`}
+                    >
+                      {row.file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "")}:
+                      {row.line}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -309,14 +485,19 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
             {data.items.map((row) => (
               <div key={row.id} className="rounded-md border p-3 text-sm">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="font-medium">{issues ? row.message : row.description}</span>
-                  {!issues && <span className="tabular-nums">{amountOf(row)}</span>}
+                  <span className="font-medium">
+                    {issues ? row.message : row.description}
+                  </span>
+                  {!issues && (
+                    <span className="tabular-nums">{amountOf(row)}</span>
+                  )}
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <RowStatusBadge status={row.status} />
                   {row.destination && <span>→ {row.destination}</span>}
                   <span>
-                    {row.file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "")}:{row.line}
+                    {row.file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "")}:
+                    {row.line}
                   </span>
                 </div>
               </div>
@@ -328,10 +509,24 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
               {data.total} filas · página {page} de {pages}
             </span>
             <div className="flex gap-1">
-              <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Anterior" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Anterior"
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Siguiente" disabled={page >= pages} onClick={() => setPage(page + 1)}>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Siguiente"
+                disabled={page >= pages}
+                onClick={() => setPage(page + 1)}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -344,12 +539,20 @@ function RowsTab({ batchId, tab, applied }: { batchId: string; tab: ImportTab; a
 
 function SummaryTab({ batch }: { batch: ImportDetail }) {
   const kpis = [
-    { label: batch.status === "applied" ? "Creadas" : "Nuevas", value: batch.created },
+    {
+      label: batch.status === "applied" ? "Creadas" : "Nuevas",
+      value: batch.created,
+    },
     { label: "Cambiaron en Notion", value: batch.updated },
     { label: "Iguales (no se tocan)", value: batch.unchanged },
-    { label: "Bloqueadas · avisos", value: `${batch.blocked} · ${batch.warnings}` },
+    {
+      label: "Bloqueadas · avisos",
+      value: `${batch.blocked} · ${batch.warnings}`,
+    },
   ];
-  const months = batch.summary.months.filter((month) => month.notionSpent != null);
+  const months = batch.summary.months.filter(
+    (month) => month.notionSpent != null,
+  );
   const matching = months.filter(monthMatches).length;
 
   return (
@@ -365,11 +568,20 @@ function SummaryTab({ batch }: { batch: ImportDetail }) {
 
       <div>
         <p className="mb-2 text-sm">
-          <span className="font-medium">Por mes frente al Resumen de Notion:</span>{" "}
-          <span className={matching === months.length ? "text-emerald-600" : "text-amber-600"}>
+          <span className="font-medium">
+            Por mes frente al Resumen de Notion:
+          </span>{" "}
+          <span
+            className={
+              matching === months.length ? "text-emerald-600" : "text-amber-600"
+            }
+          >
             {matching} de {months.length} cuadran
           </span>
-          <span className="block text-xs text-muted-foreground">Notion suma las filas enlazadas a cada Resumen (costos fijos y tarjetas), no el mes de pago.</span>
+          <span className="block text-xs text-muted-foreground">
+            Notion suma las filas enlazadas a cada Resumen (costos fijos y
+            tarjetas), no el mes de pago.
+          </span>
         </p>
         <div className="max-h-96 overflow-auto rounded-md border">
           <Table>
@@ -388,11 +600,21 @@ function SummaryTab({ batch }: { batch: ImportDetail }) {
                   <TableCell>
                     {getMonthName(month.month)} {month.year}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">{month.salary != null ? formatCurrency(month.salary) : "—"}</TableCell>
-                  <TableCell className="text-right tabular-nums">{formatCurrency(month.linked)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{formatCurrency(month.notionSpent ?? 0)}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {month.salary != null ? formatCurrency(month.salary) : "—"}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatCurrency(month.linked)}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatCurrency(month.notionSpent ?? 0)}
+                  </TableCell>
                   <TableCell>
-                    {monthMatches(month) ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <XCircle className="h-4 w-4 text-amber-600" />}
+                    {monthMatches(month) ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-amber-600" />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -402,7 +624,10 @@ function SummaryTab({ batch }: { batch: ImportDetail }) {
       </div>
 
       <div className="text-xs text-muted-foreground">
-        Archivos: {batch.summary.files.map((file) => `${file.base} (${file.rows})`).join(" · ")}
+        Archivos:{" "}
+        {batch.summary.files
+          .map((file) => `${file.base} (${file.rows})`)
+          .join(" · ")}
       </div>
     </div>
   );
@@ -417,7 +642,11 @@ function NotionDetail({ id }: { id: string }) {
 
   const confirmApply = () => {
     const total = batch.created + batch.updated;
-    if (window.confirm(`¿Importar ${total} filas (${batch.created} nuevas y ${batch.updated} que cambiaron)? Las ${batch.unchanged} iguales no se tocan.`)) {
+    if (
+      window.confirm(
+        `¿Importar ${total} filas (${batch.created} nuevas y ${batch.updated} que cambiaron)? Las ${batch.unchanged} iguales no se tocan.`,
+      )
+    ) {
       apply.mutate(batch.id);
     }
   };
@@ -428,14 +657,30 @@ function NotionDetail({ id }: { id: string }) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-base">
             Notion · {formatDate(batch.createdAt)}
-            <Badge variant={preview ? "default" : "secondary"}>{BATCH_STATUS[batch.status]}</Badge>
+            <Badge variant={preview ? "default" : "secondary"}>
+              {BATCH_STATUS[batch.status]}
+            </Badge>
           </CardTitle>
           {preview && (
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => window.confirm("¿Descartar sin importar?") && discard.mutate(batch.id)} disabled={discard.isPending}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  window.confirm("¿Descartar sin importar?") &&
+                  discard.mutate(batch.id)
+                }
+                disabled={discard.isPending}
+              >
                 Descartar
               </Button>
-              <Button size="sm" onClick={confirmApply} disabled={apply.isPending || batch.created + batch.updated === 0}>
+              <Button
+                size="sm"
+                onClick={confirmApply}
+                disabled={
+                  apply.isPending || batch.created + batch.updated === 0
+                }
+              >
                 {apply.isPending ? "Importando…" : "Importar"}
               </Button>
             </div>
@@ -478,13 +723,15 @@ function StatementPreview({ id }: { id: string }) {
   return statement ? <StatementDetail statement={statement} /> : null;
 }
 
-// Reconocimiento / Importación (P14, D104): a Notion export or a bank statement is uploaded, previewed and only then saved
 function ImportsPageView() {
   const batches = useImports().data ?? [];
   const statements = useStatements().data ?? [];
   const history = historyOf(batches, statements, getMonthName);
   const [selected, setSelected] = useState<string | null>(null);
-  const current = selected && history.some((item) => item.key === selected) ? selected : (history[0]?.key ?? null);
+  const current =
+    selected && history.some((item) => item.key === selected)
+      ? selected
+      : (history[0]?.key ?? null);
   const [source, id] = (current ?? ":").split(":");
 
   return (

@@ -12,13 +12,14 @@ export function CatalogSelectOptions({
   className,
   disabled,
   options,
+  ...triggerProps
 }: CatalogSelectProps & {
   options: CatalogOption[];
 }) {
   const selectedOption = options.find((option) => option.id === value);
   return (
     <Select disabled={disabled} value={value ?? (allowEmpty ? EMPTY : "")} onValueChange={(v) => onChange(v === EMPTY ? null : v)}>
-      <SelectTrigger className={className}>
+      <SelectTrigger {...triggerProps} className={className}>
         <SelectValue placeholder={placeholder}>
           {selectedOption && (selectedOption.content ?? <span>{selectedOption.name}</span>)}
         </SelectValue>

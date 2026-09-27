@@ -30,7 +30,7 @@ export function uploadErrorText(code: string, reason?: string): string {
       : "La contraseña no abrió el PDF. Escribe la correcta.";
   }
   if (code === "STATEMENT_UNREADABLE") {
-    if (reason?.startsWith("card not found")) return "No sé de qué tarjeta es: elígela y vuelve a subirlo.";
+    if (reason?.startsWith("card not found")) return "No se pudo identificar la tarjeta del PDF. Selecciónala y vuelve a previsualizar; el archivo sigue cargado.";
     return "No pude leer movimientos en ese PDF.";
   }
   return "No se pudo subir el estado de cuenta.";

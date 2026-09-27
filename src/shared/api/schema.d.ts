@@ -3757,6 +3757,7 @@ export interface components {
         };
         UpdateStatementDto: {
             personId?: string;
+            paymentMethodId?: string;
             minimumDue?: number | null;
             minimumAllocations?: {
                 [key: string]: number;

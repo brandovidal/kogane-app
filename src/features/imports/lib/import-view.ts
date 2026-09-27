@@ -1,6 +1,9 @@
-import type { ImportBatch, ImportRowStatus, ImportTab, StatementSummary } from "@/shared/api/types";
-
-// Reconocimiento / Importación (P14, D104): labels of the preview and the history that joins both sources
+import type {
+  ImportBatch,
+  ImportRowStatus,
+  ImportTab,
+  StatementSummary,
+} from "@/shared/api/types";
 
 export type ImportSource = "notion" | "statement";
 
@@ -18,9 +21,22 @@ export const TAB_LABELS: Record<ImportTab, string> = {
   issues: "Avisos",
 };
 
-export const TAB_ORDER: ImportTab[] = ["cards", "fixed_costs", "platforms", "debts", "budget", "issues"];
+export const TAB_ORDER: ImportTab[] = [
+  "cards",
+  "fixed_costs",
+  "platforms",
+  "debts",
+  "budget",
+  "issues",
+];
 
-export const ROW_STATUS: Record<ImportRowStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+export const ROW_STATUS: Record<
+  ImportRowStatus,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+  }
+> = {
   new: { label: "Nueva", variant: "default" },
   changed: { label: "Cambió", variant: "outline" },
   unchanged: { label: "Igual", variant: "secondary" },
@@ -48,7 +64,11 @@ export interface HistoryItem {
 }
 
 // One list, newest first: the Notion imports and the statements read
-export function historyOf(batches: ImportBatch[], statements: StatementSummary[], monthName: (month: number) => string): HistoryItem[] {
+export function historyOf(
+  batches: ImportBatch[],
+  statements: StatementSummary[],
+  monthName: (month: number) => string,
+): HistoryItem[] {
   const notion = batches.map(
     (batch): HistoryItem => ({
       key: `notion:${batch.id}`,
@@ -73,11 +93,18 @@ export function historyOf(batches: ImportBatch[], statements: StatementSummary[]
       createdAt: statement.createdAt,
     }),
   );
-  return [...notion, ...read].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return [...notion, ...read].sort((a, b) =>
+    b.createdAt.localeCompare(a.createdAt),
+  );
 }
 
-export const pageCount = (total: number, pageSize: number) => Math.max(1, Math.ceil(total / pageSize));
+export const pageCount = (total: number, pageSize: number) =>
+  Math.max(1, Math.ceil(total / pageSize));
 
 // A month of the check: the rows linked to its Resumen page add up to its "Gastos" (to the cent)
-export const monthMatches = (month: { linked: number; notionSpent: number | null }) =>
-  month.notionSpent != null && Math.abs(month.linked - month.notionSpent) < 0.01;
+export const monthMatches = (month: {
+  linked: number;
+  notionSpent: number | null;
+}) =>
+  month.notionSpent != null &&
+  Math.abs(month.linked - month.notionSpent) < 0.01;

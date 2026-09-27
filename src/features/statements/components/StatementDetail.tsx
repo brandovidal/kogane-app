@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, CirclePlus, ListFilter, Wallet, XCircle } from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { useStatements } from "@/features/statements/hooks/statements";
 import {
+  useAssignStatementCard,
   useAssignStatementPerson,
   useAssignStatementRows,
   useCreateStatementRows,
   useUpdateStatementRow,
 } from "@/features/statements/hooks/statements";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import { EXPENSE_RESOURCES, type CreditCardExpense, type Statement, type StatementRow } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
@@ -196,6 +198,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   const createRows = useCreateStatementRows();
   const [pending, setPending] = useState<PendingCreate | null>(null);
   const assignPerson = useAssignStatementPerson();
+  const assignCard = useAssignStatementCard();
   const personName = nameById(usePeople().data);
   const statementHistory = useStatements().data ?? [];
   const previousPeriod = statement.paymentMonth === 1
@@ -233,14 +236,28 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           {where}
           <Badge variant="outline">{statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}</Badge>
         </CardTitle>
-        <div className="flex max-w-sm items-center gap-2 text-sm">
-          <span className="shrink-0 text-muted-foreground">Persona</span>
-          <PersonSelect
-            value={statement.personId}
-            onChange={(personId) => personId && assignPerson.mutate({ id: statement.id, personId })}
-            placeholder="Sin asignar"
-          />
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex max-w-sm items-center gap-2 text-sm">
+            <span className="shrink-0 text-muted-foreground">Persona</span>
+            <PersonSelect
+              value={statement.personId}
+              onChange={(personId) => personId && assignPerson.mutate({ id: statement.id, personId })}
+              placeholder="Sin asignar"
+            />
+          </div>
+          <div className="flex max-w-sm items-center gap-2 text-sm">
+            <span className="shrink-0 text-muted-foreground">Tarjeta</span>
+            <PaymentMethodSelect
+              type="credit_card"
+              value={statement.paymentMethodId}
+              onChange={(paymentMethodId) => paymentMethodId && assignCard.mutate({ id: statement.id, paymentMethodId })}
+              placeholder="Elige la tarjeta"
+            />
+          </div>
         </div>
+        <p className="text-xs text-muted-foreground">
+          ¿La tarjeta no es la correcta? Cámbiala aquí: los movimientos que aún no creaste se comparan de nuevo con esa tarjeta.
+        </p>
         <div className="grid gap-2 pt-2 text-sm sm:grid-cols-4">
           <div>
             <p className="text-muted-foreground">Total del banco</p>
@@ -264,58 +281,73 @@ export function StatementDetail({ statement }: { statement: Statement }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
-          <StatementTotalCard
-            paymentMethodId={statement.paymentMethodId}
-            cardName={statement.cardName}
-            month={statement.paymentMonth}
-            year={statement.paymentYear}
-            compact
-          />
-        </div>
-        {(statement.previousBalance != null || statement.monthlyPayment != null) && (
-          <div className="mb-4 grid gap-3 lg:grid-cols-2">
-            <div className="rounded-lg border bg-muted/20 p-3">
-              <p className="text-sm font-medium">Saldo del mes anterior</p>
-              <div className="mt-2 flex flex-wrap items-baseline gap-x-2 text-sm">
-                <span>{formatCurrency(statement.previousBalance ?? 0)}</span>
-                <span className="text-muted-foreground">− pagos {formatCurrency(statement.previousPayments ?? 0)} =</span>
-                <strong className="text-primary">{formatCurrency((statement.previousBalance ?? 0) - (statement.previousPayments ?? 0))}</strong>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">La tabla incluye solo el remanente neto para agregar.</p>
-            </div>
-            <div className="rounded-lg border bg-muted/20 p-3">
-              <p className="text-sm font-medium">Pago del mes</p>
-              <p className="mt-2 text-lg font-semibold tabular-nums">{statement.monthlyPayment != null ? formatCurrency(statement.monthlyPayment) : "—"}</p>
-              <p className="text-xs text-muted-foreground">Dato informativo tomado del estado de cuenta.</p>
-            </div>
-          </div>
-        )}
-        {history.length > 0 && (
-          <div className="mb-4 rounded-lg border p-3">
-            <p className="mb-2 text-sm font-medium">Cálculo de estados anteriores</p>
-            <div className="space-y-1.5">
-              {history.map((item) => (
-                <div key={item.id} className="flex flex-wrap justify-between gap-x-4 text-xs text-muted-foreground">
-                  {item.previousBalance == null && item.monthlyPayment == null ? (
-                    <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: desglose no disponible; vuelve a cargar ese estado</span>
-                  ) : (
-                    <>
-                      <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: {formatCurrency(item.previousBalance ?? 0)} − {formatCurrency(item.previousPayments ?? 0)} = {formatCurrency((item.previousBalance ?? 0) - (item.previousPayments ?? 0))}</span>
-                      <span>Pago del mes {item.monthlyPayment != null ? formatCurrency(item.monthlyPayment) : "—"}</span>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
         <Tabs defaultValue={counts.new || statement.rows.some((row) => row.locked) ? "new" : "matched"}>
-          <TabsList>
-            <TabsTrigger value="new">Nuevos ({counts.new})</TabsTrigger>
-            <TabsTrigger value="matched">Coinciden ({counts.matched})</TabsTrigger>
-            <TabsTrigger value="missing">Solo en Kogane ({counts.missing})</TabsTrigger>
+          <TabsList
+            aria-label="Revisión del estado de cuenta"
+            className="grid w-full grid-cols-2 group-data-[orientation=horizontal]/tabs:h-auto sm:flex sm:w-fit"
+          >
+            <TabsTrigger value="new" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+              <CirclePlus aria-hidden="true" /> Nuevos ({counts.new})
+            </TabsTrigger>
+            <TabsTrigger value="matched" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+              <CheckCircle2 aria-hidden="true" /> Coinciden ({counts.matched})
+            </TabsTrigger>
+            <TabsTrigger value="missing" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+              <ListFilter aria-hidden="true" /> Solo en Kogane ({counts.missing})
+            </TabsTrigger>
+            <TabsTrigger value="total" className="h-auto whitespace-normal py-2 sm:whitespace-nowrap">
+              <Wallet aria-hidden="true" /> Pago total
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="total" forceMount className="mt-3 data-[state=inactive]:hidden">
+            <div className="mb-4">
+              <StatementTotalCard
+                paymentMethodId={statement.paymentMethodId}
+                cardName={statement.cardName}
+                month={statement.paymentMonth}
+                year={statement.paymentYear}
+                compact
+              />
+            </div>
+            {(statement.previousBalance != null || statement.monthlyPayment != null) && (
+              <div className="mb-4 grid gap-3 lg:grid-cols-2">
+                <div className="rounded-lg border bg-muted/20 p-3">
+                  <p className="text-sm font-medium">Saldo del mes anterior</p>
+                  <div className="mt-2 flex flex-wrap items-baseline gap-x-2 text-sm">
+                    <span>{formatCurrency(statement.previousBalance ?? 0)}</span>
+                    <span className="text-muted-foreground">− pagos {formatCurrency(statement.previousPayments ?? 0)} =</span>
+                    <strong className="text-primary">{formatCurrency((statement.previousBalance ?? 0) - (statement.previousPayments ?? 0))}</strong>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">La tabla incluye solo el remanente neto para agregar.</p>
+                </div>
+                <div className="rounded-lg border bg-muted/20 p-3">
+                  <p className="text-sm font-medium">Pago del mes</p>
+                  <p className="mt-2 text-lg font-semibold tabular-nums">{statement.monthlyPayment != null ? formatCurrency(statement.monthlyPayment) : "—"}</p>
+                  <p className="text-xs text-muted-foreground">Dato informativo tomado del estado de cuenta.</p>
+                </div>
+              </div>
+            )}
+            {history.length > 0 && (
+              <div className="mb-4 rounded-lg border p-3">
+                <p className="mb-2 text-sm font-medium">Cálculo de estados anteriores</p>
+                <div className="space-y-1.5">
+                  {history.map((item) => (
+                    <div key={item.id} className="flex flex-wrap justify-between gap-x-4 text-xs text-muted-foreground">
+                      {item.previousBalance == null && item.monthlyPayment == null ? (
+                        <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: desglose no disponible; vuelve a cargar ese estado</span>
+                      ) : (
+                        <>
+                          <span>{getMonthName(item.paymentMonth)} {item.paymentYear}: {formatCurrency(item.previousBalance ?? 0)} − {formatCurrency(item.previousPayments ?? 0)} = {formatCurrency((item.previousBalance ?? 0) - (item.previousPayments ?? 0))}</span>
+                          <span>Pago del mes {item.monthlyPayment != null ? formatCurrency(item.monthlyPayment) : "—"}</span>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="new" className="mt-3 space-y-3">
             {counts.new > 0 && (

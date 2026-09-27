@@ -20,7 +20,7 @@ export const NAV: NavEntry[] = [
       },
       {
         href: "/reconocimiento",
-        label: "Reconocimiento / Importación",
+        label: "Reconocimiento",
         description: "Reconoce comprobantes e importa movimientos.",
         icon: "scan-text",
       },

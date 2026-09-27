@@ -1,6 +1,8 @@
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
-export interface CatalogSelectProps {
+export interface CatalogSelectProps extends Pick<ComponentProps<"button">,
+  "id" | "aria-label" | "aria-required" | "aria-invalid" | "aria-describedby"
+> {
   value: string | null | undefined;
   onChange: (id: string | null) => void;
   placeholder?: string;

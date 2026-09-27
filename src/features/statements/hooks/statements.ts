@@ -99,6 +99,15 @@ export const useAssignStatementPerson = () =>
     { invalidate: [statementKeys.all], success: "Persona asignada" },
   );
 
+// Corrects the card (Oh Pay / IO / CMR…) when it was not identified right, without re-uploading the PDF: re-reconciles
+// the rows not yet turned into an expense against the new card
+export const useAssignStatementCard = () =>
+  useApiMutation(
+    ({ id, paymentMethodId }: { id: string; paymentMethodId: string }) =>
+      unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body: { paymentMethodId } })),
+    { invalidate: [statementKeys.all, ["expenses"], ["calendar"]], success: "Tarjeta corregida" },
+  );
+
 export const useUpdateStatementMinimum = () =>
   useApiMutation(
     ({ id, ...body }: { id: string; minimumDue?: number | null; minimumAllocations?: Record<string, number> | null }) =>
