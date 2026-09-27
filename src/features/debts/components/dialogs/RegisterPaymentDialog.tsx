@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { useBulkDebts } from "@/shared/api/hooks/debts";
+import { useBulkDebts } from "@/features/debts/hooks/debts";
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
+import { PaymentMethodLabel } from "@/features/settings/components/PaymentMethodLabel";
 import type { Debt } from "@/shared/api/types";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
@@ -215,9 +216,9 @@ export function RegisterPaymentDialog({ open, onOpenChange, debts, period }: Reg
             <Select value={methodId ?? ""} onValueChange={changeMethod}>
               <SelectTrigger aria-label="Medio de pago obligatorio"><SelectValue placeholder="Selecciona un medio" /></SelectTrigger>
               <SelectContent>
-                <SelectGroup><SelectLabel>Tarjetas</SelectLabel>{methods.filter((method) => method.type === "credit_card").map((method) => <SelectItem key={method.id} value={method.id}>{method.name}</SelectItem>)}</SelectGroup>
+                <SelectGroup><SelectLabel>Tarjetas</SelectLabel>{methods.filter((method) => method.type === "credit_card").map((method) => <SelectItem key={method.id} value={method.id}><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></SelectItem>)}</SelectGroup>
                 <SelectSeparator />
-                <SelectGroup><SelectLabel>Cuentas y otros medios</SelectLabel>{methods.filter((method) => method.type !== "credit_card").map((method) => <SelectItem key={method.id} value={method.id}>{method.name}</SelectItem>)}</SelectGroup>
+                <SelectGroup><SelectLabel>Cuentas y otros medios</SelectLabel>{methods.filter((method) => method.type !== "credit_card").map((method) => <SelectItem key={method.id} value={method.id}><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></SelectItem>)}</SelectGroup>
               </SelectContent>
             </Select>
             {!methodId && <p className="text-xs text-muted-foreground">Selecciona cómo se realizó el pago. Los movimientos especiales se configuran por tarjeta en Cuentas y tarjetas.</p>}

@@ -1,9 +1,10 @@
-import { useDebts, useCardChecks, type DebtReportFilter } from "@/shared/api/hooks/debts";
+import { useDebts, useCardChecks } from "@/features/debts/hooks/debts";
+import { type DebtReportFilter } from "@/features/debts/lib/debt-report";
 import { usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
-import { useExpenses } from "@/shared/api/hooks/expenses";
+import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
-import { paidAndOwn } from "@/shared/lib/shared-expense";
-import { applyDebtFilters, groupByPerson, type DebtFilterValues } from "../debt-filters";
+import { paidAndOwn } from "@/features/expenses/lib/shared-expense";
+import { applyDebtFilters, groupByPerson, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
 import type { CardMinimumCoverage } from "../sections/CardMinimumCoverageSection";
 import type { PersonalDebtSummaryExpense, StatementChargeAdjustment } from "../sections/PersonDebtSummaryCardList";
 

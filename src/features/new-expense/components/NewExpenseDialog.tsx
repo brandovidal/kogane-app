@@ -1,17 +1,20 @@
-import { cardHref } from "@/shared/lib/card-links";
+import { cardHref } from "@/features/credit-cards/lib/card-links";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { LoaderCircle, ReceiptText, Save } from "lucide-react";
 
 import { DraftForm } from "@/features/drafts/components/DraftForm";
-import { emptyDraftFields, toDraftBody } from "@/features/drafts/draft-form";
+import { emptyDraftFields, toDraftBody } from "@/features/drafts/lib/draft-form";
 import { ApiError } from "@/shared/api/client";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
-import { useCreateDraft, useSaveDraft, type DraftFields } from "@/shared/api/hooks/drafts";
+import { useCreateDraft, useSaveDraft, type DraftFields } from "@/features/drafts/hooks/drafts";
 import { withQuery } from "@/shared/api/query";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { DESTINATION_LABELS } from "@/shared/labels";
-import { useNewExpense } from "@/shared/stores/new-expense.store";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
+import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { Button } from "@/ui/button";
+import { installmentError } from "@/features/expenses/lib/installments";
+import { FIELDS_BY_DESTINATION } from "@/features/drafts/lib/draft-form";
 
 // Where each destination is listed, for "Ver" after saving
 function pageOf(fields: DraftFields, cardCode: (id: string | null | undefined) => string | undefined): string {
@@ -51,6 +54,13 @@ function NewExpenseDialogView() {
   }, [open, preset]);
 
   const save = async () => {
+    const rules = FIELDS_BY_DESTINATION[fields.destination ?? "daily"];
+    const quotaError = rules?.installment ? installmentError(fields.installment) : undefined;
+    if (quotaError) {
+      setMissing(["installment"]);
+      toast.error(quotaError);
+      return;
+    }
     const body = toDraftBody(fields);
     try {
       const draft = await createDraft.mutateAsync(body);
@@ -83,11 +93,16 @@ function NewExpenseDialogView() {
       open={open}
       onOpenChange={(value) => !value && close()}
       title="Nuevo gasto"
+      icon={<ReceiptText aria-hidden="true" className="size-4 text-primary" />}
       description="Pagas tú; si lo compartes, agrega el reparto."
+      contentClassName="sm:max-w-2xl max-h-[92vh]"
       footer={
         <>
           <Button variant="outline" onClick={close}>Cancelar</Button>
-          <Button onClick={save} disabled={busy}>{busy ? "Guardando..." : "Guardar"}</Button>
+          <Button onClick={save} disabled={busy}>
+            {busy ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
+            {busy ? "Guardando..." : "Guardar"}
+          </Button>
         </>
       }
     >

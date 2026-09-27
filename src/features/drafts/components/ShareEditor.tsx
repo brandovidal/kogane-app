@@ -1,9 +1,10 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, UsersRound } from "lucide-react";
 
-import type { DraftFields } from "@/shared/api/hooks/drafts";
-import { PersonSelect } from "@/shared/components/CatalogSelect";
+import type { DraftFields } from "@/features/drafts/hooks/drafts";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { formatCurrency } from "@/shared/lib/currency";
-import { shareParts, type ExpenseShare } from "@/shared/lib/shared-expense";
+import { shareParts, type ExpenseShare } from "@/features/expenses/lib/shared-expense";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
@@ -27,7 +28,7 @@ export function ShareEditor({ value, total, currency, onChange }: ShareEditorPro
   return (
     <div className="space-y-2 rounded-md border p-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium">Reparto</p>
+        <p className="text-sm font-medium"><FieldLabel icon={UsersRound}>Reparto</FieldLabel></p>
         <Button
           type="button"
           variant="ghost"

@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import { Eye, Plus, Search } from "lucide-react";
 
-import { useCommitments } from "@/shared/api/hooks/commitments";
+import { useCommitments } from "@/features/commitments/hooks/commitments";
 import { usePeople } from "@/shared/api/hooks/catalogs";
 import type { Commitment } from "@/shared/api/types";
-import { EmptyState } from "@/shared/components/EmptyState";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { DataView } from "@/shared/components/data-display/DataView";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
+import { type Column } from "@/shared/types/data-view";
 import { withQuery } from "@/shared/api/query";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
@@ -14,7 +17,7 @@ import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 
-import { totalsOf } from "../commitment-view";
+import { totalsOf } from "@/features/commitments/lib/commitment-view";
 import { CommitmentCard } from "./CommitmentCard";
 import { CommitmentDetail } from "./CommitmentDetail";
 import { CommitmentForm } from "./CommitmentForm";

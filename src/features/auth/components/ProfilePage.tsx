@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ExternalLink, KeyRound, Send } from "lucide-react";
 
-import { googleLinkUrl, useAuthConfig, useChangePassword, useMe, useTelegramLink, useUnlinkTelegram } from "@/shared/api/hooks/auth";
+import { googleLinkUrl } from "@/features/auth/services/google.service";
+import { useAuthConfig, useChangePassword, useMe, useTelegramLink, useUnlinkTelegram } from "@/features/auth/hooks/auth";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import { Badge } from "@/ui/badge";

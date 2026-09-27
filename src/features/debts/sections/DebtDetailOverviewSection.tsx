@@ -1,8 +1,8 @@
-import type { Debt } from "@/shared/api/types";
+import type { DebtDetail } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { Card, CardContent } from "@/ui/card";
-import { DEBT_STATE_LABELS } from "../debt-filters";
+import { DEBT_STATE_LABELS } from "@/features/debts/lib/debt-filters";
 
 const PAYMENT_KIND_LABELS: Record<string, string> = {
   payment: "Pago",
@@ -15,7 +15,7 @@ export function DebtDetailOverviewSection({
   debt,
   methodName,
 }: {
-  debt: Debt;
+  debt: DebtDetail;
   methodName: (methodId: string | null) => string;
 }) {
   const metrics = [

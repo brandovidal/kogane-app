@@ -1,10 +1,10 @@
 import { ChevronRight } from "lucide-react";
-import type { DebtReportFilter } from "@/shared/api/hooks/debts";
+import { type DebtReportFilter } from "@/features/debts/lib/debt-report";
 import type { Debt } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Card, CardContent } from "@/ui/card";
-import type { Direction } from "../debt-filters";
+import type { Direction } from "@/features/debts/lib/debt-filters";
 import { CollectButton } from "./CollectButton";
 import { DebtReportLinks as ReportLinks } from "./DebtListControls";
 

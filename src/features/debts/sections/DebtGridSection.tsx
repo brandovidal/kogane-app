@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import { ChevronRight, Eye, HandCoins, History, MoreHorizontal, Pencil, RotateCcw, Trash2 } from "lucide-react";
-import { useDeleteDebt, useBulkDebts } from "@/shared/api/hooks/debts";
+import { useDeleteDebt, useBulkDebts } from "@/features/debts/hooks/debts";
 import type { Debt } from "@/shared/api/types";
-import { DataView, type Column, type ViewMode } from "@/shared/components/DataView";
-import { StatusBadge } from "@/shared/components/StatusBadge";
+import { DataView } from "@/shared/components/data-display/DataView";
+import { type Column, type ViewMode } from "@/shared/types/data-view";
+import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
-import { DEBT_TIMING_LABELS } from "@/shared/labels";
+import { DEBT_TIMING_LABELS } from "@/features/debts/constants/debts";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/ui/alert-dialog";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
@@ -15,7 +16,7 @@ import { Checkbox } from "@/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { Progress } from "@/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { debtBadgeStatus, groupByPersonAndType } from "../debt-filters";
+import { debtBadgeStatus, groupByPersonAndType } from "@/features/debts/lib/debt-filters";
 
 export function DebtGridSection({
   debts,

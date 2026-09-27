@@ -1,7 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { Debt } from "@/shared/api/types";
-import { buildCollectSummaryMessage } from "../debt-filters";
+import { buildCollectSummaryMessage } from "@/features/debts/lib/debt-filters";
 import { Button } from "@/ui/button";
 
 export function CollectButton({

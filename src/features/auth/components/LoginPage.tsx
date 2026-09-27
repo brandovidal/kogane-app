@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Copy, Dices, Eye, EyeOff, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 
-import { googleSignInUrl, useAcceptInvite, useAuthConfig, useInvitePreview, useLogin } from "@/shared/api/hooks/auth";
+import { googleSignInUrl } from "@/features/auth/services/google.service";
+import { useAcceptInvite, useAuthConfig, useInvitePreview, useLogin } from "@/features/auth/hooks/auth";
 import { withQuery } from "@/shared/api/query";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { safeReturnPath } from "@/shared/lib/auth-redirect";

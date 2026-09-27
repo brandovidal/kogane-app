@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useCategories, useDeleteCategory } from "@/shared/api/hooks/catalogs";
 import type { Category } from "@/shared/api/types";
-import { useCategoryBudgets, useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/shared/api/hooks/budget";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { useCategoryBudgets, useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/features/categories/hooks/category-budgets";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
 import { withQuery } from "@/shared/api/query";
@@ -14,7 +14,7 @@ import { Progress } from "@/ui/progress";
 import { Plus, Trash2, Pencil, AlertTriangle, Tags } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CategoryDialog } from "./CategoryDialog";
-import { CategoryIcon } from "@/shared/components/CategoryIcon";
+import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 
 // Categorías (D78): what you spent this month against the limit of each one (GET /v1/category-budgets, your part only);
 // the limit is for every month or only for the month on screen, with an alert at its threshold

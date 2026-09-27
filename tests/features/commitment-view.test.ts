@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Commitment } from "@/shared/api/types";
 
-import { currentLabel, percentPaid, totalsOf } from "@/features/commitments/commitment-view";
+import { currentLabel, percentPaid, totalsOf } from "@/features/commitments/lib/commitment-view";
 
 const progress = (overrides: Partial<NonNullable<Commitment["progress"]>> = {}) => ({
   installmentCount: 36,

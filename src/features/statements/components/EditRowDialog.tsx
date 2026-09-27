@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import type { StatementRow } from "@/shared/api/types";
-import { PersonSelect } from "@/shared/components/CatalogSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/dialog";
 import { Input } from "@/ui/input";

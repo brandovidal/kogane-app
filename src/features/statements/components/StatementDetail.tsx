@@ -2,15 +2,15 @@ import { useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
-import { useExpenses } from "@/shared/api/hooks/expenses";
-import { useStatements } from "@/shared/api/hooks/statements";
+import { useExpenses } from "@/features/expenses/hooks/expenses";
+import { useStatements } from "@/features/statements/hooks/statements";
 import {
   useAssignStatementPerson,
   useAssignStatementRows,
   useCreateStatementRows,
   useUpdateStatementRow,
-} from "@/shared/api/hooks/statements";
-import { PersonSelect } from "@/shared/components/CatalogSelect";
+} from "@/features/statements/hooks/statements";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { EXPENSE_RESOURCES, type CreditCardExpense, type Statement, type StatementRow } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
@@ -31,7 +31,7 @@ import { Checkbox } from "@/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
-import { confirmCreateText, countsOf, ROW_RESULT_LABELS, rowName, rowsOf, totalsMatch } from "../statement-view";
+import { confirmCreateText, countsOf, ROW_RESULT_LABELS, rowName, rowsOf, totalsMatch } from "@/features/statements/lib/statement-view";
 import { EditRowDialog } from "./EditRowDialog";
 import { StatementRowActions } from "./StatementRowActions";
 import { MissingExpenseActions } from "./MissingExpenseActions";

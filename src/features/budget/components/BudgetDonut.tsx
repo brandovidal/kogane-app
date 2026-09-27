@@ -2,16 +2,16 @@ import { useState } from "react";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { usePeople } from "@/shared/api/hooks/catalogs";
-import { useExpenses } from "@/shared/api/hooks/expenses";
+import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES, type Summary } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
-import { paidAndOwn } from "@/shared/lib/shared-expense";
+import { paidAndOwn } from "@/features/expenses/lib/shared-expense";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/ui/sheet";
 
-import { donutSlices, type DonutMode, type DonutSlice } from "../budget-view";
+import { donutSlices, type DonutMode, type DonutSlice } from "@/features/budget/lib/budget-view";
 
 // Donut like the Resumen of Notion (D78): total spent and surplus in the middle, one slice per category (or group);
 // a slice opens what was spent in it

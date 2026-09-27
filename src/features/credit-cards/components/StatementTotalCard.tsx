@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useCardCheck } from "@/shared/api/hooks/debts";
-import { PersonSelect } from "@/shared/components/CatalogSelect";
+import { useCardCheck } from "@/features/debts/hooks/debts";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Checkbox } from "@/ui/checkbox";

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
-import { useDebt } from "@/shared/api/hooks/debts";
+import { useDebt } from "@/features/debts/hooks/debts";
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
 import { withQuery } from "@/shared/api/query";
 import { getMonthName } from "@/shared/lib/dates";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Button } from "@/ui/button";
 import { DebtDetailOverviewSection } from "../sections/DebtDetailOverviewSection";
 

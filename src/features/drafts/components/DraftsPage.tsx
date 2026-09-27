@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { shareParts } from "@/shared/lib/shared-expense";
+import { shareParts } from "@/features/expenses/lib/shared-expense";
 import { toast } from "sonner";
 import { Check, ImageIcon, Mic, MessageSquare, Pencil, RotateCw, Send, X } from "lucide-react";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { EmptyState } from "@/shared/components/EmptyState";
-import { DataView, useViewMode, ViewToggle, type Column, type ViewMode } from "@/shared/components/DataView";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { DataView } from "@/shared/components/data-display/DataView";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
+import { type Column, type ViewMode } from "@/shared/types/data-view";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { api, unwrap } from "@/shared/api/client";
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import {
@@ -18,14 +21,14 @@ import {
   useUpdateDraft,
   type DraftFields,
   type DraftTab,
-} from "@/shared/api/hooks/drafts";
+} from "@/features/drafts/hooks/drafts";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import type { Schemas } from "@/shared/api/client";
-import { DESTINATION_LABELS } from "@/shared/labels";
+import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
-import { toDraftBody } from "../draft-form";
+import { toDraftBody } from "@/features/drafts/lib/draft-form";
 import { DraftForm } from "./DraftForm";
 
 type Draft = NonNullable<Schemas["DraftListResponseDto"]["data"]>["items"][number];

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { describeChanges, formatValue } from "@/features/history/history-view";
+import { describeChanges, formatValue } from "@/features/history/lib/history-view";
 
 describe("history-view", () => {
   it("should say an edit as before → after with the Spanish name of the field", () => {

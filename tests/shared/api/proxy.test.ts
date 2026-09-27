@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildProxyRequest, toProxyResponse } from '@/shared/api/proxy'
+import { buildProxyRequest, toProxyResponse } from '@/shared/api/server/proxy'
 
 const config = { apiUrl: 'https://kogane-api.up.railway.app', apiKey: 'secret-key' }
 

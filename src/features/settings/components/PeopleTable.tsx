@@ -3,7 +3,7 @@ import { Pencil, Plus, Users } from "lucide-react";
 
 import type { Schemas } from "@/shared/api/client";
 import { usePeople, useSavePerson } from "@/shared/api/hooks/catalogs";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";

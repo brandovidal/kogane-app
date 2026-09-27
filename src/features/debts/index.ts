@@ -1,26 +1,31 @@
-// Public API for debt pages, sections and dialogs. Internal feature files import
-// each other directly to keep dependencies explicit and avoid barrel cycles.
-export { DebtsPage } from "./views/DebtsPage";
-export type { DebtsMode } from "./views/DebtsPage";
-export { DebtListView } from "./views/DebtListView";
-export { DebtSummaryView } from "./views/DebtSummaryView";
-export { DebtDetailPage } from "./views/DebtDetailView";
-
-export { CardCheckPanel } from "./sections/CardCheckPanel";
-export { DebtBulkBar } from "./sections/DebtBulkBar";
-export { DebtFilterSheet, DebtGroupingSheet, ActiveDebtFilterChips, DebtReportLinks } from "./sections/DebtListControls";
-export { CollapsibleDebtGroup } from "./sections/DebtGroupsSection";
-export { CollectButton } from "./sections/CollectButton";
-export { DebtGridSection, ResetDebtDialog } from "./sections/DebtGridSection";
-export { DebtMovementTypeSheet } from "./sections/DebtMovementTypeSheet";
-export { StatementMinimumSection } from "./sections/StatementMinimumSection";
-export { PersonDebtSummaryCardList } from "./sections/PersonDebtSummaryCardList";
-export { DebtSummaryMonthlyTable } from "./sections/DebtSummaryMonthlyTable";
-export { CardMinimumCoverageSection } from "./sections/CardMinimumCoverageSection";
-export { DebtDetailOverviewSection } from "./sections/DebtDetailOverviewSection";
-
+// Public module API. Internal files import concrete modules to avoid cycles.
 export { DebtDialog } from "./components/dialogs/DebtDialog";
 export { DebtPaymentDialog } from "./components/dialogs/DebtPaymentDialog";
 export { RegisterPaymentDialog } from "./components/dialogs/RegisterPaymentDialog";
-
-export type { DebtFilterValues, Direction, PaymentKind } from "./debt-filters";
+export { DEBT_DIRECTION_LABELS, DEBT_TIMING_LABELS } from "./constants/debts";
+export { debtKeys, useDebts, useDebt, useCardCheck, useCardChecks, useCreateDebt, useUpdateDebt, useDeleteDebt, useAddDebtPayment, useBulkDebts } from "./hooks/debts";
+export type { DebtBulk } from "./hooks/debts";
+export { useDebtSummaryData } from "./hooks/useDebtSummaryData";
+export type { Direction, DebtFilterValues, PaymentKind } from "./lib/debt-filters";
+export { DEBT_FILTER_KEYS, DEBT_STATE_LABELS, PAYMENT_KIND_LABELS, debtBadgeStatus, isSharedDebt, applyDebtFilters, buildCollectMessage, buildCollectSummaryMessage, groupByPerson, groupByPaymentMethod, groupByPersonAndType } from "./lib/debt-filters";
+export type { DebtReportFilter } from "./lib/debt-report";
+export { debtReportUrl } from "./lib/debt-report";
+export { CardCheckPanel } from "./sections/CardCheckPanel";
+export type { CardMinimumCoverage } from "./sections/CardMinimumCoverageSection";
+export { CardMinimumCoverageSection } from "./sections/CardMinimumCoverageSection";
+export { CollectButton } from "./sections/CollectButton";
+export { DebtBulkBar } from "./sections/DebtBulkBar";
+export { DebtDetailOverviewSection } from "./sections/DebtDetailOverviewSection";
+export { DebtGridSection, ResetDebtDialog } from "./sections/DebtGridSection";
+export { CollapsibleDebtGroup } from "./sections/DebtGroupsSection";
+export { DebtFilterSheet, DebtGroupingSheet, ActiveDebtFilterChips, DebtReportLinks } from "./sections/DebtListControls";
+export { DebtMovementTypeSheet } from "./sections/DebtMovementTypeSheet";
+export { DebtSummaryMonthlyTable } from "./sections/DebtSummaryMonthlyTable";
+export type { StatementChargeAdjustment, PersonalDebtSummaryExpense } from "./sections/PersonDebtSummaryCardList";
+export { PersonDebtSummaryCardList } from "./sections/PersonDebtSummaryCardList";
+export { StatementMinimumSection } from "./sections/StatementMinimumSection";
+export { DebtDetailPage } from "./views/DebtDetailView";
+export { DebtListView } from "./views/DebtListView";
+export { DebtSummaryView } from "./views/DebtSummaryView";
+export type { DebtsMode } from "./views/DebtsPage";
+export { DebtsPage } from "./views/DebtsPage";

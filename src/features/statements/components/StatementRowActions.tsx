@@ -5,7 +5,7 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
-import { rowName } from "../statement-view";
+import { rowName } from "@/features/statements/lib/statement-view";
 
 interface StatementRowActionsProps {
   row: StatementRow;

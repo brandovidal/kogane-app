@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { useAddDebtPayment } from "@/shared/api/hooks/debts";
+import { useAddDebtPayment } from "@/features/debts/hooks/debts";
 import type { Debt } from "@/shared/api/types";
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { PaymentMethodLabel } from "@/features/settings/components/PaymentMethodLabel";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
@@ -139,12 +140,12 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Tarjetas</SelectLabel>
-                  {methods.filter((method) => method.type === "credit_card").map((method) => <SelectItem key={method.id} value={method.id}>{method.name}</SelectItem>)}
+                  {methods.filter((method) => method.type === "credit_card").map((method) => <SelectItem key={method.id} value={method.id}><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></SelectItem>)}
                 </SelectGroup>
                 <SelectSeparator />
                 <SelectGroup>
                   <SelectLabel>Cuentas y otros medios</SelectLabel>
-                  {methods.filter((method) => method.type !== "credit_card").map((method) => <SelectItem key={method.id} value={method.id}>{method.name}</SelectItem>)}
+                  {methods.filter((method) => method.type !== "credit_card").map((method) => <SelectItem key={method.id} value={method.id}><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></SelectItem>)}
                 </SelectGroup>
               </SelectContent>
             </Select>

@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Card, CardContent } from "@/ui/card";
-import { useViewMode, ViewToggle } from "@/shared/components/DataView";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { useDebtSummaryData } from "../hooks/useDebtSummaryData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { DEBT_FILTER_KEYS, type DebtFilterValues } from "../debt-filters";
+import { DEBT_FILTER_KEYS, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
 import { ActiveDebtFilterChips, DebtFilterSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";
 import { DebtMovementTypeSheet } from "../sections/DebtMovementTypeSheet";
 import { StatementMinimumSection } from "../sections/StatementMinimumSection";

@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro'
 import { API_KEY, API_URL } from 'astro:env/server'
 
-import { apiUnavailableResponse, buildProxyRequest, notFoundResponse, toProxyResponse } from '@/shared/api/proxy'
+import { apiUnavailableResponse, buildProxyRequest, notFoundResponse, toProxyResponse } from '@/shared/api/server/proxy'
 
 export const prerender = false
 

@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Palette, Shapes, Tags } from "lucide-react";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { FieldLabel } from "@/shared/components/FieldLabel";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { z } from "zod";
 import { useSaveCategory } from "@/shared/api/hooks/catalogs";
 import type { Category } from "@/shared/api/types";
-import { CategoryIconPicker } from "@/shared/components/CategoryIconPicker";
+import { CategoryIconPicker } from "@/features/categories/components/CategoryIconPicker";
 
 const categoryFormSchema = z.object({
   name: z.string().trim().min(1, "Nombre requerido").max(40),

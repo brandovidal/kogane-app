@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCreditCardSummaries } from "@/features/dashboard/dashboard.service";
+import { buildCreditCardSummaries } from "@/features/dashboard/services/dashboard.service";
 import type { CreditCardExpense, PaymentMethod } from "@/shared/api/types";
 
 describe("dashboard", () => {

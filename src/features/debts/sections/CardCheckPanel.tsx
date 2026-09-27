@@ -1,7 +1,7 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
-import { useCardCheck } from "@/shared/api/hooks/debts";
+import { useCardCheck } from "@/features/debts/hooks/debts";
 import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";

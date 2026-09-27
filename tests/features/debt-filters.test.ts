@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { applyDebtFilters, buildCollectMessage, groupByPerson, isSharedDebt } from "@/features/debts/debt-filters";
+import { applyDebtFilters, buildCollectMessage, groupByPerson, isSharedDebt } from "@/features/debts/lib/debt-filters";
 import type { Debt } from "@/shared/api/types";
 
 const debt = (overrides: Record<string, unknown>) =>

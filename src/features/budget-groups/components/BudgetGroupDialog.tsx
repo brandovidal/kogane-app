@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { z } from "zod";

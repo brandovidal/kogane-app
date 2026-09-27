@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 
-import { useDeleteIncome, useIncomes, useSaveIncome, type Income, type IncomeBody } from "@/shared/api/hooks/budget";
+import { useDeleteIncome, useIncomes, useSaveIncome, type Income, type IncomeBody } from "@/features/incomes/hooks/budget";
 import { withQuery } from "@/shared/api/query";
-import { EmptyState } from "@/shared/components/EmptyState";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { CURRENCIES } from "@/shared/labels";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { DataView } from "@/shared/components/data-display/DataView";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
+import { type Column } from "@/shared/types/data-view";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { CURRENCIES } from "@/shared/constants/finance";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";

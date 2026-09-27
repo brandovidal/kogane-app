@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
 
-import { useHistory, type HistoryFilter } from "@/shared/api/hooks/history";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { useHistory, type HistoryFilter } from "@/features/history/hooks/history";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
 
-import { ENTITY_LABELS, SOURCE_LABELS } from "../history-view";
+import { ENTITY_LABELS, SOURCE_LABELS } from "@/features/history/lib/history-view";
 import { HistoryTimeline } from "./HistoryTimeline";
+import { HistoryTimelineLoading } from "./HistoryTimelineLoading";
 
 const ALL = "__all__";
 const ENTITIES = Object.keys(ENTITY_LABELS);
@@ -120,7 +121,7 @@ export function HistoryPanel() {
         )}
       </div>
 
-      {isLoading ? null : isError ? (
+      {isLoading ? <HistoryTimelineLoading /> : isError ? (
         <p className="text-sm text-destructive">No se pudo leer el historial.</p>
       ) : !data || data.items.length === 0 ? (
         <EmptyState title="Sin cambios" description={active ? "No hay cambios con estos filtros" : "Todavía no se registró ningún cambio"} />

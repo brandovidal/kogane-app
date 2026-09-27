@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChevronRight, Save } from "lucide-react";
 
-import { useCardCheck } from "@/shared/api/hooks/debts";
+import { useCardCheck } from "@/features/debts/hooks/debts";
 import { usePeople } from "@/shared/api/hooks/catalogs";
-import { useUpdateStatementMinimum } from "@/shared/api/hooks/statements";
+import { useUpdateStatementMinimum } from "@/features/statements/hooks/statements";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";

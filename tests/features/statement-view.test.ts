@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { confirmCreateText, countsOf, rowName, rowsOf, totalsMatch, uploadErrorText } from "@/features/statements/statement-view";
+import { confirmCreateText, countsOf, rowName, rowsOf, totalsMatch, uploadErrorText } from "@/features/statements/lib/statement-view";
 import type { Statement, StatementRow } from "@/shared/api/types";
 
 const row = (id: string, result: string) => ({ id, result }) as Statement["rows"][number];

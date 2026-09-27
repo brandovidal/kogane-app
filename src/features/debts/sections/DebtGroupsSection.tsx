@@ -1,8 +1,8 @@
 import { ChevronRight } from "lucide-react";
 import type { Debt } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
-import type { ViewMode } from "@/shared/components/DataView";
-import type { Direction } from "../debt-filters";
+import { type ViewMode } from "@/shared/types/data-view";
+import type { Direction } from "@/features/debts/lib/debt-filters";
 import { DebtGridSection } from "./DebtGridSection";
 import { CollectButton } from "./CollectButton";
 

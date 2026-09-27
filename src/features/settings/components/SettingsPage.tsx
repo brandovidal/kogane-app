@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBudgetGroups } from "@/shared/api/hooks/catalogs";
-import { useBudgetSettings, useSaveBudgetSettings, useSetBudget, useSummary } from "@/shared/api/hooks/summary";
+import { useBudgetSettings, useSaveBudgetSettings, useSetBudget, useSummary } from "@/features/budget/hooks/summary";
 import { withQuery } from "@/shared/api/query";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
@@ -15,7 +15,7 @@ import { PeopleTable } from "./PeopleTable";
 import { NotificationSettingsCard } from "./NotificationSettingsCard";
 import { UsersPanel } from "@/features/auth/components/UsersPanel";
 import { HistoryPanel } from "@/features/history/components/HistoryPanel";
-import { useMe } from "@/shared/api/hooks/auth";
+import { useMe } from "@/features/auth/hooks/auth";
 import { formatCurrency } from "@/shared/lib/currency";
 
 const TABS = [

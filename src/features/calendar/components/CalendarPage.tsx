@@ -2,16 +2,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 
-import {
-  useCalendar,
-  useCommittedInstallments,
-  usePayCalendarEvent,
-  useReminders,
-} from "@/shared/api/hooks/calendar";
+import { useCalendar, useCommittedInstallments, usePayCalendarEvent, useReminders } from "@/features/calendar/hooks/calendar";
 import type { Schemas } from "@/shared/api/client";
 import { withQuery } from "@/shared/api/query";
 import type { CalendarEvent } from "@/shared/api/types";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
@@ -29,7 +24,7 @@ import {
   gridRange,
   isPayable,
   monthGrid,
-} from "../calendar-view";
+} from "@/features/calendar/lib/calendar-view";
 
 const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const UPCOMING_DAYS = 14;

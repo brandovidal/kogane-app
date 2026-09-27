@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { eventLabel, eventsByDay, gridRange, isPayable, monthGrid } from "@/features/calendar/calendar-view";
+import { eventLabel, eventsByDay, gridRange, isPayable, monthGrid } from "@/features/calendar/lib/calendar-view";
 import type { CalendarEvent } from "@/shared/api/types";
 
 const event = (overrides: Partial<CalendarEvent>): CalendarEvent => ({

@@ -1,19 +1,20 @@
 import { useState, type ReactNode } from "react";
 import { CreditCard, Wallet } from "lucide-react";
 
-import { useDebts } from "@/shared/api/hooks/debts";
+import { useDebts } from "@/features/debts/hooks/debts";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
 import type { Debt } from "@/shared/api/types";
-import { EmptyState } from "@/shared/components/EmptyState";
-import { RecordListToolbar } from "@/shared/components/RecordListToolbar";
-import { useViewMode, ViewToggle } from "@/shared/components/DataView";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
 import { Switch } from "@/ui/switch";
-import { applyDebtFilters, DEBT_FILTER_KEYS, groupByPaymentMethod, groupByPerson, groupByPersonAndType, type DebtFilterValues, type Direction } from "../debt-filters";
+import { applyDebtFilters, DEBT_FILTER_KEYS, groupByPaymentMethod, groupByPerson, groupByPersonAndType, type DebtFilterValues, type Direction } from "@/features/debts/lib/debt-filters";
 import { CardCheckPanel } from "../sections/CardCheckPanel";
 import { DebtBulkBar } from "../sections/DebtBulkBar";
 import { ActiveDebtFilterChips, DebtFilterSheet, DebtGroupingSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";

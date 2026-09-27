@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
-import type { BudgetGroupSummary } from "../budget-group.service";
-import { CategoryLabel } from "@/shared/components/CategoryIcon";
+import { type BudgetGroupSummary } from "@/features/budget-groups/services/budget-group.service";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
 interface BudgetGroupCardsProps {
   groups: BudgetGroupSummary[];

@@ -1,17 +1,18 @@
 import { Input } from "@/ui/input";
+import { ArrowRightLeft } from "lucide-react";
+import { InstallmentFields } from "@/features/expenses/components/forms/InstallmentFields";
+import { installmentError } from "@/features/expenses/lib/installments";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
-import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
-import type { DraftFields } from "@/shared/api/hooks/drafts";
-import {
-  CURRENCIES,
-  DESTINATION_LABELS,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-  SUBSCRIPTION_KIND_LABELS,
-  SUBSCRIPTION_PERIOD_LABELS,
-  SUBSCRIPTION_PERIODS,
-} from "@/shared/labels";
-import { FIELDS_BY_DESTINATION, FORM_DESTINATIONS } from "../draft-form";
+import { CategorySelect } from "@/features/categories/components/CategorySelect";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { FormField as Field } from "@/shared/components/forms/FormField";
+import type { DraftFields } from "@/features/drafts/hooks/drafts";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
+import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
+import { SUBSCRIPTION_KIND_LABELS, SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS } from "@/features/subscriptions/constants/subscriptions";
+import { FIELDS_BY_DESTINATION, FORM_DESTINATIONS } from "@/features/drafts/lib/draft-form";
+import { FixedCostDraftTabs } from "./FixedCostDraftTabs";
 import { ShareEditor } from "./ShareEditor";
 
 interface DraftFormProps {
@@ -20,26 +21,17 @@ interface DraftFormProps {
   missingFields?: string[];
 }
 
-const Field = ({ label, missing, children }: { label: string; missing?: boolean; children: React.ReactNode }) => (
-  <div className="space-y-1.5">
-    <label className="text-sm font-medium">
-      {label}
-      {missing && <span className="ml-1 text-xs text-destructive">falta</span>}
-    </label>
-    {children}
-  </div>
-);
-
 // The fields of one expense for any destination (D40); the missing ones come from kogane-api (missingFields)
 export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProps) {
   const set = <K extends keyof DraftFields>(key: K, fieldValue: DraftFields[K]) => onChange({ ...value, [key]: fieldValue });
   const rules = FIELDS_BY_DESTINATION[value.destination ?? "daily"] ?? FIELDS_BY_DESTINATION.daily;
   const missing = (field: string) => missingFields.includes(field);
   const isDebt = value.destination === "receivable" || value.destination === "payable";
+  const isFixedCost = value.destination === "fixed_cost";
 
   return (
     <div className="space-y-4">
-      <Field label="Destino" missing={missing("destination")}>
+      <Field label="Registrar en" icon={ArrowRightLeft} missing={missing("destination")}>
         <Select value={value.destination ?? ""} onValueChange={(v) => set("destination", v as DraftFields["destination"])}>
           <SelectTrigger><SelectValue placeholder="Elige dónde va" /></SelectTrigger>
           <SelectContent>
@@ -50,6 +42,10 @@ export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProp
         </Select>
       </Field>
 
+      {isFixedCost ? (
+        <FixedCostDraftTabs value={value} onChange={onChange} missingFields={missingFields} />
+      ) : (
+      <div className="space-y-4">
       <Field label="Descripción" missing={missing("description")}>
         <Input value={value.description ?? ""} onChange={(e) => set("description", e.target.value)} placeholder="Ej: Almuerzo, Netflix..." />
       </Field>
@@ -136,9 +132,10 @@ export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProp
             </Field>
           )}
           {rules.installment && (
-            <Field label="Cuota (n/m)">
-              <Input value={value.installment ?? ""} onChange={(e) => set("installment", e.target.value)} placeholder={isDebt ? "1/3 crea las 3 cuotas" : "Ej: 1/3"} />
-            </Field>
+            <div className="col-span-2 space-y-2">
+              <InstallmentFields value={value.installment} onChange={(installment) => set("installment", installment)} missing={missing("installment")} error={installmentError(value.installment)} />
+              {isDebt && <p className="text-xs text-muted-foreground">El total indica cuántas cuotas se crearán.</p>}
+            </div>
           )}
         </div>
       )}
@@ -161,6 +158,8 @@ export function DraftForm({ value, onChange, missingFields = [] }: DraftFormProp
       <Field label="Nota">
         <Input value={value.notes ?? ""} onChange={(e) => set("notes", e.target.value)} placeholder="Opcional" />
       </Field>
+      </div>
+      )}
     </div>
   );
 }

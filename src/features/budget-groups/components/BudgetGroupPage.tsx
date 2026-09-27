@@ -3,11 +3,11 @@ import { useDeleteBudgetGroup } from "@/shared/api/hooks/catalogs";
 import { withQuery } from "@/shared/api/query";
 import type { BudgetGroup } from "@/shared/api/types";
 import { usePeriod } from "@/shared/stores/period.store";
-import { useBudgetGroupSummaries } from "../budget-group.service";
+import { useBudgetGroupSummaries } from "@/features/budget-groups/hooks/useBudgetGroupSummaries";
 import { BudgetGroupTable } from "./BudgetGroupTable";
 import { BudgetGroupCards } from "./BudgetGroupCards";
 import { BudgetGroupDialog } from "./BudgetGroupDialog";
-import { ViewToggle } from "@/shared/components/ViewToggle";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { Button } from "@/ui/button";
 import { Plus } from "lucide-react";
 

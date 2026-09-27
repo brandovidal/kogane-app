@@ -2,12 +2,13 @@ import { useState } from "react";
 import { CheckCircle2, ChevronLeft, ChevronRight, FileUp, Search, Trash2, XCircle } from "lucide-react";
 
 import { ApiError } from "@/shared/api/client";
-import { useApplyImport, useDiscardImport, useImport, useImportRows, useImports, useUploadNotion } from "@/shared/api/hooks/imports";
-import { useDeleteStatement, useStatement, useStatements, useUploadStatement } from "@/shared/api/hooks/statements";
+import { useApplyImport, useDiscardImport, useImport, useImportRows, useImports, useUploadNotion } from "@/features/imports/hooks/imports";
+import { useDeleteStatement, useStatement, useStatements, useUploadStatement } from "@/features/statements/hooks/statements";
 import { withQuery } from "@/shared/api/query";
 import type { ImportDetail, ImportRow, ImportRowStatus, ImportTab } from "@/shared/api/types";
-import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
@@ -20,7 +21,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
 import { StatementDetail } from "@/features/statements/components/StatementDetail";
-import { uploadErrorText } from "@/features/statements/statement-view";
+import { uploadErrorText } from "@/features/statements/lib/statement-view";
 
 import {
   BATCH_STATUS,
@@ -33,7 +34,7 @@ import {
   TAB_ORDER,
   type HistoryItem,
   type ImportSource,
-} from "../import-view";
+} from "@/features/imports/lib/import-view";
 
 const ALL = "all";
 

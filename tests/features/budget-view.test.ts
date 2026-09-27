@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { donutSlices, incomeOf, limitUsage } from "@/features/budget/budget-view";
+import { donutSlices, incomeOf, limitUsage } from "@/features/budget/lib/budget-view";
 import type { Summary } from "@/shared/api/types";
 
 const summary = {

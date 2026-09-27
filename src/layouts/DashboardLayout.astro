@@ -1,12 +1,12 @@
 ---
 import Layout from "./Layout.astro";
-import Sidebar from "@/shared/components/Sidebar.astro";
-import MobileNav from "@/shared/components/MobileNav.astro";
-import { CommandPalette } from "@/shared/components/CommandPalette";
-import { ThemeToggle } from "@/shared/components/ThemeToggle";
-import { MonthNavigator } from "@/shared/components/MonthNavigator";
+import Sidebar from "@/layouts/components/navigation/Sidebar.astro";
+import MobileNav from "@/layouts/components/navigation/MobileNav.astro";
+import { CommandPalette } from "@/layouts/components/navigation/CommandPalette";
+import { ThemeToggle } from "@/shared/components/theme/ThemeToggle";
+import { MonthNavigator } from "@/shared/components/navigation/MonthNavigator";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
-import { SalaryEditor } from "@/shared/components/SalaryEditor";
+import { SalaryEditor } from "@/features/budget/components/SalaryEditor";
 import { UserMenu } from "@/features/auth/components/UserMenu";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { Toaster } from "@/ui/sonner";

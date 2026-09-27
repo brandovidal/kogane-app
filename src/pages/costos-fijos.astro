@@ -1,8 +1,8 @@
 ---
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
-import { FixedCostTable } from "@/features/fixed-costs/components/FixedCostTable";
+import { FixedCostListPage } from "@/features/fixed-costs";
 ---
 
 <DashboardLayout title="Costos Fijos">
-  <FixedCostTable client:load />
+  <FixedCostListPage client:load />
 </DashboardLayout>

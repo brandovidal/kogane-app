@@ -1,6 +1,6 @@
 import { LogOut, User, UserCheck } from "lucide-react";
 
-import { useLogout, useMe, useStopImpersonation } from "@/shared/api/hooks/auth";
+import { useLogout, useMe, useStopImpersonation } from "@/features/auth/hooks/auth";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";

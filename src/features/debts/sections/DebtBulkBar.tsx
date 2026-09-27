@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Ban, Copy, CreditCard, HandCoins, MoreHorizontal, RotateCcw, Trash2, Undo2, Wallet, X } from "lucide-react";
 
-import { useBulkDebts, type DebtBulk } from "@/shared/api/hooks/debts";
+import { useBulkDebts, type DebtBulk } from "@/features/debts/hooks/debts";
 import type { Debt } from "@/shared/api/types";
-import { PaymentMethodSelect } from "@/shared/components/CatalogSelect";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { notificationLink, timeAgo } from "@/features/notifications/notification-view";
+import { notificationLink, timeAgo } from "@/features/notifications/lib/notification-view";
 
 describe("notification view (P20)", () => {
   it("should open what the notice is about, or its screen", () => {

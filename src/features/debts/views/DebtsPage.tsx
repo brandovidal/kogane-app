@@ -8,7 +8,7 @@ import { DebtDialog } from "../components/dialogs/DebtDialog";
 import { DebtPaymentDialog } from "../components/dialogs/DebtPaymentDialog";
 import { DebtListView } from "./DebtListView";
 import { DebtSummaryView } from "./DebtSummaryView";
-import type { Direction } from "../debt-filters";
+import type { Direction } from "@/features/debts/lib/debt-filters";
 
 export type DebtsMode = "collect" | "owe" | "summary";
 

@@ -2,14 +2,15 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
-import { useCreateDebt, useUpdateDebt } from "@/shared/api/hooks/debts";
+import { useCreateDebt, useUpdateDebt } from "@/features/debts/hooks/debts";
 import type { Debt } from "@/shared/api/types";
-import { DEBT_DIRECTION_LABELS } from "@/shared/labels";
+import { DEBT_DIRECTION_LABELS } from "@/features/debts/constants/debts";
 import { usePeriod } from "@/shared/stores/period.store";
 
 const debtFormSchema = z.object({

@@ -1,21 +1,16 @@
 import { useState } from "react";
 import { Check, History, Paperclip, Pencil, Plus, Trash2 } from "lucide-react";
 
-import {
-  useCommitment,
-  useCreateInstallments,
-  useDeleteCommitment,
-  useDeleteContribution,
-  useSaveContribution,
-  type ContributionBody,
-} from "@/shared/api/hooks/commitments";
-import { useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useCommitment, useCreateInstallments, useDeleteCommitment, useDeleteContribution, useSaveContribution, type ContributionBody } from "@/features/commitments/hooks/commitments";
+import { useSaveExpense } from "@/features/expenses/hooks/expenses";
 import type { Commitment, CommitmentInstallment, Contribution } from "@/shared/api/types";
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
-import { AttachmentsDialog, AttachmentsPanel } from "@/shared/components/AttachmentsPanel";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { StatusBadge } from "@/shared/components/StatusBadge";
-import { COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS, CURRENCIES } from "@/shared/labels";
+import { AttachmentsDialog } from "@/features/attachments/components/dialogs/AttachmentsDialog";
+import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { StatusBadge } from "@/features/expenses/components/StatusBadge";
+import { COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from "@/features/commitments/constants/commitments";
+import { CURRENCIES } from "@/shared/constants/finance";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
@@ -25,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
-import { currentLabel } from "../commitment-view";
+import { currentLabel } from "@/features/commitments/lib/commitment-view";
 
 interface CommitmentDetailProps {
   commitment: Commitment;

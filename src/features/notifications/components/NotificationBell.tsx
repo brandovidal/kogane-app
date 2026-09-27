@@ -7,7 +7,7 @@ import {
   useMarkNotificationUnread,
   useRecentNotifications,
   useUnreadCount,
-} from "@/shared/api/hooks/notifications";
+} from "@/features/notifications/hooks/notifications";
 import { withQuery } from "@/shared/api/query";
 import type { AppNotification } from "@/shared/api/types";
 import { Button } from "@/ui/button";
@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-import { notificationLink, timeAgo } from "../notification-view";
+import { notificationLink, timeAgo } from "@/features/notifications/lib/notification-view";
 
 const PAGE_NAMES: Record<string, string> = {
   "/": "Inicio",

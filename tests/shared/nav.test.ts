@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { NAV, flattenNav, isActivePath } from "@/shared/constants";
+import { NAV } from "@/shared/constants/navigation";
+import { flattenNav, isActivePath } from "@/shared/utils/navigation";
 
 describe("menu", () => {
   it("should start with Inicio and the Registrar group (D80)", () => {

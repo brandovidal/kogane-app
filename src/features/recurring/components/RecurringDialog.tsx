@@ -2,25 +2,20 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { ShareEditor } from "@/features/drafts/components/ShareEditor";
-import type { DraftFields } from "@/shared/api/hooks/drafts";
-import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
+import type { DraftFields } from "@/features/drafts/hooks/drafts";
+import { CategorySelect } from "@/features/categories/components/CategorySelect";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
-import { useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
-import {
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-  RECURRING_TARGET_LABELS,
-  RECURRING_TARGETS,
-  SUBSCRIPTION_KIND_LABELS,
-  SUBSCRIPTION_PERIOD_LABELS,
-  SUBSCRIPTION_PERIODS,
-} from "@/shared/labels";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
+import { RECURRING_TARGET_LABELS, RECURRING_TARGETS } from "@/features/recurring/constants/recurring";
+import { SUBSCRIPTION_KIND_LABELS, SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS } from "@/features/subscriptions/constants/subscriptions";
 
 const recurringFormSchema = z
   .object({

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cardFromSearch, cardHref } from "@/shared/lib/card-links";
+import { cardFromSearch, cardHref } from "@/features/credit-cards/lib/card-links";
 
 describe("card links (D102)", () => {
   it("should link a card by its code in the query, and Tarjetas without one", () => {

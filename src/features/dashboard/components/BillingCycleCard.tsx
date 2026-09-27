@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Badge } from "@/ui/badge";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CreditCard } from "lucide-react";
-import type { CreditCardSummary } from "../dashboard.service";
+import { type CreditCardSummary } from "@/features/dashboard/services/dashboard.service";
 
 interface BillingCycleCardProps {
   cards: CreditCardSummary[];

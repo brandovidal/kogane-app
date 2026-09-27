@@ -1,12 +1,12 @@
 import { Bell } from "lucide-react";
 
-import { useNotificationSettings, useUpdateNotificationSettings } from "@/shared/api/hooks/notifications";
+import { useNotificationSettings, useUpdateNotificationSettings } from "@/features/notifications/hooks/notifications";
 import type { NotificationKind } from "@/shared/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Switch } from "@/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
-import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS } from "@/features/notifications/notification-view";
+import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS } from "@/features/notifications/lib/notification-view";
 
 type Channel = "telegram" | "web";
 

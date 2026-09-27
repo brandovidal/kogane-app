@@ -4,21 +4,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Banknote, CalendarDays, CircleCheck, CreditCard, FileText, Tags, UserRound } from "lucide-react";
 
-import { useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES, type CreditCardExpense, type DailyExpense } from "@/shared/api/types";
-import { CategorySelect, PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { FieldLabel } from "@/shared/components/FieldLabel";
-import {
-  CREDIT_CARD_STATUSES,
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-} from "@/shared/labels";
+import { CategorySelect } from "@/features/categories/components/CategorySelect";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { FieldLabel } from "@/shared/components/forms/FieldLabel";
+import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { StatusBadge } from "@/shared/components/StatusBadge";
+import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 const optionalText = z.string().trim().transform((value) => value || null);
@@ -47,7 +45,7 @@ type Editable =
   | { resource: typeof EXPENSE_RESOURCES.daily; expense: DailyExpense }
   | { resource: typeof EXPENSE_RESOURCES.creditCard; expense: CreditCardExpense };
 
-interface ExpenseEditDialogProps {
+export interface ExpenseEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resource: Editable["resource"];

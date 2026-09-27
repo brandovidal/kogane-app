@@ -1,24 +1,35 @@
 import type { ReactNode } from "react";
 import {
+  ArrowDownUp,
+  CalendarDays,
+  CalendarRange,
   ChevronRight,
+  CircleCheck,
+  ClipboardList,
   CreditCard,
   FileSpreadsheet,
   FileText,
+  HandCoins,
+  Layers,
   SlidersHorizontal,
+  UserRound,
+  UsersRound,
   X,
+  type LucideIcon,
 } from "lucide-react";
 
-import { debtReportUrl } from "@/shared/api/hooks/debts";
-import type { DebtReportFilter } from "@/shared/api/hooks/debts";
+import { debtReportUrl } from "@/features/debts/lib/debt-report";
+import { type DebtReportFilter } from "@/features/debts/lib/debt-report";
 import type { Debt } from "@/shared/api/types";
 import {
   AppliedFilterChips,
   type AppliedFilterChip,
-} from "@/shared/components/AppliedFilterChips";
-import { CountedToolbarButton } from "@/shared/components/CountedToolbarButton";
-import { ExportMenu } from "@/shared/components/ExportMenu";
-import { FilterSelect } from "@/shared/components/FilterSelect";
-import { SearchField } from "@/shared/components/SearchField";
+} from "@/shared/components/filters/AppliedFilterChips";
+import { CountedToolbarButton } from "@/shared/components/toolbar/CountedToolbarButton";
+import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
+import { FilterSelect } from "@/shared/components/filters/FilterSelect";
+import { FieldLabel } from "@/shared/components/forms/FieldLabel";
+import { SearchField } from "@/shared/components/filters/SearchField";
 import { getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import {
@@ -30,7 +41,17 @@ import {
   SheetTrigger,
 } from "@/ui/sheet";
 import { Switch } from "@/ui/switch";
-import { DEBT_STATE_LABELS, type DebtFilterValues } from "../debt-filters";
+import { DEBT_STATE_LABELS, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
+
+const FILTER_ICONS: Partial<Record<keyof DebtFilterValues, LucideIcon>> = {
+  person: UserRound,
+  direction: ArrowDownUp,
+  state: CircleCheck,
+  month: CalendarDays,
+  year: CalendarRange,
+  card: CreditCard,
+  origin: HandCoins,
+};
 
 function DebtFilters({
   value,
@@ -68,6 +89,7 @@ function DebtFilters({
     <FilterSelect
       key={key}
       label={label}
+      icon={FILTER_ICONS[key]}
       value={value[key]}
       options={options.map(([option, text]) => ({ value: option, label: text }))}
       onChange={(next) => set(key, next)}
@@ -93,7 +115,7 @@ function DebtFilters({
       <details open className="group rounded-md border px-3">
         <summary className="cursor-pointer list-none py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
           <span className="flex items-center justify-between">
-            Datos generales
+            <FieldLabel icon={ClipboardList}>Datos generales</FieldLabel>
             <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
           </span>
         </summary>
@@ -265,7 +287,7 @@ export function DebtGroupingSheet({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <CountedToolbarButton label="Agrupar" count={activeCount} />
+        <CountedToolbarButton label="Agrupar" icon={<Layers aria-hidden="true" />} count={activeCount} />
       </SheetTrigger>
       <SheetContent side="right" className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto">
         <SheetHeader className="px-5 pt-6">
@@ -276,13 +298,11 @@ export function DebtGroupingSheet({
         </SheetHeader>
         <div className="space-y-4 px-5 pb-6">
           <label className="flex items-center justify-between gap-3 text-sm">
-            <span>Por persona</span>
+            <FieldLabel icon={UsersRound}>Por persona</FieldLabel>
             <Switch checked={groupedByPerson} onCheckedChange={onPersonChange} />
           </label>
           <label className="flex items-center justify-between gap-3 text-sm">
-            <span className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-muted-foreground" /> Por tarjeta
-            </span>
+            <FieldLabel icon={CreditCard}>Por tarjeta</FieldLabel>
             <Switch checked={groupedByCard} onCheckedChange={onCardChange} />
           </label>
           <p className="text-xs text-muted-foreground">
