@@ -2,4 +2,17 @@
 export type { CatalogSelectProps, CatalogOption } from "./catalog-select";
 export type { CsvExportData } from "./csv-export";
 export type { ViewMode, Column, DataViewProps } from "./data-view";
-export type { NavIcon, NavLink, NavGroup, NavEntry, Card, FlatLink } from "./navigation";
+export type {
+  NavIcon,
+  NavLink,
+  NavGroup,
+  NavEntry,
+  Card,
+  FlatLink,
+} from "./navigation";
+export type {
+  UseDataTableOptions,
+  DataTableQuery,
+  DataTableBasicProps,
+  DataTableComplexProps,
+} from "./data-table";

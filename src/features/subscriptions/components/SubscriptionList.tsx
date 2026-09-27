@@ -23,7 +23,8 @@ import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column } from "@/shared/types/data-view";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/features/expenses/lib/expense-filters";
+import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { SUBSCRIPTION_STATUSES } from "@/features/subscriptions/constants/subscriptions";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 

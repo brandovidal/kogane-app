@@ -14,6 +14,7 @@ import {
   createComboboxItems,
 } from "@/ui/combobox";
 import { cn } from "@/shared/utils/cn";
+import { normalize } from "@/shared/lib/text";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import {
   Select,
@@ -27,6 +28,7 @@ export interface FilterSelectOption {
   value: string;
   label: string;
   decoration?: ReactNode;
+  searchTerms?: readonly string[];
 }
 
 export interface FilterSelectProps {
@@ -44,6 +46,12 @@ export interface FilterSelectProps {
 }
 
 const ALL = "__all__";
+
+function matchesOption(option: FilterSelectOption, query: string) {
+  const normalizedQuery = normalize(query);
+  return [option.label, ...(option.searchTerms ?? [])]
+    .some((text) => normalize(text).includes(normalizedQuery));
+}
 
 export function FilterSelect({
   label,
@@ -70,6 +78,7 @@ export function FilterSelect({
     [allLabel, allValue, options],
   );
   const selectedOption = options.find((option) => option.value === value);
+  const hasSearchTerms = options.some((option) => option.searchTerms?.length);
 
   return (
     <div className="block space-y-1.5">
@@ -78,6 +87,7 @@ export function FilterSelect({
       {searchable ? (
         <Combobox
           items={items}
+          filter={hasSearchTerms ? matchesOption : undefined}
           value={value ?? allValue}
           onValueChange={(next) =>
             onChange(next == null || next === allValue ? undefined : String(next))

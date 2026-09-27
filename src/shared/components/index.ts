@@ -11,7 +11,10 @@ export type { ResponsiveDialogProps } from "./dialogs/ResponsiveDialog";
 export { ResponsiveDialog } from "./dialogs/ResponsiveDialog";
 export type { AppliedFilterChip } from "./filters/AppliedFilterChips";
 export { AppliedFilterChips } from "./filters/AppliedFilterChips";
-export type { FilterSelectOption, FilterSelectProps } from "./filters/FilterSelect";
+export type {
+  FilterSelectOption,
+  FilterSelectProps,
+} from "./filters/FilterSelect";
 export { FilterSelect } from "./filters/FilterSelect";
 export type { SearchFieldProps } from "./filters/SearchField";
 export { SearchField } from "./filters/SearchField";
@@ -32,3 +35,9 @@ export type { GroupingMenuProps } from "./toolbar/GroupingMenu";
 export { GroupingMenu } from "./toolbar/GroupingMenu";
 export type { RecordListToolbarProps } from "./toolbar/RecordListToolbar";
 export { RecordListToolbar } from "./toolbar/RecordListToolbar";
+export { DataTableBasic } from "./data-display/DataTableBasic";
+export { DataTableComplex } from "./data-display/DataTableComplex";
+export { DataTableColumnSelector } from "./data-display/DataTableColumnSelector";
+export { DataTablePagination } from "./data-display/DataTablePagination";
+export { BulkActionsToolbar } from "./toolbar/BulkActionsToolbar";
+export type { BulkActionsToolbarProps } from "./toolbar/BulkActionsToolbar";

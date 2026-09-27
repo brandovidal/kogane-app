@@ -1,7 +1,7 @@
 import type { Category, FixedCost } from "@/shared/api/types";
 import { EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
 import { formatDate } from "@/shared/lib/dates";
-import type { ExpenseFilterValues } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import type { CatalogName } from "@/features/fixed-costs/types/fixed-cost-types";
 import type { CsvExportData } from "@/shared/types/csv-export";
 

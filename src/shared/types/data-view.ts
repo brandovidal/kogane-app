@@ -10,6 +10,8 @@ export interface Column<T> {
   cell: (item: T) => ReactNode;
   role?: "title" | "amount" | "actions" | "meta";
   className?: string;
+  accessor?: (item: T) => string | number | null | undefined;
+  hideable?: boolean;
 }
 
 export interface DataViewProps<T> {
@@ -22,5 +24,5 @@ export interface DataViewProps<T> {
   // Selección múltiple (D115): a checkbox per row (and one for all in the table header)
   selected?: Set<string>;
   onSelectedChange?: (selected: Set<string>) => void;
+  selectionDisabled?: boolean;
 }
-

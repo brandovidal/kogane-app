@@ -1,4 +1,4 @@
-import type { ExpenseFilterKey } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterKey } from "@/features/expenses/types/expense-filters";
 import type { FixedCostGroupBy } from "@/features/fixed-costs/types/fixed-cost-types";
 
 export const FIXED_COST_FILTER_KEYS: ExpenseFilterKey[] = [

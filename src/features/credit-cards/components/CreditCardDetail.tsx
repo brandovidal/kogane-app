@@ -35,7 +35,8 @@ import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/features/expenses/lib/expense-filters";
+import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { StatementMinimumCard } from "./StatementMinimumCard";

@@ -3,3 +3,5 @@ export { useFixedCostActions } from "./useFixedCostActions";
 export type { FixedCostDialogProps } from "./useFixedCostForm";
 export { useFixedCostForm } from "./useFixedCostForm";
 export { useFixedCostList } from "./useFixedCostList";
+export { useFixedCostTable } from "./useFixedCostTable";
+export { useFixedCostBulkActions } from "./useFixedCostBulkActions";

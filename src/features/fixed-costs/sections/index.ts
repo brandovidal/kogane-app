@@ -9,3 +9,5 @@ export type { FixedCostResultsSectionProps } from "./FixedCostResultsSection";
 export { FixedCostResultsSection } from "./FixedCostResultsSection";
 export { FixedCostScheduleSection } from "./FixedCostScheduleSection";
 export { getFixedCostColumns } from "./fixed-cost-columns";
+export { FixedCostBulkActionsSection } from "./FixedCostBulkActionsSection";
+export { FixedCostDetailHistorySection } from "./FixedCostDetailHistorySection";

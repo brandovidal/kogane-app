@@ -7,3 +7,5 @@ export type { GroupingMenuProps } from "./GroupingMenu";
 export { GroupingMenu } from "./GroupingMenu";
 export type { RecordListToolbarProps } from "./RecordListToolbar";
 export { RecordListToolbar } from "./RecordListToolbar";
+export { BulkActionsToolbar } from "./BulkActionsToolbar";
+export type { BulkActionsToolbarProps } from "./BulkActionsToolbar";

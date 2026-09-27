@@ -6,3 +6,5 @@ export { HistoryTimelineItem } from "./HistoryTimelineItem";
 export { HistoryTimelineLoading } from "./HistoryTimelineLoading";
 export { HistoryChanges } from "./HistoryChanges";
 export { HistoryValue } from "./HistoryValue";
+export { RecordHistoryPanel } from "./RecordHistoryPanel";
+export type { RecordHistoryPanelProps } from "./RecordHistoryPanel";

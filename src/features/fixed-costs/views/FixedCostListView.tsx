@@ -6,10 +6,29 @@ import { useFixedCostList } from "../hooks/useFixedCostList";
 import { FixedCostListControls } from "../sections/FixedCostListControls";
 import { FixedCostResultsSection } from "../sections/FixedCostResultsSection";
 import { FixedCostDetailView } from "./FixedCostDetailView";
+import { DataTableColumnSelector } from "@/shared/components/data-display/DataTableColumnSelector";
+import { useFixedCostTable } from "../hooks/useFixedCostTable";
+import { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
+import { FixedCostBulkActionsSection } from "../sections/FixedCostBulkActionsSection";
 
 export function FixedCostListView() {
   const list = useFixedCostList();
   const interaction = useFixedCostActions();
+  const bulk = useFixedCostBulkActions(list.filtered, list.scopeKey);
+  const dataTable = useFixedCostTable({
+    items: list.filtered,
+    categories: list.categories,
+    personName: list.personName,
+    accountName: list.accountName,
+    actions: interaction.actions,
+    resetKey: list.scopeKey,
+    rowSelection: bulk.selection,
+    onSelectionChange: bulk.setSelection,
+    pending: bulk.pending,
+  });
+  const openedItem =
+    list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ??
+    interaction.openedItem;
 
   return (
     <div className="space-y-4">
@@ -25,17 +44,26 @@ export function FixedCostListView() {
         onGroupByChange={list.setGroupBy}
         exportItems={list.exportItems}
         onCreate={interaction.onCreate}
+        columnSelector={
+          <DataTableColumnSelector
+            table={dataTable.table}
+            disabled={list.loading}
+          />
+        }
       />
+      <FixedCostBulkActionsSection bulk={bulk} />
       <FixedCostResultsSection
         items={list.filtered}
         totalRecords={list.fixedCosts.length}
         categories={list.categories}
         personName={list.personName}
-        accountName={list.accountName}
         view={list.view}
         groupBy={list.groupBy}
         totals={list.totals}
-        actions={interaction.actions}
+        dataTable={dataTable}
+        loading={list.loading}
+        error={list.error}
+        pending={bulk.pending}
       />
       <FixedCostDialog
         open={interaction.dialogOpen}
@@ -43,15 +71,23 @@ export function FixedCostListView() {
         fixedCost={interaction.editingItem}
       />
       <FixedCostDetailView
-        fixedCost={interaction.openedItem}
-        categoryName={list.categories.find((category) => category.id === interaction.openedItem?.categoryId)?.name ?? "Sin categoría"}
-        personName={list.personName(interaction.openedItem?.personId)}
-        accountName={list.accountName(interaction.openedItem?.paymentMethodId)}
+        fixedCost={openedItem}
+        categoryName={
+          list.categories.find(
+            (category) => category.id === openedItem?.categoryId,
+          )?.name ?? "Sin categoría"
+        }
+        personName={list.personName(openedItem?.personId)}
+        accountName={list.accountName(openedItem?.paymentMethodId)}
         onClose={interaction.onCloseDetail}
         onEdit={interaction.onEditDetail}
       />
       {interaction.moving && (
-        <MoveSeriesDialog key={interaction.moving.id} source={interaction.moving} onClose={interaction.onCloseMove} />
+        <MoveSeriesDialog
+          key={interaction.moving.id}
+          source={interaction.moving}
+          onClose={interaction.onCloseMove}
+        />
       )}
     </div>
   );

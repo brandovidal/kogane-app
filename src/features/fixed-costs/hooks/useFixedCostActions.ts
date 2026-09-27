@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { useDeleteExpense, useSaveExpense } from "@/features/expenses/hooks/expenses";
+import {
+  useDeleteExpense,
+  useSaveExpense,
+} from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
 import type { MoveSource } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
-import { duplicateBody, nextMonthBody } from "@/features/expenses/lib/expense-actions";
+import {
+  duplicateBody,
+  nextMonthBody,
+} from "@/features/expenses/lib/expense-actions";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import type { FixedCostActions } from "@/features/fixed-costs/types/fixed-cost-types";
 
@@ -22,19 +28,35 @@ export function useFixedCostActions() {
       setOpenedItem(undefined);
       setDialogOpen(true);
     },
-    onDuplicate: (cost) => saveFixedCost.mutate({ body: duplicateBody(EXPENSE_RESOURCES.fixedCost, cost) }),
-    onNextMonth: (cost) => saveFixedCost.mutate({ id: cost.id, body: nextMonthBody(cost) }),
-    onMove: (cost) => setMoving({ resource: EXPENSE_RESOURCES.fixedCost, id: cost.id, description: cost.description }),
-    onDelete: (cost) => deleteFixedCost.mutate(cost.id),
-    onStatusChange: (cost, paymentStatus) => saveFixedCost.mutate({ id: cost.id, body: { paymentStatus } }),
+    onDuplicate: (cost) =>
+      saveFixedCost.mutate({
+        body: duplicateBody(EXPENSE_RESOURCES.fixedCost, cost),
+      }),
+    onNextMonth: (cost) =>
+      saveFixedCost.mutate({ id: cost.id, body: nextMonthBody(cost) }),
+    onMove: (cost) =>
+      setMoving({
+        resource: EXPENSE_RESOURCES.fixedCost,
+        id: cost.id,
+        description: cost.description,
+      }),
+    onDelete: (cost) => deleteFixedCost.mutateAsync(cost.id),
+    onStatusChange: (cost, paymentStatus) =>
+      saveFixedCost.mutate({ id: cost.id, body: { paymentStatus } }),
   };
 
   return {
     actions,
-    dialogOpen, setDialogOpen, editingItem, openedItem, moving,
+    dialogOpen,
+    setDialogOpen,
+    editingItem,
+    openedItem,
+    moving,
     onCreate: () => openNewExpense({ destination: "fixed_cost" }),
     onCloseDetail: () => setOpenedItem(undefined),
-    onEditDetail: () => { if (openedItem) actions.onEdit(openedItem); },
+    onEditDetail: () => {
+      if (openedItem) actions.onEdit(openedItem);
+    },
     onCloseMove: () => setMoving(null),
   };
 }
