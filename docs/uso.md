@@ -72,7 +72,17 @@ Página **Préstamos e inversiones** (`/compromisos`): tus préstamos (BCP, Comp
 
 ## Comandos del bot
 
-`/borrador` · `/ultimos` · `/resumen` · `/deudas [persona]` · `/cobrar <persona>` · `/calendario` (próximos 14 días) · `/cuotas` (cuotas de tarjeta de 3 meses) · `/avisos` · `/uso` (cuánta AI se usó hoy y cuántas capturas leyó el OCR local) · `/cancelar` · `/ayuda`
+El menú de Telegram tiene 7 comandos; los que abren un grupo muestran botones:
+
+- `/registrar` — ⚡ Rápido (repite un gasto de hoy con un toque) · ↩️ Deshacer · ✈️ Viaje · ✏️ Editar · ⌨️ Teclado · 📝 Borrador.
+- `/borrador` — lo que quedó pendiente.
+- `/consultar` — Hoy · Semana · Mes · Tarjetas · Presupuesto · Pronóstico · Últimos · 🔎 Buscar · 📈 Gráfico · ❓ Pregunta · 📥 Exportar · 🌐 Web.
+- `/deudas [persona]` · `/cobrar <persona>`.
+- `/pagos` — Avisos · Calendario · Cuotas · ✅ Cuadre.
+- `/ajustes` — Reglas · Teclado · Uso de la AI · Web.
+- `/ayuda` — lo mismo, corto.
+
+También puedes escribirlos: `/hoy` · `/semana` · `/tarjetas` · `/viaje Lima` y `/fin` (etiqueta todo lo que guardes mientras el viaje está abierto y suma por categoría al cerrar) · `/exportar [mes]` (Excel o PDF) · `/grafico [mes]` (dona por categoría) · `/pregunta ¿cuánto gasté en comida en agosto?` (la única que usa AI: elige una consulta y los números salen de tus datos) · `/cuadre <tarjeta>` (el último estado de cuenta contra lo registrado) · `/reglas` (lo que el bot aprendió cuando corriges la categoría o el medio; se borra con 🗑️) · `/buscar` (igual que `/editar`) · `/web` · `/cancelar`.
 
 ## La web
 

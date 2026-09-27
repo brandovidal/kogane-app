@@ -7,14 +7,13 @@ import { formatDate } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/ui/alert-dialog";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 const ROLE_LABELS: Record<string, string> = { superadmin: "Superadmin", admin: "Admin", member: "Miembro" };
 const STATUS_LABELS: Record<string, string> = { active: "Activo", invited: "Invitado", disabled: "Desactivado" };
 
-// Configuración ▸ Usuarios (P23, D84): admins invite (the link is handed over by them: there is no mail yet), give admin or
-// member and activate or disable; only the superadmin can enter as a user (the backdoor)
 export function UsersPanel() {
   const { data: me } = useMe();
   const { data } = useUsers(true);
@@ -27,6 +26,7 @@ export function UsersPanel() {
   const [role, setRole] = useState<"member" | "admin">("member");
   const [created, setCreated] = useState<{ email: string; url: string; emailed: boolean } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [inviteToRevoke, setInviteToRevoke] = useState<{ id: string; email: string } | null>(null);
   if (!me || !data) return null;
 
   const copy = async (url: string) => {
@@ -86,7 +86,7 @@ export function UsersPanel() {
                   <span className="min-w-0 flex-1 truncate">{item.email}</span>
                   <Badge variant="outline">{ROLE_LABELS[item.role]}</Badge>
                   <span className="text-xs text-muted-foreground">vence {formatDate(item.expiresAt)}</span>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label={`Cancelar la invitación de ${item.email}`} onClick={() => revoke.mutate(item.id)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label={`Eliminar invitación de ${item.email}`} onClick={() => setInviteToRevoke({ id: item.id, email: item.email })}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </li>
@@ -118,7 +118,7 @@ export function UsersPanel() {
                     <Badge>{ROLE_LABELS.superadmin}</Badge>
                   ) : (
                     <Select value={user.role} onValueChange={(value) => update.mutate({ id: user.id, body: { role: value as "admin" | "member" } })}>
-                      <SelectTrigger className="h-8 w-[110px]" aria-label={`Rol de ${user.name}`}><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-8 w-27.5" aria-label={`Rol de ${user.name}`}><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="member">Miembro</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
@@ -153,6 +153,27 @@ export function UsersPanel() {
           </ul>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!inviteToRevoke} onOpenChange={(open) => !open && setInviteToRevoke(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar esta invitación?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se cancelará la invitación de {inviteToRevoke?.email}. El enlace dejará de funcionar y la persona necesitará una invitación nueva.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={revoke.isPending}>Cancelar</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={revoke.isPending}
+              onClick={() => inviteToRevoke && revoke.mutate(inviteToRevoke.id, { onSuccess: () => setInviteToRevoke(null) })}
+            >
+              {revoke.isPending ? "Eliminando…" : "Eliminar invitación"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

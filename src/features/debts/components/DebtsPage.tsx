@@ -233,17 +233,17 @@ function DebtList({
   if (isLoading) return null;
 
   return (
-      <div className="min-w-0 space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{texts.total}</p>
-            <p className="text-2xl font-bold">{formatCurrency(total)}</p>
-            <p className="text-xs text-muted-foreground">
-              {shown.length} cuotas · pagado {formatCurrency(paid)}
-            </p>
-          </div>
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-            <div className="flex flex-wrap items-center gap-2">
+    <div className="min-w-0 space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">{texts.total}</p>
+          <p className="text-2xl font-bold">{formatCurrency(total)}</p>
+          <p className="text-xs text-muted-foreground">
+            {shown.length} cuotas · pagado {formatCurrency(paid)}
+          </p>
+        </div>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+          <div className="flex flex-wrap items-center gap-2">
             <DebtFilterSheet
               value={filters}
               onChange={(next) => (setFilters(next), setSelected(new Set()))}
@@ -257,20 +257,20 @@ function DebtList({
               resultLabel={direction === "owed_to_me" ? "cobros" : "deudas"}
             >
               {!splitGroupingSheet && (
-              <div className="space-y-3 border-t pt-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Agrupar resultados</p>
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  <span>Por persona</span>
-                  <Switch checked={groupedByPerson} onCheckedChange={setGroupedByPerson} />
-                </label>
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-muted-foreground" /> Por tarjeta</span>
-                  <Switch checked={groupedByCard} onCheckedChange={setGroupedByCard} />
-                </label>
-                <p className="text-xs text-muted-foreground">
-                  {groupedByPerson && groupedByCard ? "Una tabla por persona; tarjetas y plataformas se despliegan dentro." : groupedByPerson ? "Los cobros se agrupan por persona." : groupedByCard ? "Los cobros se agrupan por tarjeta." : "Activa uno o ambos para organizar los cobros."}
-                </p>
-              </div>
+                <div className="space-y-3 border-t pt-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Agrupar resultados</p>
+                  <label className="flex items-center justify-between gap-3 text-sm">
+                    <span>Por persona</span>
+                    <Switch checked={groupedByPerson} onCheckedChange={setGroupedByPerson} />
+                  </label>
+                  <label className="flex items-center justify-between gap-3 text-sm">
+                    <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-muted-foreground" /> Por tarjeta</span>
+                    <Switch checked={groupedByCard} onCheckedChange={setGroupedByCard} />
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    {groupedByPerson && groupedByCard ? "Una tabla por persona; tarjetas y plataformas se despliegan dentro." : groupedByPerson ? "Los cobros se agrupan por persona." : groupedByCard ? "Los cobros se agrupan por tarjeta." : "Activa uno o ambos para organizar los cobros."}
+                  </p>
+                </div>
               )}
             </DebtFilterSheet>
             {splitGroupingSheet && (
@@ -282,127 +282,127 @@ function DebtList({
               />
             )}
             {splitGroupingSheet && <span aria-hidden="true" className="hidden h-5 border-l sm:inline-block" />}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <ReportLinks filter={{ direction, month, year }} />
-              <Button size="sm" variant="outline" onClick={() => setRegistering(true)}>
-                <Wallet className="mr-1 h-4 w-4" /> Registrar pago
-              </Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ReportLinks filter={{ direction, month, year }} />
+            <Button size="sm" variant="outline" onClick={() => setRegistering(true)}>
+              <Wallet className="mr-1 h-4 w-4" /> Registrar pago
+            </Button>
             {actions}
-            </div>
           </div>
         </div>
-
-        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <ActiveDebtFilterChips
-            value={filters}
-            onChange={(next) => (setFilters(next), setSelected(new Set()))}
-            debts={debts}
-            cards={cards}
-            monthLabel={`${getMonthName(month)} ${year}`}
-            defaults={defaults}
-            grouping={splitGroupingSheet ? {
-              byPerson: groupedByPerson,
-              byCard: groupedByCard,
-              onToggle: (key) => key === "person"
-                ? setGroupedByPerson((current) => !current)
-                : setGroupedByCard((current) => !current),
-            } : undefined}
-          />
-          <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
-        </div>
-
-        {card && panelMonth && filters.year && (
-          <CardCheckPanel
-            cardId={card.id}
-            cardName={card.name}
-            month={panelMonth}
-            year={Number(filters.year)}
-          />
-        )}
-
-        <DebtBulkBar selected={checked} onDone={() => setSelected(new Set())} />
-
-        {!debts.length ? (
-          <EmptyState description={texts.empty} />
-        ) : !shown.length ? (
-          <EmptyState description="No hay cuotas con estos filtros" />
-        ) : personTypeGroups ? (
-          <div className="space-y-2">
-            {personGroups?.map((group) => (
-              <CollapsibleDebtGroup
-                key={group.personId}
-                title={group.name}
-                total={group.total}
-                debts={group.debts}
-                direction={direction}
-                view={view}
-                onPay={onPay}
-                onEdit={setEditingDebt}
-                selected={selected}
-                onSelectedChange={setSelected}
-                groupTypes
-                cardNames={cardNames}
-                collapsible={false}
-              />
-            ))}
-          </div>
-        ) : cardGroups ? (
-          <div className="space-y-2">
-            {cardGroups.map((group) => (
-              <CollapsibleDebtGroup
-                key={group.cardId ?? "__no_card__"}
-                title={group.cardName}
-                total={group.total}
-                debts={group.debts}
-                direction={direction}
-                view={view}
-                onPay={onPay}
-                onEdit={setEditingDebt}
-                selected={selected}
-                onSelectedChange={setSelected}
-                cardNames={cardNames}
-              />
-            ))}
-          </div>
-        ) : personGroups ? (
-          <div className="space-y-2">
-            {personGroups.map((group) => (
-              <CollapsibleDebtGroup
-                key={group.personId}
-                title={group.name}
-                total={group.total}
-                debts={group.debts}
-                direction={direction}
-                view={view}
-                onPay={onPay}
-                onEdit={setEditingDebt}
-                selected={selected}
-                onSelectedChange={setSelected}
-                cardNames={cardNames}
-                collapsible={false}
-              />
-            ))}
-          </div>
-        ) : (
-          <DebtGrid
-            debts={shown}
-            view={view}
-            onPay={onPay}
-            onEdit={setEditingDebt}
-            selected={selected}
-            onSelectedChange={setSelected}
-          />
-        )}
-
-        <RegisterPaymentDialog
-          open={registering}
-          onOpenChange={setRegistering}
-          debts={debts}
-          period={{ month, year }}
-        />
-        <DebtDialog open={!!editingDebt} onOpenChange={(open) => !open && setEditingDebt(undefined)} direction={direction} debt={editingDebt} />
       </div>
+
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <ActiveDebtFilterChips
+          value={filters}
+          onChange={(next) => (setFilters(next), setSelected(new Set()))}
+          debts={debts}
+          cards={cards}
+          monthLabel={`${getMonthName(month)} ${year}`}
+          defaults={defaults}
+          grouping={splitGroupingSheet ? {
+            byPerson: groupedByPerson,
+            byCard: groupedByCard,
+            onToggle: (key) => key === "person"
+              ? setGroupedByPerson((current) => !current)
+              : setGroupedByCard((current) => !current),
+          } : undefined}
+        />
+        <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
+      </div>
+
+      {card && panelMonth && filters.year && (
+        <CardCheckPanel
+          cardId={card.id}
+          cardName={card.name}
+          month={panelMonth}
+          year={Number(filters.year)}
+        />
+      )}
+
+      <DebtBulkBar selected={checked} onDone={() => setSelected(new Set())} />
+
+      {!debts.length ? (
+        <EmptyState description={texts.empty} />
+      ) : !shown.length ? (
+        <EmptyState description="No hay cuotas con estos filtros" />
+      ) : personTypeGroups ? (
+        <div className="space-y-2">
+          {personGroups?.map((group) => (
+            <CollapsibleDebtGroup
+              key={group.personId}
+              title={group.name}
+              total={group.total}
+              debts={group.debts}
+              direction={direction}
+              view={view}
+              onPay={onPay}
+              onEdit={setEditingDebt}
+              selected={selected}
+              onSelectedChange={setSelected}
+              groupTypes
+              cardNames={cardNames}
+              collapsible={false}
+            />
+          ))}
+        </div>
+      ) : cardGroups ? (
+        <div className="space-y-2">
+          {cardGroups.map((group) => (
+            <CollapsibleDebtGroup
+              key={group.cardId ?? "__no_card__"}
+              title={group.cardName}
+              total={group.total}
+              debts={group.debts}
+              direction={direction}
+              view={view}
+              onPay={onPay}
+              onEdit={setEditingDebt}
+              selected={selected}
+              onSelectedChange={setSelected}
+              cardNames={cardNames}
+            />
+          ))}
+        </div>
+      ) : personGroups ? (
+        <div className="space-y-2">
+          {personGroups.map((group) => (
+            <CollapsibleDebtGroup
+              key={group.personId}
+              title={group.name}
+              total={group.total}
+              debts={group.debts}
+              direction={direction}
+              view={view}
+              onPay={onPay}
+              onEdit={setEditingDebt}
+              selected={selected}
+              onSelectedChange={setSelected}
+              cardNames={cardNames}
+              collapsible={false}
+            />
+          ))}
+        </div>
+      ) : (
+        <DebtGrid
+          debts={shown}
+          view={view}
+          onPay={onPay}
+          onEdit={setEditingDebt}
+          selected={selected}
+          onSelectedChange={setSelected}
+        />
+      )}
+
+      <RegisterPaymentDialog
+        open={registering}
+        onOpenChange={setRegistering}
+        debts={debts}
+        period={{ month, year }}
+      />
+      <DebtDialog open={!!editingDebt} onOpenChange={(open) => !open && setEditingDebt(undefined)} direction={direction} debt={editingDebt} />
+    </div>
   );
 }
 
@@ -434,18 +434,18 @@ function CollapsibleDebtGroup({
   collapsible?: boolean;
 }) {
   const content = (
-      <div className="space-y-3 border-t p-3">
-        <DebtGrid
-          debts={debts}
-          view={view}
-          onPay={onPay}
-          onEdit={onEdit}
-          selected={selected}
-          onSelectedChange={onSelectedChange}
-          groupTypes={groupTypes && view === "table"}
-          cardNames={cardNames}
-        />
-      </div>
+    <div className="space-y-3 border-t p-3">
+      <DebtGrid
+        debts={debts}
+        view={view}
+        onPay={onPay}
+        onEdit={onEdit}
+        selected={selected}
+        onSelectedChange={onSelectedChange}
+        groupTypes={groupTypes && view === "table"}
+        cardNames={cardNames}
+      />
+    </div>
   );
   const heading = (
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
@@ -553,42 +553,41 @@ function DebtFilters({
 
   return (
     <div className="space-y-4">
-      <h2 className="font-semibold">Filtros</h2>
       <details open className="group rounded-md border px-3">
         <summary className="cursor-pointer list-none py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-          <span className="flex items-center justify-between">Filtros generales<ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" /></span>
+          <span className="flex items-center justify-between">Datos generales<ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" /></span>
         </summary>
         <div className="space-y-3 pb-3">
-        <label className="block space-y-1.5 text-xs font-medium text-muted-foreground">
-          <span>Buscar</span>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Concepto o persona"
-              value={value.q ?? ""}
-              onChange={(e) => set("q", e.target.value)}
-              className="h-9 pl-9"
-            />
-          </div>
-        </label>
-        {select("person", "Persona", people)}
-        {!hideDirection && select("direction", "Mostrar", [["owed_to_me", "Cobros (+)"], ["i_owe", "Deudas (−)"]])}
-        {select("state", "Estado", Object.entries(DEBT_STATE_LABELS))}
-        {select("month", "Mes", [["until", `Hasta ${monthLabel}`], ...months])}
-        {select(
-          "year",
-          "Año",
-          years.map((item) => [String(item), String(item)] as [string, string]),
-        )}
-        {select(
-          "card",
-          "Tarjeta",
-          cards.map((item) => [item.id, item.name] as [string, string]),
-        )}
-        {select("origin", "Origen", [
-          ["shared", "Compartido"],
-          ["loan", "Préstamo"],
-        ])}
+          <label className="block space-y-1.5 text-xs font-medium text-muted-foreground">
+            <span>Buscar</span>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Concepto o persona"
+                value={value.q ?? ""}
+                onChange={(e) => set("q", e.target.value)}
+                className="h-9 pl-9"
+              />
+            </div>
+          </label>
+          {select("person", "Persona", people)}
+          {!hideDirection && select("direction", "Mostrar", [["owed_to_me", "Cobros (+)"], ["i_owe", "Deudas (−)"]])}
+          {select("state", "Estado", Object.entries(DEBT_STATE_LABELS))}
+          {select("month", "Mes", [["until", `Hasta ${monthLabel}`], ...months])}
+          {select(
+            "year",
+            "Año",
+            years.map((item) => [String(item), String(item)] as [string, string]),
+          )}
+          {select(
+            "card",
+            "Tarjeta",
+            cards.map((item) => [item.id, item.name] as [string, string]),
+          )}
+          {select("origin", "Origen", [
+            ["shared", "Compartido"],
+            ["loan", "Préstamo"],
+          ])}
         </div>
       </details>
       {active && (
@@ -956,7 +955,7 @@ function DebtGrid({
         const progress =
           debt.amount > 0 ? (debt.paidAmount / debt.amount) * 100 : 0;
         return (
-          <div className="min-w-[140px] space-y-1">
+          <div className="min-w-35 space-y-1">
             <span className="font-semibold tabular-nums">
               {formatCurrency(debt.balance)}
             </span>
@@ -1076,7 +1075,7 @@ function DebtGrid({
         <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader><TableRow>
-              <TableHead className="w-[36px]"><Checkbox aria-label="Seleccionar todas las deudas de la persona" checked={debts.length > 0 && debts.every((debt) => selected.has(debt.id)) ? true : debts.some((debt) => selected.has(debt.id)) ? "indeterminate" : false} onCheckedChange={(checked) => toggleSelection(debts, checked === true)} /></TableHead>
+              <TableHead className="w-9"><Checkbox aria-label="Seleccionar todas las deudas de la persona" checked={debts.length > 0 && debts.every((debt) => selected.has(debt.id)) ? true : debts.some((debt) => selected.has(debt.id)) ? "indeterminate" : false} onCheckedChange={(checked) => toggleSelection(debts, checked === true)} /></TableHead>
               {columns.map((column) => <TableHead key={column.key} className={column.className}>{column.role === "actions" ? "" : column.header}</TableHead>)}
             </TableRow></TableHeader>
             <TableBody>
@@ -1108,7 +1107,7 @@ function DebtGrid({
           <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>¿Borrar «{deleting?.description}»?</AlertDialogTitle><AlertDialogDescription>{deleting && deleting.paidAmount > 0 ? `Tiene ${formatCurrency(deleting.paidAmount)} pagados: se borran con ella. No se puede deshacer.` : "No se puede deshacer."}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => deleting && deleteDebt.mutate(deleting.id, { onSuccess: () => setDeleting(null) })}>Borrar</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
         </AlertDialog>
         <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
-      {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
+        {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
       </>
     );
   }
@@ -1294,26 +1293,26 @@ function PeopleSummary({
   );
   const personalExpenses = summaryView === "consolidated" && ownPerson && showDebts && !filters.state && !filters.origin && (!filters.person || filters.person === ownPerson.id)
     ? [
-        ...ownCardExpenses
-          .filter((expense) => expense.personId === ownPerson.id && ["not_started", "pending"].includes(expense.paymentStatus))
-          .filter((expense) => !/cmr|falabella/i.test(expense.paymentMethodId ? cardNames.get(expense.paymentMethodId) ?? "" : ""))
-          .filter((expense) => !filters.card || filters.card === expense.paymentMethodId)
-          .filter((expense) => !filters.q || normalizeSearch(`${expense.description} ${expense.paymentMethodId ? cardNames.get(expense.paymentMethodId) ?? "" : ""} IO`).includes(normalizeSearch(filters.q)))
-          .filter((expense) => !debts.some((debt) => debt.personId === ownPerson.id && debt.paymentMethodId === expense.paymentMethodId && debt.paymentMonth === selectedMonth && debt.paymentYear === selectedYear && normalizeSearch(debt.description) === normalizeSearch(expense.description) && Math.abs(debt.amount - (expense.amountInPen ?? expense.amount)) < 0.01))
-          .map((expense) => ({ id: `card:${expense.id}`, personId: ownPerson.id, description: expense.description, amount: paidAndOwn(expense).own, source: cardNames.get(expense.paymentMethodId) ?? "Tarjeta", paymentMethodId: expense.paymentMethodId })),
-        ...ownFixedCosts
-          .filter((expense) => expense.personId === ownPerson.id && ["not_started", "pending"].includes(expense.paymentStatus))
-          .filter((expense) => !filters.card || expense.paymentMethodId === filters.card)
-          .filter((expense) => !filters.q || normalizeSearch(`${expense.description} costos fijos`).includes(normalizeSearch(filters.q)))
-          .filter((expense) => !debts.some((debt) => debt.personId === ownPerson.id && debt.paymentMethodId === expense.paymentMethodId && debt.paymentMonth === selectedMonth && debt.paymentYear === selectedYear && normalizeSearch(debt.description) === normalizeSearch(expense.description) && Math.abs(debt.amount - (expense.amountInPen ?? expense.amount)) < 0.01))
-          .map((expense) => ({ id: `fixed:${expense.id}`, personId: ownPerson.id, description: expense.description, amount: paidAndOwn(expense).own, source: "Costos fijos", paymentMethodId: expense.paymentMethodId })),
-        ...ownSubscriptions
-          .filter((expense) => expense.personId === ownPerson.id && ["not_started", "pending"].includes(expense.paymentStatus))
-          .filter((expense) => !filters.card || expense.paymentMethodId === filters.card)
-          .filter((expense) => !filters.q || normalizeSearch(`${expense.description} ${expense.kind === "platform" ? "plataformas" : "recurrentes"}`).includes(normalizeSearch(filters.q)))
-          .filter((expense) => !debts.some((debt) => debt.personId === ownPerson.id && debt.paymentMethodId === expense.paymentMethodId && debt.paymentMonth === selectedMonth && debt.paymentYear === selectedYear && normalizeSearch(debt.description) === normalizeSearch(expense.description) && Math.abs(debt.amount - (expense.amountInPen ?? expense.amount)) < 0.01))
-          .map((expense) => ({ id: `subscription:${expense.id}`, personId: ownPerson.id, description: expense.description, amount: paidAndOwn(expense).own, source: expense.kind === "platform" ? "Plataformas" : "Recurrentes", paymentMethodId: expense.paymentMethodId })),
-      ].filter((expense) => expense.amount > 0)
+      ...ownCardExpenses
+        .filter((expense) => expense.personId === ownPerson.id && ["not_started", "pending"].includes(expense.paymentStatus))
+        .filter((expense) => !/cmr|falabella/i.test(expense.paymentMethodId ? cardNames.get(expense.paymentMethodId) ?? "" : ""))
+        .filter((expense) => !filters.card || filters.card === expense.paymentMethodId)
+        .filter((expense) => !filters.q || normalizeSearch(`${expense.description} ${expense.paymentMethodId ? cardNames.get(expense.paymentMethodId) ?? "" : ""} IO`).includes(normalizeSearch(filters.q)))
+        .filter((expense) => !debts.some((debt) => debt.personId === ownPerson.id && debt.paymentMethodId === expense.paymentMethodId && debt.paymentMonth === selectedMonth && debt.paymentYear === selectedYear && normalizeSearch(debt.description) === normalizeSearch(expense.description) && Math.abs(debt.amount - (expense.amountInPen ?? expense.amount)) < 0.01))
+        .map((expense) => ({ id: `card:${expense.id}`, personId: ownPerson.id, description: expense.description, amount: paidAndOwn(expense).own, source: cardNames.get(expense.paymentMethodId) ?? "Tarjeta", paymentMethodId: expense.paymentMethodId })),
+      ...ownFixedCosts
+        .filter((expense) => expense.personId === ownPerson.id && ["not_started", "pending"].includes(expense.paymentStatus))
+        .filter((expense) => !filters.card || expense.paymentMethodId === filters.card)
+        .filter((expense) => !filters.q || normalizeSearch(`${expense.description} costos fijos`).includes(normalizeSearch(filters.q)))
+        .filter((expense) => !debts.some((debt) => debt.personId === ownPerson.id && debt.paymentMethodId === expense.paymentMethodId && debt.paymentMonth === selectedMonth && debt.paymentYear === selectedYear && normalizeSearch(debt.description) === normalizeSearch(expense.description) && Math.abs(debt.amount - (expense.amountInPen ?? expense.amount)) < 0.01))
+        .map((expense) => ({ id: `fixed:${expense.id}`, personId: ownPerson.id, description: expense.description, amount: paidAndOwn(expense).own, source: "Costos fijos", paymentMethodId: expense.paymentMethodId })),
+      ...ownSubscriptions
+        .filter((expense) => expense.personId === ownPerson.id && ["not_started", "pending"].includes(expense.paymentStatus))
+        .filter((expense) => !filters.card || expense.paymentMethodId === filters.card)
+        .filter((expense) => !filters.q || normalizeSearch(`${expense.description} ${expense.kind === "platform" ? "plataformas" : "recurrentes"}`).includes(normalizeSearch(filters.q)))
+        .filter((expense) => !debts.some((debt) => debt.personId === ownPerson.id && debt.paymentMethodId === expense.paymentMethodId && debt.paymentMonth === selectedMonth && debt.paymentYear === selectedYear && normalizeSearch(debt.description) === normalizeSearch(expense.description) && Math.abs(debt.amount - (expense.amountInPen ?? expense.amount)) < 0.01))
+        .map((expense) => ({ id: `subscription:${expense.id}`, personId: ownPerson.id, description: expense.description, amount: paidAndOwn(expense).own, source: expense.kind === "platform" ? "Plataformas" : "Recurrentes", paymentMethodId: expense.paymentMethodId })),
+    ].filter((expense) => expense.amount > 0)
     : [];
   const personalExpenseTotal = personalExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   const totalToPayBase = debtsIOwe.reduce((sum, debt) => sum + debt.balance, 0);
@@ -1396,7 +1395,7 @@ function PeopleSummary({
           monthLabel={`${getMonthName(month)} ${year}`}
           defaults={defaults}
           directionFilterEnabled={false}
-          grouping={{ byPerson: false, byCard: false, onToggle: () => {}, movement: { showCollections, showDebts, onReset: () => { setShowCollections(true); setShowDebts(true); } } }}
+          grouping={{ byPerson: false, byCard: false, onToggle: () => { }, movement: { showCollections, showDebts, onReset: () => { setShowCollections(true); setShowDebts(true); } } }}
         />
         <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
       </div>
@@ -1419,293 +1418,293 @@ function PeopleSummary({
             </TabsTrigger>
           </TabsList>
           <TabsContent value={summaryView} className="mt-4 space-y-3">
-          {summaryView === "minimum" ? (
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Estados de cuenta y pagos mínimos de tus tarjetas.</p>
-              {!showCollections ? (
-                <Card><CardContent className="p-4 text-sm text-muted-foreground">El filtro está mostrando solo deudas. El pago mínimo corresponde a cobros del estado de cuenta; selecciona Cobros (+) para verlo.</CardContent></Card>
-              ) : (
-                <StatementMinimumEditor
-                  cards={creditCards.filter((_, index) => Boolean(statementChecks[index]?.data?.statementId))}
-                  isLoading={statementChecks.some((check) => check.isLoading)}
-                  hasCreditCards={creditCards.length > 0}
-                  month={selectedMonth}
-                  year={selectedYear}
-                />
-              )}
-            </div>
-          ) : (
-          <>
-          {view === "cards" ? (
-          <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3">
-            {visibleGroups.map((group) => {
-              const owed = group.debts.filter(
-                (debt) => debt.direction === "owed_to_me",
-              );
-              const owe = group.debts.filter(
-                (debt) => debt.direction === "i_owe",
-              );
-              const totalOwed = owed.reduce(
-                (sum, debt) => sum + debt.balance,
-                0,
-              );
-              const statementAdjustmentsForPerson = statementChargeAdjustments.filter((item) => item.personId === group.personId);
-              const statementAdjustmentForPerson = statementAdjustmentsForPerson.reduce((sum, item) => sum + item.amount, 0);
-              const totalOwe = owe.reduce((sum, debt) => sum + debt.balance, 0);
-              const personalExpensesForPerson = personalExpenses.filter((item) => item.personId === group.personId);
-              const personalExpenseForPerson = personalExpensesForPerson.reduce((sum, item) => sum + item.amount, 0);
-              const balanceForPerson = totalOwed + statementAdjustmentForPerson - totalOwe - personalExpenseForPerson;
-              const balanceLabel = balanceForPerson > 0 ? "Por cobrar" : balanceForPerson < 0 ? "Por pagar" : "Saldo";
-              const sourceGroups = new Map<
-                string,
-                { key: string; name: string; direction: Direction; debts: Debt[]; total: number; owed: number; owe: number; collapsible: boolean; adjustments: typeof statementAdjustmentsForPerson; personalExpenses: typeof personalExpenses }
-              >();
-              for (const debt of group.debts) {
-                const description = debt.description.trim();
-                const isPlatform = /\b(stream|streaming|plataforma|netflix|spotify|youtube|icloud|disney|hbo|max|prime video|apple tv|paramount|crunchyroll|deezer|tidal|mubi|google one|dropbox)\b/i.test(description);
-                const isLoan = /pr[eé]stamo/i.test(description);
-                const isIsilIoInstallment = /\bisil\b/i.test(description);
-                const cardName = debt.paymentMethodId
-                  ? cardNames.get(debt.paymentMethodId)
-                  : undefined;
-                const sourceName = cardName
-                  ? (/cmr|falabella/i.test(cardName) ? "CMR (Falabella)" : cardName)
-                  : isIsilIoInstallment
-                    ? "IO"
-                  : isPlatform
-                    ? "Plataformas · Stream"
-                    : isLoan
-                      ? "Préstamo"
-                      : description;
-                const collapsible = Boolean(cardName) || isIsilIoInstallment || isPlatform || isLoan;
-                const key = collapsible ? sourceName : debt.id;
-                const sourceGroup = sourceGroups.get(key) ?? {
-                  key,
-                  name: sourceName,
-                  direction: debt.direction,
-                  debts: [],
-                  total: 0,
-                  owed: 0,
-                  owe: 0,
-                  collapsible,
-                  adjustments: [],
-                  personalExpenses: [],
-                };
-                sourceGroup.debts.push(debt);
-                sourceGroup.total += debt.balance;
-                if (debt.direction === "owed_to_me") sourceGroup.owed += debt.balance;
-                else sourceGroup.owe += debt.balance;
-                sourceGroups.set(key, sourceGroup);
-              }
-              for (const adjustment of statementAdjustmentsForPerson) {
-                const sourceName = /cmr|falabella/i.test(adjustment.cardName) ? "CMR (Falabella)" : adjustment.cardName;
-                const key = sourceName;
-                const sourceGroup = sourceGroups.get(key) ?? {
-                  key,
-                  name: sourceName,
-                  direction: "owed_to_me" as Direction,
-                  debts: [],
-                  total: 0,
-                  owed: 0,
-                  owe: 0,
-                  collapsible: true,
-                  adjustments: [],
-                  personalExpenses: [],
-                };
-                sourceGroup.adjustments.push(adjustment);
-                sourceGroup.total += adjustment.amount;
-                sourceGroup.owed += adjustment.amount;
-                sourceGroups.set(key, sourceGroup);
-              }
-              for (const expense of personalExpensesForPerson) {
-                const key = expense.source;
-                const sourceGroup = sourceGroups.get(key) ?? {
-                  key,
-                  name: expense.source,
-                  direction: "i_owe" as Direction,
-                  debts: [],
-                  total: 0,
-                  owed: 0,
-                  owe: 0,
-                  collapsible: true,
-                  adjustments: [],
-                  personalExpenses: [],
-                };
-                sourceGroup.personalExpenses ??= [];
-                sourceGroup.personalExpenses.push(expense);
-                sourceGroup.total += expense.amount;
-                sourceGroup.owe += expense.amount;
-                sourceGroup.collapsible = true;
-                sourceGroups.set(key, sourceGroup);
-              }
-              const summaryGroups = [...sourceGroups.values()];
-              const sourceSummaryLine = (sourceGroup: (typeof summaryGroups)[number], expandable = false) => (
-                <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t pt-2 text-sm">
-                  <span className="flex min-w-0 items-center gap-2 truncate font-medium">
-                    {expandable && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />}
-                    {sourceGroup.name}
-                  </span>
-                  <span className="text-right text-xs text-muted-foreground">
-                      {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0)} {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0) === 1 ? "registro" : "registros"}
-                  </span>
-                  <span className="flex flex-col items-end text-right text-xs tabular-nums">
-                    {sourceGroup.owed > 0 && <span className="text-amber-300">+ {formatCurrency(sourceGroup.owed)}</span>}
-                    {sourceGroup.owe > 0 && <span className="text-muted-foreground">− {formatCurrency(sourceGroup.owe)}</span>}
-                  </span>
-                </div>
-              );
-              return (
-                <Card key={group.personId}>
-                  <CardContent className="space-y-3 pt-5">
-                    <div>
-                      <h3 className="font-semibold">{group.name}</h3>
-                      <p className="text-xs text-muted-foreground">
-                        {showCollections && <span className="text-muted-foreground">Me debe <strong className="font-medium text-amber-300">{formatCurrency(totalOwed + statementAdjustmentForPerson)}</strong></span>}
-                        {showCollections && showDebts && " · "}
-                        {showDebts && <span className="text-muted-foreground">Le debo <strong className="font-medium">{formatCurrency(totalOwe + personalExpenseForPerson)}</strong></span>}
-                      </p>
-                      <p className="text-sm font-semibold text-violet-200">
-                        {balanceLabel} {formatCurrency(Math.abs(balanceForPerson))}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      {summaryGroups.map((sourceGroup) => sourceGroup.collapsible ? (
-                        <details key={sourceGroup.key} className="group border-t">
-                          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                            {sourceSummaryLine(sourceGroup, true)}
-                          </summary>
-                          <div className="mb-2 space-y-2 border-l pl-5">
-                            {sourceGroup.debts.map((debt) => (
-                              <div key={debt.id} className="flex items-center justify-between gap-2 text-sm">
-                                <div className="min-w-0">
-                                  <p className="truncate">{debt.description}{debt.installment ? ` ${debt.installment}` : ""}</p>
-                                  <p className="text-xs text-muted-foreground">{getMonthName(debt.paymentMonth)} {debt.paymentYear}</p>
-                                </div>
-                                <span className="font-medium tabular-nums">{formatCurrency(debt.balance)}</span>
+            {summaryView === "minimum" ? (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">Estados de cuenta y pagos mínimos de tus tarjetas.</p>
+                {!showCollections ? (
+                  <Card><CardContent className="p-4 text-sm text-muted-foreground">El filtro está mostrando solo deudas. El pago mínimo corresponde a cobros del estado de cuenta; selecciona Cobros (+) para verlo.</CardContent></Card>
+                ) : (
+                  <StatementMinimumEditor
+                    cards={creditCards.filter((_, index) => Boolean(statementChecks[index]?.data?.statementId))}
+                    isLoading={statementChecks.some((check) => check.isLoading)}
+                    hasCreditCards={creditCards.length > 0}
+                    month={selectedMonth}
+                    year={selectedYear}
+                  />
+                )}
+              </div>
+            ) : (
+              <>
+                {view === "cards" ? (
+                  <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3">
+                    {visibleGroups.map((group) => {
+                      const owed = group.debts.filter(
+                        (debt) => debt.direction === "owed_to_me",
+                      );
+                      const owe = group.debts.filter(
+                        (debt) => debt.direction === "i_owe",
+                      );
+                      const totalOwed = owed.reduce(
+                        (sum, debt) => sum + debt.balance,
+                        0,
+                      );
+                      const statementAdjustmentsForPerson = statementChargeAdjustments.filter((item) => item.personId === group.personId);
+                      const statementAdjustmentForPerson = statementAdjustmentsForPerson.reduce((sum, item) => sum + item.amount, 0);
+                      const totalOwe = owe.reduce((sum, debt) => sum + debt.balance, 0);
+                      const personalExpensesForPerson = personalExpenses.filter((item) => item.personId === group.personId);
+                      const personalExpenseForPerson = personalExpensesForPerson.reduce((sum, item) => sum + item.amount, 0);
+                      const balanceForPerson = totalOwed + statementAdjustmentForPerson - totalOwe - personalExpenseForPerson;
+                      const balanceLabel = balanceForPerson > 0 ? "Por cobrar" : balanceForPerson < 0 ? "Por pagar" : "Saldo";
+                      const sourceGroups = new Map<
+                        string,
+                        { key: string; name: string; direction: Direction; debts: Debt[]; total: number; owed: number; owe: number; collapsible: boolean; adjustments: typeof statementAdjustmentsForPerson; personalExpenses: typeof personalExpenses }
+                      >();
+                      for (const debt of group.debts) {
+                        const description = debt.description.trim();
+                        const isPlatform = /\b(stream|streaming|plataforma|netflix|spotify|youtube|icloud|disney|hbo|max|prime video|apple tv|paramount|crunchyroll|deezer|tidal|mubi|google one|dropbox)\b/i.test(description);
+                        const isLoan = /pr[eé]stamo/i.test(description);
+                        const isIsilIoInstallment = /\bisil\b/i.test(description);
+                        const cardName = debt.paymentMethodId
+                          ? cardNames.get(debt.paymentMethodId)
+                          : undefined;
+                        const sourceName = cardName
+                          ? (/cmr|falabella/i.test(cardName) ? "CMR (Falabella)" : cardName)
+                          : isIsilIoInstallment
+                            ? "IO"
+                            : isPlatform
+                              ? "Plataformas · Stream"
+                              : isLoan
+                                ? "Préstamo"
+                                : description;
+                        const collapsible = Boolean(cardName) || isIsilIoInstallment || isPlatform || isLoan;
+                        const key = collapsible ? sourceName : debt.id;
+                        const sourceGroup = sourceGroups.get(key) ?? {
+                          key,
+                          name: sourceName,
+                          direction: debt.direction,
+                          debts: [],
+                          total: 0,
+                          owed: 0,
+                          owe: 0,
+                          collapsible,
+                          adjustments: [],
+                          personalExpenses: [],
+                        };
+                        sourceGroup.debts.push(debt);
+                        sourceGroup.total += debt.balance;
+                        if (debt.direction === "owed_to_me") sourceGroup.owed += debt.balance;
+                        else sourceGroup.owe += debt.balance;
+                        sourceGroups.set(key, sourceGroup);
+                      }
+                      for (const adjustment of statementAdjustmentsForPerson) {
+                        const sourceName = /cmr|falabella/i.test(adjustment.cardName) ? "CMR (Falabella)" : adjustment.cardName;
+                        const key = sourceName;
+                        const sourceGroup = sourceGroups.get(key) ?? {
+                          key,
+                          name: sourceName,
+                          direction: "owed_to_me" as Direction,
+                          debts: [],
+                          total: 0,
+                          owed: 0,
+                          owe: 0,
+                          collapsible: true,
+                          adjustments: [],
+                          personalExpenses: [],
+                        };
+                        sourceGroup.adjustments.push(adjustment);
+                        sourceGroup.total += adjustment.amount;
+                        sourceGroup.owed += adjustment.amount;
+                        sourceGroups.set(key, sourceGroup);
+                      }
+                      for (const expense of personalExpensesForPerson) {
+                        const key = expense.source;
+                        const sourceGroup = sourceGroups.get(key) ?? {
+                          key,
+                          name: expense.source,
+                          direction: "i_owe" as Direction,
+                          debts: [],
+                          total: 0,
+                          owed: 0,
+                          owe: 0,
+                          collapsible: true,
+                          adjustments: [],
+                          personalExpenses: [],
+                        };
+                        sourceGroup.personalExpenses ??= [];
+                        sourceGroup.personalExpenses.push(expense);
+                        sourceGroup.total += expense.amount;
+                        sourceGroup.owe += expense.amount;
+                        sourceGroup.collapsible = true;
+                        sourceGroups.set(key, sourceGroup);
+                      }
+                      const summaryGroups = [...sourceGroups.values()];
+                      const sourceSummaryLine = (sourceGroup: (typeof summaryGroups)[number], expandable = false) => (
+                        <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t pt-2 text-sm">
+                          <span className="flex min-w-0 items-center gap-2 truncate font-medium">
+                            {expandable && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />}
+                            {sourceGroup.name}
+                          </span>
+                          <span className="text-right text-xs text-muted-foreground">
+                            {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0)} {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0) === 1 ? "registro" : "registros"}
+                          </span>
+                          <span className="flex flex-col items-end text-right text-xs tabular-nums">
+                            {sourceGroup.owed > 0 && <span className="text-amber-300">+ {formatCurrency(sourceGroup.owed)}</span>}
+                            {sourceGroup.owe > 0 && <span className="text-muted-foreground">− {formatCurrency(sourceGroup.owe)}</span>}
+                          </span>
+                        </div>
+                      );
+                      return (
+                        <Card key={group.personId}>
+                          <CardContent className="space-y-3 pt-5">
+                            <div>
+                              <h3 className="font-semibold">{group.name}</h3>
+                              <p className="text-xs text-muted-foreground">
+                                {showCollections && <span className="text-muted-foreground">Me debe <strong className="font-medium text-amber-300">{formatCurrency(totalOwed + statementAdjustmentForPerson)}</strong></span>}
+                                {showCollections && showDebts && " · "}
+                                {showDebts && <span className="text-muted-foreground">Le debo <strong className="font-medium">{formatCurrency(totalOwe + personalExpenseForPerson)}</strong></span>}
+                              </p>
+                              <p className="text-sm font-semibold text-violet-200">
+                                {balanceLabel} {formatCurrency(Math.abs(balanceForPerson))}
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              {summaryGroups.map((sourceGroup) => sourceGroup.collapsible ? (
+                                <details key={sourceGroup.key} className="group border-t">
+                                  <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                                    {sourceSummaryLine(sourceGroup, true)}
+                                  </summary>
+                                  <div className="mb-2 space-y-2 border-l pl-5">
+                                    {sourceGroup.debts.map((debt) => (
+                                      <div key={debt.id} className="flex items-center justify-between gap-2 text-sm">
+                                        <div className="min-w-0">
+                                          <p className="truncate">{debt.description}{debt.installment ? ` ${debt.installment}` : ""}</p>
+                                          <p className="text-xs text-muted-foreground">{getMonthName(debt.paymentMonth)} {debt.paymentYear}</p>
+                                        </div>
+                                        <span className="font-medium tabular-nums">{formatCurrency(debt.balance)}</span>
+                                      </div>
+                                    ))}
+                                    {sourceGroup.adjustments.map((adjustment) => (
+                                      <div key={adjustment.key} className="flex items-center justify-between gap-2 text-sm">
+                                        <div className="min-w-0"><p className="truncate">{adjustment.description}</p><p className="text-xs text-muted-foreground">Comparado con estado de cuenta · {getMonthName(adjustment.periodMonth)} {adjustment.periodYear}</p></div>
+                                        <span className={`font-medium tabular-nums ${adjustment.amount < 0 ? "text-emerald-300" : ""}`}>{adjustment.amount < 0 ? "−" : "+"}{formatCurrency(Math.abs(adjustment.amount))}</span>
+                                      </div>
+                                    ))}
+                                    {sourceGroup.personalExpenses?.map((expense) => (
+                                      <div key={expense.id} className="flex items-center justify-between gap-2 text-sm">
+                                        <p className="min-w-0 truncate">{expense.description}</p>
+                                        <span className="shrink-0 font-medium tabular-nums">{formatCurrency(expense.amount)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </details>
+                              ) : (
+                                <div key={sourceGroup.key}>{sourceSummaryLine(sourceGroup)}</div>
+                              ))}
+                              <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t-2 pt-2 text-sm font-semibold">
+                                <span>{balanceLabel}</span>
+                                <span className="text-right text-xs font-normal text-muted-foreground">
+                                  {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length} {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length === 1 ? "registro" : "registros"}
+                                </span>
+                                <span className="text-right font-bold tabular-nums text-violet-200">
+                                  {formatCurrency(Math.abs(balanceForPerson))}
+                                </span>
                               </div>
-                            ))}
-                            {sourceGroup.adjustments.map((adjustment) => (
-                              <div key={adjustment.key} className="flex items-center justify-between gap-2 text-sm">
-                                <div className="min-w-0"><p className="truncate">{adjustment.description}</p><p className="text-xs text-muted-foreground">Comparado con estado de cuenta · {getMonthName(adjustment.periodMonth)} {adjustment.periodYear}</p></div>
-                                <span className={`font-medium tabular-nums ${adjustment.amount < 0 ? "text-emerald-300" : ""}`}>{adjustment.amount < 0 ? "−" : "+"}{formatCurrency(Math.abs(adjustment.amount))}</span>
-                              </div>
-                            ))}
-                            {sourceGroup.personalExpenses?.map((expense) => (
-                              <div key={expense.id} className="flex items-center justify-between gap-2 text-sm">
-                                <p className="min-w-0 truncate">{expense.description}</p>
-                                <span className="shrink-0 font-medium tabular-nums">{formatCurrency(expense.amount)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </details>
-                      ) : (
-                        <div key={sourceGroup.key}>{sourceSummaryLine(sourceGroup)}</div>
-                      ))}
-                      <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t-2 pt-2 text-sm font-semibold">
-                        <span>{balanceLabel}</span>
-                        <span className="text-right text-xs font-normal text-muted-foreground">
-                          {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length} {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length === 1 ? "registro" : "registros"}
-                        </span>
-                        <span className="text-right font-bold tabular-nums text-violet-200">
-                          {formatCurrency(Math.abs(balanceForPerson))}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <ReportLinks personId={group.personId} filter={reportFilter} />
-                      <CollectButton
-                        name={group.name}
-                        debts={owed}
-                        cardNames={cardNames}
-                        additionalCharges={statementAdjustmentsForPerson}
-                        summaryDebts={group.debts}
-                        personalExpenses={personalExpensesForPerson}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <ReportLinks personId={group.personId} filter={reportFilter} />
+                              <CollectButton
+                                name={group.name}
+                                debts={owed}
+                                cardNames={cardNames}
+                                additionalCharges={statementAdjustmentsForPerson}
+                                summaryDebts={group.debts}
+                                personalExpenses={personalExpensesForPerson}
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
 
-          ) : (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Persona</TableHead>
-                  <TableHead>Mes / concepto</TableHead>
-                  <TableHead className="text-right">Me debe</TableHead>
-                  <TableHead className="text-right">Le debo</TableHead>
-                  <TableHead className="text-right text-violet-200">Por cobrar / pagar</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {byMonth.map((row) => (
-                  <TableRow key={`${row.name}-${row.year}-${row.month}-${row.concept}`}>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {row.concept || `${getMonthName(row.month)} ${row.year}`}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-amber-300">
-                      {formatCurrency(row.owed)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
-                      {formatCurrency(row.owe)}
-                    </TableCell>
-                    <TableCell className="text-right font-semibold tabular-nums text-violet-200">
-                      {formatCurrency(row.owed - row.owe)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                <TableRow className="border-t-2 bg-muted/20 font-semibold">
-                  <TableCell>Total registros · {shown.length + (summaryView === "consolidated" ? personalExpenses.length : 0)}</TableCell>
-                  <TableCell className="text-muted-foreground">Todos los periodos</TableCell>
-                  <TableCell className="text-right font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</TableCell>
-                  <TableCell className="text-right tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</TableCell>
-                  <TableCell className="text-right font-bold tabular-nums text-violet-200">
-                    {formatCurrency(netTotal)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
-          )}
-          {showCollections && <div className="grid items-start gap-3 sm:grid-cols-2 2xl:grid-cols-3">
-            {creditCards.map((card, index) => {
-              const check = statementChecks[index]?.data;
-              if (!check?.statementId || check.minimumDue == null) return null;
-              const currentCharges = check.expensesByPerson.reduce((sum, person) => sum + person.amount, 0);
-              const difference = currentCharges - check.minimumDue;
-              const covered = difference >= -0.005;
-              return (
-                <Card key={`minimum-coverage-${card.id}`}>
-                  <CardContent className="space-y-3 p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <h3 className="font-semibold">{card.name} · {getMonthName(selectedMonth)} {selectedYear}</h3>
-                        <p className="text-xs text-muted-foreground">Cargos del estado asignados, incluidos intereses</p>
-                      </div>
-              <span className={`text-sm font-semibold ${covered ? "text-emerald-300" : "text-amber-300"}`}>
-                        {covered ? "Mínimo cubierto" : "Falta para el mínimo"}
-                      </span>
-                    </div>
-                    <div className="grid gap-2 sm:grid-cols-3">
-                      <div className="rounded-md bg-amber-500/10 p-2"><p className="text-xs text-muted-foreground">Pago mínimo</p><p className="font-semibold tabular-nums text-amber-300">{formatCurrency(check.minimumDue)}</p></div>
-                      <div className="rounded-md bg-muted/40 p-2"><p className="text-xs text-muted-foreground">Cargos + intereses</p><p className="font-semibold tabular-nums">{formatCurrency(currentCharges)}</p></div>
-                      <div className={`rounded-md p-2 ${covered ? "bg-emerald-500/10" : "bg-amber-500/10"}`}><p className="text-xs text-muted-foreground">{covered ? "Excedente" : "Por cubrir"}</p><p className={`font-semibold tabular-nums ${covered ? "text-emerald-300" : "text-amber-300"}`}>{formatCurrency(Math.abs(difference))}</p></div>
-                    </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                      {check.expensesByPerson.map((person) => <span key={person.personId}>{person.name} <strong className="text-foreground tabular-nums">{formatCurrency(person.amount)}</strong></span>)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">La suma incluye los cargos e intereses de {card.name}. Se compara con el pago mínimo una sola vez y no se agrega a «Lo que debo».</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>}
-          </>
-          )}
+                ) : (
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Persona</TableHead>
+                          <TableHead>Mes / concepto</TableHead>
+                          <TableHead className="text-right">Me debe</TableHead>
+                          <TableHead className="text-right">Le debo</TableHead>
+                          <TableHead className="text-right text-violet-200">Por cobrar / pagar</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {byMonth.map((row) => (
+                          <TableRow key={`${row.name}-${row.year}-${row.month}-${row.concept}`}>
+                            <TableCell>{row.name}</TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {row.concept || `${getMonthName(row.month)} ${row.year}`}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums text-amber-300">
+                              {formatCurrency(row.owed)}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums text-muted-foreground">
+                              {formatCurrency(row.owe)}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold tabular-nums text-violet-200">
+                              {formatCurrency(row.owed - row.owe)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="border-t-2 bg-muted/20 font-semibold">
+                          <TableCell>Total registros · {shown.length + (summaryView === "consolidated" ? personalExpenses.length : 0)}</TableCell>
+                          <TableCell className="text-muted-foreground">Todos los periodos</TableCell>
+                          <TableCell className="text-right font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</TableCell>
+                          <TableCell className="text-right tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</TableCell>
+                          <TableCell className="text-right font-bold tabular-nums text-violet-200">
+                            {formatCurrency(netTotal)}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+                {showCollections && <div className="grid items-start gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+                  {creditCards.map((card, index) => {
+                    const check = statementChecks[index]?.data;
+                    if (!check?.statementId || check.minimumDue == null) return null;
+                    const currentCharges = check.expensesByPerson.reduce((sum, person) => sum + person.amount, 0);
+                    const difference = currentCharges - check.minimumDue;
+                    const covered = difference >= -0.005;
+                    return (
+                      <Card key={`minimum-coverage-${card.id}`}>
+                        <CardContent className="space-y-3 p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                              <h3 className="font-semibold">{card.name} · {getMonthName(selectedMonth)} {selectedYear}</h3>
+                              <p className="text-xs text-muted-foreground">Cargos del estado asignados, incluidos intereses</p>
+                            </div>
+                            <span className={`text-sm font-semibold ${covered ? "text-emerald-300" : "text-amber-300"}`}>
+                              {covered ? "Mínimo cubierto" : "Falta para el mínimo"}
+                            </span>
+                          </div>
+                          <div className="grid gap-2 sm:grid-cols-3">
+                            <div className="rounded-md bg-amber-500/10 p-2"><p className="text-xs text-muted-foreground">Pago mínimo</p><p className="font-semibold tabular-nums text-amber-300">{formatCurrency(check.minimumDue)}</p></div>
+                            <div className="rounded-md bg-muted/40 p-2"><p className="text-xs text-muted-foreground">Cargos + intereses</p><p className="font-semibold tabular-nums">{formatCurrency(currentCharges)}</p></div>
+                            <div className={`rounded-md p-2 ${covered ? "bg-emerald-500/10" : "bg-amber-500/10"}`}><p className="text-xs text-muted-foreground">{covered ? "Excedente" : "Por cubrir"}</p><p className={`font-semibold tabular-nums ${covered ? "text-emerald-300" : "text-amber-300"}`}>{formatCurrency(Math.abs(difference))}</p></div>
+                          </div>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                            {check.expensesByPerson.map((person) => <span key={person.personId}>{person.name} <strong className="text-foreground tabular-nums">{formatCurrency(person.amount)}</strong></span>)}
+                          </div>
+                          <p className="text-xs text-muted-foreground">La suma incluye los cargos e intereses de {card.name}. Se compara con el pago mínimo una sola vez y no se agrega a «Lo que debo».</p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>}
+              </>
+            )}
           </TabsContent>
         </Tabs>
       )}

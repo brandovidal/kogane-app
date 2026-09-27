@@ -26,6 +26,8 @@ const fixedCostFormSchema = z.object({
   personId: z.string().min(1, "Persona requerida"),
   paymentMethodId: z.string().nullable(),
   categoryId: z.string().min(1, "Categoría requerida"),
+  paymentMonth: z.number().int().min(1).max(12),
+  paymentYear: z.number().int().min(2020).max(2100),
   dueDate: z.string(),
   // "Se paga en cuotas": only then the installment is asked for, and it is required (e.g. Terreno 14/48)
   hasInstallments: z.boolean(),
@@ -48,6 +50,8 @@ const emptyForm: FixedCostForm = {
   personId: "",
   paymentMethodId: null,
   categoryId: "",
+  paymentMonth: 1,
+  paymentYear: 2026,
   dueDate: "",
   hasInstallments: false,
   installment: "",
@@ -87,14 +91,16 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
             personId: fixedCost.personId,
             paymentMethodId: fixedCost.paymentMethodId,
             categoryId: fixedCost.categoryId,
+            paymentMonth: fixedCost.paymentMonth,
+            paymentYear: fixedCost.paymentYear,
             dueDate: toIsoDate(fixedCost.dueDate),
             hasInstallments: !!fixedCost.installment,
             installment: fixedCost.installment ?? "",
             notes: fixedCost.notes ?? "",
           }
-        : emptyForm,
+        : { ...emptyForm, paymentMonth: month, paymentYear: year },
     );
-  }, [open, fixedCost, reset]);
+  }, [open, fixedCost, reset, month, year]);
 
   const onSubmit = handleSubmit(({ hasInstallments: inInstallments, ...data }) => {
     const body = {
@@ -102,8 +108,6 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
       installment: inInstallments ? data.installment : null,
       exchangeRate: data.currency === "PEN" ? null : data.exchangeRate,
       dueDate: data.dueDate || null,
-      // a new one goes to the month on screen; editing keeps its month
-      ...(isEdit ? {} : { paymentMonth: month, paymentYear: year }),
     };
     saveExpense.mutate({ id: fixedCost?.id, body }, { onSuccess: () => onOpenChange(false) });
   });
@@ -208,6 +212,32 @@ export function FixedCostDialog({ open, onOpenChange, fixedCost }: FixedCostDial
           <label className="text-sm font-medium">Fecha vencimiento</label>
           <Input type="date" {...register("dueDate")} />
         </div>
+
+        {isEdit && (
+          <div className="space-y-1.5 rounded-md border p-3">
+            <label className="text-sm font-medium">Mes y año del registro</label>
+            <p className="text-xs text-muted-foreground">Corrige el período al que pertenece este costo fijo.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Select value={String(watch("paymentMonth"))} onValueChange={(v) => setValue("paymentMonth", Number(v))}>
+                <SelectTrigger aria-label="Mes del registro"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[
+                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+                  ].map((label, index) => <SelectItem key={label} value={String(index + 1)}>{label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={String(watch("paymentYear"))} onValueChange={(v) => setValue("paymentYear", Number(v))}>
+                <SelectTrigger aria-label="Año del registro"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 81 }, (_, index) => 2020 + index).map((optionYear) => (
+                    <SelectItem key={optionYear} value={String(optionYear)}>{optionYear}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-3 rounded-md border p-3">
           <label className="flex items-center justify-between gap-3 text-sm font-medium">
