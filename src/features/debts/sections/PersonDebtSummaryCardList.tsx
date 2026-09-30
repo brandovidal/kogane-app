@@ -191,7 +191,7 @@ export function PersonDebtSummaryCardList({
                                 {showCollections && showDebts && " · "}
                                 {showDebts && <span className="text-muted-foreground">Le debo <strong className="font-medium">{formatCurrency(totalOwe + personalExpenseForPerson)}</strong></span>}
                               </p>
-                              <p className="text-sm font-semibold text-violet-200">
+                              <p className="text-sm font-semibold text-primary">
                                 {balanceLabel} {formatCurrency(Math.abs(balanceForPerson))}
                               </p>
                             </div>
@@ -233,7 +233,7 @@ export function PersonDebtSummaryCardList({
                                 <span className="text-right text-xs font-normal text-muted-foreground">
                                   {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length} {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length === 1 ? "registro" : "registros"}
                                 </span>
-                                <span className="text-right font-bold tabular-nums text-violet-200">
+                                <span className="text-right font-bold tabular-nums text-primary">
                                   {formatCurrency(Math.abs(balanceForPerson))}
                                 </span>
                               </div>

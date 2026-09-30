@@ -14,7 +14,6 @@ import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { Checkbox } from "@/ui/checkbox";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
@@ -24,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, ArrowLeft, HandCoins, FileText, ChartPie, ChevronDown } from "lucide-react";
+import { Plus, ArrowLeft, HandCoins, FileText, ChartPie, List, Wallet } from "lucide-react";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
@@ -47,6 +46,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { api, unwrap } from "@/shared/api/client";
 import { expenseKeys } from "@/features/expenses/hooks/expenses";
 import { isPaidStatus } from "@/features/expenses/lib/expense-actions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
 const GROUP_BY_OPTIONS = [
@@ -80,7 +80,6 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
   const [editing, setEditing] = useState<CreditCardExpense | undefined>();
-  const [showStatementDetail, setShowStatementDetail] = useState(false);
   const [selectedExpenses, setSelectedExpenses] = useState<Set<string>>(() => new Set());
   const [confirmPayment, setConfirmPayment] = useState(false);
   const [payingSelected, setPayingSelected] = useState(false);
@@ -302,76 +301,88 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         }
       />
 
-      <details className="group rounded-lg border">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-sm [&::-webkit-details-marker]:hidden">
-          <span className="flex min-w-0 items-center gap-2 font-medium">
-            <ChartPie className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <span>Detalle por categoría</span>
-            <span className="hidden text-xs font-normal text-muted-foreground sm:inline">· {getMonthName(selectedMonth)} {selectedYear}</span>
-          </span>
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-        </summary>
-        <div className="border-t p-2 sm:p-3">
-          <CardCategoryBreakdown expenses={ofCard} />
-        </div>
-      </details>
+      <Tabs defaultValue="expenses" className="w-full">
+        <TabsList
+          aria-label="Secciones del detalle de tarjeta"
+          className="grid h-auto w-full grid-cols-3 sm:flex sm:w-fit"
+        >
+          <TabsTrigger value="expenses" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
+            <List aria-hidden="true" /> Movimientos
+          </TabsTrigger>
+          <TabsTrigger value="card-detail" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
+            <ChartPie aria-hidden="true" /> Categorías
+          </TabsTrigger>
+          <TabsTrigger value="payment" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
+            <Wallet aria-hidden="true" /> Pago de tarjeta
+          </TabsTrigger>
+        </TabsList>
 
-      <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-        <Checkbox checked={showStatementDetail} onCheckedChange={(checked) => setShowStatementDetail(checked === true)} />
-        Mostrar el detalle del estado de cuenta{statement ? "" : " (necesita el PDF cargado)"}
-      </label>
-      {showStatementDetail && statementDetail && (
-        <div className="space-y-4 rounded-lg border p-4">
-          <StatementBalanceSummary statement={statementDetail} />
-          <StatementPaymentSummary statement={statementDetail} />
-          <div className="grid gap-3 lg:grid-cols-2">
-            <StatementMinimumCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
-            <StatementTotalCard
-              key={`${card.id}-${selectedYear}-${selectedMonth}`}
-              initialCurrency={statementDetail.currency === "USD" ? "USD" : "PEN"}
-              paymentMethodId={card.id}
-              cardName={card.name}
-              month={selectedMonth}
-              year={selectedYear}
-              compact
+        <TabsContent value="expenses" className="mt-3 space-y-3">
+          <ExpenseFilters
+            fields={FILTERS}
+            value={filters}
+            onChange={setFilters}
+            statuses={CREDIT_CARD_STATUSES}
+            shown={cardExpenses.length}
+            total={ofCard.length}
+            groupBy={groupBy}
+            onGroupByChange={setGroupBy}
+            groupByOptions={GROUP_BY_OPTIONS}
+            showActiveSummary={false}
+            appliedFilters={<ActiveExpenseFilterChips fields={FILTERS} value={filters} onChange={setFilters} me={me} />}
+            viewToggle={<ViewToggle value={view} onChange={setView} />}
+          />
+
+          {cardExpenses.length === 0 ? (
+            <EmptyState
+              description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
             />
-          </div>
-        </div>
-      )}
+          ) : (
+            <GroupedDataView
+              items={cardExpenses}
+              columns={columns}
+              rowKey={(exp) => exp.id}
+              view={view}
+              groupBy={groupBy}
+              groupKey={groupKey}
+              groupLabel={groupLabel}
+              footer={footer}
+              selected={selectedExpenses}
+              onSelectedChange={setSelectedExpenses}
+            />
+          )}
+        </TabsContent>
 
-      <ExpenseFilters
-        fields={FILTERS}
-        value={filters}
-        onChange={setFilters}
-        statuses={CREDIT_CARD_STATUSES}
-        shown={cardExpenses.length}
-        total={ofCard.length}
-        groupBy={groupBy}
-        onGroupByChange={setGroupBy}
-        groupByOptions={GROUP_BY_OPTIONS}
-        showActiveSummary={false}
-        appliedFilters={<ActiveExpenseFilterChips fields={FILTERS} value={filters} onChange={setFilters} me={me} />}
-        viewToggle={<ViewToggle value={view} onChange={setView} />}
-      />
+        <TabsContent value="card-detail" className="mt-3">
+          <CardCategoryBreakdown expenses={ofCard} />
+        </TabsContent>
 
-      {cardExpenses.length === 0 ? (
-        <EmptyState
-          description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
-        />
-      ) : (
-        <GroupedDataView
-          items={cardExpenses}
-          columns={columns}
-          rowKey={(exp) => exp.id}
-          view={view}
-          groupBy={groupBy}
-          groupKey={groupKey}
-          groupLabel={groupLabel}
-          footer={footer}
-          selected={selectedExpenses}
-          onSelectedChange={setSelectedExpenses}
-        />
-      )}
+        <TabsContent value="payment" className="mt-3">
+          {statementDetail ? (
+            <div className="space-y-4 rounded-lg border p-3 sm:p-4">
+              <StatementBalanceSummary statement={statementDetail} />
+              <StatementPaymentSummary statement={statementDetail} />
+              <div className="grid gap-3 lg:grid-cols-2">
+                <StatementMinimumCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
+                <StatementTotalCard
+                  key={`${card.id}-${selectedYear}-${selectedMonth}`}
+                  initialCurrency={statementDetail.currency === "USD" ? "USD" : "PEN"}
+                  paymentMethodId={card.id}
+                  cardName={card.name}
+                  month={selectedMonth}
+                  year={selectedYear}
+                  compact
+                />
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              title="Sin estado de cuenta"
+              description="Carga el PDF de este período para ver el detalle por moneda y calcular el pago total."
+            />
+          )}
+        </TabsContent>
+      </Tabs>
 
       <ExpenseEditDialog
         open={!!editing}

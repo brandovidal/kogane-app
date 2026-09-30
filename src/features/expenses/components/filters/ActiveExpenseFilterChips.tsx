@@ -33,6 +33,7 @@ export interface ActiveExpenseFilterChipsProps<T extends string | string[] = str
   groupBy?: T;
   onGroupByChange?: (value: T) => void;
   groupByLabel?: string;
+  periodChip?: { label: string; onRemove: () => void };
 }
 
 export function ActiveExpenseFilterChips<T extends string | string[] = string>({
@@ -43,6 +44,7 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   groupBy,
   onGroupByChange,
   groupByLabel,
+  periodChip,
 }: ActiveExpenseFilterChipsProps<T>) {
   const categories = useCategories().data ?? [];
   const methods = usePaymentMethods().data ?? [];
@@ -84,13 +86,22 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
       : undefined,
     dueTo: value.dueTo ? `Vence hasta: ${formatDate(value.dueTo)}` : undefined,
   };
-  const chips: AppliedFilterChip[] = fields
-    .filter((key) => labels[key])
-    .map((key) => ({
-      key,
-      label: labels[key]!,
-      onRemove: () => onChange({ ...value, [key]: undefined }),
-    }));
+  const chips: AppliedFilterChip[] = [
+    ...(periodChip
+      ? [{ key: "period", label: periodChip.label, onRemove: periodChip.onRemove }]
+      : []),
+    ...fields
+      .filter(
+        (key) =>
+          labels[key] &&
+          !(periodChip && (key === "month" || key === "year")),
+      )
+      .map((key) => ({
+        key,
+        label: labels[key]!,
+        onRemove: () => onChange({ ...value, [key]: undefined }),
+      })),
+  ];
   const isGrouped = Array.isArray(groupBy)
     ? groupBy.length > 0
     : !!groupBy && groupBy !== "none";

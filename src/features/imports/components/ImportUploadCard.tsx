@@ -158,13 +158,16 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
               type="password"
               placeholder="Escribe la contraseña del PDF"
               autoComplete="off"
-              required
+              required={needsCard}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              aria-required={needsCard}
               aria-invalid={needsPassword || passwordMissing}
             />
             {passwordMissing && (
-              <p className="text-xs text-muted-foreground">La contraseña es necesaria para previsualizar el estado de cuenta.</p>
+              <p className="text-xs text-muted-foreground">
+                La contraseña es necesaria para previsualizar el estado de cuenta.
+              </p>
             )}
             {password && (
               <label className="flex items-center gap-2 text-xs text-muted-foreground">

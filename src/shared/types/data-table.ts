@@ -32,6 +32,8 @@ export interface DataTableBasicProps<T> {
   error?: ReactNode;
   emptyMessage?: string;
   footer?: ReactNode;
+  rowClassName?: (row: T) => string | undefined;
+  rowIsSelected?: (row: T) => boolean;
 }
 
 export interface DataTableComplexProps<T> extends DataTableBasicProps<T> {

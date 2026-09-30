@@ -18,6 +18,22 @@ export function rowsOf(
   );
 }
 
+// What a tab adds up to, per currency (the two are never mixed): only currencies that have something are returned
+export function totalsOf(
+  items: { amount: number; currency?: string | null }[],
+): { currency: "PEN" | "USD"; amount: number }[] {
+  const cents = { PEN: 0, USD: 0 };
+  const seen = { PEN: false, USD: false };
+  for (const item of items) {
+    const currency = item.currency === "USD" ? "USD" : "PEN";
+    cents[currency] += Math.round(item.amount * 100);
+    seen[currency] = true;
+  }
+  return (["PEN", "USD"] as const)
+    .filter((currency) => seen[currency])
+    .map((currency) => ({ currency, amount: cents[currency] / 100 }));
+}
+
 export function countsOf(statement: Statement) {
   return {
     new: statement.rows.filter((row) => row.result === "new").length,

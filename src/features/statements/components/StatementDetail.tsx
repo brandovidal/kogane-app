@@ -1,7 +1,8 @@
 import { StatementBalanceSummary } from "./StatementBalanceSummary";
 import { StatementPaymentSummary } from "./StatementPaymentSummary";
 import { StatementBalanceHistory } from "./StatementBalanceHistory";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2, CirclePlus, ListFilter, Wallet } from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
@@ -53,6 +54,7 @@ import {
   ROW_RESULT_LABELS,
   rowName,
   rowsOf,
+  totalsOf,
 } from "@/features/statements/lib/statement-view";
 import { EditRowDialog } from "./EditRowDialog";
 import { StatementRowActions } from "./StatementRowActions";
@@ -60,6 +62,8 @@ import { StatementMatchDialog } from "./StatementMatchDialog";
 import { MissingExpenseActions } from "./MissingExpenseActions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
+import { DataTableBasic } from "@/shared/components/data-display/DataTableBasic";
+import { useDataTable } from "@/shared/hooks/useDataTable";
 
 interface PendingCreate {
   rowIds?: string[];
@@ -112,6 +116,191 @@ function RowsTable({
       { onSuccess: () => (setSelected(new Set()), setAssignTo(null)) },
     );
 
+  const columns = useMemo<ColumnDef<StatementRow>[]>(
+    () => [
+      {
+        id: "select",
+        enableSorting: false,
+        header: () => (
+          <Checkbox
+            aria-label="Seleccionar todas"
+            disabled={!selectable.length}
+            checked={
+              allChecked ? true : selected.size ? "indeterminate" : false
+            }
+            onCheckedChange={(on) =>
+              setSelected(
+                on === true
+                  ? new Set(selectable.map((row) => row.id))
+                  : new Set(),
+              )
+            }
+          />
+        ),
+        cell: ({ row }) => {
+          const item = row.original;
+          return (
+            <Checkbox
+              aria-label="Seleccionar"
+              disabled={
+                item.locked ||
+                item.result === "matched" ||
+                item.result === "created"
+              }
+              checked={selected.has(item.id)}
+              onCheckedChange={(on) => toggle(item.id, on === true)}
+            />
+          );
+        },
+        meta: { className: "w-[36px]" },
+      },
+      {
+        id: "date",
+        accessorFn: (row) => row.date ?? "",
+        header: "Fecha",
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap text-sm text-muted-foreground">
+            {row.original.date ? formatDate(row.original.date) : "—"}
+          </span>
+        ),
+        meta: { label: "Fecha" },
+      },
+      {
+        id: "description",
+        accessorFn: rowName,
+        header: "Descripción",
+        cell: ({ row }) => {
+          const item = row.original;
+          return (
+            <div className="min-w-56">
+              {item.expenseId ? (
+                <button
+                  type="button"
+                  className="text-left font-medium underline decoration-muted-foreground/40 underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={`Revisar registro de ${rowName(item)}`}
+                  onClick={() => onReview(item)}
+                >
+                  {rowName(item)}
+                </button>
+              ) : (
+                <span>{rowName(item)}</span>
+              )}
+              {item.installment && (
+                <Badge variant="outline" className="ml-2">
+                  {item.installment}
+                </Badge>
+              )}
+              {item.label && (
+                <p className="text-xs text-muted-foreground">
+                  Banco: {item.description}
+                </p>
+              )}
+            </div>
+          );
+        },
+        meta: { label: "Descripción" },
+      },
+      {
+        id: "amount",
+        accessorFn: (row) => row.amount,
+        header: "Monto",
+        cell: ({ row }) => (
+          <span className="tabular-nums">
+            {formatCurrency(row.original.amount, row.original.currency)}
+          </span>
+        ),
+        meta: { label: "Monto", className: "text-right" },
+      },
+      {
+        id: "person",
+        accessorFn: (row) => (row.personId ? personName(row.personId) : ""),
+        header: "Persona",
+        cell: ({ row }) => {
+          const item = row.original;
+          return (
+            <span className="whitespace-nowrap text-sm">
+              {item.personId ? personName(item.personId) : "—"}
+              {isCollect(item, statementPersonId) && (
+                <Badge
+                  variant="outline"
+                  className="ml-2 text-[10px]"
+                  title="Al guardarlo se crea su cobro"
+                >
+                  {item.debtId ? "cobro creado" : "se cobra"}
+                </Badge>
+              )}
+            </span>
+          );
+        },
+        meta: { label: "Persona" },
+      },
+      {
+        id: "status",
+        accessorFn: (row) => ROW_RESULT_LABELS[row.result],
+        header: "Estado",
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap text-xs text-muted-foreground">
+            {ROW_RESULT_LABELS[row.original.result]}
+          </span>
+        ),
+        meta: { label: "Estado" },
+      },
+      {
+        id: "actions",
+        enableSorting: false,
+        header: () => <span className="sr-only">Acciones</span>,
+        cell: ({ row }) => {
+          const item = row.original;
+          return (
+            <StatementRowActions
+              row={item}
+              onEdit={() => setEditingRow(item)}
+              onSave={() =>
+                item.expenseId && item.result === "matched"
+                  ? onReview(item)
+                  : onCreate(item)
+              }
+              onReview={item.expenseId ? () => onReview(item) : undefined}
+              onIgnore={() =>
+                update.mutate({
+                  id: statementId,
+                  rowId: item.id,
+                  result: "ignored",
+                })
+              }
+              onRestore={() =>
+                update.mutate({
+                  id: statementId,
+                  rowId: item.id,
+                  result: "new",
+                })
+              }
+              saving={update.isPending}
+            />
+          );
+        },
+        meta: { label: "Acciones", className: "text-right" },
+      },
+    ],
+    [
+      allChecked,
+      onCreate,
+      onReview,
+      personName,
+      selectable,
+      selected,
+      statementId,
+      statementPersonId,
+      update,
+    ],
+  );
+  const dataTable = useDataTable({
+    items: rows,
+    columns,
+    rowKey: (row) => row.id,
+    paginationEnabled: false,
+  });
+
   return (
     <>
       {selected.size > 0 && (
@@ -143,130 +332,13 @@ function RowsTable({
         </div>
       )}
       <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[36px]">
-                <Checkbox
-                  aria-label="Seleccionar todas"
-                  disabled={!selectable.length}
-                  checked={
-                    allChecked ? true : selected.size ? "indeterminate" : false
-                  }
-                  onCheckedChange={(on) =>
-                    setSelected(
-                      on === true
-                        ? new Set(selectable.map((row) => row.id))
-                        : new Set(),
-                    )
-                  }
-                />
-              </TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Descripción</TableHead>
-              <TableHead className="text-right">Monto</TableHead>
-              <TableHead>Persona</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className={row.result === "ignored" ? "opacity-60" : ""}
-                data-state={selected.has(row.id) ? "selected" : undefined}
-              >
-                <TableCell>
-                  <Checkbox
-                    aria-label="Seleccionar"
-                    disabled={
-                      row.locked ||
-                      row.result === "matched" ||
-                      row.result === "created"
-                    }
-                    checked={selected.has(row.id)}
-                    onCheckedChange={(on) => toggle(row.id, on === true)}
-                  />
-                </TableCell>
-                <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                  {row.date ? formatDate(row.date) : "—"}
-                </TableCell>
-                <TableCell className="min-w-56">
-                  <div>
-                    {row.expenseId ? (
-                      <button
-                        type="button"
-                        className="text-left font-medium underline decoration-muted-foreground/40 underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        aria-label={`Revisar registro de ${rowName(row)}`}
-                        onClick={() => onReview(row)}
-                      >
-                        {rowName(row)}
-                      </button>
-                    ) : (
-                      <span>{rowName(row)}</span>
-                    )}
-                    {row.installment && (
-                      <Badge variant="outline" className="ml-2">
-                        {row.installment}
-                      </Badge>
-                    )}
-                    {row.label && (
-                      <p className="text-xs text-muted-foreground">
-                        Banco: {row.description}
-                      </p>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {formatCurrency(row.amount, row.currency)}
-                </TableCell>
-                <TableCell className="whitespace-nowrap text-sm">
-                  {row.personId ? personName(row.personId) : "—"}
-                  {isCollect(row, statementPersonId) && (
-                    <Badge
-                      variant="outline"
-                      className="ml-2 text-[10px]"
-                      title="Al guardarlo se crea su cobro"
-                    >
-                      {row.debtId ? "cobro creado" : "se cobra"}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                  {ROW_RESULT_LABELS[row.result]}
-                </TableCell>
-                <TableCell className="text-right">
-                  <StatementRowActions
-                    row={row}
-                    onEdit={() => setEditingRow(row)}
-                    onSave={() =>
-                      row.expenseId && row.result === "matched"
-                        ? onReview(row)
-                        : onCreate(row)
-                    }
-                    onReview={row.expenseId ? () => onReview(row) : undefined}
-                    onIgnore={() =>
-                      update.mutate({
-                        id: statementId,
-                        rowId: row.id,
-                        result: "ignored",
-                      })
-                    }
-                    onRestore={() =>
-                      update.mutate({
-                        id: statementId,
-                        rowId: row.id,
-                        result: "new",
-                      })
-                    }
-                    saving={update.isPending}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTableBasic
+          table={dataTable}
+          rowClassName={(row) =>
+            row.result === "ignored" ? "opacity-60" : undefined
+          }
+          rowIsSelected={(row) => selected.has(row.id)}
+        />
       </div>
 
       {editingRow && (
@@ -289,6 +361,29 @@ function RowsTable({
 
 // A statement read (P14, D95): what it already has, what is new and what is only in Kogane. Every row can be renamed,
 // saved (also a matched or ignored one: same names can be another month or card, the user decides) or ignored
+// The sum of a tab, in soles and in dollars apart
+function TabTotals({
+  items,
+}: {
+  items: { amount: number; currency?: string | null }[];
+}) {
+  const totals = totalsOf(items);
+  if (!totals.length) return null;
+  return (
+    <p className="text-sm text-muted-foreground">
+      Suma:{" "}
+      {totals.map((total, index) => (
+        <span key={total.currency}>
+          {index > 0 && " · "}
+          <span className="font-medium tabular-nums text-foreground">
+            {formatCurrency(total.amount, total.currency)}
+          </span>
+        </span>
+      ))}
+    </p>
+  );
+}
+
 export function StatementDetail({ statement }: { statement: Statement }) {
   const createRows = useCreateStatementRows();
   const [pending, setPending] = useState<PendingCreate | null>(null);
@@ -339,9 +434,11 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="flex flex-wrap items-center gap-2 text-base">
-          {where}
-          <Badge variant="outline">
+        <CardTitle className="flex min-w-0 flex-nowrap items-center gap-2 text-base">
+          <span className="min-w-0 truncate whitespace-nowrap" title={where}>
+            {where}
+          </span>
+          <Badge variant="outline" className="shrink-0 whitespace-nowrap">
             {statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}
           </Badge>
         </CardTitle>
@@ -431,7 +528,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                 compact
               />
             </div>
-            <StatementBalanceHistory statement={statement} history={history} />
+            <StatementBalanceHistory history={history} />
           </TabsContent>
 
           <TabsContent value="new" className="mt-3 space-y-3">
@@ -449,6 +546,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                 Guardar todos ({counts.new})
               </Button>
             )}
+            <TabTotals items={newRows.filter((row) => row.result === "new")} />
             {newRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Todo lo del estado de cuenta ya está registrado.
@@ -465,6 +563,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           </TabsContent>
 
           <TabsContent value="matched" className="mt-3 space-y-2">
+            <TabTotals items={matchedRows} />
             {matchedRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Nada coincidió todavía.
@@ -489,7 +588,8 @@ export function StatementDetail({ statement }: { statement: Statement }) {
             )}
           </TabsContent>
 
-          <TabsContent value="missing" className="mt-3">
+          <TabsContent value="missing" className="mt-3 space-y-2">
+            <TabTotals items={statement.missing} />
             {statement.missing.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Todo lo registrado para esta tarjeta y mes está en el estado de

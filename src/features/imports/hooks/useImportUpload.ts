@@ -18,9 +18,9 @@ export function useImportUpload(onRead: (key: string) => void) {
   const reason = (error?.details as { reason?: string } | undefined)?.reason;
   const needsPassword =
     source === "statement" && error?.code === "STATEMENT_PASSWORD";
-  const needsCard = source === "statement";
+  const needsCard = source === "statement" && files.length > 0;
   const cardMissing = needsCard && !cardId;
-  const passwordMissing = source === "statement" && !password.trim();
+  const passwordMissing = needsCard && !password.trim();
 
   const reset = () => {
     setFiles([]);

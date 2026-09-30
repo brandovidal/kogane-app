@@ -1,4 +1,4 @@
-import type { Statement, StatementSummary } from "@/shared/api/types";
+import type { StatementSummary } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 
@@ -43,41 +43,33 @@ function BalanceBreakdown({
 }
 
 export function StatementBalanceHistory({
-  statement,
   history,
 }: {
-  statement: Statement;
   history: StatementSummary[];
 }) {
+  if (!history.length) return null;
+
   return (
-    <div className="space-y-3">
-      <section className="rounded-lg border bg-muted/10 p-3">
-        <h3 className="mb-3 text-sm font-medium">Desglose del estado</h3>
-        <BalanceBreakdown balances={statement.balances} />
-      </section>
-      {history.length > 0 && (
-        <details className="rounded-lg border p-3">
-          <summary className="cursor-pointer text-sm font-medium">
-            Estados anteriores
-          </summary>
-          <div className="mt-3 space-y-3">
-            {history.map((item) => (
-              <section key={item.id} className="space-y-2 border-t pt-3">
-                <h4 className="text-sm font-medium">
-                  {getMonthName(item.paymentMonth)} {item.paymentYear}
-                </h4>
-                {item.currencyReviewRequired ? (
-                  <p className="text-xs text-muted-foreground">
-                    Vuelve a cargar este PDF para revisar sus monedas.
-                  </p>
-                ) : (
-                  <BalanceBreakdown balances={item.balances} />
-                )}
-              </section>
-            ))}
-          </div>
-        </details>
-      )}
-    </div>
+    <details className="rounded-lg border p-3">
+      <summary className="cursor-pointer text-sm font-medium">
+        Estados anteriores
+      </summary>
+      <div className="mt-3 space-y-3">
+        {history.map((item) => (
+          <section key={item.id} className="space-y-2 border-t pt-3">
+            <h4 className="text-sm font-medium">
+              {getMonthName(item.paymentMonth)} {item.paymentYear}
+            </h4>
+            {item.currencyReviewRequired ? (
+              <p className="text-xs text-muted-foreground">
+                Vuelve a cargar este PDF para revisar sus monedas.
+              </p>
+            ) : (
+              <BalanceBreakdown balances={item.balances} />
+            )}
+          </section>
+        ))}
+      </div>
+    </details>
   );
 }

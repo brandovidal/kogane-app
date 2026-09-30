@@ -3797,6 +3797,15 @@ export interface components {
             minimumAllocations?: {
                 [key: string]: number;
             } | null;
+            balances?: {
+                /** @enum {string} */
+                currency: "PEN" | "USD";
+                totalDue?: number | null;
+                minimumDue?: number | null;
+                previousBalance?: number | null;
+                previousPayments?: number | null;
+                monthlyPayment?: number | null;
+            }[];
         };
         AssignRowsDto: {
             rowIds: string[];

@@ -1,5 +1,4 @@
 import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFields";
 import type { ReactNode } from "react";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
@@ -19,7 +18,7 @@ import {
 } from "@/features/fixed-costs/lib/fixed-cost-filters";
 import type { FixedCostGroupBy } from "@/features/fixed-costs/types/fixed-cost-types";
 import { GroupingMenu } from "@/shared/components/toolbar/GroupingMenu";
-import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
+import { getCurrentMonth, getCurrentYear, getMonthName } from "@/shared/lib/dates";
 
 export interface FixedCostListControlsProps {
   filters: ExpenseFilterValues;
@@ -54,7 +53,10 @@ export function FixedCostListControls({
   const year = Number(filters.year) || getCurrentYear();
   const currentMonth = getCurrentMonth();
   const currentYear = getCurrentYear();
-  const isCurrentPeriod = month === currentMonth && year === currentYear;
+  const hasPeriod = !!filters.month && !!filters.year;
+  const isCurrentPeriod =
+    filters.month === String(currentMonth) &&
+    filters.year === String(currentYear);
   const changePeriod = (delta: number) => {
     const index = year * 12 + month - 1 + delta;
     const nextMonth = (index % 12) + 1;
@@ -74,59 +76,57 @@ export function FixedCostListControls({
         onChange={onFiltersChange}
         personInPanel
         primaryControls={
-          <div className="space-y-1.5">
-            <PeriodFilterFields
-              compact
-              month={filters.month}
-              year={filters.year}
-              onMonthChange={(month) => onFiltersChange({ ...filters, month })}
-              onYearChange={(year) => onFiltersChange({ ...filters, year })}
-            />
-            <div
-              className="flex items-center gap-1"
-              role="group"
-              aria-label="Navegación mensual"
+          <div
+            className="flex h-9 w-max items-center gap-1 whitespace-nowrap"
+            role="group"
+            aria-label="Navegación mensual"
+          >
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              aria-label="Mes anterior"
+              title="Mes anterior"
+              onClick={() => changePeriod(-1)}
             >
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-7 w-7"
-                aria-label="Mes anterior"
-                title="Mes anterior"
-                onClick={() => changePeriod(-1)}
-              >
-                <ChevronLeft className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-xs"
-                disabled={isCurrentPeriod}
-                onClick={() =>
-                  onFiltersChange({
-                    ...filters,
-                    month: String(currentMonth),
-                    year: String(currentYear),
-                  })
-                }
-              >
-                <CalendarDays className="mr-1 size-3.5" />
-                Mes actual
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-7 w-7"
-                aria-label="Mes siguiente"
-                title="Mes siguiente"
-                onClick={() => changePeriod(1)}
-              >
-                <ChevronRight className="size-4" />
-              </Button>
-            </div>
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="min-w-32 shrink-0 whitespace-nowrap px-2 text-center text-sm font-medium tabular-nums">
+              {hasPeriod
+                ? `${getMonthName(month)} - ${year}`
+                : "Todos los períodos"}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              aria-label="Mes siguiente"
+              title="Mes siguiente"
+              onClick={() => changePeriod(1)}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="ml-1 h-8 shrink-0"
+              aria-label="Ir al mes actual"
+              title="Ir al mes actual"
+              disabled={isCurrentPeriod}
+              onClick={() =>
+                onFiltersChange({
+                  ...filters,
+                  month: String(currentMonth),
+                  year: String(currentYear),
+                })
+              }
+            >
+              <CalendarDays className="size-4" />
+              Hoy
+            </Button>
           </div>
         }
         description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y un rango de vencimiento."
@@ -156,6 +156,19 @@ export function FixedCostListControls({
             groupBy={groupBy}
             onGroupByChange={(next) => onGroupByChange(next)}
             groupByLabel={groupBy.map((field) => FIXED_COST_GROUP_LABELS[field]).join(" → ")}
+            periodChip={
+              hasPeriod
+                ? {
+                    label: `Período: ${getMonthName(month)} ${year}`,
+                    onRemove: () =>
+                      onFiltersChange({
+                        ...filters,
+                        month: undefined,
+                        year: undefined,
+                      }),
+                  }
+                : undefined
+            }
           />
         }
         rightActions={

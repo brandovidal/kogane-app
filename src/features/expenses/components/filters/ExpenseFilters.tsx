@@ -178,7 +178,9 @@ export function ExpenseFilters({
         primaryControls ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
             {search}
-            <div className="w-full min-w-0 sm:w-64">{primaryControls}</div>
+            <div className="w-full min-w-0 sm:w-max sm:shrink-0">
+              {primaryControls}
+            </div>
           </div>
         ) : (
           search

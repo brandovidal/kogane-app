@@ -33,7 +33,7 @@ export function DebtSummaryMonthlyTable({
             <TableHead>Mes / concepto</TableHead>
             <TableHead className="text-right">Me debe</TableHead>
             <TableHead className="text-right">Le debo</TableHead>
-            <TableHead className="text-right text-violet-200">Por cobrar / pagar</TableHead>
+            <TableHead className="text-right text-primary">Por cobrar / pagar</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -45,7 +45,7 @@ export function DebtSummaryMonthlyTable({
               </TableCell>
               <TableCell className="text-right tabular-nums text-amber-300">{formatCurrency(row.owed)}</TableCell>
               <TableCell className="text-right tabular-nums text-muted-foreground">{formatCurrency(row.owe)}</TableCell>
-              <TableCell className="text-right font-semibold tabular-nums text-violet-200">{formatCurrency(row.owed - row.owe)}</TableCell>
+              <TableCell className="text-right font-semibold tabular-nums text-primary">{formatCurrency(row.owed - row.owe)}</TableCell>
             </TableRow>
           ))}
           <TableRow className="border-t-2 bg-muted/20 font-semibold">
@@ -53,7 +53,7 @@ export function DebtSummaryMonthlyTable({
             <TableCell className="text-muted-foreground">Todos los periodos</TableCell>
             <TableCell className="text-right font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</TableCell>
-            <TableCell className="text-right font-bold tabular-nums text-violet-200">{formatCurrency(netTotal)}</TableCell>
+            <TableCell className="text-right font-bold tabular-nums text-primary">{formatCurrency(netTotal)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

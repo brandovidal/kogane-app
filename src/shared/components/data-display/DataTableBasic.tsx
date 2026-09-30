@@ -16,6 +16,8 @@ export function DataTableBasic<T>({
   error,
   emptyMessage = "Sin registros",
   footer,
+  rowClassName,
+  rowIsSelected,
 }: DataTableBasicProps<T>) {
   const rows = table.getRowModel().rows;
   return (
@@ -92,7 +94,12 @@ export function DataTableBasic<T>({
             rows.map((row) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() ? "selected" : undefined}
+                className={rowClassName?.(row.original)}
+                data-state={
+                  rowIsSelected?.(row.original) || row.getIsSelected()
+                    ? "selected"
+                    : undefined
+                }
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell

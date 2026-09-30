@@ -95,10 +95,10 @@ export function DebtSummaryView({
         />
         <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
       </div>
-      {showDebts && <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-violet-400/25 bg-violet-500/5 px-3 py-2 text-sm">
+      {showDebts && <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-primary/25 bg-primary/5 px-3 py-2 text-sm">
         {showCollections && <span><span className="text-muted-foreground">Cobros</span> <strong className="font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</strong></span>}
         <span><span className="text-muted-foreground">Lo que debo</span> <strong className="font-medium tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</strong></span>
-        <span className="font-semibold text-violet-200">{netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"} {formatCurrency(Math.abs(netTotal))}</span>
+        <span className="font-semibold text-primary">{netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"} {formatCurrency(Math.abs(netTotal))}</span>
       </div>}
       {(!groups.length && !creditCards.length) || (!showCollections && !showDebts) ? (
         <EmptyState description={!showCollections && !showDebts ? "Activa Cobros (+), Deudas (−) o ambos en los filtros." : "No hay deudas con saldo para este período"} />
@@ -108,7 +108,7 @@ export function DebtSummaryView({
             <TabsTrigger value="consolidated">Consolidado</TabsTrigger>
             <TabsTrigger
               value="minimum"
-              className="data-[state=active]:bg-violet-500/15 data-[state=active]:text-violet-200"
+              className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary"
             >
               Tarjeta (pago mínimo)
             </TabsTrigger>

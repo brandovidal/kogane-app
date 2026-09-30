@@ -190,6 +190,27 @@ export const useUpdateStatementMinimum = () =>
     },
   );
 
+export interface UpdateStatementBalanceInput {
+  currency: "PEN" | "USD";
+  totalDue: number | null;
+  minimumDue: number | null;
+  previousBalance: number | null;
+  previousPayments: number | null;
+  monthlyPayment: number | null;
+}
+
+export const useUpdateStatementBalances = () =>
+  useApiMutation(
+    ({ id, balances }: { id: string; balances: UpdateStatementBalanceInput[] }) =>
+      unwrap(
+        api.PATCH("/v1/statements/{id}", {
+          params: { path: { id } },
+          body: { balances },
+        }),
+      ),
+    { invalidate, success: "Saldos actualizados" },
+  );
+
 export const useDeleteStatement = () =>
   useApiMutation(
     (id: string) =>
