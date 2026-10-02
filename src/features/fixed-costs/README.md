@@ -4,8 +4,11 @@ La página de Astro importa `FixedCostListPage` desde el `index.ts` de la featur
 Los archivos internos se importan directamente, sin pasar por el índice, para evitar ciclos.
 
 - `views/`: composición del listado y del detalle. `FixedCostListPage` agrega el proveedor de consultas.
-- `sections/`: controles del listado, resultados, columnas, resumen del detalle y pestañas del formulario.
-- `components/`: piezas pequeñas del registro (nombre y fila del detalle).
+- `sections/list/`: filtros, acciones masivas, resultados y columnas del listado.
+- `sections/detail/`: resumen y panel de historial del registro.
+- `sections/form/`: secciones generales, cuotas y notas del formulario.
+- `components/list/`: piezas visuales propias del listado, como el nombre y adjunto.
+- `components/detail/`: filas reutilizables de información del detalle.
 - `components/dialogs/`: contenedor del formulario de creación y edición.
 - `hooks/`: consultas y filtros del listado, acciones del registro y ciclo de vida del formulario.
 - `lib/fixed-cost-form.ts`: validación, valores iniciales y transformación del cuerpo para guardar.

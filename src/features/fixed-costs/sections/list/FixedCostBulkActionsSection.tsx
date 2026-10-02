@@ -19,8 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { FIXED_COST_STATUSES } from "../constants/statuses";
-import type { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
+import { FIXED_COST_STATUSES } from "../../constants/statuses";
+import type { useFixedCostBulkActions } from "../../hooks/useFixedCostBulkActions";
 
 export function FixedCostBulkActionsSection({
   bulk,

@@ -1,6 +1,6 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
-export { FixedCostDetailRow } from "./components/FixedCostDetailRow";
-export { FixedCostName } from "./components/FixedCostName";
+export { FixedCostDetailRow } from "./components/detail/FixedCostDetailRow";
+export { FixedCostName } from "./components/list/FixedCostName";
 export { FixedCostDialog } from "./components/dialogs/FixedCostDialog";
 export { FIXED_COST_STATUSES } from "./constants/statuses";
 export { useFixedCostActions } from "./hooks/useFixedCostActions";
@@ -21,16 +21,16 @@ export {
   fixedCostSaveBody,
 } from "./lib/fixed-cost-form";
 export type { FixedCostForm, FixedCostValues } from "./lib/fixed-cost-form";
-export type { FixedCostDetailOverviewSectionProps } from "./sections/FixedCostDetailOverviewSection";
-export { FixedCostDetailOverviewSection } from "./sections/FixedCostDetailOverviewSection";
-export { FixedCostGeneralSection } from "./sections/FixedCostGeneralSection";
-export type { FixedCostListControlsProps } from "./sections/FixedCostListControls";
-export { FixedCostListControls } from "./sections/FixedCostListControls";
-export { FixedCostNotesSection } from "./sections/FixedCostNotesSection";
-export type { FixedCostResultsSectionProps } from "./sections/FixedCostResultsSection";
-export { FixedCostResultsSection } from "./sections/FixedCostResultsSection";
-export { FixedCostScheduleSection } from "./sections/FixedCostScheduleSection";
-export { getFixedCostColumns } from "./sections/fixed-cost-columns";
+export type { FixedCostDetailOverviewSectionProps } from "./sections/detail/FixedCostDetailOverviewSection";
+export { FixedCostDetailOverviewSection } from "./sections/detail/FixedCostDetailOverviewSection";
+export { FixedCostGeneralSection } from "./sections/form/FixedCostGeneralSection";
+export type { FixedCostListControlsProps } from "./sections/list/FixedCostListControls";
+export { FixedCostListControls } from "./sections/list/FixedCostListControls";
+export { FixedCostNotesSection } from "./sections/form/FixedCostNotesSection";
+export type { FixedCostResultsSectionProps } from "./sections/list/FixedCostResultsSection";
+export { FixedCostResultsSection } from "./sections/list/FixedCostResultsSection";
+export { FixedCostScheduleSection } from "./sections/form/FixedCostScheduleSection";
+export { getFixedCostColumns } from "./sections/list/fixed-cost-columns";
 export type {
   FixedCostGroupBy,
   CatalogName,
@@ -44,9 +44,9 @@ export {
 } from "./views/FixedCostListView";
 export { useFixedCostTable } from "./hooks/useFixedCostTable";
 export { useFixedCostBulkActions } from "./hooks/useFixedCostBulkActions";
-export { FixedCostBulkActionsSection } from "./sections/FixedCostBulkActionsSection";
-export { FixedCostDetailHistorySection } from "./sections/FixedCostDetailHistorySection";
-export type { FixedCostDetailHistorySectionProps } from "./sections/FixedCostDetailHistorySection";
+export { FixedCostBulkActionsSection } from "./sections/list/FixedCostBulkActionsSection";
+export { FixedCostDetailHistorySection } from "./sections/detail/FixedCostDetailHistorySection";
+export type { FixedCostDetailHistorySectionProps } from "./sections/detail/FixedCostDetailHistorySection";
 export { FIXED_COST_BULK_LABELS } from "./constants/bulk-actions";
 export type {
   FixedCostBulkAction,

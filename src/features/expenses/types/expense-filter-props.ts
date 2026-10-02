@@ -14,6 +14,9 @@ export interface ExpenseFiltersProps {
   personInPanel?: boolean;
   description?: string;
   countLabel?: string;
+  compactCountInTitle?: boolean;
+  floatingFilterCount?: boolean;
+  searchInPanelBelowTablet?: boolean;
   primaryControls?: ReactNode;
   rightActions?: ReactNode;
   appliedFilters?: ReactNode;

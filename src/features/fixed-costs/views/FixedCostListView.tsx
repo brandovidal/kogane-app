@@ -3,13 +3,13 @@ import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSer
 import { FixedCostDialog } from "../components/dialogs/FixedCostDialog";
 import { useFixedCostActions } from "../hooks/useFixedCostActions";
 import { useFixedCostList } from "../hooks/useFixedCostList";
-import { FixedCostListControls } from "../sections/FixedCostListControls";
-import { FixedCostResultsSection } from "../sections/FixedCostResultsSection";
+import { FixedCostListControls } from "../sections/list/FixedCostListControls";
+import { FixedCostResultsSection } from "../sections/list/FixedCostResultsSection";
 import { FixedCostDetailView } from "./FixedCostDetailView";
 import { DataTableColumnSelector } from "@/shared/components/data-display/DataTableColumnSelector";
 import { useFixedCostTable } from "../hooks/useFixedCostTable";
 import { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
-import { FixedCostBulkActionsSection } from "../sections/FixedCostBulkActionsSection";
+import { FixedCostBulkActionsSection } from "../sections/list/FixedCostBulkActionsSection";
 
 export function FixedCostListView() {
   const list = useFixedCostList();

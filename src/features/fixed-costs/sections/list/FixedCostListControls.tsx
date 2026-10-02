@@ -69,7 +69,7 @@ export function FixedCostListControls({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <ExpenseFilters
         fields={FIXED_COST_FILTER_KEYS}
         value={filters}
@@ -131,6 +131,9 @@ export function FixedCostListControls({
         }
         description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y un rango de vencimiento."
         countLabel="costos fijos"
+        compactCountInTitle
+        floatingFilterCount
+        searchInPanelBelowTablet
         statuses={FIXED_COST_STATUSES}
         shown={shown}
         total={total}
@@ -142,43 +145,52 @@ export function FixedCostListControls({
               onChange={onGroupByChange}
               options={FIXED_COST_GROUP_OPTIONS}
               multiple
+              floatingCount
             />
             {columnSelector}
             <ViewToggle value={view} onChange={onViewChange} />
           </div>
         }
         appliedFilters={
-          <ActiveExpenseFilterChips
-            fields={FIXED_COST_FILTER_KEYS}
-            value={filters}
-            onChange={onFiltersChange}
-            me={me}
-            groupBy={groupBy}
-            onGroupByChange={(next) => onGroupByChange(next)}
-            groupByLabel={groupBy.map((field) => FIXED_COST_GROUP_LABELS[field]).join(" → ")}
-            periodChip={
-              hasPeriod
-                ? {
-                    label: `Período: ${getMonthName(month)} ${year}`,
-                    onRemove: () =>
-                      onFiltersChange({
-                        ...filters,
-                        month: undefined,
-                        year: undefined,
-                      }),
-                  }
-                : undefined
-            }
-          />
+          <div className="hidden lg:block">
+            <ActiveExpenseFilterChips
+              fields={FIXED_COST_FILTER_KEYS}
+              value={filters}
+              onChange={onFiltersChange}
+              me={me}
+              groupBy={groupBy}
+              onGroupByChange={onGroupByChange}
+              groupByLabels={FIXED_COST_GROUP_LABELS}
+              periodChip={
+                hasPeriod
+                  ? {
+                      label: `Período: ${getMonthName(month)} ${year}`,
+                      onRemove: () =>
+                        onFiltersChange({
+                          ...filters,
+                          month: undefined,
+                          year: undefined,
+                        }),
+                    }
+                  : undefined
+              }
+            />
+          </div>
         }
         rightActions={
-          <>
+          <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2">
             <ExportMenu items={exportItems} />
-            <Button size="sm" className="h-9" onClick={onCreate}>
-              <Plus className="mr-1 size-4" />
-              Nuevo gasto
+            <Button
+              size="sm"
+              className="h-9 shrink-0 gap-1 px-3 sm:px-4"
+              aria-label="Crear gasto"
+              title="Crear gasto"
+              onClick={onCreate}
+            >
+              <Plus className="size-4" />
+              Crear
             </Button>
-          </>
+          </div>
         }
       />
     </div>

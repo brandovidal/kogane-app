@@ -7,7 +7,7 @@ import { RowActions } from "@/features/expenses/components/RowActions";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
 import { formatDate } from "@/shared/lib/dates";
 import { PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
-import { FixedCostName } from "../components/FixedCostName";
+import { FixedCostName } from "../../components/list/FixedCostName";
 import type {
   CatalogName,
   FixedCostActions,

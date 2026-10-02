@@ -23,6 +23,7 @@ import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFiel
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Marker, MarkerContent } from "@/ui/marker";
+import { entriesOf } from "@/shared/utils/entries";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
 import type { ExpenseFiltersProps } from "../../types/expense-filter-props";
@@ -35,12 +36,6 @@ import {
   PANEL_FILTER_KEYS,
   PRIMARY_PANEL_FILTER_KEYS,
 } from "../../constants/expense-filters";
-
-const entriesOf = (labels: Record<string, string>, keys?: string[]) =>
-  (keys ?? Object.keys(labels)).map((key) => ({
-    value: key,
-    label: labels[key] ?? key,
-  }));
 
 export function ExpenseFilterFields({
   fields,
@@ -248,9 +243,9 @@ export function ExpenseFilterFields({
     (key) => !PRIMARY_PANEL_FILTER_KEYS.includes(key),
   );
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {primary.length > 0 && (
-        <section aria-label="Filtros principales" className="space-y-3">
+        <section aria-label="Filtros principales" className="space-y-2">
           <Marker>
             <MarkerContent>Principales</MarkerContent>
           </Marker>

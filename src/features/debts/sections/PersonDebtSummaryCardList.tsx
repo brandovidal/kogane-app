@@ -1,4 +1,5 @@
-import { CalendarClock, ChevronRight } from "lucide-react";
+import { CalendarClock, ChevronRight, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { type DebtReportFilter } from "@/features/debts/lib/debt-report";
 import type { Debt } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
@@ -7,6 +8,7 @@ import { Card, CardContent } from "@/ui/card";
 import type { Direction } from "@/features/debts/lib/debt-filters";
 import { CollectButton } from "./CollectButton";
 import { DebtReportLinks as ReportLinks } from "./DebtListControls";
+import { Button } from "@/ui/button";
 
 type PersonDebtGroup = { personId: string; name: string; total: number; debts: Debt[] };
 export type StatementChargeAdjustment = {
@@ -28,6 +30,31 @@ export type PersonalDebtSummaryExpense = {
   source: string;
   paymentMethodId?: string | null;
 };
+
+async function copyValue(value: string, label: string) {
+  try {
+    await navigator.clipboard.writeText(value);
+    toast.success(`${label} copiado`);
+  } catch {
+    toast.error(`No pude copiar ${label.toLowerCase()}`);
+  }
+}
+
+function CopyFieldButton({ value, label }: { value: string; label: string }) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="size-6 shrink-0 text-muted-foreground hover:text-foreground"
+      aria-label={`Copiar ${label}`}
+      title={`Copiar ${label}`}
+      onClick={() => void copyValue(value, label)}
+    >
+      <Copy className="size-3.5" />
+    </Button>
+  );
+}
 
 export function PersonDebtSummaryCardList({
   groups,
@@ -205,22 +232,28 @@ export function PersonDebtSummaryCardList({
                                     {sourceGroup.debts.map((debt) => (
                                       <div key={debt.id} className="flex items-center justify-between gap-2 text-sm">
                                         <div className="min-w-0">
-                                          <p className="truncate">{debt.description}{debt.installment ? ` ${debt.installment}` : ""}</p>
+                                          <div className="flex min-w-0 items-center gap-1">
+                                            <p className="truncate">{debt.description}{debt.installment ? ` ${debt.installment}` : ""}</p>
+                                            <CopyFieldButton value={`${debt.description}${debt.installment ? ` ${debt.installment}` : ""}`} label="descripción" />
+                                          </div>
                                           <p className="text-xs text-muted-foreground">{getMonthName(debt.paymentMonth)} {debt.paymentYear}</p>
                                         </div>
-                                        <span className="font-medium tabular-nums">{formatCurrency(debt.balance)}</span>
+                                        <span className="flex shrink-0 items-center gap-1 font-medium tabular-nums">
+                                          {formatCurrency(debt.balance)}
+                                          <CopyFieldButton value={formatCurrency(debt.balance)} label="monto" />
+                                        </span>
                                       </div>
                                     ))}
                                     {sourceGroup.adjustments.map((adjustment) => (
                                       <div key={adjustment.key} className="flex items-center justify-between gap-2 text-sm">
-                                        <div className="min-w-0"><p className="truncate">{adjustment.description}</p><p className="text-xs text-muted-foreground">Comparado con estado de cuenta · {getMonthName(adjustment.periodMonth)} {adjustment.periodYear}</p></div>
-                                        <span className={`font-medium tabular-nums ${adjustment.amount < 0 ? "text-emerald-300" : ""}`}>{adjustment.amount < 0 ? "−" : "+"}{formatCurrency(Math.abs(adjustment.amount))}</span>
+                                        <div className="min-w-0"><div className="flex min-w-0 items-center gap-1"><p className="truncate">{adjustment.description}</p><CopyFieldButton value={adjustment.description} label="descripción" /></div><p className="text-xs text-muted-foreground">Comparado con estado de cuenta · {getMonthName(adjustment.periodMonth)} {adjustment.periodYear}</p></div>
+                                        <span className={`flex shrink-0 items-center gap-1 font-medium tabular-nums ${adjustment.amount < 0 ? "text-emerald-300" : ""}`}>{adjustment.amount < 0 ? "−" : "+"}{formatCurrency(Math.abs(adjustment.amount))}<CopyFieldButton value={`${adjustment.amount < 0 ? "−" : "+"}${formatCurrency(Math.abs(adjustment.amount))}`} label="monto" /></span>
                                       </div>
                                     ))}
                                     {sourceGroup.personalExpenses?.map((expense) => (
                                       <div key={expense.id} className="flex items-center justify-between gap-2 text-sm">
-                                        <p className="min-w-0 truncate">{expense.description}</p>
-                                        <span className="shrink-0 font-medium tabular-nums">{formatCurrency(expense.amount)}</span>
+                                        <div className="flex min-w-0 items-center gap-1"><p className="truncate">{expense.description}</p><CopyFieldButton value={expense.description} label="descripción" /></div>
+                                        <span className="flex shrink-0 items-center gap-1 font-medium tabular-nums">{formatCurrency(expense.amount)}<CopyFieldButton value={formatCurrency(expense.amount)} label="monto" /></span>
                                       </div>
                                     ))}
                                   </div>

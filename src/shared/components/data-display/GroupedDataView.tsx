@@ -12,6 +12,7 @@ export function GroupedDataView<T>({
   groupLabel,
   footer,
   extraCard,
+  compactCards,
   selected,
   onSelectedChange,
   selectionDisabled,
@@ -34,6 +35,7 @@ export function GroupedDataView<T>({
         view={view}
         footer={footer}
         extraCard={extraCard}
+        compactCards={compactCards}
         selected={selected}
         onSelectedChange={onSelectedChange}
         selectionDisabled={selectionDisabled}
@@ -58,6 +60,7 @@ export function GroupedDataView<T>({
                 rowKey={rowKey}
                 view={view}
                 extraCard={firstGroup ? (firstGroup = false, extraCard) : undefined}
+                compactCards={compactCards}
                 selected={selected}
                 onSelectedChange={onSelectedChange}
                 selectionDisabled={selectionDisabled}

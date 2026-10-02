@@ -4,9 +4,9 @@ import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { useFixedCostForm, type FixedCostDialogProps } from "../../hooks/useFixedCostForm";
-import { FixedCostGeneralSection } from "../../sections/FixedCostGeneralSection";
-import { FixedCostNotesSection } from "../../sections/FixedCostNotesSection";
-import { FixedCostScheduleSection } from "../../sections/FixedCostScheduleSection";
+import { FixedCostGeneralSection } from "../../sections/form/FixedCostGeneralSection";
+import { FixedCostNotesSection } from "../../sections/form/FixedCostNotesSection";
+import { FixedCostScheduleSection } from "../../sections/form/FixedCostScheduleSection";
 
 export function FixedCostDialog(props: FixedCostDialogProps) {
   const { form, activeTab, setActiveTab, onSubmit, isEdit, isSaving } = useFixedCostForm(props);

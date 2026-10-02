@@ -33,6 +33,7 @@ export interface ActiveExpenseFilterChipsProps<T extends string | string[] = str
   groupBy?: T;
   onGroupByChange?: (value: T) => void;
   groupByLabel?: string;
+  groupByLabels?: Record<string, string>;
   periodChip?: { label: string; onRemove: () => void };
 }
 
@@ -44,6 +45,7 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   groupBy,
   onGroupByChange,
   groupByLabel,
+  groupByLabels,
   periodChip,
 }: ActiveExpenseFilterChipsProps<T>) {
   const categories = useCategories().data ?? [];
@@ -88,13 +90,18 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   };
   const chips: AppliedFilterChip[] = [
     ...(periodChip
-      ? [{ key: "period", label: periodChip.label, onRemove: periodChip.onRemove }]
+      ? [
+          {
+            key: "period",
+            label: periodChip.label,
+            onRemove: periodChip.onRemove,
+          },
+        ]
       : []),
     ...fields
       .filter(
         (key) =>
-          labels[key] &&
-          !(periodChip && (key === "month" || key === "year")),
+          labels[key] && !(periodChip && (key === "month" || key === "year")),
       )
       .map((key) => ({
         key,
@@ -105,15 +112,28 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   const isGrouped = Array.isArray(groupBy)
     ? groupBy.length > 0
     : !!groupBy && groupBy !== "none";
-  const hasGrouping = isGrouped && onGroupByChange;
-  if (!chips.length && !hasGrouping) return null;
-  if (hasGrouping)
-    chips.push({
-      key: "group-by",
-      label: `Agrupar: ${groupByLabel ?? groupBy}`,
-      onRemove: () => onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T),
-      kind: "group",
+  if (!chips.length && !(isGrouped && onGroupByChange)) return null;
+  if (isGrouped && groupBy !== undefined && onGroupByChange) {
+    const groupFields = Array.isArray(groupBy)
+      ? groupBy.map(String)
+      : [String(groupBy)];
+    groupFields.forEach((field) => {
+      const label =
+        groupByLabels?.[field] ??
+        (Array.isArray(groupBy) ? field : groupByLabel ?? field);
+      chips.push({
+        key: `group-by-${field}`,
+        label: `Agrupar: ${label}`,
+        onRemove: () =>
+          onGroupByChange(
+            (Array.isArray(groupBy)
+              ? groupBy.filter((item) => String(item) !== field)
+              : "none") as T,
+          ),
+        kind: "group",
+      });
     });
+  }
   return (
     <AppliedFilterChips
       items={chips}

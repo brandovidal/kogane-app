@@ -10,6 +10,7 @@ export function DataView<T>({
   view,
   footer,
   extraCard,
+  compactCards = false,
   selected,
   onSelectedChange,
   selectionDisabled,
@@ -35,11 +36,14 @@ export function DataView<T>({
           {items.map((item) => (
             <Card
               key={rowKey(item)}
-              className={
-                selected?.has(rowKey(item)) ? "ring-2 ring-primary" : undefined
-              }
+              className={[
+                compactCards && "py-3 sm:py-6",
+                selected?.has(rowKey(item)) && "ring-2 ring-primary",
+              ].filter(Boolean).join(" ") || undefined}
             >
-              <CardContent className="space-y-2 pt-6">
+              <CardContent
+                className={compactCards ? "space-y-1.5 px-3 sm:space-y-2 sm:px-6" : "space-y-2 pt-6"}
+              >
                 <div className="flex items-start justify-between gap-2">
                   {selectable && (
                     <Checkbox
@@ -57,15 +61,21 @@ export function DataView<T>({
                     <div className="shrink-0">{actions.cell(item)}</div>
                   )}
                 </div>
-                {amount && <div className="text-lg">{amount.cell(item)}</div>}
-                <dl className="space-y-1 text-sm">
+                {amount && <div className={compactCards ? "text-base font-medium sm:text-lg" : "text-lg"}>{amount.cell(item)}</div>}
+                <dl className={compactCards ? "space-y-0.5 text-xs sm:space-y-1 sm:text-sm" : "space-y-1 text-sm"}>
                   {meta.map((column) => (
                     <div
                       key={column.key}
                       className="flex justify-between gap-3"
                     >
                       <dt className="text-muted-foreground">{column.header}</dt>
-                      <dd className="min-w-0 text-right">
+                      <dd
+                        className={
+                          compactCards
+                            ? "min-w-0 whitespace-nowrap text-right"
+                            : "min-w-0 text-right"
+                        }
+                      >
                         {column.cell(item)}
                       </dd>
                     </div>

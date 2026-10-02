@@ -1,0 +1,1 @@
+export { FixedCostDetailRow } from "./FixedCostDetailRow";

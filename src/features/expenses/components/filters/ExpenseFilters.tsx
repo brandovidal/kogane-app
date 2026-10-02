@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ListOrdered, SlidersHorizontal, UserRound, X } from "lucide-react";
+import { ListOrdered, RotateCcw, SlidersHorizontal, UserRound, X } from "lucide-react";
 import {
   countActiveExpenseFilters,
   hasActiveFilters,
@@ -23,7 +23,6 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -43,6 +42,9 @@ export function ExpenseFilters({
   personInPanel = false,
   description,
   countLabel,
+  compactCountInTitle = false,
+  floatingFilterCount = false,
+  searchInPanelBelowTablet = false,
   primaryControls,
   rightActions,
   appliedFilters,
@@ -86,7 +88,7 @@ export function ExpenseFilters({
 
   const search = has("q") && (
     <SearchField
-      className="w-full sm:w-56 sm:shrink-0"
+      className={`${searchInPanelBelowTablet ? "hidden md:block " : ""}w-full sm:w-56 sm:shrink-0`}
       placeholder="Buscar..."
       value={value.q ?? ""}
       onChange={(next) => set("q", next)}
@@ -113,28 +115,40 @@ export function ExpenseFilters({
               label="Filtros"
               icon={<SlidersHorizontal className="h-4 w-4" />}
               count={count}
+              floatingCount={floatingFilterCount}
             />
           </SheetTrigger>
           <SheetContent
             side="right"
             className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto"
           >
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
-              <SheetDescription>
-                {description ??
-                  "Filtra los registros y conserva tus opciones en la dirección de la página."}
-                {countLabel && (
+            <SheetHeader className="gap-2 pr-10">
+              <div className="flex min-w-0 items-center gap-2">
+                <SheetTitle className="shrink-0">Filtros</SheetTitle>
+                {compactCountInTitle && countLabel && (
+                  <span className="truncate text-xs tabular-nums text-muted-foreground">
+                    {shown}/{total} registros
+                  </span>
+                )}
+              </div>
+              <SheetDescription className="min-w-0">
+                <span
+                  className="block truncate whitespace-nowrap"
+                  title={description}
+                >
+                  {description ??
+                    "Filtra los registros y conserva tus opciones en la dirección de la página."}
+                </span>
+                {!compactCountInTitle && countLabel && (
                   <span className="mt-1 block">
                     {shown} de {total} {countLabel}
                   </span>
                 )}
               </SheetDescription>
-            </SheetHeader>
-            <div className="flex flex-col gap-3 px-4">{controls}</div>
-            <SheetFooter>
               <Button
-                variant="outline"
+                variant="ghost"
+                size="sm"
+                className="h-7 w-fit justify-start px-1.5 text-xs"
                 disabled={count === 0}
                 onClick={() =>
                   onChange(
@@ -144,9 +158,21 @@ export function ExpenseFilters({
                   )
                 }
               >
-                Limpiar filtros
+                <RotateCcw className="mr-1 size-3.5" /> Limpiar
               </Button>
-            </SheetFooter>
+            </SheetHeader>
+            {searchInPanelBelowTablet && has("q") && (
+              <div className="px-4 md:hidden">
+                <SearchField
+                  label="Buscar"
+                  className="w-full"
+                  placeholder="Buscar..."
+                  value={value.q ?? ""}
+                  onChange={(next) => set("q", next)}
+                />
+              </div>
+            )}
+            <div className="flex flex-col gap-3 px-4">{controls}</div>
           </SheetContent>
         </Sheet>
       ) : (

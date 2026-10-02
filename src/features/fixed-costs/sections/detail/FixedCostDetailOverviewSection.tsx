@@ -12,7 +12,7 @@ import type { FixedCost } from "@/shared/api/types";
 import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { formatDate } from "@/shared/lib/dates";
-import { FixedCostDetailRow } from "../components/FixedCostDetailRow";
+import { FixedCostDetailRow } from "../../components/detail/FixedCostDetailRow";
 import { AttachmentGallery } from "@/features/attachments/components/AttachmentGallery";
 import { LinkifiedText } from "@/shared/components/data-display/LinkifiedText";
 import { cn } from "@/shared/utils/cn";

@@ -11,8 +11,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/ui/sheet";
-import { FixedCostDetailOverviewSection } from "../sections/FixedCostDetailOverviewSection";
-import { FixedCostDetailHistorySection } from "../sections/FixedCostDetailHistorySection";
+import { FixedCostDetailOverviewSection } from "../sections/detail/FixedCostDetailOverviewSection";
+import { FixedCostDetailHistorySection } from "../sections/detail/FixedCostDetailHistorySection";
 import { cn } from "@/shared/utils/cn";
 
 export interface FixedCostDetailViewProps {

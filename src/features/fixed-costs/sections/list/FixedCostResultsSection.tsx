@@ -9,7 +9,7 @@ import type {
 } from "@/features/fixed-costs/types/fixed-cost-types";
 import { DataTableComplex } from "@/shared/components/data-display/DataTableComplex";
 import { DataTablePagination } from "@/shared/components/data-display/DataTablePagination";
-import type { useFixedCostTable } from "../hooks/useFixedCostTable";
+import type { useFixedCostTable } from "../../hooks/useFixedCostTable";
 
 export interface FixedCostResultsSectionProps {
   items: FixedCost[];
@@ -89,6 +89,7 @@ export function FixedCostResultsSection({
         rowKey={(cost) => cost.id}
         view={view}
         groupBy={groupBy}
+        compactCards
         selected={dataTable.selected}
         onSelectedChange={dataTable.onSelectedChange}
         selectionDisabled={pending}

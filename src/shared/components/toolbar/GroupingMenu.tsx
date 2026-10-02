@@ -7,6 +7,7 @@ export interface GroupingMenuProps<T extends string | readonly string[] = string
   onChange: (value: T) => void;
   options: { value: string; label: string }[];
   multiple?: boolean;
+  floatingCount?: boolean;
 }
 
 export function GroupingMenu<T extends string | readonly string[]>({
@@ -14,6 +15,7 @@ export function GroupingMenu<T extends string | readonly string[]>({
   onChange,
   options,
   multiple = false,
+  floatingCount = false,
 }: GroupingMenuProps<T>) {
   const selected: string[] = Array.isArray(value)
     ? value.map(String)
@@ -31,6 +33,7 @@ export function GroupingMenu<T extends string | readonly string[]>({
           count={count}
           trailingIcon={<ChevronDown className="h-3.5 w-3.5" />}
           variant={count > 0 ? "secondary" : "outline"}
+          floatingCount={floatingCount}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
