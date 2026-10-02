@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ListOrdered, RotateCcw, SlidersHorizontal, UserRound, X } from "lucide-react";
+import { ListOrdered, SlidersHorizontal, Trash, UserRound, X } from "lucide-react";
 import {
   countActiveExpenseFilters,
   hasActiveFilters,
@@ -23,6 +23,7 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -44,7 +45,7 @@ export function ExpenseFilters({
   countLabel,
   compactCountInTitle = false,
   floatingFilterCount = false,
-  searchInPanelBelowTablet = false,
+  searchInPanel = false,
   primaryControls,
   rightActions,
   appliedFilters,
@@ -81,14 +82,15 @@ export function ExpenseFilters({
       value={value}
       onChange={onChange}
       statuses={statuses}
-      personInPanel={personInPanel}
       panel={panel}
+      personInPanel={personInPanel}
+      searchInPanel={searchInPanel}
     />
   );
 
   const search = has("q") && (
     <SearchField
-      className={`${searchInPanelBelowTablet ? "hidden md:block " : ""}w-full sm:w-56 sm:shrink-0`}
+      className={`${searchInPanel ? "hidden lg:block " : ""}w-full sm:w-56 sm:shrink-0`}
       placeholder="Buscar..."
       value={value.q ?? ""}
       onChange={(next) => set("q", next)}
@@ -120,7 +122,7 @@ export function ExpenseFilters({
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto"
+            className="w-[min(24rem,calc(100vw-1rem))] overflow-hidden"
           >
             <SheetHeader className="gap-2 pr-10">
               <div className="flex min-w-0 items-center gap-2">
@@ -133,7 +135,7 @@ export function ExpenseFilters({
               </div>
               <SheetDescription className="min-w-0">
                 <span
-                  className="block truncate whitespace-nowrap"
+                  className="[display:-webkit-box] overflow-hidden whitespace-normal [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
                   title={description}
                 >
                   {description ??
@@ -145,10 +147,15 @@ export function ExpenseFilters({
                   </span>
                 )}
               </SheetDescription>
+            </SheetHeader>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pb-4">
+              <div className="flex flex-col gap-3 px-4">{controls}</div>
+            </div>
+            <SheetFooter className="border-t p-4">
               <Button
-                variant="ghost"
+                variant="destructive"
                 size="sm"
-                className="h-7 w-fit justify-start px-1.5 text-xs"
+                className="ml-auto h-8 px-3 text-xs"
                 disabled={count === 0}
                 onClick={() =>
                   onChange(
@@ -158,21 +165,9 @@ export function ExpenseFilters({
                   )
                 }
               >
-                <RotateCcw className="mr-1 size-3.5" /> Limpiar
+                <Trash className="mr-1 size-3.5" /> Limpiar
               </Button>
-            </SheetHeader>
-            {searchInPanelBelowTablet && has("q") && (
-              <div className="px-4 md:hidden">
-                <SearchField
-                  label="Buscar"
-                  className="w-full"
-                  placeholder="Buscar..."
-                  value={value.q ?? ""}
-                  onChange={(next) => set("q", next)}
-                />
-              </div>
-            )}
-            <div className="flex flex-col gap-3 px-4">{controls}</div>
+            </SheetFooter>
           </SheetContent>
         </Sheet>
       ) : (

@@ -129,11 +129,11 @@ export function FixedCostListControls({
             </Button>
           </div>
         }
-        description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y un rango de vencimiento."
+        description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y más filtros."
         countLabel="costos fijos"
         compactCountInTitle
         floatingFilterCount
-        searchInPanelBelowTablet
+        searchInPanel
         statuses={FIXED_COST_STATUSES}
         shown={shown}
         total={total}

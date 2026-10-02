@@ -18,7 +18,6 @@ export const SHARED_FILTER_OPTIONS = [
 ];
 export const CURRENCY_FILTER_OPTIONS = [...CURRENCY_OPTIONS];
 
-// Person placement is configured separately through personInPanel.
 export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = [
   "category",
   "method",

@@ -9,7 +9,7 @@ import { FixedCostNotesSection } from "../../sections/form/FixedCostNotesSection
 import { FixedCostScheduleSection } from "../../sections/form/FixedCostScheduleSection";
 
 export function FixedCostDialog(props: FixedCostDialogProps) {
-  const { form, activeTab, setActiveTab, onSubmit, isEdit, isSaving } = useFixedCostForm(props);
+  const { form, activeTab, setActiveTab, onSubmit, isEdit, isSaving, fixedCostId, pendingAttachments, setPendingAttachments, retryPendingAttachments, isUploadingAttachments } = useFixedCostForm(props);
 
   return (
     <ResponsiveDialog
@@ -39,7 +39,7 @@ export function FixedCostDialog(props: FixedCostDialogProps) {
             </TabsList>
             <TabsContent value="general" className="py-4"><FixedCostGeneralSection /></TabsContent>
             <TabsContent value="schedule" className="py-4"><FixedCostScheduleSection /></TabsContent>
-            <TabsContent value="notes" className="py-4"><FixedCostNotesSection fixedCostId={props.fixedCost?.id} /></TabsContent>
+            <TabsContent value="notes" className="py-4"><FixedCostNotesSection fixedCostId={fixedCostId} pendingAttachments={pendingAttachments} onPendingAttachmentsChange={setPendingAttachments} onRetryPendingAttachments={retryPendingAttachments} retryingAttachments={isUploadingAttachments} /></TabsContent>
           </Tabs>
         </form>
       </FormProvider>

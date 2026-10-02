@@ -4,10 +4,8 @@ import {
   PERIOD_YEAR_OPTIONS,
 } from "@/shared/constants/period";
 import { FilterSelect } from "./FilterSelect";
-import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 
 export interface PeriodFilterFieldsProps {
-  compact?: boolean;
   month?: string;
   year?: string;
   showMonth?: boolean;
@@ -17,7 +15,6 @@ export interface PeriodFilterFieldsProps {
 }
 
 export function PeriodFilterFields({
-  compact = false,
   month,
   year,
   showMonth = true,
@@ -25,7 +22,6 @@ export function PeriodFilterFields({
   onMonthChange,
   onYearChange,
 }: PeriodFilterFieldsProps) {
-  // A shared URL can also contain a valid year outside the usual form range.
   const years =
     year && !PERIOD_YEAR_OPTIONS.some((option) => option.value === year)
       ? [{ value: year, label: year }, ...PERIOD_YEAR_OPTIONS]
@@ -33,14 +29,9 @@ export function PeriodFilterFields({
 
   return (
     <section
-      className={compact ? "min-w-0" : "space-y-3 rounded-lg border p-3"}
+      className="-mx-2 space-y-3 rounded-lg border py-2.5 px-2"
       aria-label="Período del registro"
     >
-      {!compact && (
-        <div className="text-sm font-medium">
-          <FieldLabel icon={CalendarRange}>Período del registro</FieldLabel>
-        </div>
-      )}
       <div
         className={
           showMonth && showYear
@@ -57,11 +48,7 @@ export function PeriodFilterFields({
             onChange={onMonthChange}
             width="w-full"
             searchable
-            labelClassName={
-              compact
-                ? "text-xs font-medium text-muted-foreground"
-                : "text-sm font-medium"
-            }
+            labelClassName="text-sm font-medium"
           />
         )}
         {showYear && (
@@ -73,11 +60,7 @@ export function PeriodFilterFields({
             onChange={onYearChange}
             width="w-full"
             searchable
-            labelClassName={
-              compact
-                ? "text-xs font-medium text-muted-foreground"
-                : "text-sm font-medium"
-            }
+            labelClassName="text-sm font-medium"
           />
         )}
       </div>

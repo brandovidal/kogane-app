@@ -1,6 +1,8 @@
 import { useFormContext } from "react-hook-form";
 import { NotebookPen, Paperclip } from "lucide-react";
 import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
+import { PendingAttachmentsPanel } from "@/features/attachments/components/PendingAttachmentsPanel";
+import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Textarea } from "@/ui/textarea";
 import type {
@@ -10,8 +12,16 @@ import type {
 
 export function FixedCostNotesSection({
   fixedCostId,
+  pendingAttachments,
+  onPendingAttachmentsChange,
+  onRetryPendingAttachments,
+  retryingAttachments,
 }: {
   fixedCostId?: string;
+  pendingAttachments: PendingAttachmentUpload[];
+  onPendingAttachmentsChange: (files: PendingAttachmentUpload[]) => void;
+  onRetryPendingAttachments: () => void;
+  retryingAttachments: boolean;
 }) {
   const { register, getValues, setValue } = useFormContext<
     FixedCostForm,
@@ -36,11 +46,11 @@ export function FixedCostNotesSection({
           placeholder="Escribe una nota…"
         />
       </section>
-      {fixedCostId && (
-        <section className="space-y-3 rounded-lg border p-4">
-          <h3 className="text-sm font-semibold">
-            <FieldLabel icon={Paperclip}>Archivos</FieldLabel>
-          </h3>
+      <section className="space-y-3 rounded-lg border p-4">
+        <h3 className="text-sm font-semibold">
+          <FieldLabel icon={Paperclip}>Archivos</FieldLabel>
+        </h3>
+        {fixedCostId ? (
           <AttachmentsPanel
             refType="fixed_cost"
             refId={fixedCostId}
@@ -53,8 +63,16 @@ export function FixedCostNotesSection({
                 setValue("paymentStatus", "paid", { shouldDirty: true });
             }}
           />
-        </section>
-      )}
+        ) : (
+          <p className="text-sm text-muted-foreground">Los archivos se adjuntarán al crear el costo fijo.</p>
+        )}
+        <PendingAttachmentsPanel
+          files={pendingAttachments}
+          onChange={onPendingAttachmentsChange}
+          onRetry={fixedCostId ? onRetryPendingAttachments : undefined}
+          retrying={retryingAttachments}
+        />
+      </section>
     </div>
   );
 }

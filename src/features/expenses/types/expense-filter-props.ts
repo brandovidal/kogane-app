@@ -16,10 +16,20 @@ export interface ExpenseFiltersProps {
   countLabel?: string;
   compactCountInTitle?: boolean;
   floatingFilterCount?: boolean;
-  searchInPanelBelowTablet?: boolean;
+  searchInPanel?: boolean;
   primaryControls?: ReactNode;
   rightActions?: ReactNode;
   appliedFilters?: ReactNode;
   viewToggle?: ReactNode;
   showActiveSummary?: boolean;
 }
+
+export type ExpenseFilterFieldsProps = Pick<
+  ExpenseFiltersProps,
+  | "fields"
+  | "value"
+  | "onChange"
+  | "statuses"
+  | "personInPanel"
+  | "searchInPanel"
+> & { panel: boolean };

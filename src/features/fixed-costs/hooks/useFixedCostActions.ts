@@ -9,13 +9,11 @@ import {
   duplicateBody,
   nextMonthBody,
 } from "@/features/expenses/lib/expense-actions";
-import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import type { FixedCostActions } from "@/features/fixed-costs/types/fixed-cost-types";
 
 export function useFixedCostActions() {
   const saveFixedCost = useSaveExpense(EXPENSE_RESOURCES.fixedCost);
   const deleteFixedCost = useDeleteExpense(EXPENSE_RESOURCES.fixedCost);
-  const openNewExpense = useNewExpense((state) => state.openWith);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FixedCost>();
   const [openedItem, setOpenedItem] = useState<FixedCost>();
@@ -52,7 +50,10 @@ export function useFixedCostActions() {
     editingItem,
     openedItem,
     moving,
-    onCreate: () => openNewExpense({ destination: "fixed_cost" }),
+    onCreate: () => {
+      setEditingItem(undefined);
+      setDialogOpen(true);
+    },
     onCloseDetail: () => setOpenedItem(undefined),
     onEditDetail: () => {
       if (openedItem) actions.onEdit(openedItem);

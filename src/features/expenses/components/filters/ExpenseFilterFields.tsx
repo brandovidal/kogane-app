@@ -18,6 +18,7 @@ import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/s
 import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
+import { SearchField } from "@/shared/components/filters/SearchField";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFields";
 import { DatePicker } from "@/shared/components/forms/DatePicker";
@@ -26,7 +27,7 @@ import { Marker, MarkerContent } from "@/ui/marker";
 import { entriesOf } from "@/shared/utils/entries";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
-import type { ExpenseFiltersProps } from "../../types/expense-filter-props";
+import type { ExpenseFilterFieldsProps } from "../../types/expense-filter-props";
 import { useExpensePersonOptions } from "../../hooks/useExpensePersonOptions";
 import {
   PERSON_ALL,
@@ -44,10 +45,8 @@ export function ExpenseFilterFields({
   statuses,
   personInPanel,
   panel,
-}: Pick<
-  ExpenseFiltersProps,
-  "fields" | "value" | "onChange" | "statuses" | "personInPanel"
-> & { panel: boolean }) {
+  searchInPanel = false,
+}: ExpenseFilterFieldsProps) {
   const categories = useCategories().data ?? [];
   const methods =
     usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
@@ -246,9 +245,15 @@ export function ExpenseFilterFields({
     <div className="space-y-3">
       {primary.length > 0 && (
         <section aria-label="Filtros principales" className="space-y-2">
-          <Marker>
-            <MarkerContent>Principales</MarkerContent>
-          </Marker>
+          {searchInPanel && fields.includes("q") && (
+            <SearchField
+              label="Buscar"
+              className="w-full"
+              placeholder="Buscar registros..."
+              value={value.q ?? ""}
+              onChange={(next) => set("q", next)}
+            />
+          )}
           <div className="grid grid-cols-2 gap-3">{renderFields(primary)}</div>
         </section>
       )}
