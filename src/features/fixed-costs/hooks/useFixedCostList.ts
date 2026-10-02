@@ -13,7 +13,6 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
-import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 import { buildFixedCostExport } from "@/features/fixed-costs/lib/fixed-cost-export";
 import { FIXED_COST_FILTER_KEYS } from "@/features/fixed-costs/lib/fixed-cost-filters";
@@ -85,7 +84,6 @@ export function useFixedCostList() {
     setView,
     groupBy,
     setGroupBy,
-    totals: totalsOf(filtered),
     exportItems: csvExport.items,
     loading: query.isLoading,
     error: query.isError,

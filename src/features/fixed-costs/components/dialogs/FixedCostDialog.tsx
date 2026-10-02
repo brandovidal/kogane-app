@@ -32,10 +32,10 @@ export function FixedCostDialog(props: FixedCostDialogProps) {
       <FormProvider {...form}>
         <form className="py-2" onSubmit={onSubmit}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="general"><ReceiptText aria-hidden="true" />General</TabsTrigger>
-              <TabsTrigger value="schedule"><CalendarClock aria-hidden="true" />Programación</TabsTrigger>
-              <TabsTrigger value="notes"><NotebookPen aria-hidden="true" />Notas y archivos</TabsTrigger>
+            <TabsList className="w-full justify-start gap-1 overflow-x-auto overscroll-x-contain scrollbar-none sm:grid sm:grid-cols-3 sm:overflow-visible">
+              <TabsTrigger value="general" className="min-w-max flex-none px-3 text-xs sm:min-w-0 sm:flex-1 sm:px-2 sm:text-sm"><ReceiptText aria-hidden="true" />General</TabsTrigger>
+              <TabsTrigger value="schedule" className="min-w-max flex-none px-3 text-xs sm:min-w-0 sm:flex-1 sm:px-2 sm:text-sm"><CalendarClock aria-hidden="true" />Programación</TabsTrigger>
+              <TabsTrigger value="notes" className="min-w-max flex-none px-3 text-xs sm:min-w-0 sm:flex-1 sm:px-2 sm:text-sm"><NotebookPen aria-hidden="true" /><span className="sm:hidden">Archivos</span><span className="hidden sm:inline">Notas y archivos</span></TabsTrigger>
             </TabsList>
             <TabsContent value="general" className="py-4"><FixedCostGeneralSection /></TabsContent>
             <TabsContent value="schedule" className="py-4"><FixedCostScheduleSection /></TabsContent>

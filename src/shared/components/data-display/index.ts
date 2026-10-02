@@ -10,3 +10,4 @@ export { DataTableBasic } from "./DataTableBasic";
 export { DataTableComplex } from "./DataTableComplex";
 export { DataTableColumnSelector } from "./DataTableColumnSelector";
 export { DataTablePagination } from "./DataTablePagination";
+export { DataTableColumnCalculation } from "./DataTableColumnCalculation";

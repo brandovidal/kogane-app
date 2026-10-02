@@ -10,6 +10,10 @@ export function DataViewTable<T>({
   columns,
   rowKey,
   footer,
+  summary,
+  calculationStorageKey,
+  calculationDefaults,
+  calculationState,
   selected,
   onSelectedChange,
   selectionDisabled,
@@ -39,5 +43,13 @@ export function DataViewTable<T>({
       onSelectedChange?.(new Set(Object.keys(next).filter((id) => next[id])));
     },
   });
-  return <DataTableBasic table={table} footer={footer} />;
+  return (
+    <DataTableBasic
+      table={table}
+      footer={footer}
+      calculationStorageKey={calculationStorageKey}
+      calculationDefaults={calculationDefaults}
+      calculationState={calculationState}
+    />
+  );
 }

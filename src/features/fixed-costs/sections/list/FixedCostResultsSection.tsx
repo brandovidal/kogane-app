@@ -9,6 +9,8 @@ import type {
 } from "@/features/fixed-costs/types/fixed-cost-types";
 import { DataTableComplex } from "@/shared/components/data-display/DataTableComplex";
 import { DataTablePagination } from "@/shared/components/data-display/DataTablePagination";
+import { formatCurrency } from "@/shared/lib/currency";
+import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import type { useFixedCostTable } from "../../hooks/useFixedCostTable";
 
 export interface FixedCostResultsSectionProps {
@@ -18,7 +20,6 @@ export interface FixedCostResultsSectionProps {
   personName: CatalogName;
   view: ViewMode;
   groupBy: FixedCostGroupBy;
-  totals: { paid: number; own: number };
   dataTable: ReturnType<typeof useFixedCostTable>;
   loading: boolean;
   error: boolean;
@@ -32,7 +33,6 @@ export function FixedCostResultsSection({
   personName,
   view,
   groupBy,
-  totals,
   dataTable,
   loading,
   error,
@@ -42,23 +42,26 @@ export function FixedCostResultsSection({
     ? "No hay costos fijos con estos filtros"
     : "No hay costos fijos en este mes";
   const footer = (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-muted-foreground">
-        {items.length} registros
-      </span>
-      <div className="text-right">
-        <span className="text-sm font-semibold">
-          Total: S/ {totals.paid.toFixed(2)}
-        </span>
-        <OwnPart {...totals} />
-      </div>
-    </div>
+    <span className="text-sm text-muted-foreground">{items.length} registros</span>
   );
+  const summaryFor = (records: FixedCost[]) => {
+    const subtotal = totalsOf(records);
+    return {
+      label: (
+        <div className="whitespace-nowrap text-right text-sm font-semibold">
+          Total: {formatCurrency(subtotal.paid)}
+          <OwnPart {...subtotal} />
+        </div>
+      ),
+    };
+  };
   if (view === "table" && groupBy.length === 0)
     return (
       <DataTableComplex
         table={dataTable.table}
         footer={footer}
+        calculationStorageKey="fixed-costs"
+        calculationDefaults={{ amount: "sum" }}
         loading={loading}
         error={error ? "No se pudieron cargar los costos fijos." : undefined}
         emptyMessage={emptyMessage}
@@ -90,6 +93,9 @@ export function FixedCostResultsSection({
         view={view}
         groupBy={groupBy}
         compactCards
+        summaryForGroup={summaryFor}
+        calculationStorageKey="fixed-costs"
+        calculationDefaults={{ amount: "sum" }}
         selected={dataTable.selected}
         onSelectedChange={dataTable.onSelectedChange}
         selectionDisabled={pending}

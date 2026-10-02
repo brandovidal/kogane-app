@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import type { DataViewProps } from "@/shared/types/data-view";
+import type { DataViewProps, DataViewSummary } from "@/shared/types/data-view";
+import { useDataTableCalculations } from "@/shared/hooks/useDataTableCalculations";
 import { DataView } from "./DataView";
 
 export function GroupedDataView<T>({
@@ -10,6 +11,9 @@ export function GroupedDataView<T>({
   groupBy = "none",
   groupKey,
   groupLabel,
+  summaryForGroup,
+  calculationStorageKey,
+  calculationDefaults,
   footer,
   extraCard,
   compactCards,
@@ -20,7 +24,9 @@ export function GroupedDataView<T>({
   groupBy?: string | readonly string[];
   groupKey: (item: T, field: string) => string;
   groupLabel: (key: string, field: string) => string;
+  summaryForGroup?: (items: T[]) => DataViewSummary;
 }) {
+  const calculationState = useDataTableCalculations(calculationStorageKey, calculationDefaults);
   const fields = Array.isArray(groupBy)
     ? groupBy
     : groupBy === "none"
@@ -34,6 +40,10 @@ export function GroupedDataView<T>({
         rowKey={rowKey}
         view={view}
         footer={footer}
+        summary={summaryForGroup?.(items)}
+        calculationStorageKey={calculationStorageKey}
+        calculationDefaults={calculationDefaults}
+        calculationState={calculationState}
         extraCard={extraCard}
         compactCards={compactCards}
         selected={selected}
@@ -52,6 +62,7 @@ export function GroupedDataView<T>({
     return (
       <div className={depth ? "ml-3 space-y-3 border-l pl-3 sm:ml-5 sm:pl-5" : "space-y-4"}>
         {[...groups].map(([key, groupedRows]) => {
+          const summary = summaryForGroup?.(groupedRows);
           const content = depth + 1 < fields.length
             ? renderGroups(groupedRows, depth + 1)
             : <DataView
@@ -59,6 +70,10 @@ export function GroupedDataView<T>({
                 columns={columns}
                 rowKey={rowKey}
                 view={view}
+                summary={undefined}
+                calculationStorageKey={calculationStorageKey}
+                calculationDefaults={calculationDefaults}
+                calculationState={calculationState}
                 extraCard={firstGroup ? (firstGroup = false, extraCard) : undefined}
                 compactCards={compactCards}
                 selected={selected}
@@ -67,9 +82,12 @@ export function GroupedDataView<T>({
               />;
           return (
             <section key={`${field}:${key}`} className="space-y-2">
-              <h2 className={depth ? "text-sm font-medium" : "font-medium"}>
-                {groupLabel(key, field)}
-                <span className="ml-2 text-xs text-muted-foreground">{groupedRows.length}</span>
+              <h2 className={`flex items-baseline justify-between gap-3 ${depth ? "text-sm font-medium" : "font-medium"}`}>
+                <span className="min-w-0 truncate">
+                  {groupLabel(key, field)}
+                  <span className="ml-2 text-xs text-muted-foreground">{groupedRows.length}</span>
+                </span>
+                {view === "cards" && summary?.label}
               </h2>
               {content}
             </section>

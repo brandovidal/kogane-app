@@ -6,6 +6,7 @@ import { type Column } from "@/shared/types/data-view";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
 import { formatDate } from "@/shared/lib/dates";
+import { formatCurrency } from "@/shared/lib/currency";
 import { PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
 import { FixedCostName } from "../../components/list/FixedCostName";
 import type {
@@ -57,6 +58,9 @@ export function getFixedCostColumns({
       key: "amount",
       header: "Monto",
       role: "amount",
+      className: "text-right",
+      calculationType: "number",
+      formatCalculation: (value) => formatCurrency(value, "PEN"),
       accessor: (cost) => cost.amountInPen ?? cost.amount,
       cell: (cost) => (
         <CurrencyDisplay

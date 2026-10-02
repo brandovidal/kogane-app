@@ -8,3 +8,4 @@ export { useDataTable } from "./useDataTable";
 export type { UseDataTableOptions } from "./useDataTable";
 export { useUrlGrouping } from "./useUrlGrouping";
 export { useUrlPeriod } from "./useUrlPeriod";
+export { useDataTableCalculations } from "./useDataTableCalculations";

@@ -15,4 +15,5 @@ export { downloadCsv } from "./export-csv";
 export { getFileIcon } from "./file-icons";
 export { normalize } from "./text";
 export { toDataTableColumns, selectionColumn } from "./data-table-columns";
+export { calculateTableColumn } from "./data-table-calculations";
 export { readUrlValues, replaceUrlValues, sameUrlValues } from "./url-state";

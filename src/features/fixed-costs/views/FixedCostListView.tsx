@@ -59,7 +59,6 @@ export function FixedCostListView() {
         personName={list.personName}
         view={list.view}
         groupBy={list.groupBy}
-        totals={list.totals}
         dataTable={dataTable}
         loading={list.loading}
         error={list.error}

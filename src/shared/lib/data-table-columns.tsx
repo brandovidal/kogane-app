@@ -13,7 +13,12 @@ export function toDataTableColumns<T>(columns: Column<T>[]): ColumnDef<T>[] {
     enableSorting: !!column.accessor,
     enableHiding:
       column.hideable ?? (column.role !== "title" && column.role !== "actions"),
-    meta: { label: column.header, className: column.className },
+    meta: {
+      label: column.header,
+      className: column.className,
+      calculationType: column.calculationType,
+      formatCalculation: column.formatCalculation,
+    },
   }));
 }
 

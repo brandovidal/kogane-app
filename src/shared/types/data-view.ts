@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { DataTableCalculation, DataTableCalculationState } from "./data-table-calculation";
 
 export type ViewMode = "table" | "cards";
 
@@ -10,6 +11,8 @@ export interface Column<T> {
   cell: (item: T) => ReactNode;
   role?: "title" | "amount" | "actions" | "meta";
   className?: string;
+  calculationType?: "number" | "text" | false;
+  formatCalculation?: (value: number) => string;
   accessor?: (item: T) => string | number | null | undefined;
   hideable?: boolean;
 }
@@ -20,10 +23,18 @@ export interface DataViewProps<T> {
   rowKey: (item: T) => string;
   view: ViewMode;
   footer?: ReactNode; // under the table, or under the cards
+  summary?: DataViewSummary;
+  calculationStorageKey?: string;
+  calculationDefaults?: Record<string, DataTableCalculation>;
+  calculationState?: DataTableCalculationState;
   extraCard?: ReactNode; // e.g. the dashed "Nueva plataforma" card
   compactCards?: boolean;
   // Selección múltiple (D115): a checkbox per row (and one for all in the table header)
   selected?: Set<string>;
   onSelectedChange?: (selected: Set<string>) => void;
   selectionDisabled?: boolean;
+}
+
+export interface DataViewSummary {
+  label?: ReactNode;
 }
