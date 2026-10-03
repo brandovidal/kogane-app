@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { activePanelCount, applyExpenseFilters, hasActiveFilters, usesPanel } from "@/features/expenses/lib/expense-filters";
+import { activePanelCount, applyExpenseFilters, hasActiveFilters, PERSON_ME, usesPanel } from "@/features/expenses/lib/expense-filters";
 
 const records = [
   { description: "Netflix", categoryId: "fun", paymentMethodId: "io", expenseType: "essential", paymentStatus: "pending", period: "monthly", installment: null, othersShare: 32 },
@@ -27,12 +27,13 @@ describe("expense filters (D79)", () => {
     expect(applyExpenseFilters(records, { shared: "no" })).toHaveLength(2);
   });
 
-  it("should show only the default person until another one (or everyone) is chosen (D80)", () => {
+  it("should show everyone unless a person is chosen, with PERSON_ME meaning the default person (D80)", () => {
     const people = [
       { description: "Mío", personId: "me" },
       { description: "De Danery", personId: "danery" },
     ];
-    expect(applyExpenseFilters(people, {}, "me").map((r) => r.description)).toEqual(["Mío"]);
+    expect(applyExpenseFilters(people, {}, "me")).toHaveLength(2);
+    expect(applyExpenseFilters(people, { person: PERSON_ME }, "me").map((r) => r.description)).toEqual(["Mío"]);
     expect(applyExpenseFilters(people, { person: "all" }, "me")).toHaveLength(2);
     expect(applyExpenseFilters(people, { person: "danery" }, "me").map((r) => r.description)).toEqual(["De Danery"]);
   });

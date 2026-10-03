@@ -9,7 +9,7 @@ describe("menu", () => {
     const links = flattenNav(NAV);
     expect(links.filter((link) => link.group === "Registrar").map((link) => link.label)).toEqual([
       "Mensajes",
-      "Reconocimiento / Importación",
+      "Importación",
       "Borrador",
     ]);
     expect(links.map((link) => link.href)).toContain("/ingresos");
