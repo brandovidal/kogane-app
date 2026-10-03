@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { FixedCost } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { cn } from "@/shared/utils/cn";
@@ -36,7 +36,7 @@ export function FixedCostMonthOverview({
     return (
       <section aria-label="Resumen del período" aria-busy="true" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
-          <div key={index} className="space-y-3 rounded-2xl border bg-card px-4 py-3.5">
+          <div key={index} className="space-y-3 rounded-xl border border-border/80 bg-card px-4 py-3.5">
             <div className="h-3 w-24 animate-pulse rounded bg-muted" />
             <div className="h-7 w-32 animate-pulse rounded bg-muted" />
             <div className="h-3 w-20 animate-pulse rounded bg-muted" />
@@ -55,8 +55,9 @@ export function FixedCostMonthOverview({
     key: FixedCostStatusScope,
     label: string,
     amount: number,
-    detail: React.ReactNode,
+    detail: ReactNode,
     amountClass?: string,
+    dotClass?: string,
   ) => (
     <button
       type="button"
@@ -64,12 +65,15 @@ export function FixedCostMonthOverview({
       aria-pressed={scope === key}
       onClick={() => onScopeChange(key)}
       className={cn(
-        "min-w-0 rounded-2xl border bg-card px-4 py-3.5 text-left transition-colors hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        scope === key && "border-brand/50 ring-[3px] ring-brand/15",
+        "min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5 text-left transition-colors hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        scope === key && "border-brand/50 bg-brand/10 ring-2 ring-brand/15 dark:bg-indigo-300/10",
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="eyebrow">{label}</span>
+        <span className="eyebrow inline-flex items-center gap-2">
+          {dotClass && <span aria-hidden="true" className={cn("size-1.5 rounded-full", dotClass)} />}
+          {label}
+        </span>
         {scope === key && <span className="text-xs font-medium text-brand">Mostrando</span>}
       </div>
       <div className={cn("mt-1.5 text-2xl font-semibold tracking-tight tabular-nums", amountClass)}>{formatCurrency(amount)}</div>
@@ -84,8 +88,12 @@ export function FixedCostMonthOverview({
         "payable",
         "Por pagar",
         summary.payable,
-        <span>Por iniciar {summary.notStartedCount} · En curso {summary.inProgressCount}</span>,
+        <span className="flex flex-wrap gap-1.5">
+          <span className="rounded-full border px-2 py-0.5 leading-none">Por iniciar {summary.notStartedCount}</span>
+          <span className="rounded-full border px-2 py-0.5 leading-none">En curso {summary.inProgressCount}</span>
+        </span>,
         summary.payableCount ? "text-amber-600 dark:text-amber-300" : undefined,
+        "bg-amber-400",
       )}
       {metric(
         "completed",
@@ -94,16 +102,17 @@ export function FixedCostMonthOverview({
         <>
           <span className="mb-1 block h-1 overflow-hidden rounded-full bg-muted">
             <span
-              className="block h-full rounded-full bg-emerald-500 dark:bg-emerald-300"
+              className="block h-full rounded-full bg-brand"
               style={{ width: `${summary.totalCount ? (summary.completedCount / summary.totalCount) * 100 : 0}%` }}
             />
           </span>
           {summary.completedCount} de {summary.totalCount}
           {summary.totalCount > 0 && summary.completedCount === summary.totalCount ? " · todo al día" : " · pagado, abonado o exonerado"}
         </>,
-        summary.completedCount ? "text-emerald-600 dark:text-emerald-300" : undefined,
+        summary.completedCount ? "text-emerald-600 dark:text-emerald-400" : undefined,
+        "bg-emerald-400",
       )}
-      <div className="min-w-0 rounded-2xl border bg-card px-4 py-3.5">
+      <div className="min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5">
         <div className="eyebrow">Próximo vencimiento</div>
         <div className="mt-1.5 truncate text-xl font-semibold tracking-tight">
           {summary.nextDue ? `${summary.nextDue.description} · ${dueDisplay}` : "Sin pendientes"}

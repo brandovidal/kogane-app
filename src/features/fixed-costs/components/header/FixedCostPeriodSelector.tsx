@@ -68,18 +68,7 @@ export function FixedCostPeriodSelector() {
     if (next === "range") setRange(year * 12 + month - 3, year * 12 + month - 1);
     if (next === "all") write({ month: undefined, year: undefined });
   };
-  const step = (delta: number) => {
-    if (mode === "year") setYear(year + delta);
-    else setMonth(year * 12 + month - 1 + delta);
-  };
-
-  if (scope === "none")
-    return (
-      <span className="hidden h-9 items-center gap-2 rounded-lg border px-3 text-sm text-muted-foreground sm:inline-flex">
-        <CalendarDays className="size-4" />
-        Todos los meses
-      </span>
-    );
+  if (scope === "none") return null;
 
   const label =
     mode === "month"
@@ -119,19 +108,7 @@ export function FixedCostPeriodSelector() {
   ];
 
   return (
-    <div className="flex items-center gap-0.5">
-      {(mode === "month" || mode === "year") && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="hidden size-8 text-muted-foreground sm:inline-flex"
-          aria-label={mode === "year" ? "Año anterior" : "Mes anterior"}
-          onClick={() => step(-1)}
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-      )}
+    <div className="flex items-center">
       <Popover
         open={open}
         onOpenChange={(next) => {
@@ -143,7 +120,7 @@ export function FixedCostPeriodSelector() {
         <PopoverTrigger
           type="button"
           aria-label={`Período: ${label}. Cambiar mes, año o rango`}
-          className="inline-flex h-9 items-center gap-2 rounded-lg border bg-muted/40 px-3 text-sm font-semibold outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border/70 bg-muted/40 px-3.5 text-sm font-semibold outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
         >
           <CalendarDays className="size-4 text-muted-foreground" />
           {isCurrent && <span aria-label="Mes actual" className="size-1.5 rounded-full bg-brand" />}
@@ -231,18 +208,6 @@ export function FixedCostPeriodSelector() {
           )}
         </PopoverContent>
       </Popover>
-      {(mode === "month" || mode === "year") && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="hidden size-8 text-muted-foreground sm:inline-flex"
-          aria-label={mode === "year" ? "Año siguiente" : "Mes siguiente"}
-          onClick={() => step(1)}
-        >
-          <ChevronRight className="size-4" />
-        </Button>
-      )}
     </div>
   );
 }

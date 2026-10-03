@@ -103,6 +103,7 @@ export function ExpenseFilterFields({
             onChange={(next) => set("category", next)}
             width={width}
             searchable={panel}
+            multiple={panel}
             labelClassName="text-sm font-medium"
           />
         )}

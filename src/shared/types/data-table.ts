@@ -31,6 +31,7 @@ export interface DataTableQuery {
 
 export interface DataTableBasicProps<T> {
   table: Table<T>;
+  className?: string;
   loading?: boolean;
   error?: ReactNode;
   emptyMessage?: string;

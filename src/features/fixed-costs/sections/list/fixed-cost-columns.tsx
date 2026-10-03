@@ -40,6 +40,9 @@ export function getFixedCostColumns({
       cell: (cost) => (
         <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} />
       ),
+      cardCell: (cost) => (
+        <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} showThumbnail={false} />
+      ),
     },
     {
       key: "category",
@@ -48,11 +51,12 @@ export function getFixedCostColumns({
         categories.find((item) => item.id === cost.categoryId)?.name,
       cell: (cost) => {
         const category = categories.find((item) => item.id === cost.categoryId);
+        const isLoanCategory = category?.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("prestam");
         return category ? (
           <CategoryLabel
             name={category.name}
             icon={category.icon}
-            color={category.color}
+            color={isLoanCategory ? "#a5b4fc" : category.color}
             className="text-sm"
           />
         ) : (
@@ -88,9 +92,26 @@ export function getFixedCostColumns({
       key: "person",
       header: "Persona",
       accessor: (cost) => personName(cost.personId),
-      cell: (cost) => (
-        <span className="text-sm">{personName(cost.personId)}</span>
-      ),
+      cell: (cost) => {
+        const name = personName(cost.personId);
+        const initials = name
+          .split(/\s+/)
+          .slice(0, 2)
+          .map((part) => part[0])
+          .join("")
+          .toUpperCase();
+        return (
+          <span className="inline-flex items-center gap-2 text-sm">
+            <span
+              aria-hidden="true"
+              className="inline-flex size-6 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-foreground/90"
+            >
+              {initials}
+            </span>
+            {name}
+          </span>
+        );
+      },
     },
     {
       key: "due",

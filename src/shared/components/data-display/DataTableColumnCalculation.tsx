@@ -27,11 +27,11 @@ const labels: Record<DataTableCalculation, string> = {
 
 const shortLabels: Record<DataTableCalculation, string> = {
   none: "",
-  count: "TODO",
+  count: "COUNT",
   "count-values": "VAL",
   "count-unique": "ÚN",
   "count-empty": "VAC",
-  sum: "Σ",
+  sum: "SUM",
   average: "PROM",
   median: "MED",
   min: "MIN",

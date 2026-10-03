@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import type { Table } from "@tanstack/react-table";
 import {
   ArrowDownUp,
+  ArrowDown,
+  ArrowUp,
   ChevronDown,
   ChevronRight,
   Columns3,
@@ -12,6 +15,7 @@ import {
   Clock,
   Layers,
   Plus,
+  ReceiptText,
   SlidersHorizontal,
   Table2,
   Trash2,
@@ -24,6 +28,7 @@ import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filt
 import type { FixedCost } from "@/shared/api/types";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { ExportMenu, type ExportMenuItem } from "@/shared/components/toolbar/ExportMenu";
+import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
 import type { ViewMode } from "@/shared/types/data-view";
 import { cn } from "@/shared/utils/cn";
 import { Button } from "@/ui/button";
@@ -31,6 +36,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -82,38 +88,83 @@ export function FixedCostViewBar({
 }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div
-        role="tablist"
-        aria-label="Vistas"
-        className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 pb-1 sm:pb-0 [scrollbar-width:none]"
-      >
-        {FIXED_COST_VIEWS.map((view) => {
-          const Icon = VIEW_ICONS[view.value];
-          const active = view.value === page;
-          return (
-            <button
-              key={view.value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onPageChange(view.value)}
-              className={cn(
-                "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                active && "bg-accent text-foreground",
-              )}
-            >
-              <Icon className="size-4" />
-              {view.label}
-            </button>
-          );
-        })}
+      <div className="flex min-w-0 items-center gap-1">
+        <div
+          role="tablist"
+          aria-label="Vistas"
+          className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 pb-1 sm:pb-0 [scrollbar-width:none]"
+        >
+          {FIXED_COST_VIEWS.map((view) => {
+            const Icon = VIEW_ICONS[view.value];
+            const active = view.value === page;
+            return (
+              <button
+                key={view.value}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => onPageChange(view.value)}
+                className={cn(
+                  "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  active && "bg-accent text-foreground ring-1 ring-border/70",
+                )}
+              >
+                <Icon className="size-4" />
+                {view.label}
+              </button>
+            );
+          })}
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          title="Más vistas: próximamente"
+          aria-label="Más vistas, próximamente"
+          className="rounded-md border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
+          onClick={() => toast.info("La creación de vistas personalizadas estará disponible próximamente.")}
+        >
+          <Plus className="size-4" />
+        </Button>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <ExportMenu items={exportItems} />
-        <Button size="sm" className="h-9 gap-1 px-4" onClick={onCreate} aria-label="Crear costo fijo">
-          <Plus className="size-4" />
-          Crear
-        </Button>
+        <ExportMenu items={exportItems} label="Más opciones" iconOnly />
+        <div className="inline-flex items-center">
+          <Button
+            type="button"
+            size="sm"
+            className="fixed-costs-create-button h-9 gap-1 rounded-l-lg rounded-r-none px-4"
+            onClick={onCreate}
+            aria-label="Crear costo fijo"
+          >
+            <Plus className="size-4" />
+            Crear
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
+                className="fixed-costs-create-button fixed-costs-create-menu-button h-9 w-9 rounded-l-none rounded-r-lg border-l"
+                aria-label="Más opciones para crear"
+              >
+                <ChevronDown className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-44">
+              <DropdownMenuItem onSelect={onCreate}>
+                <CalendarDays className="size-4" />
+                Costo fijo
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => newExpenseStore.getState().openWith({ destination: "daily" })}
+              >
+                <ReceiptText className="size-4" />
+                Gasto general
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </div>
   );
@@ -139,7 +190,7 @@ function ToolbarButton({
       type="button"
       variant="ghost"
       size="sm"
-      className={cn("h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground", active && "bg-accent text-foreground")}
+      className={cn("h-8 gap-1.5 rounded-md border border-transparent px-2 text-muted-foreground hover:border-border/60 hover:text-foreground", active && "border-border/70 bg-accent text-foreground")}
       {...props}
     >
       <Icon className="size-4" />
@@ -161,6 +212,7 @@ export interface FixedCostToolbarProps {
   onGroupByChange: (groupBy: FixedCostGroupBy) => void;
   sort?: string;
   onSortChange: (sort: string | undefined) => void;
+  onResetView: () => void;
   view: ViewMode;
   onViewChange: (view: ViewMode) => void;
   table?: Table<FixedCost>;
@@ -184,6 +236,7 @@ export function FixedCostToolbar({
   onGroupByChange,
   sort,
   onSortChange,
+  onResetView,
   view,
   onViewChange,
   table,
@@ -197,6 +250,7 @@ export function FixedCostToolbar({
   const filterCount = countActiveExpenseFilters(filters, panelFields);
   const sortOption = findFixedCostSort(sort);
   const appliedCount = filterCount + (sortOption ? 1 : 0) + groupBy.length;
+  const hasViewSettings = filterCount > 0 || !!filters.q?.trim() || !!sortOption || groupBy.length > 0;
   const hideable = table?.getAllLeafColumns().filter((column) => column.getCanHide()) ?? [];
   const visible = hideable.filter((column) => column.getIsVisible()).length;
   const filtersWithoutPeriod = { ...filters, month: undefined, year: undefined };
@@ -210,6 +264,7 @@ export function FixedCostToolbar({
           <SearchField
             className="w-full sm:w-56"
             placeholder="Buscar"
+            shortcut="/"
             value={filters.q ?? ""}
             onChange={(next) => onFiltersChange({ ...filters, q: next || undefined })}
           />
@@ -313,7 +368,7 @@ export function FixedCostToolbar({
             </DropdownMenu>
           )}
           {canChangeLayout && (
-            <div role="radiogroup" aria-label="Diseño" className="flex items-center gap-0.5 rounded-lg border p-0.5">
+            <div role="radiogroup" aria-label="Diseño" className="flex items-center gap-0.5 rounded-md border border-border/80 p-0.5">
               {(
                 [
                   ["table", "Tabla", Table2],
@@ -327,8 +382,8 @@ export function FixedCostToolbar({
                   aria-checked={view === mode}
                   onClick={() => onViewChange(mode)}
                   className={cn(
-                    "inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                    view === mode && "bg-accent text-foreground",
+                    "inline-flex h-7 items-center gap-1.5 rounded-sm px-2 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                    view === mode && "bg-accent text-foreground ring-1 ring-border/70",
                   )}
                 >
                   <Icon className="size-4" />
@@ -341,30 +396,73 @@ export function FixedCostToolbar({
       </div>
 
       {showApplied && appliedCount > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed px-3 py-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-dashed px-3 py-2">
           {sortOption && (
-            <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-brand/40 bg-brand/10 pl-2.5 pr-1 text-xs font-medium text-brand">
-              <ArrowDownUp className="size-3" />
-              {sortOption.label}
-              <button
-                type="button"
-                aria-label="Quitar orden"
-                onClick={() => onSortChange(undefined)}
-                className="inline-flex size-5 items-center justify-center rounded-full hover:bg-brand/20"
-              >
-                <X className="size-3" />
-              </button>
-            </span>
+            <div className="flex items-center gap-2 border-r pr-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Orden</span>
+              <span className="inline-flex h-7 items-center gap-1 rounded-full border border-brand/40 bg-brand/10 pl-2.5 pr-1 text-xs font-medium text-brand">
+                {sortOption.desc ? <ArrowDown className="size-3" /> : <ArrowUp className="size-3" />}
+                {sortOption.label.split(":")[0]}
+                <button
+                  type="button"
+                  aria-label="Quitar orden"
+                  onClick={() => onSortChange(undefined)}
+                  className="inline-flex size-5 items-center justify-center rounded-full hover:bg-brand/20"
+                >
+                  <X className="size-3" />
+                </button>
+              </span>
+            </div>
           )}
-          <ActiveExpenseFilterChips
-            fields={panelFields}
-            value={filtersWithoutPeriod}
-            onChange={(next) => onFiltersChange({ ...next, month: filters.month, year: filters.year, q: filters.q })}
-            me={me}
-            groupBy={groupBy}
-            onGroupByChange={onGroupByChange}
-            groupByLabels={FIXED_COST_GROUP_LABELS}
-          />
+          {groupBy.length > 0 && (
+            <div className="flex items-center gap-2 border-r pr-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Agrupar</span>
+              <ActiveExpenseFilterChips
+                fields={[]}
+                value={filtersWithoutPeriod}
+                onChange={() => undefined}
+                groupBy={groupBy}
+                onGroupByChange={onGroupByChange}
+                groupByLabels={FIXED_COST_GROUP_LABELS}
+                tone="brand"
+                collapsible={false}
+                showClearAll={false}
+              />
+            </div>
+          )}
+          {filterCount > 0 && (
+            <div className="flex min-w-0 items-center gap-2 border-r pr-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Filtros</span>
+              <ActiveExpenseFilterChips
+                fields={panelFields}
+                value={filtersWithoutPeriod}
+                onChange={(next) => onFiltersChange({ ...next, month: filters.month, year: filters.year, q: filters.q })}
+                me={me}
+                tone="brand"
+                maxVisibleItems={3}
+                collapsible={false}
+              />
+            </div>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            className="h-7 shrink-0 gap-1 text-muted-foreground"
+            onClick={() => setSheetOpen(true)}
+          >
+            <Plus className="size-3.5" /> Filtro
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            className="ml-auto h-7 shrink-0 text-muted-foreground"
+            disabled={!hasViewSettings}
+            onClick={onResetView}
+          >
+            Restablecer vista
+          </Button>
         </div>
       )}
 
@@ -425,6 +523,9 @@ function FixedCostFilterSheet({
             value={{ ...filters, month: undefined, year: undefined }}
             onChange={(next) => onFiltersChange({ ...next, month: filters.month, year: filters.year, q: filters.q })}
             me={me}
+            tone="brand"
+            maxVisibleItems={3}
+            collapsible={false}
           />
         </SheetHeader>
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">

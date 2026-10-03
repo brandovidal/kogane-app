@@ -48,6 +48,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
         : filters.person;
   const dueFrom = filters.dueFrom || null;
   const dueTo = filters.dueTo || null;
+  const categories = filters.category?.split(",").filter(Boolean) ?? [];
   return records.filter(
     (record) =>
       (!person || record.personId === person) &&
@@ -55,7 +56,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
         [record.description, record.merchant, record.notes].some(
           (text) => text && fold(text).includes(q),
         )) &&
-      (!filters.category || record.categoryId === filters.category) &&
+      (!categories.length || categories.includes(record.categoryId ?? "")) &&
       (!filters.method || record.paymentMethodId === filters.method) &&
       (!filters.currency || record.currency === filters.currency) &&
       (!filters.type || record.expenseType === filters.type) &&

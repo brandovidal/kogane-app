@@ -12,9 +12,11 @@ export function DataView<T>({
   summary,
   calculationStorageKey,
   calculationDefaults,
+  tableClassName,
   calculationState,
   extraCard,
   compactCards = false,
+  cardRenderer,
   selected,
   onSelectedChange,
   selectionDisabled,
@@ -37,8 +39,10 @@ export function DataView<T>({
     return (
       <div className="space-y-3">
         {summary?.label && <div className="text-sm font-semibold">{summary.label}</div>}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {items.map((item) => cardRenderer ? (
+            <div key={rowKey(item)}>{cardRenderer(item)}</div>
+          ) : (
             <Card
               key={rowKey(item)}
               className={[
@@ -105,6 +109,7 @@ export function DataView<T>({
       summary={summary}
       calculationStorageKey={calculationStorageKey}
       calculationDefaults={calculationDefaults}
+      tableClassName={tableClassName}
       calculationState={calculationState}
       selected={selected}
       onSelectedChange={onSelectedChange}

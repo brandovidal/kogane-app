@@ -14,9 +14,11 @@ export function GroupedDataView<T>({
   summaryForGroup,
   calculationStorageKey,
   calculationDefaults,
+  tableClassName,
   footer,
   extraCard,
   compactCards,
+  cardRenderer,
   selected,
   onSelectedChange,
   selectionDisabled,
@@ -43,9 +45,11 @@ export function GroupedDataView<T>({
         summary={summaryForGroup?.(items)}
         calculationStorageKey={calculationStorageKey}
         calculationDefaults={calculationDefaults}
+        tableClassName={tableClassName}
         calculationState={calculationState}
         extraCard={extraCard}
         compactCards={compactCards}
+        cardRenderer={cardRenderer}
         selected={selected}
         onSelectedChange={onSelectedChange}
         selectionDisabled={selectionDisabled}
@@ -73,9 +77,11 @@ export function GroupedDataView<T>({
                 summary={undefined}
                 calculationStorageKey={calculationStorageKey}
                 calculationDefaults={calculationDefaults}
+                tableClassName={tableClassName}
                 calculationState={calculationState}
                 extraCard={firstGroup ? (firstGroup = false, extraCard) : undefined}
                 compactCards={compactCards}
+                cardRenderer={cardRenderer}
                 selected={selected}
                 onSelectedChange={onSelectedChange}
                 selectionDisabled={selectionDisabled}

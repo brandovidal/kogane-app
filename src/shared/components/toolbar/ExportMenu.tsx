@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Ellipsis } from "lucide-react";
 
 import { Button } from "@/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
@@ -12,12 +12,27 @@ export interface ExportMenuItem {
   onSelect?: () => void;
 }
 
-export function ExportMenu({ items, label = "Exportar" }: { items: ExportMenuItem[]; label?: string }) {
+export function ExportMenu({
+  items,
+  label = "Exportar",
+  iconOnly = false,
+}: {
+  items: ExportMenuItem[];
+  label?: string;
+  iconOnly?: boolean;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9">
-          {label} <ChevronDown className="h-3.5 w-3.5" />
+        <Button
+          type="button"
+          variant="outline"
+          size={iconOnly ? "icon" : "sm"}
+          className={iconOnly ? "size-9 rounded-xl bg-background/50" : "h-9"}
+          aria-label={iconOnly ? label : undefined}
+          title={iconOnly ? label : undefined}
+        >
+          {iconOnly ? <Ellipsis className="size-4" /> : <>{label} <ChevronDown className="size-3.5" /></>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

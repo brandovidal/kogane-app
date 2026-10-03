@@ -46,6 +46,7 @@ export interface FilterSelectProps {
   allValue?: string;
   searchable?: boolean;
   active?: boolean;
+  multiple?: boolean;
 }
 
 const ALL = "__all__";
@@ -70,10 +71,11 @@ export function FilterSelect({
   allValue = ALL,
   searchable = false,
   active,
+  multiple = false,
 }: FilterSelectProps) {
   const isActive = active ?? (value != null && value !== "" && value !== allValue);
   const activeControlClass = isActive
-    ? "border-primary/60 bg-primary/5 ring-1 ring-primary/20"
+    ? "border-brand/60 bg-brand/5 ring-1 ring-brand/20"
     : undefined;
   const items = useMemo(
     () =>
@@ -84,12 +86,18 @@ export function FilterSelect({
     [allLabel, allValue, options],
   );
   const selectedOption = options.find((option) => option.value === value);
+  const selectedValues = multiple
+    ? (value?.split(",").filter(Boolean) ?? [])
+    : [];
+  const selectedOptions = multiple
+    ? options.filter((option) => selectedValues.includes(option.value))
+    : [];
   const hasSearchTerms = options.some((option) => option.searchTerms?.length);
 
   return (
     <div className="block min-w-0 space-y-1.5">
       <div className={labelClassName}>
-        <FieldLabel icon={icon} className={isActive ? "text-primary" : undefined}>{label}</FieldLabel>
+        <FieldLabel icon={icon} className={isActive ? "text-brand" : undefined}>{label}</FieldLabel>
       </div>
       {description && (
         <p className="text-xs text-muted-foreground">{description}</p>
@@ -98,18 +106,24 @@ export function FilterSelect({
         <Combobox
           items={items}
           filter={hasSearchTerms ? matchesOption : undefined}
-          value={value ?? allValue}
-          onValueChange={(next) =>
-            onChange(
-              next == null || next === allValue ? undefined : String(next),
-            )
-          }
+          multiple={multiple}
+          value={multiple ? selectedValues : value ?? allValue}
+          onValueChange={(next) => {
+            if (multiple) {
+              const nextValues = Array.isArray(next) ? next.map(String) : [];
+              if (nextValues.includes(allValue)) return onChange(undefined);
+              return onChange(nextValues.length ? nextValues.join(",") : undefined);
+            }
+            onChange(next == null || next === allValue ? undefined : String(next));
+          }}
           autoHighlight
         >
           <ComboboxTrigger aria-label={label} className={cn(width, activeControlClass)}>
-            {selectedOption?.decoration}
+            {!multiple && selectedOption?.decoration}
             <span className="min-w-0 flex-1 truncate text-left">
-              <ComboboxValue placeholder={allLabel} />
+              {multiple
+                ? selectedOptions.map((option) => option.label).join(", ") || allLabel
+                : <ComboboxValue placeholder={allLabel} />}
             </span>
             <ChevronDown className="size-4 shrink-0 opacity-50" />
           </ComboboxTrigger>
@@ -129,7 +143,7 @@ export function FilterSelect({
             </div>
             <ComboboxList className="max-h-60 overflow-y-auto p-1">
               {(option: FilterSelectOption) => (
-                <ComboboxItem key={option.value} value={option.value}>
+                  <ComboboxItem key={option.value} value={option.value}>
                   {option.decoration}
                   {option.label}
                   <ComboboxItemIndicator>

@@ -12,6 +12,7 @@ import { DataTablePagination } from "@/shared/components/data-display/DataTableP
 import { formatCurrency } from "@/shared/lib/currency";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import type { useFixedCostTable } from "../../hooks/useFixedCostTable";
+import { FixedCostCard } from "../../components/list/FixedCostCard";
 
 export interface FixedCostResultsSectionProps {
   items: FixedCost[];
@@ -66,8 +67,9 @@ export function FixedCostResultsSection({
     return (
       <DataTableComplex
         table={dataTable.table}
+        className="fixed-costs-table"
         calculationStorageKey="fixed-costs"
-        calculationDefaults={{ amount: "sum" }}
+        calculationDefaults={{ description: "count", amount: "sum" }}
         loading={loading}
         error={error ? "No se pudieron cargar los costos fijos." : undefined}
         emptyMessage={emptyMessage}
@@ -99,9 +101,24 @@ export function FixedCostResultsSection({
         view={view}
         groupBy={fields}
         compactCards
+        cardRenderer={(cost) => (
+          <FixedCostCard
+            cost={cost}
+            columns={dataTable.visibleColumns}
+            selected={dataTable.selected.has(cost.id)}
+            onSelectedChange={(checked) => {
+              const next = new Set(dataTable.selected);
+              if (checked) next.add(cost.id);
+              else next.delete(cost.id);
+              dataTable.onSelectedChange(next);
+            }}
+            selectionDisabled={pending}
+          />
+        )}
         summaryForGroup={summaryFor}
         calculationStorageKey="fixed-costs"
-        calculationDefaults={{ amount: "sum" }}
+        calculationDefaults={{ description: "count", amount: "sum" }}
+        tableClassName="fixed-costs-table"
         selected={dataTable.selected}
         onSelectedChange={dataTable.onSelectedChange}
         selectionDisabled={pending}

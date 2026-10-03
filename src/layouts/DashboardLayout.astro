@@ -14,9 +14,10 @@ interface Props {
   title?: string;
   /** Small uppercase label above the title, e.g. "Gastos". */
   section?: string;
+  mainClass?: string;
 }
 
-const { title = "Kogane", section } = Astro.props;
+const { title = "Kogane", section, mainClass } = Astro.props;
 const currentPath = Astro.url.pathname;
 // Views with their own month-based data get a local period control in the page body.
 // Debt and fixed-cost views expose period filters; Ingresos has its own month/year selectors.
@@ -56,7 +57,7 @@ const hasLocalPeriodControl = [
         </div>
       </header>
 
-      <main class="flex-1 overflow-y-auto p-4 md:p-6">
+      <main class:list={["flex-1 overflow-y-auto p-4 md:p-6", mainClass]}>
         {hasLocalPeriodControl && (
           <div class="mb-4 flex justify-end">
             <MonthNavigator client:idle />

@@ -14,6 +14,7 @@ import { FixedCostToolbar, FixedCostViewBar } from "../sections/list/FixedCostTo
 import { FixedCostInstallmentsView } from "../sections/list/FixedCostInstallmentsView";
 import { FixedCostStatusBoard } from "../sections/list/FixedCostStatusBoard";
 import { FixedCostEmptyMonth } from "../sections/list/FixedCostEmptyMonth";
+import { FixedCostPeriodSelector } from "../components/header/FixedCostPeriodSelector";
 import {
   URGENCY_GROUPS,
   localTodayKey,
@@ -58,6 +59,12 @@ export function FixedCostListView() {
       onGroupByChange={list.setGroupBy}
       sort={list.sort?.value}
       onSortChange={list.setSort}
+      onResetView={() => {
+        list.setFilters({ month: list.filters.month, year: list.filters.year });
+        list.setSort(undefined);
+        list.setGroupBy([]);
+        list.setScope("all");
+      }}
       view={list.view}
       onViewChange={list.setView}
       table={dataTable.table}
@@ -141,6 +148,9 @@ export function FixedCostListView() {
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end sm:hidden">
+        <FixedCostPeriodSelector />
+      </div>
       <FixedCostViewBar
         page={page}
         onPageChange={list.setPage}

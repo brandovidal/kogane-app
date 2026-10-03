@@ -4,11 +4,11 @@ import { Badge } from "@/ui/badge";
 import { AttachmentRecordThumbnail } from "@/features/attachments/components/AttachmentRecordThumbnail";
 import { parseInstallment } from "../../lib/fixed-cost-views";
 
-export function FixedCostName({ cost, onOpen }: { cost: FixedCost; onOpen: () => void }) {
+export function FixedCostName({ cost, onOpen, showThumbnail = true }: { cost: FixedCost; onOpen: () => void; showThumbnail?: boolean }) {
   const plan = parseInstallment(cost.installment);
   return (
     <div className="flex items-center gap-3">
-      <AttachmentRecordThumbnail refType="fixed_cost" refId={cost.id} label={cost.description} />
+      {showThumbnail && <AttachmentRecordThumbnail refType="fixed_cost" refId={cost.id} label={cost.description} showPlaceholder />}
       <div className="min-w-0">
         <div className="flex min-w-0 items-center gap-2">
           <button
