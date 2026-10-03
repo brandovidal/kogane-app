@@ -1,0 +1,195 @@
+import type { FixedCost } from "@/shared/api/types";
+import { getMonthName } from "@/shared/lib/dates";
+import { daysUntilDue, isCompletedFixedCost } from "./fixed-cost-summary";
+
+/** Saved views of the page, kept in `?vista=` so a link opens the same view. */
+export const FIXED_COST_VIEWS = [
+  { value: "mes", label: "Mes actual" },
+  { value: "por-pagar", label: "Por pagar" },
+  { value: "cuotas", label: "Cuotas" },
+  { value: "estado", label: "Por estado" },
+  { value: "todos", label: "Todos" },
+] as const;
+
+export type FixedCostView = (typeof FIXED_COST_VIEWS)[number]["value"];
+
+export const isFixedCostView = (value: unknown): value is FixedCostView =>
+  FIXED_COST_VIEWS.some((view) => view.value === value);
+
+/**
+ * How each view uses the period of the header: one month, one year,
+ * or every month (Por pagar and Cuotas look across months).
+ */
+export const FIXED_COST_VIEW_PERIOD: Record<FixedCostView, "month" | "year" | "none"> = {
+  mes: "month",
+  estado: "month",
+  todos: "year",
+  "por-pagar": "none",
+  cuotas: "none",
+};
+
+/** `YYYY-MM` → month index (year * 12 + month - 1), or null when invalid. */
+export function monthKeyIndex(value: string | undefined) {
+  const match = /^(\d{4})-(\d{2})$/.exec(value ?? "");
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) return null;
+  return year * 12 + month - 1;
+}
+
+export const monthIndexKey = (index: number) =>
+  `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`;
+
+export const costMonthIndex = (cost: Pick<FixedCost, "paymentMonth" | "paymentYear">) =>
+  cost.paymentYear * 12 + cost.paymentMonth - 1;
+
+export function filterByMonthRange(costs: FixedCost[], from?: string, to?: string) {
+  const start = monthKeyIndex(from);
+  const end = monthKeyIndex(to);
+  if (start == null && end == null) return costs;
+  return costs.filter((cost) => {
+    const index = costMonthIndex(cost);
+    return (start == null || index >= start) && (end == null || index <= end);
+  });
+}
+
+export function monthRangeLabel(from?: string, to?: string) {
+  const short = (index: number) =>
+    `${getMonthName((index % 12) + 1).slice(0, 3)} ${Math.floor(index / 12)}`;
+  const start = monthKeyIndex(from);
+  const end = monthKeyIndex(to);
+  if (start != null && end != null) {
+    if (Math.floor(start / 12) === Math.floor(end / 12))
+      return `${getMonthName((start % 12) + 1).slice(0, 3)} – ${short(end)}`;
+    return `${short(start)} – ${short(end)}`;
+  }
+  if (start != null) return `Desde ${short(start)}`;
+  if (end != null) return `Hasta ${short(end)}`;
+  return "Rango";
+}
+
+/** Sorting options of the "Ordenar" menu, kept in `?orden=`. */
+export const FIXED_COST_SORTS = [
+  { value: "vencimiento", label: "Vencimiento: más próximo", column: "due", desc: false },
+  { value: "-vencimiento", label: "Vencimiento: más lejano", column: "due", desc: true },
+  { value: "-monto", label: "Monto: mayor a menor", column: "amount", desc: true },
+  { value: "monto", label: "Monto: menor a mayor", column: "amount", desc: false },
+  { value: "descripcion", label: "Descripción: A → Z", column: "description", desc: false },
+] as const;
+
+export type FixedCostSort = (typeof FIXED_COST_SORTS)[number]["value"];
+
+export const findFixedCostSort = (value: string | undefined) =>
+  FIXED_COST_SORTS.find((sort) => sort.value === value);
+
+/** "13/36" → { current: 13, total: 36 }; null for single payments ("1/1") or invalid values. */
+export function parseInstallment(installment: string | null | undefined) {
+  const match = /^(\d{1,3})\/(\d{1,3})$/.exec(installment?.trim() ?? "");
+  if (!match) return null;
+  const current = Number(match[1]);
+  const total = Number(match[2]);
+  if (total < 2 || current < 1 || current > total) return null;
+  return { current, total, percent: Math.round((current / total) * 100) };
+}
+
+/** Groups of the "Por pagar" view, in display order. */
+export const URGENCY_GROUPS = [
+  { value: "overdue", label: "Vencidos" },
+  { value: "week", label: "Esta semana" },
+  { value: "month", label: "Próximos 30 días" },
+  { value: "later", label: "Después" },
+  { value: "undated", label: "Sin fecha de vencimiento" },
+] as const;
+
+export type UrgencyGroup = (typeof URGENCY_GROUPS)[number]["value"];
+
+export function urgencyOf(cost: FixedCost, todayKey: string): UrgencyGroup {
+  if (!cost.dueDate) return "undated";
+  const days = daysUntilDue(cost.dueDate, todayKey);
+  if (days == null) return "undated";
+  if (days < 0) return "overdue";
+  if (days <= 7) return "week";
+  if (days <= 30) return "month";
+  return "later";
+}
+
+/** Pending costs of every month, overdue first and then by due date. */
+export function payableByUrgency(costs: FixedCost[], todayKey: string) {
+  const order = new Map(URGENCY_GROUPS.map((group, index) => [group.value, index]));
+  return costs
+    .filter((cost) => !isCompletedFixedCost(cost))
+    .sort(
+      (a, b) =>
+        (order.get(urgencyOf(a, todayKey)) ?? 0) - (order.get(urgencyOf(b, todayKey)) ?? 0) ||
+        (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999"),
+    );
+}
+
+export interface InstallmentSeries {
+  key: string;
+  latest: FixedCost;
+  current: number;
+  total: number;
+  percent: number;
+  /** Installments already paid, counting the latest one when it is completed. */
+  paid: number;
+  remaining: number;
+  /** Month index when the last installment falls, assuming one per month. */
+  endIndex: number;
+  /** Remaining installments × the latest amount (no interest). */
+  estimatedBalance: number;
+}
+
+/**
+ * One row per debt paid in installments: the records of the same description,
+ * person and total of installments are one series; the most recent month wins.
+ */
+export function installmentSeries(costs: FixedCost[]): InstallmentSeries[] {
+  const latest = new Map<string, FixedCost>();
+  for (const cost of costs) {
+    const plan = parseInstallment(cost.installment);
+    if (!plan) continue;
+    const key = [cost.description.trim().toLowerCase(), cost.personId ?? "", plan.total].join("|");
+    const previous = latest.get(key);
+    if (!previous || costMonthIndex(cost) > costMonthIndex(previous)) latest.set(key, cost);
+  }
+  return [...latest.entries()]
+    .map(([key, cost]) => {
+      const plan = parseInstallment(cost.installment)!;
+      const paid = plan.current - (isCompletedFixedCost(cost) ? 0 : 1);
+      const remaining = plan.total - paid;
+      const amount = cost.amountInPen ?? cost.amount;
+      return {
+        key,
+        latest: cost,
+        current: plan.current,
+        total: plan.total,
+        percent: plan.percent,
+        paid,
+        remaining,
+        endIndex: costMonthIndex(cost) + (plan.total - plan.current),
+        estimatedBalance: Math.round(remaining * amount * 100) / 100,
+      };
+    })
+    .sort((a, b) => a.endIndex - b.endIndex);
+}
+
+export const monthGroupKey = (cost: FixedCost) => monthIndexKey(costMonthIndex(cost));
+
+export function monthGroupLabel(key: string) {
+  const index = monthKeyIndex(key);
+  if (index == null) return key;
+  return `${getMonthName((index % 12) + 1)} ${Math.floor(index / 12)}`;
+}
+
+export function localTodayKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+export function relativeDueLabel(days: number | null) {
+  if (days == null) return null;
+  if (days < 0) return `venció hace ${Math.abs(days)} ${Math.abs(days) === 1 ? "día" : "días"}`;
+  if (days === 0) return "vence hoy";
+  return `en ${days} ${days === 1 ? "día" : "días"}`;
+}

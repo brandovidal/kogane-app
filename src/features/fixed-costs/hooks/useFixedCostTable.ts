@@ -16,6 +16,7 @@ export function useFixedCostTable({
   rowSelection,
   onSelectionChange,
   pending,
+  sorting,
 }: {
   items: FixedCost[];
   categories: Category[];
@@ -26,6 +27,8 @@ export function useFixedCostTable({
   rowSelection: RowSelectionState;
   onSelectionChange: (selection: RowSelectionState) => void;
   pending: boolean;
+  /** Column and direction chosen in "Ordenar"; undefined keeps the order of the view. */
+  sorting?: { column: string; desc: boolean };
 }) {
   const columns = useMemo(
     () => getFixedCostColumns({ categories, personName, accountName, actions }),
@@ -39,7 +42,10 @@ export function useFixedCostTable({
     selectable: true,
     resetKey,
     selectionDisabled: pending,
-    state: { rowSelection },
+    state: {
+      rowSelection,
+      sorting: sorting ? [{ id: sorting.column, desc: sorting.desc }] : [],
+    },
     onRowSelectionChange: (updater) =>
       onSelectionChange(
         typeof updater === "function" ? updater(rowSelection) : updater,

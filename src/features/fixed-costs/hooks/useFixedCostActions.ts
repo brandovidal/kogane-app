@@ -8,6 +8,7 @@ import type { MoveSource } from "@/features/expenses/components/dialogs/MoveSeri
 import {
   duplicateBody,
   nextMonthBody,
+  previousMonthBody,
 } from "@/features/expenses/lib/expense-actions";
 import type { FixedCostActions } from "@/features/fixed-costs/types/fixed-cost-types";
 
@@ -17,10 +18,14 @@ export function useFixedCostActions() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FixedCost>();
   const [openedItem, setOpenedItem] = useState<FixedCost>();
+  const [openedTab, setOpenedTab] = useState<"detail" | "files" | "history">("detail");
   const [moving, setMoving] = useState<MoveSource | null>(null);
 
   const actions: FixedCostActions = {
-    onOpen: setOpenedItem,
+    onOpen: (cost, tab = "detail") => {
+      setOpenedTab(tab);
+      setOpenedItem(cost);
+    },
     onEdit: (cost) => {
       setEditingItem(cost);
       setOpenedItem(undefined);
@@ -32,6 +37,8 @@ export function useFixedCostActions() {
       }),
     onNextMonth: (cost) =>
       saveFixedCost.mutate({ id: cost.id, body: nextMonthBody(cost) }),
+    onPreviousMonth: (cost) =>
+      saveFixedCost.mutate({ id: cost.id, body: previousMonthBody(cost) }),
     onMove: (cost) =>
       setMoving({
         resource: EXPENSE_RESOURCES.fixedCost,
@@ -49,6 +56,7 @@ export function useFixedCostActions() {
     setDialogOpen,
     editingItem,
     openedItem,
+    openedTab,
     moving,
     onCreate: () => {
       setEditingItem(undefined);

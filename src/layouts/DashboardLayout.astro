@@ -12,9 +12,11 @@ import NavTooltipLayer from "@/layouts/components/navigation/NavTooltipLayer.ast
 
 interface Props {
   title?: string;
+  /** Small uppercase label above the title, e.g. "Gastos". */
+  section?: string;
 }
 
-const { title = "Kogane" } = Astro.props;
+const { title = "Kogane", section } = Astro.props;
 const currentPath = Astro.url.pathname;
 // Views with their own month-based data get a local period control in the page body.
 // Debt and fixed-cost views expose period filters; Ingresos has its own month/year selectors.
@@ -39,9 +41,16 @@ const hasLocalPeriodControl = [
       <header class="flex h-16 items-center justify-between border-b px-4 md:px-6">
         <div class="flex min-w-0 flex-1 items-center gap-2">
           <MobileNav currentPath={currentPath} />
-          <h1 class="truncate text-lg font-semibold">{title}</h1>
+          <div class="flex min-w-0 flex-col">
+            {section && <span class="eyebrow hidden sm:block">{section}</span>}
+            <div class="flex min-w-0 items-baseline gap-2.5">
+              <h1 class="truncate text-lg font-semibold tracking-tight">{title}</h1>
+              <slot name="title-extra" />
+            </div>
+          </div>
         </div>
         <div class="flex shrink-0 items-center gap-1 sm:gap-3">
+          <slot name="header-actions" />
           <NotificationBell client:idle currentPath={currentPath} />
           <UserMenu client:load />
         </div>

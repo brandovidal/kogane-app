@@ -16,6 +16,7 @@ import { FixedCostDetailRow } from "../../components/detail/FixedCostDetailRow";
 import { AttachmentGallery } from "@/features/attachments/components/AttachmentGallery";
 import { LinkifiedText } from "@/shared/components/data-display/LinkifiedText";
 import { cn } from "@/shared/utils/cn";
+import { parseInstallment } from "../../lib/fixed-cost-views";
 
 export interface FixedCostDetailOverviewSectionProps {
   fixedCost: FixedCost;
@@ -24,6 +25,8 @@ export interface FixedCostDetailOverviewSectionProps {
   accountName: string;
   actions?: ReactNode;
   className?: string;
+  /** The files have their own tab in the detail sheet; other uses keep them inline. */
+  showFiles?: boolean;
 }
 
 export function FixedCostDetailOverviewSection({
@@ -33,14 +36,14 @@ export function FixedCostDetailOverviewSection({
   accountName,
   actions,
   className,
+  showFiles = true,
 }: FixedCostDetailOverviewSectionProps) {
+  const plan = parseInstallment(fixedCost.installment);
   return (
     <div className={cn("min-w-0 space-y-5 p-4", className)}>
-      <section className="rounded-xl border bg-muted/20 p-4">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Monto del registro
-        </p>
-        <div className="text-xl tabular-nums">
+      <section className="rounded-2xl border bg-muted/20 p-4">
+        <p className="eyebrow mb-2">Monto del registro</p>
+        <div className="text-2xl font-semibold tracking-tight tabular-nums">
           <CurrencyDisplay
             amount={fixedCost.amount}
             currency={fixedCost.currency}
@@ -53,7 +56,7 @@ export function FixedCostDetailOverviewSection({
       {actions}
 
       <dl
-        className="space-y-1 rounded-xl border p-3"
+        className="space-y-1 rounded-2xl border p-3"
         aria-label="Datos del costo fijo"
       >
         <FixedCostDetailRow
@@ -101,8 +104,25 @@ export function FixedCostDetailOverviewSection({
         )}
       </dl>
 
+      {plan && (
+        <section className="space-y-2 rounded-2xl border p-4" aria-label="Avance de cuotas">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium">
+              Cuota {plan.current} de {plan.total}
+            </span>
+            <span className="tabular-nums text-muted-foreground">{plan.percent}%</span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
+            <span className="block h-full rounded-full bg-brand" style={{ width: `${plan.percent}%` }} />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {plan.total - plan.current} {plan.total - plan.current === 1 ? "cuota" : "cuotas"} después de esta
+          </p>
+        </section>
+      )}
+
       <section
-        className="min-w-0 rounded-xl border p-4"
+        className="min-w-0 rounded-2xl border p-4"
         aria-label="Observación"
       >
         <h3 className="mb-1 text-sm font-medium">Observación</h3>
@@ -110,8 +130,8 @@ export function FixedCostDetailOverviewSection({
           <LinkifiedText text={fixedCost.notes || "Sin observación."} />
         </p>
       </section>
-      <section
-        className="min-w-0 space-y-3 rounded-xl border p-4"
+      {showFiles && <section
+        className="min-w-0 space-y-3 rounded-2xl border p-4"
         aria-label="Archivos del registro"
       >
         <h3 className="flex items-center gap-2 text-sm font-medium">
@@ -123,7 +143,7 @@ export function FixedCostDetailOverviewSection({
           refType="fixed_cost"
           refId={fixedCost.id}
         />
-      </section>
+      </section>}
     </div>
   );
 }
