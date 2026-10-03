@@ -81,8 +81,7 @@ function LoginPageView() {
   if (!url) return null;
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#090a0c] px-4 py-8 text-white sm:px-8">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_20%,rgba(72,94,180,0.18),transparent_44%),radial-gradient(ellipse_at_90%_85%,rgba(45,150,135,0.12),transparent_38%)]" />
+    <main className="app-gradient app-gradient--dark relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 text-white sm:px-8">
       <div className="relative grid w-full max-w-5xl overflow-hidden rounded-[28px] border border-white/10 bg-[#101114]/95 shadow-2xl shadow-black/50 lg:min-h-[640px] lg:grid-cols-[1.05fr_0.95fr]">
         <section className="relative hidden flex-col justify-between overflow-hidden border-r border-white/10 bg-[#111318] p-10 lg:flex">
           <div aria-hidden="true" className="absolute -right-24 top-28 h-80 w-80 rounded-full border border-white/[0.06]" />

@@ -5,6 +5,7 @@ import { DataTableColumnCalculation } from "./DataTableColumnCalculation";
 import { useDataTableCalculations } from "@/shared/hooks/useDataTableCalculations";
 import { calculateTableColumn } from "@/shared/lib/data-table-calculations";
 import { DATA_TABLE_SELECTION_COLUMN } from "@/shared/constants/data-table";
+import { cn } from "@/shared/utils/cn";
 import {
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
 
 export function DataTableBasic<T>({
   table,
+  className,
   loading,
   error,
   emptyMessage = "Sin registros",
@@ -36,7 +38,7 @@ export function DataTableBasic<T>({
   const { selection: calculations, setCalculation } = calculationState ?? localCalculationState;
   return (
     <div
-      className="overflow-hidden rounded-md border"
+      className={cn("overflow-hidden rounded-md border", className)}
       aria-busy={loading || undefined}
     >
       <Table>
@@ -127,7 +129,7 @@ export function DataTableBasic<T>({
             ))
           )}
         </TableBody>
-        {calculationStorageKey && (
+        {calculationStorageKey && !loading && !error && (
           <TableFooter>
             <TableRow>
               {table.getVisibleLeafColumns().map((column) => {
@@ -150,7 +152,7 @@ export function DataTableBasic<T>({
                   : formatted ?? new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 }).format(result);
                 return (
                   <TableCell key={column.id} className={`${meta.className ?? ""} group/calculation-cell`}>
-                    <div className="flex justify-end">
+                    <div className={cn("flex", meta.className?.includes("text-right") ? "justify-end" : "justify-start")}>
                       <DataTableColumnCalculation
                         value={result}
                         calculation={calculation}

@@ -1,8 +1,14 @@
 ---
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
 import { FixedCostListPage } from "@/features/fixed-costs";
+import { FixedCostPeriodSelector, FixedCostRecordCount } from "@/features/fixed-costs/components/header";
+import "@/features/fixed-costs/styles/fixed-cost-list.css";
 ---
 
-<DashboardLayout title="Costos Fijos">
+<DashboardLayout title="Costos fijos" section="Gastos" mainClass="app-gradient fixed-costs-canvas">
+  <FixedCostRecordCount slot="title-extra" client:load />
+  <div slot="header-actions" class="hidden sm:block">
+    <FixedCostPeriodSelector client:load />
+  </div>
   <FixedCostListPage client:load />
 </DashboardLayout>

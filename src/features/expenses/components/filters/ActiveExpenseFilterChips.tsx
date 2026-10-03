@@ -35,6 +35,10 @@ export interface ActiveExpenseFilterChipsProps<T extends string | string[] = str
   groupByLabel?: string;
   groupByLabels?: Record<string, string>;
   periodChip?: { label: string; onRemove: () => void };
+  tone?: "default" | "brand";
+  maxVisibleItems?: number;
+  collapsible?: boolean;
+  showClearAll?: boolean;
 }
 
 export function ActiveExpenseFilterChips<T extends string | string[] = string>({
@@ -47,6 +51,10 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   groupByLabel,
   groupByLabels,
   periodChip,
+  tone,
+  maxVisibleItems,
+  collapsible = true,
+  showClearAll = true,
 }: ActiveExpenseFilterChipsProps<T>) {
   const categories = useCategories().data ?? [];
   const methods = usePaymentMethods().data ?? [];
@@ -62,7 +70,11 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
         ? `Persona: ${value.person === PERSON_ME ? PERSON_FILTER_LABELS.ME : value.person === me ? (people.find((person) => person.id === me)?.name ?? PERSON_FILTER_LABELS.ME) : (people.find((person) => person.id === value.person)?.name ?? value.person)}`
         : undefined,
     category: value.category
-      ? `Categoría: ${categories.find((category) => category.id === value.category)?.name ?? value.category}`
+      ? `Categoría: ${value.category
+          .split(",")
+          .filter(Boolean)
+          .map((id) => categories.find((category) => category.id === id)?.name ?? id)
+          .join(", ")}`
       : undefined,
     method: value.method
       ? `Medio de pago: ${methods.find((method) => method.id === value.method)?.name ?? value.method}`
@@ -117,34 +129,42 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
     const groupFields = Array.isArray(groupBy)
       ? groupBy.map(String)
       : [String(groupBy)];
-    groupFields.forEach((field) => {
-      const label =
-        groupByLabels?.[field] ??
-        (Array.isArray(groupBy) ? field : groupByLabel ?? field);
+    if (Array.isArray(groupBy)) {
+      const labels = groupFields.map((field) =>
+        (groupByLabels?.[field] ?? field)
+          .replace(/^Por\s+/i, "")
+          .replace(/^./, (letter) => letter.toLocaleUpperCase()),
+      );
+      chips.push({
+        key: "group-by",
+        label: labels.join(" › "),
+        onRemove: () => onGroupByChange([] as T),
+        kind: "group",
+      });
+    } else {
+      const field = groupFields[0];
+      const label = groupByLabels?.[field] ?? groupByLabel ?? field;
       chips.push({
         key: `group-by-${field}`,
         label: `Agrupar: ${label}`,
-        onRemove: () =>
-          onGroupByChange(
-            (Array.isArray(groupBy)
-              ? groupBy.filter((item) => String(item) !== field)
-              : "none") as T,
-          ),
+        onRemove: () => onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T),
         kind: "group",
       });
-    });
+    }
   }
   return (
     <AppliedFilterChips
       items={chips}
       ariaLabel="Filtros y agrupación activos"
-      collapsible
-      onClearAll={() => {
+      collapsible={collapsible}
+      tone={tone}
+      maxVisibleItems={maxVisibleItems}
+      onClearAll={showClearAll ? () => {
         onChange({});
         if (isGrouped && onGroupByChange) {
           onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T);
         }
-      }}
+      } : undefined}
     />
   );
 }

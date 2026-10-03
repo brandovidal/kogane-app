@@ -9,6 +9,7 @@ export interface Column<T> {
   key: string;
   header: string;
   cell: (item: T) => ReactNode;
+  cardCell?: (item: T) => ReactNode;
   role?: "title" | "amount" | "actions" | "meta";
   className?: string;
   calculationType?: "number" | "text" | false;
@@ -27,8 +28,11 @@ export interface DataViewProps<T> {
   calculationStorageKey?: string;
   calculationDefaults?: Record<string, DataTableCalculation>;
   calculationState?: DataTableCalculationState;
+  tableClassName?: string;
   extraCard?: ReactNode; // e.g. the dashed "Nueva plataforma" card
   compactCards?: boolean;
+  /** Feature-specific card layout; receives the item while shared grouping/selection stay intact. */
+  cardRenderer?: (item: T) => ReactNode;
   // Selección múltiple (D115): a checkbox per row (and one for all in the table header)
   selected?: Set<string>;
   onSelectedChange?: (selected: Set<string>) => void;

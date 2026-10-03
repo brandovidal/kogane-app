@@ -13,10 +13,11 @@ export type FixedCostGroupBy = FixedCostGroupField[];
 export type CatalogName = (id?: string | null) => string;
 
 export interface FixedCostActions {
-  onOpen: (cost: FixedCost) => void;
+  onOpen: (cost: FixedCost, tab?: "detail" | "files" | "history") => void;
   onEdit: (cost: FixedCost) => void;
   onDuplicate: (cost: FixedCost) => void;
   onNextMonth: (cost: FixedCost) => void;
+  onPreviousMonth: (cost: FixedCost) => void;
   onMove: (cost: FixedCost) => void;
   onDelete: (cost: FixedCost) => void | Promise<unknown>;
   onStatusChange: (cost: FixedCost, status: string) => void;

@@ -1,0 +1,38 @@
+.fixed-costs-table {
+  border-radius: 1.25rem;
+  background-color: var(--card);
+}
+
+.fixed-costs-table [data-slot="table-header"],
+.fixed-costs-table [data-slot="table-footer"] {
+  background-color: color-mix(in srgb, var(--card) 97%, var(--foreground) 3%);
+}
+
+.fixed-costs-table [data-slot="table-head"] {
+  color: var(--muted-foreground);
+}
+
+.fixed-costs-table [data-slot="table-cell"] {
+  padding-block: 0.65rem;
+}
+
+.fixed-costs-table [data-slot="table-footer"] [data-slot="table-cell"] {
+  padding-block: 0.55rem;
+}
+
+.fixed-costs-thumbnail-placeholder {
+  background: repeating-linear-gradient(45deg, #aab2bd 0 4px, #d7dce3 4px 8px);
+}
+
+.dark .fixed-costs-create-button {
+  background-color: #fff;
+  color: #101114;
+}
+
+.dark .fixed-costs-create-button:hover {
+  background-color: #e9eaed;
+}
+
+.dark .fixed-costs-create-menu-button {
+  border-color: rgba(16, 17, 20, 0.18);
+}

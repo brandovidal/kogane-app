@@ -13,6 +13,7 @@ export function DataViewTable<T>({
   summary,
   calculationStorageKey,
   calculationDefaults,
+  tableClassName,
   calculationState,
   selected,
   onSelectedChange,
@@ -46,6 +47,7 @@ export function DataViewTable<T>({
   return (
     <DataTableBasic
       table={table}
+      className={tableClassName}
       footer={footer}
       calculationStorageKey={calculationStorageKey}
       calculationDefaults={calculationDefaults}
