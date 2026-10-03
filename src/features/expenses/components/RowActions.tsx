@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ArrowRightLeft,
+  CalendarArrowDown,
   CalendarArrowUp,
   Check,
   Copy,
@@ -39,11 +40,17 @@ export interface RowActionsProps {
   onEdit?: () => void;
   onDuplicate?: () => void;
   onNextMonth?: () => void;
+  onPreviousMonth?: () => void;
+  /** Labels of the target months, e.g. "Noviembre 2026", shown under "Transferir". */
+  monthLabels?: { previous?: string; next?: string };
   onMove?: () => void; // Transferir la serie entre Costos fijos, Recurrentes y Plataformas
   onDelete?: () => void | Promise<unknown>;
   files?: { refType: AttachmentRefType; refId: string }; // boleta, recibo, contrato (P27, D100)
   history?: { entity: string; id: string }; // the table (exp_fixed_costs) and the row (P29)
   status?: PaymentStatusMenuProps;
+  /** Open files / history somewhere else (e.g. a tab of the detail sheet) instead of the dialogs. */
+  onOpenFiles?: () => void;
+  onOpenHistory?: () => void;
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
@@ -52,11 +59,15 @@ export function RowActions({
   onEdit,
   onDuplicate,
   onNextMonth,
+  onPreviousMonth,
+  monthLabels,
   onMove,
   onDelete,
   files,
   history,
   status,
+  onOpenFiles,
+  onOpenHistory,
 }: RowActionsProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -107,7 +118,7 @@ export function RowActions({
               </DropdownMenuItem>
             )}
           {status && <PaymentStatusMenu {...status} />}
-          {(onNextMonth || onMove) && (
+          {(onNextMonth || onPreviousMonth || onMove) && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuSub>
@@ -115,9 +126,26 @@ export function RowActions({
                   <ArrowRightLeft /> Transferir
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
+                  {onPreviousMonth && (
+                    <DropdownMenuItem onSelect={onPreviousMonth}>
+                      <CalendarArrowDown />
+                      <span className="flex flex-col">
+                        Mover al mes anterior
+                        {monthLabels?.previous && (
+                          <span className="text-xs text-muted-foreground">{monthLabels.previous}</span>
+                        )}
+                      </span>
+                    </DropdownMenuItem>
+                  )}
                   {onNextMonth && (
                     <DropdownMenuItem onSelect={onNextMonth}>
-                      <CalendarArrowUp /> Mover al siguiente mes
+                      <CalendarArrowUp />
+                      <span className="flex flex-col">
+                        Mover al siguiente mes
+                        {monthLabels?.next && (
+                          <span className="text-xs text-muted-foreground">{monthLabels.next}</span>
+                        )}
+                      </span>
                     </DropdownMenuItem>
                   )}
                   {onMove && (
@@ -130,12 +158,12 @@ export function RowActions({
             </>
           )}
           {files && (
-            <DropdownMenuItem onSelect={() => setFilesOpen(true)}>
+            <DropdownMenuItem onSelect={() => (onOpenFiles ? onOpenFiles() : setFilesOpen(true))}>
               <Paperclip /> Archivos
             </DropdownMenuItem>
           )}
           {history && (
-            <DropdownMenuItem onSelect={() => setHistoryOpen(true)}>
+            <DropdownMenuItem onSelect={() => (onOpenHistory ? onOpenHistory() : setHistoryOpen(true))}>
               <History /> Historial
             </DropdownMenuItem>
           )}

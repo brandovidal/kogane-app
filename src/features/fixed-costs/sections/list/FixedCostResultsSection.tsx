@@ -24,6 +24,13 @@ export interface FixedCostResultsSectionProps {
   loading: boolean;
   error: boolean;
   pending: boolean;
+  /** Extra grouping set by the view (urgency in "Por pagar", month in "Todos"), before the user's groups. */
+  viewGroup?: {
+    field: string;
+    key: (cost: FixedCost) => string;
+    label: (key: string) => string;
+  };
+  emptyDescription?: string;
 }
 
 export function FixedCostResultsSection({
@@ -37,10 +44,13 @@ export function FixedCostResultsSection({
   loading,
   error,
   pending,
+  viewGroup,
+  emptyDescription,
 }: FixedCostResultsSectionProps) {
-  const emptyMessage = totalRecords
-    ? "No hay costos fijos con estos filtros"
-    : "No hay costos fijos en este mes";
+  const emptyMessage =
+    emptyDescription ??
+    (totalRecords ? "No hay costos fijos con estos filtros" : "No hay costos fijos en este período");
+  const fields = viewGroup ? [viewGroup.field, ...groupBy] : groupBy;
   const summaryFor = (records: FixedCost[]) => {
     const subtotal = totalsOf(records);
     return {
@@ -52,7 +62,7 @@ export function FixedCostResultsSection({
       ),
     };
   };
-  if (view === "table" && groupBy.length === 0)
+  if (view === "table" && fields.length === 0)
     return (
       <DataTableComplex
         table={dataTable.table}
@@ -87,7 +97,7 @@ export function FixedCostResultsSection({
         columns={dataTable.visibleColumns}
         rowKey={(cost) => cost.id}
         view={view}
-        groupBy={groupBy}
+        groupBy={fields}
         compactCards
         summaryForGroup={summaryFor}
         calculationStorageKey="fixed-costs"
@@ -96,12 +106,16 @@ export function FixedCostResultsSection({
         onSelectedChange={dataTable.onSelectedChange}
         selectionDisabled={pending}
         groupKey={(cost, field) =>
-          field === "person"
-            ? (cost.personId ?? "none")
-            : (cost.categoryId ?? "none")
+          viewGroup && field === viewGroup.field
+            ? viewGroup.key(cost)
+            : field === "person"
+              ? (cost.personId ?? "none")
+              : (cost.categoryId ?? "none")
         }
         groupLabel={(key, field) =>
-          key === "none"
+          viewGroup && field === viewGroup.field
+            ? viewGroup.label(key)
+            : key === "none"
             ? "Sin asignar"
             : field === "person"
               ? personName(key)

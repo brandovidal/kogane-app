@@ -1,8 +1,11 @@
 ---
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
 import { FixedCostListPage } from "@/features/fixed-costs";
+import { FixedCostPeriodSelector, FixedCostRecordCount } from "@/features/fixed-costs/components/header";
 ---
 
-<DashboardLayout title="Costos Fijos">
+<DashboardLayout title="Costos fijos" section="Gastos">
+  <FixedCostRecordCount slot="title-extra" client:load />
+  <FixedCostPeriodSelector slot="header-actions" client:load />
   <FixedCostListPage client:load />
 </DashboardLayout>

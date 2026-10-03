@@ -34,9 +34,11 @@ export function duplicateBody(resource: ExpenseResource, row: Row): Row {
 }
 
 // The same row in the next payment month (a fixed cost or a card charge that moves: "pasa al mes siguiente")
-export function nextMonthBody(row: { paymentMonth: number; paymentYear: number }) {
-  const index = row.paymentYear * 12 + (row.paymentMonth - 1) + 1;
+export function nextMonthBody(row: { paymentMonth: number; paymentYear: number }, delta = 1) {
+  const index = row.paymentYear * 12 + (row.paymentMonth - 1) + delta;
   return { paymentMonth: (index % 12) + 1, paymentYear: Math.floor(index / 12) };
 }
+
+export const previousMonthBody = (row: { paymentMonth: number; paymentYear: number }) => nextMonthBody(row, -1);
 
 export const isPaidStatus = (status: string) => ["paid", "waived", "cashback", "amortized", "skipped"].includes(status);

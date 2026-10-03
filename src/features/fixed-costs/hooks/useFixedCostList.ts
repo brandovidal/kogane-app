@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   nameById,
   useCategories,
@@ -21,6 +21,17 @@ import {
   filterFixedCostsByScope,
   type FixedCostStatusScope,
 } from "../lib/fixed-cost-summary";
+import {
+  FIXED_COST_VIEW_PERIOD,
+  costMonthIndex,
+  filterByMonthRange,
+  findFixedCostSort,
+  isFixedCostView,
+  localTodayKey,
+  payableByUrgency,
+  type FixedCostView,
+} from "../lib/fixed-cost-views";
+import { fixedCostHeaderStore } from "../stores/fixed-cost-header.store";
 
 const EMPTY_COSTS: FixedCost[] = [];
 
@@ -29,27 +40,54 @@ export function useFixedCostList() {
     FIXED_COST_FILTER_KEYS,
     { month: String(getCurrentMonth()), year: String(getCurrentYear()) },
   );
+  const [viewParams, setViewParams] = useUrlFilters<{
+    vista?: string;
+    orden?: string;
+    desde?: string;
+    hasta?: string;
+  }>(["vista", "orden", "desde", "hasta"]);
+  const page: FixedCostView = isFixedCostView(viewParams.vista) ? viewParams.vista : "mes";
+  const setPage = (next: FixedCostView) =>
+    setViewParams({ ...viewParams, vista: next === "mes" ? undefined : next });
+  const sort = findFixedCostSort(viewParams.orden);
+  const setSort = (next: string | undefined) => setViewParams({ ...viewParams, orden: next });
+  const periodScope = FIXED_COST_VIEW_PERIOD[page];
+  const hasRange = periodScope === "month" && !!(viewParams.desde || viewParams.hasta);
   const month = Number(filters.month);
   const year = Number(filters.year);
   const hasPeriod =
+    periodScope === "month" &&
+    !hasRange &&
     Number.isInteger(month) &&
     month >= 1 &&
     month <= 12 &&
     Number.isInteger(year) &&
     year >= 1 &&
     year <= 9999;
+  // One month asks the API for that month; years, ranges and the cross-month views load every record.
   const query = useExpenses(
     EXPENSE_RESOURCES.fixedCost,
     hasPeriod ? { month, year } : undefined,
   );
   const fixedCosts = query.data ?? EMPTY_COSTS;
+  const periodFilters = useMemo<ExpenseFilterValues>(() => {
+    if (periodScope === "none" || hasRange) return { ...filters, month: undefined, year: undefined };
+    if (periodScope === "year")
+      return { ...filters, month: undefined, year: filters.year || String(getCurrentYear()) };
+    return filters;
+  }, [filters, periodScope, hasRange]);
   const categories = useCategories().data ?? [];
   const personName = nameById(usePeople().data);
   const accountName = nameById(usePaymentMethods().data);
   const me = useMe();
   const baseFiltered = useMemo(
-    () => applyExpenseFilters(fixedCosts, filters, me),
-    [fixedCosts, filters, me],
+    () =>
+      filterByMonthRange(
+        applyExpenseFilters(fixedCosts, periodFilters, me),
+        hasRange ? viewParams.desde : undefined,
+        hasRange ? viewParams.hasta : undefined,
+      ),
+    [fixedCosts, periodFilters, me, hasRange, viewParams.desde, viewParams.hasta],
   );
   const [scopeParams, setScopeParams] = useUrlFilters<{ scope?: FixedCostStatusScope }>(["scope"]);
   const scope: FixedCostStatusScope =
@@ -59,9 +97,19 @@ export function useFixedCostList() {
   const setScope = (next: FixedCostStatusScope) =>
     setScopeParams(next === "all" ? {} : { scope: next });
   const filtered = useMemo(
-    () => filterFixedCostsByScope(baseFiltered, scope),
-    [baseFiltered, scope],
+    () =>
+      page === "por-pagar"
+        ? payableByUrgency(baseFiltered, localTodayKey())
+        : page === "todos"
+          ? [...filterFixedCostsByScope(baseFiltered, scope)].sort(
+              (a, b) => costMonthIndex(b) - costMonthIndex(a),
+            )
+          : filterFixedCostsByScope(baseFiltered, scope),
+    [baseFiltered, scope, page],
   );
+  useEffect(() => {
+    fixedCostHeaderStore.getState().setShown(query.isLoading ? null : filtered.length);
+  }, [filtered.length, query.isLoading]);
   const [view, setView] = useViewMode("fixed-costs", "table");
   const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
   const groupBy = (groupParams.group?.split(",") ?? []).filter(
@@ -96,6 +144,11 @@ export function useFixedCostList() {
     setFilters,
     filtered,
     baseFiltered,
+    page,
+    setPage,
+    sort,
+    setSort,
+    periodScope,
     scope,
     setScope,
     view,
@@ -105,6 +158,6 @@ export function useFixedCostList() {
     exportItems: csvExport.items,
     loading: query.isLoading,
     error: query.isError,
-    scopeKey: JSON.stringify([filters, scope]),
+    scopeKey: JSON.stringify([filters, scope, page, viewParams.desde, viewParams.hasta]),
   };
 }

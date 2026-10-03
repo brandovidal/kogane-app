@@ -5,10 +5,16 @@ import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { type Column } from "@/shared/types/data-view";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
-import { formatDate } from "@/shared/lib/dates";
 import { formatCurrency } from "@/shared/lib/currency";
 import { PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
+import { getMonthName } from "@/shared/lib/dates";
+
+const shiftedMonthLabel = (cost: FixedCost, delta: number) => {
+  const index = cost.paymentYear * 12 + cost.paymentMonth - 1 + delta;
+  return `${getMonthName((index % 12) + 1)} ${Math.floor(index / 12)}`;
+};
 import { FixedCostName } from "../../components/list/FixedCostName";
+import { FixedCostDue } from "../../components/list/FixedCostDue";
 import type {
   CatalogName,
   FixedCostActions,
@@ -90,11 +96,7 @@ export function getFixedCostColumns({
       key: "due",
       header: "Vencimiento",
       accessor: (cost) => cost.dueDate,
-      cell: (cost) => (
-        <span className="text-sm text-muted-foreground">
-          {cost.dueDate ? formatDate(cost.dueDate) : "—"}
-        </span>
-      ),
+      cell: (cost) => <FixedCostDue cost={cost} />,
     },
     {
       key: "account",
@@ -117,6 +119,13 @@ export function getFixedCostColumns({
           onEdit={() => actions.onEdit(cost)}
           onDuplicate={() => actions.onDuplicate(cost)}
           onNextMonth={() => actions.onNextMonth(cost)}
+          onPreviousMonth={() => actions.onPreviousMonth(cost)}
+          monthLabels={{
+            previous: shiftedMonthLabel(cost, -1),
+            next: shiftedMonthLabel(cost, 1),
+          }}
+          onOpenFiles={() => actions.onOpen(cost, "files")}
+          onOpenHistory={() => actions.onOpen(cost, "history")}
           onMove={() => actions.onMove(cost)}
           onDelete={() => actions.onDelete(cost)}
           status={{
