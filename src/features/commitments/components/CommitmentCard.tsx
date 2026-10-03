@@ -1,14 +1,14 @@
 import { CalendarClock, Paperclip, TriangleAlert } from "lucide-react";
 
 import type { Commitment } from "@/shared/api/types";
-import { COMMITMENT_KIND_LABELS, COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from "@/shared/labels";
+import { COMMITMENT_KIND_LABELS, COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from "@/features/commitments/constants/commitments";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
 import { Card, CardContent } from "@/ui/card";
 import { Progress } from "@/ui/progress";
 
-import { currentLabel, percentPaid } from "../commitment-view";
+import { currentLabel, percentPaid } from "@/features/commitments/lib/commitment-view";
 
 const Stat = ({ label, value, tone }: { label: string; value: string; tone?: string }) => (
   <div>

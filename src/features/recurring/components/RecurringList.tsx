@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { nameById, useCategories, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
-import { useGenerateRecurring } from "@/shared/api/hooks/calendar";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/features/expenses/hooks/expenses";
+import { useGenerateRecurring } from "@/features/recurring/hooks/recurring";
 import { usePeriod } from "@/shared/stores/period.store";
 import { toast } from "sonner";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
-import { RECURRING_TARGET_LABELS as TARGET_LABELS } from "@/shared/labels";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { RECURRING_TARGET_LABELS as TARGET_LABELS } from "@/features/recurring/constants/recurring";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { Card, CardContent } from "@/ui/card";
@@ -16,6 +16,7 @@ import { Plus, Trash2, Calendar, CalendarPlus } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { RecurringDialog } from "./RecurringDialog";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
 // Recurring templates (D88): kogane-api creates their pending rows on day 1 at 06:00; "Generar" does it now for the
 // month on screen, never twice
@@ -103,7 +104,7 @@ function RecurringListView() {
                   )}
                   {cat && (
                     <Badge style={{ backgroundColor: `${cat.color}20`, color: cat.color }}>
-                      {cat.name}
+                      <CategoryLabel name={cat.name} icon={cat.icon} color={cat.color} className="gap-1.5" />
                     </Badge>
                   )}
                   {rec.paymentMethodId && <Badge variant="secondary">{accountName(rec.paymentMethodId)}</Badge>}

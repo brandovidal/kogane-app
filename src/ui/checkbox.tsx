@@ -4,7 +4,7 @@ import * as React from "react"
 import { Checkbox as CheckboxPrimitive } from "radix-ui"
 import { CheckIcon, MinusIcon } from "lucide-react"
 
-import { cn } from "@/shared/lib/utils"
+import { cn } from "@/shared/utils/cn"
 
 // shadcn/ui new-york checkbox (D101); written by hand because `shadcn add` failed on 2026-09-25
 function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {

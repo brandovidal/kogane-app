@@ -17,6 +17,7 @@ export type RecurringExpense = Extract<ExpenseRecord, { dayOfMonth: number }>;
 
 export type Summary = DataOf<"SummaryResponseDto">;
 export type Debt = DataOf<"DebtListResponseDto">[number];
+export type DebtDetail = DataOf<"DebtDetailResponseDto">;
 
 // The path of each table in /v1/expenses/{resource}
 export const EXPENSE_RESOURCES = {

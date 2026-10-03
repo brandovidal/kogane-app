@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Copy, LogIn, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuthConfig, useImpersonate, useInviteUser, useMe, useRevokeInvite, useUpdateUser, useUsers } from "@/shared/api/hooks/auth";
+import { useAuthConfig, useImpersonate, useInviteUser, useMe, useRevokeInvite, useUpdateUser, useUsers } from "@/features/auth/hooks/auth";
 import { formatDate } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";

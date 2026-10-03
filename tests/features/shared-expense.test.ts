@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { toDraftBody } from "@/features/drafts/draft-form";
-import { paidAndOwn, shareParts, totalsOf } from "@/shared/lib/shared-expense";
+import { toDraftBody } from "@/features/drafts/lib/draft-form";
+import { paidAndOwn, shareParts, totalsOf } from "@/features/expenses/lib/shared-expense";
 
 describe("shared expenses (D73)", () => {
   it("should split the total like kogane-api: ratios, amounts and the rest for the user", () => {

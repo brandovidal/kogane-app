@@ -1,7 +1,7 @@
 import { ImageIcon, Mic } from "lucide-react";
 import { Button } from "@/ui/button";
-import { cn } from "@/shared/lib/utils";
-import { sanitizeBotHtml, type ChatMessage } from "../chat";
+import { cn } from "@/shared/utils/cn";
+import { sanitizeBotHtml, type ChatMessage } from "@/features/messages/lib/chat";
 
 interface MessageBubbleProps {
   message: ChatMessage;

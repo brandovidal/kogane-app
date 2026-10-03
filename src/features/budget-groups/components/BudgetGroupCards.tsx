@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
-import type { BudgetGroupSummary } from "../budget-group.service";
+import { type BudgetGroupSummary } from "@/features/budget-groups/services/budget-group.service";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
 interface BudgetGroupCardsProps {
   groups: BudgetGroupSummary[];
@@ -57,8 +58,7 @@ export function BudgetGroupCards({ groups, onEdit, onDelete }: BudgetGroupCardsP
                   {categories.map((cat) => (
                     <div key={cat.id} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1.5">
-                        <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                        <span>{cat.name}</span>
+                        <CategoryLabel name={cat.name} icon={cat.icon} color={cat.color} />
                       </div>
                       <span className="text-muted-foreground">{formatCurrency(cat.spent)}</span>
                     </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cardBody, cardErrors, emptyCardForm } from "@/features/settings/card-form";
+import { cardBody, cardErrors, emptyCardForm } from "@/features/settings/lib/card-form";
 
 describe("new card form (D97)", () => {
   it("should ask a credit card for its name, code and both days, and a debit card for its bank", () => {

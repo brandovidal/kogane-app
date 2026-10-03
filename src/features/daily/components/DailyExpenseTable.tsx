@@ -2,27 +2,32 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 import { nameById, useCategories, useMe, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type DailyExpense } from "@/shared/api/types";
-import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
-import { GroupedDataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
-import { EmptyState } from "@/shared/components/EmptyState";
-import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
-import { OwnPart } from "@/shared/components/OwnPart";
-import { RowActions } from "@/shared/components/RowActions";
-import { duplicateBody } from "@/shared/lib/expense-actions";
+import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
+import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
+import { type Column } from "@/shared/types/data-view";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
+import { OwnPart } from "@/features/expenses/components/OwnPart";
+import { RowActions } from "@/features/expenses/components/RowActions";
+import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { EXPENSE_TYPE_LABELS } from "@/shared/labels";
+import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
-import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
-import { totalsOf } from "@/shared/lib/shared-expense";
-import { useNewExpense } from "@/shared/stores/new-expense.store";
+import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import { totalsOf } from "@/features/expenses/lib/shared-expense";
+import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "method", "currency", "type", "shared"];
 
@@ -33,7 +38,8 @@ function DailyExpenseTableView() {
   const { data: expenses = [], isLoading } = useExpenses(EXPENSE_RESOURCES.daily, { month, year });
   const personName = nameById(usePeople().data);
   const methodName = nameById(usePaymentMethods().data);
-  const categoryName = nameById(useCategories().data);
+  const categories = useCategories().data ?? [];
+  const categoryName = nameById(categories);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.daily);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.daily);
   const [editing, setEditing] = useState<DailyExpense | undefined>();
@@ -69,7 +75,16 @@ function DailyExpenseTableView() {
       cell: (e) => <CurrencyDisplay amount={e.amount} currency={e.currency} amountInPEN={e.amountInPen} othersShare={e.othersShare} />,
     },
     { key: "method", header: "Medio de pago", cell: (e) => <span className="text-sm">{methodName(e.paymentMethodId)}</span> },
-    { key: "category", header: "Categoría", cell: (e) => <span className="text-sm">{e.categoryId ? categoryName(e.categoryId) : "—"}</span> },
+    {
+      key: "category",
+      header: "Categoría",
+      cell: (e) => {
+        const category = categories.find((item) => item.id === e.categoryId);
+        return category ? (
+          <CategoryLabel name={category.name} icon={category.icon} color={category.color} className="text-sm" />
+        ) : "—";
+      },
+    },
     { key: "person", header: "Persona", cell: (e) => <span className="text-sm">{personName(e.personId)}</span> },
     {
       key: "actions",

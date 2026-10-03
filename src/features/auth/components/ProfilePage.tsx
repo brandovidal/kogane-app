@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { ExternalLink, KeyRound, Send } from "lucide-react";
 
-import { googleLinkUrl, useAuthConfig, useChangePassword, useMe, useTelegramLink, useUnlinkTelegram } from "@/shared/api/hooks/auth";
+import { googleLinkUrl } from "@/features/auth/services/google.service";
+import { useAuthConfig, useChangePassword, useMe, useTelegramLink, useUnlinkTelegram } from "@/features/auth/hooks/auth";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
+import { AUTH_ROLE_LABELS } from "../constants/roles";
 
-const ROLE_LABELS: Record<string, string> = { superadmin: "Superadmin", admin: "Admin", member: "Miembro" };
 
 // Perfil (P23): who I am, my password and the Telegram chat linked to my account (D85)
 function ProfilePageView() {
@@ -56,7 +57,7 @@ function ProfilePageView() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {me.name} <Badge variant="secondary">{ROLE_LABELS[me.role] ?? me.role}</Badge>
+            {me.name} <Badge variant="secondary">{AUTH_ROLE_LABELS[me.role] ?? me.role}</Badge>
           </CardTitle>
           <CardDescription>
             {me.email}

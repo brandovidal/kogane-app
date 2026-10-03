@@ -10,14 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { CardHoldersDialog } from "./CardHoldersDialog";
 import { NewCardDialog } from "./NewCardDialog";
-
-const TYPE_LABELS: Record<string, string> = {
-  credit_card: "Tarjeta de crédito",
-  debit_card: "Débito",
-  wallet: "Billetera",
-  cash: "Efectivo",
-  bank_transfer: "Transferencia",
-};
+import { PaymentMethodLabel } from "./PaymentMethodLabel";
+import { PAYMENT_METHOD_TYPE_LABELS } from "../constants/payment-methods";
 
 // Cuentas y tarjetas (P22): "La tengo" (isActive) decides the menu, the pages and the forms; "En el bot" (showInBot)
 // the quick buttons of the chat. Cards also keep their closing and payment days (billing month, D22).
@@ -62,8 +56,8 @@ export function AccountsTable() {
             <TableBody>
               {methods.map((method) => (
                 <TableRow key={method.id} className={method.isActive ? "" : "opacity-60"}>
-                  <TableCell className="font-medium">{method.name}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{TYPE_LABELS[method.type] ?? method.type}</TableCell>
+                  <TableCell className="font-medium"><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{PAYMENT_METHOD_TYPE_LABELS[method.type]}</TableCell>
                   <TableCell>
                     <Switch
                       checked={method.isActive}

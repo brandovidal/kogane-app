@@ -1,16 +1,13 @@
 import { useState } from "react";
 
 import { useCategories } from "@/shared/api/hooks/catalogs";
-import {
-  useCreateCommitment,
-  useUpdateCommitment,
-  type CommitmentBody,
-  type CommitmentPatch,
-} from "@/shared/api/hooks/commitments";
+import { useCreateCommitment, useUpdateCommitment, type CommitmentBody, type CommitmentPatch } from "@/features/commitments/hooks/commitments";
 import type { Commitment } from "@/shared/api/types";
-import { CategorySelect, PersonSelect } from "@/shared/components/CatalogSelect";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { COMMITMENT_KIND_LABELS, COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS, CURRENCIES } from "@/shared/labels";
+import { CategorySelect } from "@/features/categories/components/CategorySelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { COMMITMENT_KIND_LABELS, COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from "@/features/commitments/constants/commitments";
+import { CURRENCIES } from "@/shared/constants/finance";
 import { getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";

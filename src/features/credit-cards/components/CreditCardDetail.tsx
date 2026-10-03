@@ -1,48 +1,60 @@
-import { OwnPart } from "@/shared/components/OwnPart";
-import { totalsOf } from "@/shared/lib/shared-expense";
-import { nameById, useCreditCards, usePeople, useMe } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses, useSaveExpense } from "@/shared/api/hooks/expenses";
-import { useCardCheck } from "@/shared/api/hooks/debts";
-import { useStatements } from "@/shared/api/hooks/statements";
+import { OwnPart } from "@/features/expenses/components/OwnPart";
+import { totalsOf } from "@/features/expenses/lib/shared-expense";
+import { nameById, useCreditCards, usePeople, useMe, useCategories } from "@/shared/api/hooks/catalogs";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/features/expenses/hooks/expenses";
+import { useStatement, useStatements } from "@/features/statements/hooks/statements";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type Attachment, type CreditCardExpense } from "@/shared/api/types";
-import { useUploadAttachment } from "@/shared/api/hooks/commitments";
+import { useUploadAttachment } from "@/features/attachments/hooks/attachments";
 import { usePeriod } from "@/shared/stores/period.store";
 import { formatCurrency } from "@/shared/lib/currency";
-import { StatusBadge } from "@/shared/components/StatusBadge";
-import { CurrencyDisplay } from "@/shared/components/CurrencyDisplay";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { StatusBadge } from "@/features/expenses/components/StatusBadge";
+import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
-import { DataView, useViewMode, type Column } from "@/shared/components/DataView";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/ui/select";
+import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
+import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { type Column } from "@/shared/types/data-view";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, ArrowLeft, CircleDollarSign, LayoutGrid, Table2, Users, ChevronDown, HandCoins, CalendarDays, Clock3, FileText } from "lucide-react";
-import { RowActions } from "@/shared/components/RowActions";
-import { duplicateBody, nextMonthBody } from "@/shared/lib/expense-actions";
+import { Plus, ArrowLeft, HandCoins, FileText, ChartPie, List, Wallet } from "lucide-react";
+import { RowActions } from "@/features/expenses/components/RowActions";
+import { duplicateBody, nextMonthBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
-import { ATTACHMENT_KIND_LABELS, CREDIT_CARD_STATUSES, EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/labels";
-import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
+import { ATTACHMENT_KIND_LABELS } from "@/features/attachments/constants/attachments";
+import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
+import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
+import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
+import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
-import { useNewExpense } from "@/shared/stores/new-expense.store";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { StatementMinimumCard } from "./StatementMinimumCard";
 import { StatementTotalCard } from "./StatementTotalCard";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { CardCategoryBreakdown } from "./CardCategoryBreakdown";
+import { StatementBalanceSummary } from "@/features/statements/components/StatementBalanceSummary";
+import { StatementPaymentSummary } from "@/features/statements/components/StatementPaymentSummary";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/ui/alert-dialog";
 import { api, unwrap } from "@/shared/api/client";
-import { expenseKeys } from "@/shared/api/hooks/expenses";
-import { isPaidStatus } from "@/shared/lib/expense-actions";
+import { expenseKeys } from "@/features/expenses/hooks/expenses";
+import { isPaidStatus } from "@/features/expenses/lib/expense-actions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
+const GROUP_BY_OPTIONS = [
+  { value: "category", label: "Categoría" },
+  { value: "currency", label: "Moneda" },
+  { value: "person", label: "Persona" },
+  { value: "installments", label: "Cuotas" },
+];
 
 interface CreditCardDetailProps {
   cardCode: string;
@@ -55,18 +67,19 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const { data: creditCards, isLoading } = useCreditCards();
   const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month: selectedMonth, year: selectedYear }).data ?? [];
   const people = usePeople().data ?? [];
+  const categories = useCategories().data ?? [];
   const personName = nameById(people);
+  const categoryName = (id: string | null) => categories.find((item) => item.id === id)?.name ?? "Sin categoría";
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.creditCard);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.creditCard);
   const uploadAttachment = useUploadAttachment({ quiet: true });
   const queryClient = useQueryClient();
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
+  const [groupBy, setGroupBy] = useState<string>("none");
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
-  const [currencyView, setCurrencyView] = useState(false);
   const [editing, setEditing] = useState<CreditCardExpense | undefined>();
-  const [groupedByPerson, setGroupedByPerson] = useState(false);
   const [selectedExpenses, setSelectedExpenses] = useState<Set<string>>(() => new Set());
   const [confirmPayment, setConfirmPayment] = useState(false);
   const [payingSelected, setPayingSelected] = useState(false);
@@ -74,8 +87,14 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [paymentProofKind, setPaymentProofKind] = useState<Attachment["kind"]>("boleta");
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
-  const cardCheck = useCardCheck(card ? { paymentMethodId: card.id, month: selectedMonth, year: selectedYear } : null).data;
   const statements = useStatements().data ?? [];
+  const statement = card
+    ? statements.find(
+        (item) => item.paymentMethodId === card.id && item.paymentMonth === selectedMonth && item.paymentYear === selectedYear,
+      )
+    : undefined;
+  // The list only has the balances the bank stated; the breakdown (D95) comes from the full statement
+  const { data: statementDetail } = useStatement(statement?.id ?? null);
   if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
 
@@ -84,14 +103,13 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     (b.processDate ?? "").localeCompare(a.processDate ?? ""),
   );
   const selectedPending = cardExpenses.filter((expense) => selectedExpenses.has(expense.id) && !isPaidStatus(expense.paymentStatus));
-  const statement = statements.find((item) => item.id === cardCheck?.statementId);
   const monthlyByCurrency = new Map<string, number>();
   for (const expense of ofCard) {
     const currency = expense.currency || "PEN";
     monthlyByCurrency.set(currency, (monthlyByCurrency.get(currency) ?? 0) + expense.amount);
   }
-  if (statement?.currency && !monthlyByCurrency.has(statement.currency)) monthlyByCurrency.set(statement.currency, 0);
   const currencySummary = [...monthlyByCurrency.entries()].sort(([a], [b]) => a.localeCompare(b));
+
   const registerSelectedPayment = async () => {
     if (!selectedPending.length) return;
     setPayingSelected(true);
@@ -129,33 +147,21 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   };
 
   const totals = totalsOf(cardExpenses);
-  const currencyGroups = [...cardExpenses.reduce((groups, expense) => {
-    const currency = expense.currency || "PEN";
-    const group = groups.get(currency) ?? [];
-    group.push(expense);
-    groups.set(currency, group);
-    return groups;
-  }, new Map<string, CreditCardExpense[]>())]
-    .map(([currency, items]) => ({
-      currency,
-      items,
-      total: items.reduce((sum, expense) => sum + expense.amount, 0),
-    }))
-    .sort((a, b) => a.currency.localeCompare(b.currency));
-  const personMap = new Map(people.map((p) => [p.id, p.name]));
-  const personGroups = groupedByPerson
-    ? (() => {
-        const groups = new Map<string, { personId: string; name: string; total: number; expenses: CreditCardExpense[] }>();
-        for (const exp of cardExpenses) {
-          const name = personMap.get(exp.personId) ?? "Sin persona";
-          const group = groups.get(exp.personId) ?? { personId: exp.personId, name, total: 0, expenses: [] };
-          group.total += exp.amount;
-          group.expenses.push(exp);
-          groups.set(exp.personId, group);
-        }
-        return [...groups.values()].sort((a, b) => b.total - a.total);
-      })()
-    : null;
+
+  const groupKey = (expense: CreditCardExpense, field: string) => {
+    if (field === "category") return expense.categoryId ?? "none";
+    if (field === "currency") return expense.currency || "PEN";
+    if (field === "person") return expense.personId;
+    if (field === "installments") return expense.installment ? "cuotas" : "sin-cuotas";
+    return "none";
+  };
+  const groupLabel = (key: string, field: string) => {
+    if (field === "category") return key === "none" ? "Sin categoría" : categoryName(key);
+    if (field === "currency") return key === "USD" ? "Dólares (USD)" : key === "PEN" ? "Soles (PEN)" : key;
+    if (field === "person") return personName(key);
+    if (field === "installments") return key === "cuotas" ? "En cuotas" : "Sin cuotas";
+    return key;
+  };
 
   const columns: Column<CreditCardExpense>[] = [
     {
@@ -186,7 +192,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           </SelectTrigger>
           <SelectContent>
             {CREDIT_CARD_STATUSES.map((status) => (
-              <SelectItem key={status} value={status}>{PAYMENT_STATUS_LABELS[status]}</SelectItem>
+              <SelectItem key={status} value={status}><StatusBadge status={status} /></SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -231,6 +237,18 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     },
   ];
 
+  const footer = (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <span className="text-sm text-muted-foreground">
+        {cardExpenses.length} {cardExpenses.length === 1 ? "gasto" : "gastos"}
+      </span>
+      <div className="text-right">
+        <span className="text-sm font-semibold">Total: {formatCurrency(totals.paid)}</span>
+        <OwnPart {...totals} />
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
@@ -244,172 +262,126 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         <span className="w-9" aria-hidden="true" />
       </div>
 
-      <Card className="overflow-hidden">
-        <CardContent className="space-y-4 p-4 sm:p-6">
-          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <span className={`h-2.5 w-2.5 rounded-full ${statement ? "bg-emerald-500" : "bg-muted-foreground"}`} />
-            {statement ? "Estado de cuenta cargado" : "Consumo registrado"}
-            <span className="ml-auto text-xs">{getMonthName(selectedMonth)} {selectedYear}</span>
+      <RecordListToolbar
+        primary={
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className={`h-2 w-2 rounded-full ${statement ? "bg-emerald-500" : "bg-muted-foreground"}`} />
+              {statement ? "Estado de cuenta cargado" : "Consumo registrado"} · {getMonthName(selectedMonth)} {selectedYear}
+            </span>
+            {currencySummary.length ? (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {currencySummary.map(([currency, amount]) => (
+                  <span key={currency} className="inline-flex items-baseline gap-1 rounded-md border bg-muted/30 px-2 py-1 tabular-nums">
+                    <strong className="text-sm font-semibold">{formatCurrency(amount, currency)}</strong>
+                    <span className="text-[10px] text-muted-foreground">{currency}</span>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-xs text-muted-foreground">Sin consumos en este período</span>
+            )}
+            {statement?.dueDate && (
+              <span className="text-xs text-muted-foreground">Vence {formatDate(statement.dueDate)}</span>
+            )}
           </div>
-          <div className="grid gap-5 md:grid-cols-[minmax(0,1.2fr)_minmax(220px,0.8fr)] md:items-end">
-            <div>
-              <p className="text-sm text-muted-foreground">{statement ? "Pago total del estado" : "Total registrado del mes (en soles)"}</p>
-              <p className="mt-1 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
-                {formatCurrency(statement?.totalDue ?? totals.paid, statement?.currency ?? "PEN")}
-              </p>
-              {!statement && <OwnPart {...totals} />}
+        }
+        actions={
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <a href="/importacion" className="inline-flex">
+              <Button variant="outline" size="sm"><FileText className="mr-1 h-4 w-4" /> Estados de cuenta</Button>
+            </a>
+            <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
+              <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
+            </Button>
+            <Button variant="outline" size="sm" disabled={selectedPending.length === 0} onClick={() => setConfirmPayment(true)}>
+              <HandCoins className="mr-1 h-4 w-4" /> Registrar pago{selectedPending.length ? ` (${selectedPending.length})` : ""}
+            </Button>
+          </div>
+        }
+      />
+
+      <Tabs defaultValue="expenses" className="w-full">
+        <TabsList
+          aria-label="Secciones del detalle de tarjeta"
+          className="grid h-auto w-full grid-cols-3 sm:flex sm:w-fit"
+        >
+          <TabsTrigger value="expenses" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
+            <List aria-hidden="true" /> Movimientos
+          </TabsTrigger>
+          <TabsTrigger value="card-detail" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
+            <ChartPie aria-hidden="true" /> Categorías
+          </TabsTrigger>
+          <TabsTrigger value="payment" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
+            <Wallet aria-hidden="true" /> Pago de tarjeta
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="expenses" className="mt-3 space-y-3">
+          <ExpenseFilters
+            fields={FILTERS}
+            value={filters}
+            onChange={setFilters}
+            statuses={CREDIT_CARD_STATUSES}
+            shown={cardExpenses.length}
+            total={ofCard.length}
+            groupBy={groupBy}
+            onGroupByChange={setGroupBy}
+            groupByOptions={GROUP_BY_OPTIONS}
+            showActiveSummary={false}
+            appliedFilters={<ActiveExpenseFilterChips fields={FILTERS} value={filters} onChange={setFilters} me={me} />}
+            viewToggle={<ViewToggle value={view} onChange={setView} />}
+          />
+
+          {cardExpenses.length === 0 ? (
+            <EmptyState
+              description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
+            />
+          ) : (
+            <GroupedDataView
+              items={cardExpenses}
+              columns={columns}
+              rowKey={(exp) => exp.id}
+              view={view}
+              groupBy={groupBy}
+              groupKey={groupKey}
+              groupLabel={groupLabel}
+              footer={footer}
+              selected={selectedExpenses}
+              onSelectedChange={setSelectedExpenses}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="card-detail" className="mt-3">
+          <CardCategoryBreakdown expenses={ofCard} />
+        </TabsContent>
+
+        <TabsContent value="payment" className="mt-3">
+          {statementDetail ? (
+            <div className="space-y-4 rounded-lg border p-3 sm:p-4">
+              <StatementBalanceSummary statement={statementDetail} />
+              <StatementPaymentSummary statement={statementDetail} />
+              <div className="grid gap-3 lg:grid-cols-2">
+                <StatementMinimumCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
+                <StatementTotalCard
+                  key={`${card.id}-${selectedYear}-${selectedMonth}`}
+                  initialCurrency={statementDetail.currency === "USD" ? "USD" : "PEN"}
+                  paymentMethodId={card.id}
+                  cardName={card.name}
+                  month={selectedMonth}
+                  year={selectedYear}
+                  compact
+                />
+              </div>
             </div>
-            <div className="space-y-2 border-t pt-3 text-sm md:border-l md:border-t-0 md:pl-5 md:pt-0">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Consumo del mes</p>
-              {currencySummary.length ? currencySummary.map(([currency, amount]) => (
-                <div key={currency} className="flex items-center justify-between gap-3">
-                  <span className="flex items-center gap-2 text-muted-foreground"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: currency === "USD" ? "#38bdf8" : card.color ?? "#818cf8" }} />{currency === "USD" ? "Consumo dólares" : currency === "PEN" ? "Consumo soles" : `Consumo ${currency}`}</span>
-                  <strong className="tabular-nums">{formatCurrency(amount, currency)}</strong>
-                </div>
-              )) : <p className="text-muted-foreground">Sin consumos en este período</p>}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <a href="/reconocimiento" className="flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-primary/10 px-4 py-4 text-center font-semibold text-foreground transition-colors hover:bg-primary/15">
-        <FileText className="h-5 w-5" /> Ver estados de cuenta
-      </a>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Card><CardContent className="flex min-h-24 items-center justify-between gap-3 p-4">
-          <div><p className="text-sm text-muted-foreground">Cierre de facturación</p><p className="mt-1 text-lg font-semibold">{statement?.periodEnd ? formatDate(statement.periodEnd) : card.billingCloseDay ? `Día ${card.billingCloseDay}` : "Sin fecha"}</p></div>
-          <CalendarDays className="h-8 w-8 text-muted-foreground/35" />
-        </CardContent></Card>
-        <Card><CardContent className="flex min-h-24 items-center justify-between gap-3 p-4">
-          <div><p className="text-sm text-muted-foreground">Último día de pago</p><p className="mt-1 text-lg font-semibold">{statement?.dueDate ? formatDate(statement.dueDate) : card.paymentDueDay ? `Día ${card.paymentDueDay}` : "Sin fecha"}</p></div>
-          <Clock3 className="h-8 w-8 text-muted-foreground/35" />
-        </CardContent></Card>
-      </div>
-
-      <section className="space-y-3">
-        <h3 className="text-xl font-semibold">Resumen de pago de <span className="text-primary">{getMonthName(selectedMonth).toLowerCase()}</span></h3>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {currencySummary.map(([currency, amount]) => {
-            const minimumForCurrency = statement?.currency === currency ? statement.minimumDue : null;
-            return (
-              <Card key={currency} className="bg-primary/[0.04]">
-                <CardContent className="grid grid-cols-2 gap-4 p-4 sm:p-5">
-                  <div className="space-y-3 border-r pr-4">
-                    <h4 className="font-semibold">{currency === "USD" ? "Dólares" : currency === "PEN" ? "Soles" : currency}</h4>
-                    <div><p className="text-sm text-muted-foreground">Pago total mes</p><p className="mt-1 text-lg font-bold tabular-nums">{formatCurrency(amount, currency)}</p></div>
-                  </div>
-                  <div className="space-y-3">
-                    <h4 className="font-semibold">Pago mínimo</h4>
-                    <div><p className="text-sm text-muted-foreground">Del estado de cuenta</p><p className="mt-1 text-lg font-bold tabular-nums">{minimumForCurrency == null ? "—" : formatCurrency(minimumForCurrency, currency)}</p></div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-          {!currencySummary.length && <Card><CardContent className="p-4 text-sm text-muted-foreground">No hay movimientos registrados para este mes.</CardContent></Card>}
-        </div>
-      </section>
-
-      <Tabs defaultValue="expenses" className="space-y-4">
-      <TabsList>
-        <TabsTrigger value="expenses">Gastos de la tarjeta</TabsTrigger>
-        <TabsTrigger value="minimum">Pago mínimo</TabsTrigger>
-        <TabsTrigger value="total">Pago total</TabsTrigger>
-      </TabsList>
-      <TabsContent value="expenses" className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <ExpenseFilters
-          fields={FILTERS}
-          value={filters}
-          onChange={setFilters}
-          statuses={CREDIT_CARD_STATUSES}
-          shown={cardExpenses.length}
-          total={ofCard.length}
-        />
-        <div className="flex shrink-0 items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={groupedByPerson || currencyView ? "secondary" : "outline"} size="sm">
-                Agrupar{groupedByPerson ? ": Persona" : currencyView ? ": Moneda" : ""}<ChevronDown className="ml-1 h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuCheckboxItem checked={!groupedByPerson && !currencyView} onCheckedChange={() => { setGroupedByPerson(false); setCurrencyView(false); }}>
-                Sin agrupar
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={groupedByPerson} onCheckedChange={(checked) => { setGroupedByPerson(checked); if (checked) setCurrencyView(false); }}>
-                <Users className="h-4 w-4" /> Por persona
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={currencyView} onCheckedChange={(checked) => { setCurrencyView(checked); if (checked) setGroupedByPerson(false); }}>
-                <CircleDollarSign className="h-4 w-4" /> Por moneda
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="flex items-center gap-1 rounded-lg border p-1">
-            <Button variant={!currencyView && view === "table" ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Vista de tabla" aria-pressed={!currencyView && view === "table"} onClick={() => { setView("table"); setCurrencyView(false); }}><Table2 className="h-4 w-4" /></Button>
-            <Button variant={!currencyView && view === "cards" ? "secondary" : "ghost"} size="sm" className="h-7 px-2" aria-label="Vista de tarjetas" aria-pressed={!currencyView && view === "cards"} onClick={() => { setView("cards"); setCurrencyView(false); }}><LayoutGrid className="h-4 w-4" /></Button>
-          </div>
-          <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
-            <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
-          </Button>
-          <Button variant="outline" size="sm" disabled={selectedPending.length === 0} onClick={() => setConfirmPayment(true)}>
-            <HandCoins className="mr-1 h-4 w-4" /> Registrar pago{selectedPending.length ? ` (${selectedPending.length})` : ""}
-          </Button>
-        </div>
-      </div>
-
-      {cardExpenses.length === 0 ? (
-        <EmptyState
-          description={ofCard.length ? "No hay gastos con estos filtros" : "No hay gastos registrados para esta tarjeta"}
-        />
-      ) : currencyView ? (
-        <div className="space-y-4">
-          {currencyGroups.map((group) => (
-            <Card key={group.currency}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-base">{group.currency === "PEN" ? "Soles (PEN)" : group.currency === "USD" ? "Dólares (USD)" : group.currency}</CardTitle>
-                    <p className="mt-1 text-xs text-muted-foreground">{group.items.length} {group.items.length === 1 ? "gasto" : "gastos"}</p>
-                  </div>
-                  <strong className="text-right tabular-nums">{formatCurrency(group.total, group.currency)}</strong>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <DataView items={group.items} columns={columns} rowKey={(exp) => exp.id} view="table" selected={selectedExpenses} onSelectedChange={setSelectedExpenses} />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : groupedByPerson ? (
-        <div className="space-y-6">
-          {personGroups?.map((group) => {
-            const gTotal = group.expenses.reduce((sum, e) => sum + e.amount, 0);
-            return (
-              <section key={group.personId} className="space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-                  <h3 className="font-semibold">
-                    {group.name} · {formatCurrency(gTotal)}
-                  </h3>
-                </div>
-                <DataView items={group.expenses} columns={columns} rowKey={(exp) => exp.id} view={view} selected={selectedExpenses} onSelectedChange={setSelectedExpenses} />
-              </section>
-            );
-          })}
-        </div>
-      ) : (
-        <DataView items={cardExpenses} columns={columns} rowKey={(exp) => exp.id} view={view} selected={selectedExpenses} onSelectedChange={setSelectedExpenses} />
-      )}
-      </TabsContent>
-      <TabsContent value="minimum" className="space-y-4">
-        <p className="text-sm text-muted-foreground">Detalle del estado de cuenta {card.name}.</p>
-        <StatementMinimumCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
-      </TabsContent>
-      <TabsContent value="total" className="space-y-4">
-        <p className="text-sm text-muted-foreground">Consulta cuánto del total del estado está cubierto por los pagos registrados.</p>
-        <StatementTotalCard paymentMethodId={card.id} cardName={card.name} month={selectedMonth} year={selectedYear} />
-      </TabsContent>
+          ) : (
+            <EmptyState
+              title="Sin estado de cuenta"
+              description="Carga el PDF de este período para ver el detalle por moneda y calcular el pago total."
+            />
+          )}
+        </TabsContent>
       </Tabs>
 
       <ExpenseEditDialog

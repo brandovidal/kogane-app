@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { duplicateBody, isPaidStatus, nextMonthBody } from "@/shared/lib/expense-actions";
+import { duplicateBody, isPaidStatus, nextMonthBody } from "@/features/expenses/lib/expense-actions";
 
 describe("row actions of the expense tables", () => {
   it("should copy only the columns of the table, with days as YYYY-MM-DD and no ids, totals or chat draft", () => {

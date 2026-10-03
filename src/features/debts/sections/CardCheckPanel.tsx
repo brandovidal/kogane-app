@@ -1,0 +1,158 @@
+import { CurrencySelect } from "@/shared/components/forms/CurrencySelect";
+import type { CurrencyCode } from "@/shared/constants/currency";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+
+import { useCardCheck } from "@/features/debts/hooks/debts";
+import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
+import { formatCurrency } from "@/shared/lib/currency";
+import { getMonthName } from "@/shared/lib/dates";
+import { Checkbox } from "@/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+
+// Contraste con la tarjeta (D114): what others owe of this card and month next to what the bank billed. The
+// "sin explicar" is what the statement asks beyond the card expenses registered: interest, fees or a missing charge
+export function CardCheckPanel({
+  cardId,
+  cardName,
+  month,
+  year,
+}: {
+  cardId: string;
+  cardName: string;
+  month: number;
+  year: number;
+}) {
+  const [currency, setCurrency] = useState<CurrencyCode>("PEN");
+  const money = (amount: number) => formatCurrency(amount, currency);
+  const { data: check } = useCardCheck({
+    paymentMethodId: cardId,
+    month,
+    year,
+    currency,
+  });
+  const [showTotalCalculation, setShowTotalCalculation] = useState(false);
+  if (!check) return null;
+  const unexplained = check.unexplained ?? 0;
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">
+          Estado de cuenta {cardName} · {getMonthName(month)} {year}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <CurrencySelect value={currency} onChange={setCurrency} />
+        {check.currencyReviewRequired && (
+          <p className="text-xs text-amber-600">
+            Vuelve a cargar este PDF para reconocer los saldos por moneda.
+          </p>
+        )}
+        {!check.statementId ? (
+          <p className="text-muted-foreground">
+            Todavía no subes el estado de cuenta de este mes.{" "}
+            <a className="underline" href="/importacion">
+              Súbelo en Importación
+            </a>{" "}
+            para contrastarlo.
+          </p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-4">
+            <div>
+              <p className="text-muted-foreground">Total del banco</p>
+              <p className="font-semibold tabular-nums">
+                {check.statementTotal == null
+                  ? "—"
+                  : money(check.statementTotal)}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Registrado en Kogane</p>
+              <p className="font-semibold tabular-nums">
+                {money(check.koganeTotal)}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Sin explicar</p>
+              <p
+                className={`flex items-center gap-1 font-semibold tabular-nums ${Math.abs(unexplained) < 0.01 ? "text-emerald-600" : "text-amber-600"}`}
+              >
+                {Math.abs(unexplained) < 0.01 ? (
+                  <CheckCircle2 className="h-4 w-4" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4" />
+                )}
+                {check.unexplained == null ? "—" : money(unexplained)}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Te deben de esta tarjeta</p>
+              <p className="font-semibold tabular-nums">
+                {money(check.othersOwed - check.othersPaid)}{" "}
+                <span className="text-xs font-normal text-muted-foreground">
+                  de {money(check.othersOwed)}
+                </span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {check.people.length > 0 && (
+          <div className="space-y-1 border-t pt-2">
+            {check.people.map((person) => (
+              <div key={person.personId} className="flex justify-between gap-2">
+                <span>{person.name}</span>
+                <span className="tabular-nums text-muted-foreground">
+                  pagó {money(person.paid)} de {money(person.owed)} ·{" "}
+                  <span
+                    className={
+                      person.balance > 0 ? "font-medium text-foreground" : ""
+                    }
+                  >
+                    saldo {money(person.balance)}
+                  </span>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {check.possibleInterest.length > 0 && (
+          <div className="rounded-md bg-amber-50 p-2 text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+            <p className="font-medium">Posibles intereses o comisiones</p>
+            {check.possibleInterest.map((line, index) => (
+              <p key={index} className="flex justify-between gap-2">
+                <span>{line.description}</span>
+                <span className="tabular-nums">{money(line.amount)}</span>
+              </p>
+            ))}
+          </div>
+        )}
+
+        {check.statementId && (
+          <div className="space-y-3 border-t pt-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <Checkbox
+                checked={showTotalCalculation}
+                onCheckedChange={(checked) =>
+                  setShowTotalCalculation(checked === true)
+                }
+              />
+              Mostrar cálculo visual del pago total
+            </label>
+            {showTotalCalculation && (
+              <StatementTotalCard
+                paymentMethodId={cardId}
+                cardName={cardName}
+                month={month}
+                year={year}
+                compact
+              />
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

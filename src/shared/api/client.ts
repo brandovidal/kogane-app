@@ -1,6 +1,6 @@
 import createClient from 'openapi-fetch'
 
-import { loginUrl } from '../lib/auth-redirect'
+import { loginUrl } from '@/shared/lib/auth-redirect'
 import type { components, paths } from './schema'
 
 // Typed client of kogane-api through the Astro proxy (D56). Types: `pnpm api:types` with kogane-api running.

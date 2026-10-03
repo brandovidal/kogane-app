@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { applyReplies, sanitizeBotHtml, type ChatMessage } from "@/features/messages/chat";
+import { applyReplies, sanitizeBotHtml, type ChatMessage } from "@/features/messages/lib/chat";
 
 const summary: ChatMessage = {
   id: "m1",

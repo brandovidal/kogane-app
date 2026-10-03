@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { useBudgetGroups } from "@/shared/api/hooks/catalogs";
-import { useBudgetSettings, useSaveBudgetSettings, useSetBudget, useSummary } from "@/shared/api/hooks/summary";
+import { useBudgetSettings, useSaveBudgetSettings, useSummary } from "@/features/budget/hooks/summary";
+import { incomesHref } from "@/features/incomes/lib/income-links";
 import { withQuery } from "@/shared/api/query";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { Switch } from "@/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { Save, DollarSign, PieChart, Palette } from "lucide-react";
+import { ArrowUpRight, DollarSign, PieChart, Palette } from "lucide-react";
 import { AccountsTable } from "./AccountsTable";
 import { PeopleTable } from "./PeopleTable";
 import { NotificationSettingsCard } from "./NotificationSettingsCard";
 import { UsersPanel } from "@/features/auth/components/UsersPanel";
 import { HistoryPanel } from "@/features/history/components/HistoryPanel";
-import { useMe } from "@/shared/api/hooks/auth";
+import { useMe } from "@/features/auth/hooks/auth";
 import { formatCurrency } from "@/shared/lib/currency";
 
 const TABS = [
@@ -80,7 +80,7 @@ function BudgetSwitches() {
   );
 }
 
-// Salary and limit are per month (bud_monthly_budgets): this edits the month on screen
+// Income editing lives in Ingresos; this page configures the budget and catalogs.
 function SettingsPageView() {
   const [tab, setTab] = useTabInUrl();
   const { data: me } = useMe();
@@ -89,24 +89,7 @@ function SettingsPageView() {
   const year = usePeriod((s) => s.year);
   const summary = useSummary(month, year).data;
   const budgetGroups = useBudgetGroups().data ?? [];
-  const setBudget = useSetBudget();
   const salary = summary?.budget?.salary ?? 0;
-  const budgetLimitPercent = summary?.budget?.limitPercent ?? 100;
-
-  const [salaryInput, setSalaryInput] = useState(salary.toString());
-  const [limitInput, setLimitInput] = useState(budgetLimitPercent.toString());
-
-  useEffect(() => {
-    setSalaryInput(salary.toString());
-    setLimitInput(budgetLimitPercent.toString());
-  }, [salary, budgetLimitPercent]);
-
-  const handleSaveSalary = () => {
-    const val = parseFloat(salaryInput);
-    const lim = parseFloat(limitInput);
-    if (isNaN(val) || val <= 0 || isNaN(lim) || lim <= 0 || lim > 100) return;
-    setBudget.mutate({ month, year, salary: val, limitPercent: lim });
-  };
 
   return (
     <div className="max-w-4xl">
@@ -129,29 +112,9 @@ function SettingsPageView() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">Sueldo mensual</label>
-              <Input
-                type="number"
-                value={salaryInput}
-                onChange={(e) => setSalaryInput(e.target.value)}
-                placeholder="5000"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">Límite presupuesto (%)</label>
-              <Input
-                type="number"
-                value={limitInput}
-                onChange={(e) => setLimitInput(e.target.value)}
-                placeholder="100"
-              />
-            </div>
-          </div>
-          <Button size="sm" onClick={handleSaveSalary} disabled={setBudget.isPending}>
-            <Save className="mr-1.5 h-3.5 w-3.5" />
-            Guardar
+          <p className="text-sm text-muted-foreground">Gestiona el sueldo mensual, su límite de gasto y los ingresos extra desde Ingresos.</p>
+          <Button size="sm" asChild>
+            <a href={incomesHref({ month, year })}><ArrowUpRight aria-hidden="true" /> Ir a Ingresos</a>
           </Button>
         </CardContent>
       </Card>
@@ -169,7 +132,7 @@ function SettingsPageView() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium">Tema</p>
-              <p className="text-xs text-muted-foreground">Usa el toggle en la barra superior para cambiar el tema</p>
+              <p className="text-xs text-muted-foreground">Elige Claro, Oscuro o Sistema desde Apariencia en el menú de tu perfil.</p>
             </div>
           </div>
           <div className="flex items-center justify-between">

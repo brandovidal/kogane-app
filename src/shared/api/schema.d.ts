@@ -1636,6 +1636,10 @@ export interface components {
             status: number;
             message: string;
             data: {
+                /** @enum {string} */
+                currency: "PEN" | "USD";
+                availableCurrencies: ("PEN" | "USD")[];
+                currencyReviewRequired: boolean;
                 paymentMethodId: string;
                 month: number;
                 year: number;
@@ -3648,6 +3652,24 @@ export interface components {
             status: number;
             message: string;
             data: {
+                currencyReviewRequired: boolean;
+                balances: {
+                    /** @enum {string} */
+                    currency: "PEN" | "USD";
+                    totalDue: number | null;
+                    minimumDue: number | null;
+                    previousBalance: number | null;
+                    previousPayments: number | null;
+                    monthlyPayment: number | null;
+                    koganeTotal: number;
+                    difference: number | null;
+                    /** @description Purchases without an installment plan, no interest/fees */
+                    directConsumption: number;
+                    /** @description Purchases with an installment plan ("2/6"), no interest/fees */
+                    installmentConsumption: number;
+                    /** @description Interest, insurance, commissions, ITF… as itemized rows */
+                    itemizedCharges: number;
+                }[];
                 id: string;
                 paymentMethodId: string;
                 personId: string | null;
@@ -3703,6 +3725,7 @@ export interface components {
                     id: string;
                     description: string;
                     amount: number;
+                    currency: string;
                     processDate: string | null;
                     installment: string | null;
                     personId: string;
@@ -3720,6 +3743,16 @@ export interface components {
             status: number;
             message: string;
             data: {
+                currencyReviewRequired: boolean;
+                balances: {
+                    /** @enum {string} */
+                    currency: "PEN" | "USD";
+                    totalDue: number | null;
+                    minimumDue: number | null;
+                    previousBalance: number | null;
+                    previousPayments: number | null;
+                    monthlyPayment: number | null;
+                }[];
                 id: string;
                 paymentMethodId: string;
                 personId: string | null;
@@ -3757,10 +3790,22 @@ export interface components {
         };
         UpdateStatementDto: {
             personId?: string;
+            paymentMethodId?: string;
+            /** @enum {string} */
+            currency?: "PEN" | "USD";
             minimumDue?: number | null;
             minimumAllocations?: {
                 [key: string]: number;
             } | null;
+            balances?: {
+                /** @enum {string} */
+                currency: "PEN" | "USD";
+                totalDue?: number | null;
+                minimumDue?: number | null;
+                previousBalance?: number | null;
+                previousPayments?: number | null;
+                monthlyPayment?: number | null;
+            }[];
         };
         AssignRowsDto: {
             rowIds: string[];
@@ -4552,6 +4597,7 @@ export interface operations {
                 paymentMethodId: string;
                 month: number;
                 year: number;
+                currency?: "PEN" | "USD";
             };
             header?: never;
             path?: never;

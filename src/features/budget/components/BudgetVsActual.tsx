@@ -4,7 +4,7 @@ import type { Summary } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 
-import { STATUS_BAR, STATUS_TEXT, type LimitStatus } from "../budget-view";
+import { STATUS_BAR, STATUS_TEXT, type LimitStatus } from "@/features/budget/lib/budget-view";
 
 // Presupuesto vs real (D78): one bar per category with a limit; the state has an icon and a label, not only color
 export function BudgetVsActual({ summary, compact = false }: { summary: Summary | undefined; compact?: boolean }) {

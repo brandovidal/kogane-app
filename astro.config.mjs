@@ -9,28 +9,23 @@ import tailwindcss from '@tailwindcss/vite';
 // (e.g. `ASTRO_ADAPTER=cloudflare pnpm build && pnpm exec wrangler deploy --dry-run`)
 const isProduction = process.env.WORKERS_CI === '1' || process.env.ASTRO_ADAPTER === 'cloudflare';
 
-// Use node adapter for local dev, cloudflare for production
 const adapter = isProduction
   ? (await import('@astrojs/cloudflare')).default()
   : node({ mode: 'standalone' });
 
 // https://astro.build/config
 export default defineConfig({
-  // Every page is a static shell with islands that ask for data through /api (D102); the only route that runs on the
-  // server is the /api proxy (prerender = false)
   output: 'static',
   server: { port: 4000 },
   integrations: [react()],
-  // Estados de cuenta joined Reconocimiento / Importación (D104)
-  redirects: { '/estados-de-cuenta': '/reconocimiento' },
+  redirects: { '/estados-de-cuenta': '/importacion' },
   adapter,
-
-  // Server only (D56): the /api proxy adds the key; it never reaches the browser. Locally from .env, on Cloudflare
-  // from the Worker secrets (docs/deploy.md)
   env: {
     schema: {
       API_URL: envField.string({ context: 'server', access: 'secret', default: 'http://localhost:5560' }),
       API_KEY: envField.string({ context: 'server', access: 'secret' }),
+      DEV_LOGIN_IDENTIFIER: envField.string({ context: 'server', access: 'secret', optional: true }),
+      DEV_LOGIN_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 

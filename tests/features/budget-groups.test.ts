@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildBudgetGroupSummaries } from "@/features/budget-groups/budget-group.service";
+import { buildBudgetGroupSummaries } from "@/features/budget-groups/services/budget-group.service";
 import type { BudgetGroup, Category } from "@/shared/api/types";
 
 describe("budget groups", () => {

@@ -1,15 +1,14 @@
 ---
 import Layout from "./Layout.astro";
-import Sidebar from "@/shared/components/Sidebar.astro";
-import MobileNav from "@/shared/components/MobileNav.astro";
-import { CommandPalette } from "@/shared/components/CommandPalette";
-import { ThemeToggle } from "@/shared/components/ThemeToggle";
-import { MonthNavigator } from "@/shared/components/MonthNavigator";
+import Sidebar from "@/layouts/components/navigation/Sidebar.astro";
+import MobileNav from "@/layouts/components/navigation/MobileNav.astro";
+import { CommandPalette } from "@/layouts/components/navigation/CommandPalette";
+import { MonthNavigator } from "@/shared/components/navigation/MonthNavigator";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
-import { SalaryEditor } from "@/shared/components/SalaryEditor";
 import { UserMenu } from "@/features/auth/components/UserMenu";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { Toaster } from "@/ui/sonner";
+import NavTooltipLayer from "@/layouts/components/navigation/NavTooltipLayer.astro";
 
 interface Props {
   title?: string;
@@ -18,18 +17,16 @@ interface Props {
 const { title = "Kogane" } = Astro.props;
 const currentPath = Astro.url.pathname;
 // Views with their own month-based data get a local period control in the page body.
-// Debt views already expose month and year inside their own filter panel.
+// Debt and fixed-cost views expose period filters; Ingresos has its own month/year selectors.
 const hasLocalPeriodControl = [
   "/",
   "/resumen",
   "/calendario",
   "/tarjetas",
-  "/costos-fijos",
   "/dia-a-dia",
   "/recurrentes",
   "/categorias",
   "/plataformas",
-  "/ingresos",
   "/configuracion",
 ].some((path) => currentPath === path || (path === "/tarjetas" && currentPath.startsWith("/tarjetas/")));
 ---
@@ -40,14 +37,12 @@ const hasLocalPeriodControl = [
 
     <div class="flex flex-1 flex-col overflow-hidden">
       <header class="flex h-16 items-center justify-between border-b px-4 md:px-6">
-        <div class="flex items-center gap-2">
+        <div class="flex min-w-0 flex-1 items-center gap-2">
           <MobileNav currentPath={currentPath} />
-          <h1 class="text-lg font-semibold">{title}</h1>
+          <h1 class="truncate text-lg font-semibold">{title}</h1>
         </div>
-        <div class="flex items-center gap-3">
-          <SalaryEditor client:idle />
+        <div class="flex shrink-0 items-center gap-1 sm:gap-3">
           <NotificationBell client:idle currentPath={currentPath} />
-          <ThemeToggle client:idle />
           <UserMenu client:load />
         </div>
       </header>
@@ -65,4 +60,5 @@ const hasLocalPeriodControl = [
     </div>
   </div>
   <Toaster client:idle />
+  <NavTooltipLayer />
 </Layout>

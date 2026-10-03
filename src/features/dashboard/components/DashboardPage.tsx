@@ -2,11 +2,11 @@ import { BudgetDonut } from "@/features/budget/components/BudgetDonut";
 import { BudgetKpis } from "@/features/budget/components/BudgetKpis";
 import { BudgetVsActual } from "@/features/budget/components/BudgetVsActual";
 import { SurplusTrend } from "@/features/budget/components/SurplusTrend";
-import { useSummary } from "@/shared/api/hooks/summary";
+import { useSummary } from "@/features/budget/hooks/summary";
 import { withQuery } from "@/shared/api/query";
 import { usePeriod } from "@/shared/stores/period.store";
 
-import { useCreditCardSummaries } from "../dashboard.service";
+import { useCreditCardSummaries } from "@/features/dashboard/hooks/useCreditCardSummaries";
 import { BillingCycleCard } from "./BillingCycleCard";
 
 // Inicio (D78): your budget of the month and the cards; the same pieces as the Resumen, without the detail

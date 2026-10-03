@@ -3,10 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/ui/button";
-import { pressButton, sendMessage } from "@/shared/api/hooks/messages";
+import { pressButton, sendMessage } from "@/features/messages/hooks/messages";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
-import { applyReplies, clearHistory, loadHistory, newMessageId, saveHistory, type ChatMessage } from "../chat";
+import { applyReplies, clearHistory, loadHistory, newMessageId, saveHistory, type ChatMessage } from "@/features/messages/lib/chat";
 import { ChatInput, type ChatInputValue } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 

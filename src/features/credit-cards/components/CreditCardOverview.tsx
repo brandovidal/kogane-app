@@ -1,24 +1,28 @@
-import { cardHref } from "@/shared/lib/card-links";
+import { cardHref } from "@/features/credit-cards/lib/card-links";
 import { ArrowRight, Calendar, CreditCard, Plus } from "lucide-react";
 
 import { useCreditCards, useMe } from "@/shared/api/hooks/catalogs";
-import { useExpenses } from "@/shared/api/hooks/expenses";
+import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
-import { DataView, useViewMode, ViewToggle, type Column } from "@/shared/components/DataView";
-import { EmptyState } from "@/shared/components/EmptyState";
-import { ExpenseFilters } from "@/shared/components/ExpenseFilters";
-import { OwnPart } from "@/shared/components/OwnPart";
+import { DataView } from "@/shared/components/data-display/DataView";
+import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
+import { type Column } from "@/shared/types/data-view";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
+import { OwnPart } from "@/features/expenses/components/OwnPart";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { CREDIT_CARD_STATUSES } from "@/shared/labels";
+import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
 import { formatCurrency } from "@/shared/lib/currency";
-import { applyExpenseFilters, type ExpenseFilterKey, type ExpenseFilterValues } from "@/shared/lib/expense-filters";
-import { totalsOf } from "@/shared/lib/shared-expense";
+import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
 import { Card, CardContent } from "@/ui/card";
 import { Button } from "@/ui/button";
-import { useNewExpense } from "@/shared/stores/new-expense.store";
+import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
 

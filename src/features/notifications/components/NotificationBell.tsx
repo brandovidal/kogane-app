@@ -7,7 +7,7 @@ import {
   useMarkNotificationUnread,
   useRecentNotifications,
   useUnreadCount,
-} from "@/shared/api/hooks/notifications";
+} from "@/features/notifications/hooks/notifications";
 import { withQuery } from "@/shared/api/query";
 import type { AppNotification } from "@/shared/api/types";
 import { Button } from "@/ui/button";
@@ -20,7 +20,10 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-import { notificationLink, timeAgo } from "../notification-view";
+import {
+  notificationLink,
+  timeAgo,
+} from "@/features/notifications/lib/notification-view";
 
 const PAGE_NAMES: Record<string, string> = {
   "/": "Inicio",
@@ -34,7 +37,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/resumen-deudas": "Resumen de deudas",
   "/categorias": "Categorías",
   "/recurrentes": "Recurrentes",
-  "/reconocimiento": "Reconocimiento / Importación",
+  "/importacion": "Importación",
 };
 
 const SHOWN = 8;
@@ -60,7 +63,12 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label={`Notificaciones: ${unread} sin leer`}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          aria-label={`Notificaciones: ${unread} sin leer`}
+        >
           <Bell className="h-4 w-4" />
           {unread > 0 && (
             <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-white">
@@ -69,7 +77,10 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)]">
+      <DropdownMenuContent
+        align="end"
+        className="w-80 max-w-[calc(100vw-2rem)]"
+      >
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notificaciones</span>
           {unread > 0 && (
@@ -86,7 +97,11 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
           )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {recent.length === 0 && <p className="px-2 py-6 text-center text-sm text-muted-foreground">Sin notificaciones</p>}
+        {recent.length === 0 && (
+          <p className="px-2 py-6 text-center text-sm text-muted-foreground">
+            Sin notificaciones
+          </p>
+        )}
         {recent.slice(0, SHOWN).map((notification) => (
           <DropdownMenuItem
             key={notification.id}
@@ -102,7 +117,11 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
               aria-label={notification.readAt ? undefined : "Sin leer"}
             />
             <div className="min-w-0 flex-1">
-              <p className={`truncate text-sm ${notification.readAt ? "" : "font-semibold"}`}>{notification.title}</p>
+              <p
+                className={`truncate text-sm ${notification.readAt ? "" : "font-semibold"}`}
+              >
+                {notification.title}
+              </p>
               <p
                 className={`text-xs text-muted-foreground ${expanded === notification.id ? "whitespace-pre-line" : "line-clamp-2"}`}
               >
@@ -122,22 +141,29 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
                     <MailOpen className="h-3 w-3" /> No leída
                   </button>
                 )}
-                {expanded === notification.id && notificationLink(notification) !== currentPath && (
-                  <a
-                    href={notificationLink(notification)}
-                    className="flex items-center gap-0.5 text-primary hover:underline"
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    Ir a {PAGE_NAMES[notificationLink(notification)] ?? "la página"} <ArrowRight className="h-3 w-3" />
-                  </a>
-                )}
+                {expanded === notification.id &&
+                  notificationLink(notification) !== currentPath && (
+                    <a
+                      href={notificationLink(notification)}
+                      className="flex items-center gap-0.5 text-primary hover:underline"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      Ir a{" "}
+                      {PAGE_NAMES[notificationLink(notification)] ??
+                        "la página"}{" "}
+                      <ArrowRight className="h-3 w-3" />
+                    </a>
+                  )}
               </p>
             </div>
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <a href="/notificaciones" className="justify-center text-sm text-primary">
+          <a
+            href="/notificaciones"
+            className="justify-center text-sm text-primary"
+          >
             Ver todas
           </a>
         </DropdownMenuItem>

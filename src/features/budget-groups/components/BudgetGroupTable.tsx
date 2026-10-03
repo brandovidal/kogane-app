@@ -10,7 +10,8 @@ import {
 import { Button } from "@/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
-import type { BudgetGroupSummary } from "../budget-group.service";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
+import { type BudgetGroupSummary } from "@/features/budget-groups/services/budget-group.service";
 
 interface BudgetGroupTableProps {
   groups: BudgetGroupSummary[];
@@ -56,10 +57,10 @@ export function BudgetGroupTable({ groups, onEdit, onDelete }: BudgetGroupTableP
                   {categories.map((cat) => (
                     <span
                       key={cat.id}
-                      className="inline-block rounded-full px-2 py-0.5 text-xs text-white"
+                      className="inline-flex items-center rounded-full px-2 py-0.5 text-xs text-white"
                       style={{ backgroundColor: cat.color }}
                     >
-                      {cat.name}
+                      <CategoryLabel name={cat.name} icon={cat.icon} color="white" className="gap-1.5" />
                     </span>
                   ))}
                 </div>

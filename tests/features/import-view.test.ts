@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { historyOf, monthMatches, pageCount } from "@/features/imports/import-view";
+import { historyOf, monthMatches, pageCount } from "@/features/imports/lib/import-view";
 import type { ImportBatch, StatementSummary } from "@/shared/api/types";
 
 const batch = (over: Partial<ImportBatch>): ImportBatch =>

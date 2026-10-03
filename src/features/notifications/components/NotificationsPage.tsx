@@ -6,10 +6,10 @@ import {
   useMarkNotificationRead,
   useMarkNotificationUnread,
   useNotificationHistory,
-} from "@/shared/api/hooks/notifications";
+} from "@/features/notifications/hooks/notifications";
 import { withQuery } from "@/shared/api/query";
 import type { NotificationKind } from "@/shared/api/types";
-import { EmptyState } from "@/shared/components/EmptyState";
+import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { formatCurrency } from "@/shared/lib/currency";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
@@ -17,7 +17,7 @@ import { Card, CardContent } from "@/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Switch } from "@/ui/switch";
 
-import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS, notificationLink, timeAgo } from "../notification-view";
+import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS, notificationLink, timeAgo } from "@/features/notifications/lib/notification-view";
 
 const PAGE_SIZE = 20;
 const ALL = "__all__";

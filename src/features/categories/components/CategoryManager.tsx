@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useCategories, useDeleteCategory } from "@/shared/api/hooks/catalogs";
 import type { Category } from "@/shared/api/types";
-import { useCategoryBudgets, useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/shared/api/hooks/budget";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
+import { useCategoryBudgets, useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/features/categories/hooks/category-budgets";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
 import { withQuery } from "@/shared/api/query";
@@ -11,9 +11,10 @@ import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Badge } from "@/ui/badge";
 import { Progress } from "@/ui/progress";
-import { Plus, Trash2, Pencil, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Pencil, AlertTriangle, Tags } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CategoryDialog } from "./CategoryDialog";
+import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 
 // Categorías (D78): what you spent this month against the limit of each one (GET /v1/category-budgets, your part only);
 // the limit is for every month or only for the month on screen, with an alert at its threshold
@@ -31,7 +32,9 @@ function CategoryManagerView() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{categories.length} categorías</p>
+        <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <Tags className="size-4" /> {categories.length} categorías
+        </p>
         <Button size="sm" onClick={() => { setEditingCategory(undefined); setDialogOpen(true); }}><Plus className="mr-1 h-4 w-4" /> Nueva categoría</Button>
       </div>
 
@@ -49,15 +52,22 @@ function CategoryManagerView() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 rounded" style={{ backgroundColor: cat.color }} />
+                    <CategoryIcon icon={cat.icon} color={cat.color} size="sm" />
                     <CardTitle className="text-base">{cat.name}</CardTitle>
                   </div>
                   <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      aria-label={cat.isDefault ? `Cambiar icono de ${cat.name}` : `Editar ${cat.name}`}
+                      title={cat.isDefault ? "Cambiar icono" : "Editar categoría"}
+                      onClick={() => { setEditingCategory(cat); setDialogOpen(true); }}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
                     {!cat.isDefault && (
                       <>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingCategory(cat); setDialogOpen(true); }}>
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteCategory.mutate(cat.id)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>

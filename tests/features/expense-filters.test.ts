@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { activePanelCount, applyExpenseFilters, hasActiveFilters, usesPanel } from "@/shared/lib/expense-filters";
+import { activePanelCount, applyExpenseFilters, hasActiveFilters, usesPanel } from "@/features/expenses/lib/expense-filters";
 
 const records = [
   { description: "Netflix", categoryId: "fun", paymentMethodId: "io", expenseType: "essential", paymentStatus: "pending", period: "monthly", installment: null, othersShare: 32 },

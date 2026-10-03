@@ -1,13 +1,13 @@
 import { AlertTriangle, CheckCircle2, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
-import { useSetBudget } from "@/shared/api/hooks/summary";
+import { useSetBudget } from "@/features/budget/hooks/summary";
 import type { Summary } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 
-import { incomeOf, limitUsage } from "../budget-view";
+import { incomeOf, limitUsage } from "@/features/budget/lib/budget-view";
 
 interface BudgetKpisProps {
   summary: Summary | undefined;

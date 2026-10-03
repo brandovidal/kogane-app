@@ -3,7 +3,7 @@ import { BudgetGroupsCard } from "@/features/budget/components/BudgetGroupsCard"
 import { BudgetKpis } from "@/features/budget/components/BudgetKpis";
 import { BudgetVsActual } from "@/features/budget/components/BudgetVsActual";
 import { SurplusTrend } from "@/features/budget/components/SurplusTrend";
-import { useSummary } from "@/shared/api/hooks/summary";
+import { useSummary } from "@/features/budget/hooks/summary";
 import { withQuery } from "@/shared/api/query";
 import { usePeriod } from "@/shared/stores/period.store";
 

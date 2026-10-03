@@ -1,0 +1,3 @@
+// Public module API. Internal files import concrete modules to avoid cycles.
+export { IncomesPage } from "./IncomesPage";
+export { IncomeDialog, type IncomeDialogProps } from "./IncomeDialog";

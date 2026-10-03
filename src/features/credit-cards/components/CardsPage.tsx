@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { cardFromSearch } from "@/shared/lib/card-links";
+import { cardFromSearch } from "@/features/credit-cards/lib/card-links";
 
 import { CreditCardDetail } from "./CreditCardDetail";
 import { CreditCardOverview } from "./CreditCardOverview";

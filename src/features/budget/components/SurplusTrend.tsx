@@ -1,6 +1,6 @@
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { useSummaryHistory } from "@/shared/api/hooks/summary";
+import { useSummaryHistory } from "@/features/budget/hooks/summary";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";

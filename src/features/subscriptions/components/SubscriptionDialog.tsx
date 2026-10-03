@@ -2,22 +2,17 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ResponsiveDialog } from "@/shared/components/ResponsiveDialog";
-import { PaymentMethodSelect, PersonSelect } from "@/shared/components/CatalogSelect";
+import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
-import { useSaveExpense } from "@/shared/api/hooks/expenses";
+import { useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
-import {
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-  PAYMENT_STATUS_LABELS,
-  SUBSCRIPTION_PERIOD_LABELS,
-  SUBSCRIPTION_PERIODS,
-  SUBSCRIPTION_STATUSES,
-} from "@/shared/labels";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
+import { SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS, SUBSCRIPTION_STATUSES } from "@/features/subscriptions/constants/subscriptions";
 import { toIsoDate } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 
@@ -194,7 +189,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Subscri
             <Select value={watch("paymentStatus")} onValueChange={(v) => setValue("paymentStatus", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {SUBSCRIPTION_STATUSES.map((s) => <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>)}
+                {SUBSCRIPTION_STATUSES.map((s) => <SelectItem key={s} value={s}><StatusBadge status={s} /></SelectItem>)}
               </SelectContent>
             </Select>
           </div>
