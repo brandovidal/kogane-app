@@ -14,6 +14,7 @@ export interface DatePickerProps {
   minDate?: string;
   maxDate?: string;
   className?: string;
+  active?: boolean;
 }
 
 const parseDate = (value?: string | null) => {
@@ -44,11 +45,13 @@ export function DatePicker({
   minDate,
   maxDate,
   className,
+  active,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const date = useMemo(() => parseDate(value), [value]);
   const minimum = useMemo(() => parseDate(minDate), [minDate]);
   const maximum = useMemo(() => parseDate(maxDate), [maxDate]);
+  const isActive = active ?? !!date;
 
   return (
     <div className="flex min-w-0 gap-1">
@@ -60,6 +63,7 @@ export function DatePicker({
             buttonVariants({ variant: "outline" }),
             "min-w-0 flex-1 justify-start text-left font-normal",
             !date && "text-muted-foreground",
+            isActive && "border-primary/60 bg-primary/5 ring-1 ring-primary/20",
             className,
           )}
         >

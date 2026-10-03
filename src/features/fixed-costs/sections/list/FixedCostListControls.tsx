@@ -67,6 +67,66 @@ export function FixedCostListControls({
       year: String(nextYear),
     });
   };
+  const goToCurrentPeriod = () =>
+    onFiltersChange({
+      ...filters,
+      month: String(currentMonth),
+      year: String(currentYear),
+    });
+  const clearPeriod = () =>
+    onFiltersChange({ ...filters, month: undefined, year: undefined });
+  const periodNavigation = (
+    <div
+      className="flex h-9 w-max items-center gap-1 whitespace-nowrap"
+      role="group"
+      aria-label="Navegación mensual"
+    >
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 shrink-0"
+        aria-label="Mes anterior"
+        title="Mes anterior"
+        onClick={() => changePeriod(-1)}
+      >
+        <ChevronLeft className="size-4" />
+      </Button>
+      <span className="min-w-32 shrink-0 whitespace-nowrap px-2 text-center text-sm font-medium tabular-nums">
+        {hasPeriod ? `${getMonthName(month)} - ${year}` : "Todos los períodos"}
+      </span>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 shrink-0"
+        aria-label="Mes siguiente"
+        title="Mes siguiente"
+        onClick={() => changePeriod(1)}
+      >
+        <ChevronRight className="size-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="ml-1 h-8 shrink-0"
+        aria-label="Ir al mes actual"
+        title="Ir al mes actual"
+        disabled={isCurrentPeriod}
+        onClick={goToCurrentPeriod}
+      >
+        <CalendarDays className="size-4" />
+        Hoy
+      </Button>
+    </div>
+  );
+  const periodChip = hasPeriod
+    ? {
+        label: `Período: ${getMonthName(month)} ${year}`,
+        onRemove: clearPeriod,
+      }
+    : undefined;
 
   return (
     <div className="space-y-1.5">
@@ -75,60 +135,7 @@ export function FixedCostListControls({
         value={filters}
         onChange={onFiltersChange}
         personInPanel
-        primaryControls={
-          <div
-            className="flex h-9 w-max items-center gap-1 whitespace-nowrap"
-            role="group"
-            aria-label="Navegación mensual"
-          >
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              aria-label="Mes anterior"
-              title="Mes anterior"
-              onClick={() => changePeriod(-1)}
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <span className="min-w-32 shrink-0 whitespace-nowrap px-2 text-center text-sm font-medium tabular-nums">
-              {hasPeriod
-                ? `${getMonthName(month)} - ${year}`
-                : "Todos los períodos"}
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              aria-label="Mes siguiente"
-              title="Mes siguiente"
-              onClick={() => changePeriod(1)}
-            >
-              <ChevronRight className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="ml-1 h-8 shrink-0"
-              aria-label="Ir al mes actual"
-              title="Ir al mes actual"
-              disabled={isCurrentPeriod}
-              onClick={() =>
-                onFiltersChange({
-                  ...filters,
-                  month: String(currentMonth),
-                  year: String(currentYear),
-                })
-              }
-            >
-              <CalendarDays className="size-4" />
-              Hoy
-            </Button>
-          </div>
-        }
+        primaryControls={periodNavigation}
         description="Selecciona el mes y año del registro. Puedes combinarlos con personas, estados y más filtros."
         countLabel="costos fijos"
         compactCountInTitle
@@ -152,30 +159,16 @@ export function FixedCostListControls({
           </div>
         }
         appliedFilters={
-          <div className="hidden lg:block">
-            <ActiveExpenseFilterChips
-              fields={FIXED_COST_FILTER_KEYS}
-              value={filters}
-              onChange={onFiltersChange}
-              me={me}
-              groupBy={groupBy}
-              onGroupByChange={onGroupByChange}
-              groupByLabels={FIXED_COST_GROUP_LABELS}
-              periodChip={
-                hasPeriod
-                  ? {
-                      label: `Período: ${getMonthName(month)} ${year}`,
-                      onRemove: () =>
-                        onFiltersChange({
-                          ...filters,
-                          month: undefined,
-                          year: undefined,
-                        }),
-                    }
-                  : undefined
-              }
-            />
-          </div>
+          <ActiveExpenseFilterChips
+            fields={FIXED_COST_FILTER_KEYS}
+            value={filters}
+            onChange={onFiltersChange}
+            me={me}
+            groupBy={groupBy}
+            onGroupByChange={onGroupByChange}
+            groupByLabels={FIXED_COST_GROUP_LABELS}
+            periodChip={periodChip}
+          />
         }
         rightActions={
           <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2">

@@ -24,6 +24,8 @@ export default defineConfig({
     schema: {
       API_URL: envField.string({ context: 'server', access: 'secret', default: 'http://localhost:5560' }),
       API_KEY: envField.string({ context: 'server', access: 'secret' }),
+      DEV_LOGIN_IDENTIFIER: envField.string({ context: 'server', access: 'secret', optional: true }),
+      DEV_LOGIN_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 

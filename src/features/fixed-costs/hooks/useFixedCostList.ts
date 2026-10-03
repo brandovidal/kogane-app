@@ -17,6 +17,10 @@ import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
 import { buildFixedCostExport } from "@/features/fixed-costs/lib/fixed-cost-export";
 import { FIXED_COST_FILTER_KEYS } from "@/features/fixed-costs/lib/fixed-cost-filters";
 import { FIXED_COST_GROUP_VALUES } from "../constants/grouping";
+import {
+  filterFixedCostsByScope,
+  type FixedCostStatusScope,
+} from "../lib/fixed-cost-summary";
 
 const EMPTY_COSTS: FixedCost[] = [];
 
@@ -43,9 +47,20 @@ export function useFixedCostList() {
   const personName = nameById(usePeople().data);
   const accountName = nameById(usePaymentMethods().data);
   const me = useMe();
-  const filtered = useMemo(
+  const baseFiltered = useMemo(
     () => applyExpenseFilters(fixedCosts, filters, me),
     [fixedCosts, filters, me],
+  );
+  const [scopeParams, setScopeParams] = useUrlFilters<{ scope?: FixedCostStatusScope }>(["scope"]);
+  const scope: FixedCostStatusScope =
+    scopeParams.scope === "payable" || scopeParams.scope === "completed"
+      ? scopeParams.scope
+      : "all";
+  const setScope = (next: FixedCostStatusScope) =>
+    setScopeParams(next === "all" ? {} : { scope: next });
+  const filtered = useMemo(
+    () => filterFixedCostsByScope(baseFiltered, scope),
+    [baseFiltered, scope],
   );
   const [view, setView] = useViewMode("fixed-costs", "table");
   const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
@@ -80,6 +95,9 @@ export function useFixedCostList() {
     filters,
     setFilters,
     filtered,
+    baseFiltered,
+    scope,
+    setScope,
     view,
     setView,
     groupBy,
@@ -87,6 +105,6 @@ export function useFixedCostList() {
     exportItems: csvExport.items,
     loading: query.isLoading,
     error: query.isError,
-    scopeKey: JSON.stringify(filters),
+    scopeKey: JSON.stringify([filters, scope]),
   };
 }

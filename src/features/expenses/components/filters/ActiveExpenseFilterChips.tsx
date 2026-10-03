@@ -138,6 +138,13 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
     <AppliedFilterChips
       items={chips}
       ariaLabel="Filtros y agrupación activos"
+      collapsible
+      onClearAll={() => {
+        onChange({});
+        if (isGrouped && onGroupByChange) {
+          onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T);
+        }
+      }}
     />
   );
 }

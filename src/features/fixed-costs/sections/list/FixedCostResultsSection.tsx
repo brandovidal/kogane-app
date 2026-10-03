@@ -41,9 +41,6 @@ export function FixedCostResultsSection({
   const emptyMessage = totalRecords
     ? "No hay costos fijos con estos filtros"
     : "No hay costos fijos en este mes";
-  const footer = (
-    <span className="text-sm text-muted-foreground">{items.length} registros</span>
-  );
   const summaryFor = (records: FixedCost[]) => {
     const subtotal = totalsOf(records);
     return {
@@ -59,7 +56,6 @@ export function FixedCostResultsSection({
     return (
       <DataTableComplex
         table={dataTable.table}
-        footer={footer}
         calculationStorageKey="fixed-costs"
         calculationDefaults={{ amount: "sum" }}
         loading={loading}
@@ -112,7 +108,6 @@ export function FixedCostResultsSection({
               : (categories.find((category) => category.id === key)?.name ??
                 "Sin categoría")
         }
-        footer={footer}
       />
       <DataTablePagination table={dataTable.table} disabled={pending} />
     </div>

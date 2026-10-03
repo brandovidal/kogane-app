@@ -45,6 +45,7 @@ export interface FilterSelectProps {
   allLabel?: string;
   allValue?: string;
   searchable?: boolean;
+  active?: boolean;
 }
 
 const ALL = "__all__";
@@ -68,7 +69,12 @@ export function FilterSelect({
   allLabel = "Todos",
   allValue = ALL,
   searchable = false,
+  active,
 }: FilterSelectProps) {
+  const isActive = active ?? (value != null && value !== "" && value !== allValue);
+  const activeControlClass = isActive
+    ? "border-primary/60 bg-primary/5 ring-1 ring-primary/20"
+    : undefined;
   const items = useMemo(
     () =>
       createComboboxItems([{ value: allValue, label: allLabel }, ...options], {
@@ -83,7 +89,7 @@ export function FilterSelect({
   return (
     <div className="block min-w-0 space-y-1.5">
       <div className={labelClassName}>
-        <FieldLabel icon={icon}>{label}</FieldLabel>
+        <FieldLabel icon={icon} className={isActive ? "text-primary" : undefined}>{label}</FieldLabel>
       </div>
       {description && (
         <p className="text-xs text-muted-foreground">{description}</p>
@@ -100,7 +106,7 @@ export function FilterSelect({
           }
           autoHighlight
         >
-          <ComboboxTrigger aria-label={label} className={cn(width)}>
+          <ComboboxTrigger aria-label={label} className={cn(width, activeControlClass)}>
             {selectedOption?.decoration}
             <span className="min-w-0 flex-1 truncate text-left">
               <ComboboxValue placeholder={allLabel} />
@@ -144,7 +150,7 @@ export function FilterSelect({
             onChange(next === allValue ? undefined : next)
           }
         >
-          <SelectTrigger className={`h-9 ${width}`} aria-label={label}>
+          <SelectTrigger className={cn("h-9", width, activeControlClass)} aria-label={label}>
             {selectedOption?.decoration}
             <SelectValue placeholder={label}>
               {selectedOption?.label}

@@ -204,6 +204,7 @@ export function ExpenseFilterFields({
                   <DatePicker
                     ariaLabel="Fecha de vencimiento desde"
                     value={value.dueFrom}
+                    active={!!value.dueFrom}
                     onChange={(next) => set("dueFrom", next)}
                     maxDate={value.dueTo}
                     placeholder="Cualquier fecha"
@@ -216,6 +217,7 @@ export function ExpenseFilterFields({
                   <DatePicker
                     ariaLabel="Fecha de vencimiento hasta"
                     value={value.dueTo}
+                    active={!!value.dueTo}
                     onChange={(next) => set("dueTo", next)}
                     minDate={value.dueFrom}
                     placeholder="Cualquier fecha"
@@ -251,6 +253,7 @@ export function ExpenseFilterFields({
               className="w-full"
               placeholder="Buscar registros..."
               value={value.q ?? ""}
+              active={!!value.q?.trim()}
               onChange={(next) => set("q", next)}
             />
           )}
