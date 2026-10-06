@@ -17,15 +17,12 @@ import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsP
 import { useAttachments } from "@/features/attachments/hooks/attachments";
 import { RecordHistoryPanel } from "@/features/history/components/RecordHistoryPanel";
 import { useRecordHistory } from "@/features/history/hooks/history";
-import { groupPaymentStatuses } from "@/features/expenses/lib/group-payment-statuses";
-import { FIXED_COST_STATUSES } from "../constants/statuses";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import { ATTACHMENT_KIND_LABELS } from "@/features/attachments/constants/attachments";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -45,7 +42,6 @@ export interface FixedCostDetailPageProps {
   onClose: () => void;
   onEdit: () => void;
   initialTab?: DetailTab;
-  onStatusChange: (cost: FixedCost, status: string) => void;
   onDelete: (cost: FixedCost) => void | Promise<unknown>;
   items: FixedCost[];
   onNavigate: (cost: FixedCost) => void;
@@ -61,7 +57,6 @@ export function FixedCostDetailPage({
   onClose,
   onEdit,
   initialTab = "detail",
-  onStatusChange,
   onDelete,
   items,
   onNavigate,
@@ -163,13 +158,7 @@ export function FixedCostDetailPage({
                 personName={personName}
                 accountName={accountName}
                 showFiles={false}
-                actions={<div className="flex flex-wrap items-center gap-2">
-                  <Select value={fixedCost.paymentStatus} onValueChange={(status) => onStatusChange(fixedCost, status)}>
-                    <SelectTrigger className="w-[190px]" aria-label="Cambiar estado"><SelectValue><StatusBadge status={fixedCost.paymentStatus} /></SelectValue></SelectTrigger>
-                    <SelectContent>{groupPaymentStatuses(FIXED_COST_STATUSES).map((group) => <SelectGroup key={group.label}><SelectLabel>{group.label}</SelectLabel>{group.options.map((status) => <SelectItem key={status} value={status}><StatusBadge status={status} /></SelectItem>)}</SelectGroup>)}</SelectContent>
-                  </Select>
-                  <Button size="sm" onClick={onEdit}><Pencil aria-hidden="true" className="size-4" />Editar</Button>
-                </div>}
+                actions={<Button size="sm" onClick={onEdit}><Pencil aria-hidden="true" className="size-4" />Editar</Button>}
               />
               {(files.length > 0 || latestChange) && <div className="space-y-3 px-4 pb-4">
                 {files.length > 0 && <button type="button" onClick={() => setTab("files")} className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30">
@@ -197,6 +186,7 @@ export function FixedCostDetailPage({
                 key={fixedCost.id}
                 entity="exp_fixed_costs"
                 id={fixedCost.id}
+                compact
               />
             </TabsContent>
           </Tabs>

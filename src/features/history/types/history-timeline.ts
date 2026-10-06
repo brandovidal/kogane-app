@@ -10,4 +10,5 @@ export interface HistoryTimelineProps {
   entries: HistoryEntry[];
   labels: Record<string, string>;
   showRecord?: boolean;
+  compact?: boolean;
 }

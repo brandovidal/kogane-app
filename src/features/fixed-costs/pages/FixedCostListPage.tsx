@@ -247,7 +247,6 @@ function FixedCostListPageContent() {
         accountName={list.accountName(openedItem?.paymentMethodId)}
         onClose={interaction.onCloseDetail}
         onEdit={interaction.onEditDetail}
-        onStatusChange={(cost, status) => interaction.actions.onStatusChange(cost, status)}
         onDelete={(cost) => interaction.actions.onDelete(cost)}
         items={list.filtered}
         onNavigate={(cost) => interaction.actions.onOpen(cost, "detail")}

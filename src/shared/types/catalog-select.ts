@@ -11,4 +11,4 @@ export interface CatalogSelectProps extends Pick<ComponentProps<"button">,
   disabled?: boolean;
 }
 
-export interface CatalogOption { id: string; name: string; content?: ReactNode; }
+export interface CatalogOption { id: string; name: string; content?: ReactNode; group?: string; }

@@ -22,12 +22,16 @@ export function FixedCostNotesSection({
   onPendingAttachmentsChange,
   onRetryPendingAttachments,
   retryingAttachments,
+  uploadingAttachmentIds,
+  onInvalidSavedUploadsChange,
 }: {
   fixedCostId?: string;
   pendingAttachments: PendingAttachmentUpload[];
   onPendingAttachmentsChange: (files: PendingAttachmentUpload[]) => void;
   onRetryPendingAttachments: () => void;
   retryingAttachments: boolean;
+  uploadingAttachmentIds: ReadonlySet<string>;
+  onInvalidSavedUploadsChange: (count: number) => void;
 }) {
   const [attachmentKind, setAttachmentKind] = useState<Attachment["kind"]>("boleta");
   const [filterKind, setFilterKind] = useState<Attachment["kind"] | "all">("all");
@@ -136,6 +140,7 @@ export function FixedCostNotesSection({
               )
                 setValue("paymentStatus", "paid", { shouldDirty: true });
             }}
+            onInvalidFilesChange={onInvalidSavedUploadsChange}
             dropzone
           />
         ) : null}
@@ -144,6 +149,7 @@ export function FixedCostNotesSection({
           onChange={onPendingAttachmentsChange}
           onRetry={fixedCostId ? onRetryPendingAttachments : undefined}
           retrying={retryingAttachments}
+          uploadingIds={uploadingAttachmentIds}
           kind={attachmentKind}
           onKindChange={setAttachmentKind}
           showKindSelect={false}

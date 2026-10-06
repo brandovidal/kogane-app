@@ -17,10 +17,12 @@ import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { FormField } from "@/shared/components/forms/FormField";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
+import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
 import {
   CURRENCIES,
   EXPENSE_TYPE_LABELS,
   EXPENSE_TYPES,
+  PAYMENT_STATUS_LABELS,
 } from "@/shared/constants/finance";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
 import { groupPaymentStatuses } from "@/features/expenses/lib/group-payment-statuses";
@@ -35,9 +37,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
@@ -201,6 +201,8 @@ export function FixedCostGeneralSection() {
           <FormField label="Cuenta" icon={WalletCards}>
             <PaymentMethodSelect
               className="w-full"
+              placeholder="Selecciona cuenta"
+              groupByType
               allowEmpty
               value={watch("paymentMethodId")}
               onChange={(id) => setValue("paymentMethodId", id)}
@@ -212,26 +214,24 @@ export function FixedCostGeneralSection() {
               icon={CircleCheck}
               htmlFor="fixed-cost-status"
             >
-              <Select
+              <CatalogSelectOptions
+                id="fixed-cost-status"
+                aria-label="Estado"
+                className="w-full"
+                placeholder="Selecciona estado"
                 value={watch("paymentStatus")}
-                onValueChange={(value) => setValue("paymentStatus", value)}
-              >
-                <SelectTrigger id="fixed-cost-status" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {groupPaymentStatuses(FIXED_COST_STATUSES).map((group) => (
-                    <SelectGroup key={group.label}>
-                      <SelectLabel>{group.label}</SelectLabel>
-                      {group.options.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          <StatusBadge status={status} />
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(status) => {
+                  if (status) setValue("paymentStatus", status);
+                }}
+                options={groupPaymentStatuses(FIXED_COST_STATUSES).flatMap((group) =>
+                  group.options.map((status) => ({
+                    id: status,
+                    name: PAYMENT_STATUS_LABELS[status] ?? status,
+                    group: group.label,
+                    content: <StatusBadge status={status} />,
+                  })),
+                )}
+              />
             </FormField>
           </div>
         </div>

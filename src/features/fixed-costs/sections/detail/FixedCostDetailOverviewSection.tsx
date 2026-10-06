@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   CalendarDays,
   CreditCard,
+  FileText,
   Paperclip,
   Repeat2,
   Tags,
@@ -91,6 +92,13 @@ export function FixedCostDetailOverviewSection({
               : "Sin vencimiento"
           }
         />
+        <FixedCostDetailRow
+          icon={FileText}
+          label="Observación"
+          value={
+            <LinkifiedText text={fixedCost.notes?.trim() || "Sin observación"} />
+          }
+        />
         {!plan && <FixedCostDetailRow icon={Repeat2} label="Cuotas" value="No aplica" />}
         {fixedCost.exchangeRate != null && (
           <FixedCostDetailRow
@@ -118,15 +126,6 @@ export function FixedCostDetailOverviewSection({
         </section>
       )}
 
-      <section
-        className="min-w-0 rounded-2xl border p-4"
-        aria-label="Observación"
-      >
-        <h3 className="mb-1 text-sm font-medium">Observación</h3>
-        <p className="whitespace-pre-wrap wrap-anywhere text-sm text-muted-foreground">
-          <LinkifiedText text={fixedCost.notes || "Sin observación."} />
-        </p>
-      </section>
       {showFiles && <section
         className="min-w-0 space-y-3 rounded-2xl border p-4"
         aria-label="Archivos del registro"

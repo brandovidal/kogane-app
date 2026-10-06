@@ -37,6 +37,10 @@ function Combobox<Value, Multiple extends boolean | undefined = false, Item = Va
 const createComboboxItems = ComboboxPrimitive.createItems;
 const ComboboxValue = ComboboxPrimitive.Value;
 const ComboboxItemIndicator = ComboboxPrimitive.ItemIndicator;
+const ComboboxGroup = ComboboxPrimitive.Group;
+const ComboboxGroupLabel = ComboboxPrimitive.GroupLabel;
+const ComboboxCollection = ComboboxPrimitive.Collection;
+const ComboboxSeparator = ComboboxPrimitive.Separator;
 
 const ComboboxList = React.forwardRef<
   HTMLDivElement,
@@ -155,6 +159,10 @@ export {
   ComboboxInput,
   ComboboxItem,
   ComboboxItemIndicator,
+  ComboboxGroup,
+  ComboboxGroupLabel,
+  ComboboxCollection,
+  ComboboxSeparator,
   ComboboxList,
   ComboboxTrigger,
   ComboboxValue,

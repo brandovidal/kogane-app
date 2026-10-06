@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useIsMutating } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useUploadAttachment } from "@/features/attachments/hooks/attachments";
+import { ATTACHMENT_MAX_MB } from "@/features/attachments/constants/attachments";
 import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 import { useExpense, useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { attachmentKeys } from "@/features/attachments/constants/query-keys";
@@ -39,6 +40,8 @@ export function useFixedCostForm({
   );
   const [createdId, setCreatedId] = useState<string>();
   const [pendingAttachments, setPendingAttachments] = useState<PendingAttachmentUpload[]>([]);
+  const [invalidSavedUploads, setInvalidSavedUploads] = useState(0);
+  const [uploadingAttachmentIds, setUploadingAttachmentIds] = useState<Set<string>>(() => new Set());
   const isUploading =
     useIsMutating({
       mutationKey: attachmentKeys.upload,
@@ -63,6 +66,8 @@ export function useFixedCostForm({
     if (!open) return;
     setCreatedId(undefined);
     setPendingAttachments([]);
+    setInvalidSavedUploads(0);
+    setUploadingAttachmentIds(new Set());
     setActiveTab("general");
     reset(fixedCostFormDefaults(fixedCost, { month, year }));
   }, [open, fixedCost, reset, month, year]);
@@ -87,6 +92,7 @@ export function useFixedCostForm({
   const uploadPendingAttachments = async (refId: string, files: PendingAttachmentUpload[]) => {
     const failed: PendingAttachmentUpload[] = [];
     for (const pending of files) {
+      setUploadingAttachmentIds((current) => new Set(current).add(pending.id));
       try {
         const attachment = await uploadAttachment.mutateAsync({
           file: pending.file,
@@ -99,6 +105,12 @@ export function useFixedCostForm({
         }
       } catch {
         failed.push(pending);
+      } finally {
+        setUploadingAttachmentIds((current) => {
+          const next = new Set(current);
+          next.delete(pending.id);
+          return next;
+        });
       }
     }
     setPendingAttachments(failed);
@@ -112,6 +124,14 @@ export function useFixedCostForm({
 
   const onSubmit = handleSubmit(
     (values) => {
+      const hasOversizedPending = pendingAttachments.some(
+        ({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024,
+      );
+      if (hasOversizedPending || invalidSavedUploads > 0) {
+        setActiveTab("notes");
+        toast.error(`Comprime o reemplaza los archivos para que pesen ${ATTACHMENT_MAX_MB} MB o menos antes de guardar.`);
+        return;
+      }
       if (isUploading) return;
       saveExpense.mutate(
         { id: fixedCost?.id ?? createdId, body: fixedCostSaveBody(values) },
@@ -154,6 +174,10 @@ export function useFixedCostForm({
     setPendingAttachments,
     retryPendingAttachments,
     isUploadingAttachments: isUploading,
+    uploadingAttachmentIds,
+    hasInvalidAttachments: invalidSavedUploads > 0 || pendingAttachments.some(({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024),
+    invalidSavedUploadCount: invalidSavedUploads,
     isSaving: saveExpense.isPending || isUploading || uploadAttachment.isPending,
+    setInvalidSavedUploads,
   };
 }

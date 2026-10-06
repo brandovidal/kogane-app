@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
 export function FixedCostDetailRow({
@@ -7,7 +8,7 @@ export function FixedCostDetailRow({
 }: {
   icon: LucideIcon;
   label: string;
-  value: string;
+  value: ReactNode;
 }) {
   return (
     <div className="flex min-h-10 items-center justify-between gap-4 border-b py-2 last:border-0">

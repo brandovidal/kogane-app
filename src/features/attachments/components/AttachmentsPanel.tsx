@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CloudUpload, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,6 +25,7 @@ import {
 
 import { AttachmentFileCard } from "./AttachmentFileCard";
 import { AttachmentPreviewDialog } from "./dialogs/AttachmentPreviewDialog";
+import { OversizedAttachmentCard } from "./OversizedAttachmentCard";
 
 export interface AttachmentsPanelProps {
   refType: AttachmentRefType;
@@ -38,6 +39,7 @@ export interface AttachmentsPanelProps {
   filterKind?: Attachment["kind"] | "all";
   listToolbar?: ReactNode;
   emptyMessage?: string | null;
+  onInvalidFilesChange?: (count: number) => void;
 }
 
 interface UploadingAttachment {
@@ -59,6 +61,7 @@ export function AttachmentsPanel({
   filterKind = "all",
   listToolbar,
   emptyMessage = "Sin archivos todavía.",
+  onInvalidFilesChange,
 }: AttachmentsPanelProps) {
   const {
     data: files = [],
@@ -74,23 +77,18 @@ export function AttachmentsPanel({
     if (kind === undefined) setLocalKind(next);
   };
   const [uploadingFiles, setUploadingFiles] = useState<UploadingAttachment[]>([]);
+  const [oversizedFiles, setOversizedFiles] = useState<UploadingAttachment[]>([]);
   const [deletingFile, setDeletingFile] = useState<Attachment | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
-  const pick = (selected: FileList | File[]) => {
-    // Snapshot the live FileList before resetting the input. Otherwise clearing
-    // input.value also clears the selected files before they are queued.
-    const selectedFiles = Array.from(selected);
-    if (input.current) input.current.value = "";
-    const accepted = selectedFiles.filter((file) => {
-      if (file.size <= ATTACHMENT_MAX_MB * 1024 * 1024) return true;
-      toast.error(`${file.name} supera el límite de ${ATTACHMENT_MAX_MB} MB.`);
-      return false;
-    });
-    if (!accepted.length) return;
-    const batch = accepted.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }));
+  useEffect(() => {
+    onInvalidFilesChange?.(oversizedFiles.length);
+  }, [onInvalidFilesChange, oversizedFiles.length]);
+
+  const uploadBatch = (batch: UploadingAttachment[]) => {
+    if (!batch.length) return;
     setUploadingFiles((current) => [...current, ...batch]);
     void (async () => {
       let uploaded = 0;
@@ -107,6 +105,27 @@ export function AttachmentsPanel({
       }
       if (uploaded) toast.success(uploaded === 1 ? "Archivo adjuntado" : `${uploaded} archivos adjuntados`);
     })();
+  };
+
+  const pick = (selected: FileList | File[]) => {
+    // Snapshot the live FileList before resetting the input. Otherwise clearing
+    // input.value also clears the selected files before they are queued.
+    const selectedFiles = Array.from(selected);
+    if (input.current) input.current.value = "";
+    const batch = selectedFiles.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }));
+    const limit = ATTACHMENT_MAX_MB * 1024 * 1024;
+    setOversizedFiles((current) => [...current, ...batch.filter((item) => item.file.size > limit)]);
+    uploadBatch(batch.filter((item) => item.file.size <= limit));
+  };
+
+  const replaceOversizedFile = (id: string, file: File) => {
+    const kind = oversizedFiles.find((item) => item.id === id)?.kind ?? selectedKind;
+    if (file.size > ATTACHMENT_MAX_MB * 1024 * 1024) {
+      setOversizedFiles((current) => current.map((item) => item.id === id ? { ...item, file } : item));
+      return;
+    }
+    setOversizedFiles((current) => current.filter((item) => item.id !== id));
+    uploadBatch([{ id: crypto.randomUUID(), file, kind }]);
   };
 
   const visibleFiles = filterKind === "all" ? files : files.filter((file) => file.kind === filterKind);
@@ -215,6 +234,15 @@ export function AttachmentsPanel({
           kind,
           url: null,
         }} />
+      ))}
+      {oversizedFiles.map(({ id, file, kind }) => (
+        <OversizedAttachmentCard
+          key={id}
+          file={file}
+          kind={kind}
+          onReplace={(replacement) => replaceOversizedFile(id, replacement)}
+          onRemove={() => setOversizedFiles((current) => current.filter((item) => item.id !== id))}
+        />
       ))}
       {listToolbar}
       {isLoading ? (

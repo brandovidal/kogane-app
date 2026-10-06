@@ -6,9 +6,10 @@ import { HistoryValue } from "./HistoryValue";
 interface HistoryChangesProps {
   entry: HistoryEntry;
   labels: Record<string, string>;
+  compact?: boolean;
 }
 
-export function HistoryChanges({ entry, labels }: HistoryChangesProps) {
+export function HistoryChanges({ entry, labels, compact = false }: HistoryChangesProps) {
   const lines = describeChanges(entry.action, entry.changes, labels);
   const rawChanges = new Map(entry.changes.map((change) => [change.field, change]));
 
@@ -17,6 +18,22 @@ export function HistoryChanges({ entry, labels }: HistoryChangesProps) {
   }
 
   if (entry.action === "update") {
+    if (compact) {
+      return (
+        <div className="space-y-2">
+          {lines.map((line) => (
+            <div key={line.field} className="min-w-0">
+              {lines.length > 1 && <p className="mb-1 text-xs text-muted-foreground">{line.label}</p>}
+              <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
+                <span className="whitespace-pre-wrap wrap-anywhere text-muted-foreground line-through decoration-muted-foreground/40">{line.before}</span>
+                <span aria-hidden="true" className="text-muted-foreground">→</span>
+                <span className="min-w-0 font-medium"><HistoryValue field={line.field} rawValue={rawChanges.get(line.field)?.after} formattedValue={line.after} /></span>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
     return (
       <div className="overflow-hidden rounded-md border text-sm">
         <div aria-hidden="true" className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3 border-b bg-muted/40 px-3 py-2 text-xs text-muted-foreground sm:grid">

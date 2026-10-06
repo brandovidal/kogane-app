@@ -33,14 +33,31 @@ export function AttachmentFileCard({ file, uploading, onRemove, onPreview, remov
       <Attachment state={uploading ? "uploading" : "done"} className="w-full flex-nowrap rounded-lg">
         <AttachmentMedia variant={isImage ? "image" : "icon"}>
           {uploading ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : isImage ? <img src={file.url ?? ""} alt="" loading="lazy" onError={() => setImageFailed(true)} /> : <Icon aria-hidden="true" />}
+          {file.url && !uploading && onPreview && (
+            <AttachmentTrigger
+              aria-label={`Ver archivo ${file.name}`}
+              title={`Ver archivo ${file.name}`}
+              onClick={onPreview}
+              className="rounded-lg focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          )}
         </AttachmentMedia>
         <AttachmentContent>
           <AttachmentTitle title={file.name}>{file.name}</AttachmentTitle>
-          <AttachmentDescription>
-            {uploading ? "Subiendo…" : ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind} · {formatAttachmentSize(file.sizeBytes)}
-          </AttachmentDescription>
+        <AttachmentDescription>
+          {uploading ? "Subiendo…" : ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind} · {formatAttachmentSize(file.sizeBytes)}
+        </AttachmentDescription>
+        {uploading && (
+          <div
+            role="progressbar"
+            aria-label={`Subiendo ${file.name}`}
+            aria-valuetext="Subida en curso"
+            className="mt-1 h-1 w-full overflow-hidden rounded-full bg-muted"
+          >
+            <span className="block h-full w-1/3 animate-pulse rounded-full bg-brand" />
+          </div>
+        )}
         </AttachmentContent>
-        {file.url && !uploading && onPreview && <AttachmentTrigger aria-label={`Ver archivo ${file.name}`} onClick={onPreview} />}
         {(onRemove || (file.url && !uploading)) && (
           <AttachmentActions>
             {file.url && !uploading && (

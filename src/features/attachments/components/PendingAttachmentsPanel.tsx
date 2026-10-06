@@ -1,12 +1,12 @@
 import { useRef, useState, type ReactNode } from "react";
 import { CloudUpload, Paperclip } from "lucide-react";
-import { toast } from "sonner";
 import { ATTACHMENT_ACCEPT, ATTACHMENT_KIND_LABELS, ATTACHMENT_MAX_MB } from "@/features/attachments/constants/attachments";
 import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 import type { Attachment } from "@/shared/api/types";
 import { Button } from "@/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { AttachmentFileCard } from "./AttachmentFileCard";
+import { OversizedAttachmentCard } from "./OversizedAttachmentCard";
 
 export function PendingAttachmentsPanel({
   files,
@@ -19,6 +19,7 @@ export function PendingAttachmentsPanel({
   showKindSelect = true,
   filterKind = "all",
   listToolbar,
+  uploadingIds,
 }: {
   files: PendingAttachmentUpload[];
   onChange: (files: PendingAttachmentUpload[]) => void;
@@ -30,6 +31,7 @@ export function PendingAttachmentsPanel({
   showKindSelect?: boolean;
   filterKind?: Attachment["kind"] | "all";
   listToolbar?: ReactNode;
+  uploadingIds?: ReadonlySet<string>;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [localKind, setLocalKind] = useState<PendingAttachmentUpload["kind"]>("boleta");
@@ -45,13 +47,8 @@ export function PendingAttachmentsPanel({
     // input so the same file can be selected again later.
     const selectedFiles = Array.from(selected);
     if (input.current) input.current.value = "";
-    const accepted = selectedFiles.filter((file) => {
-      if (file.size <= ATTACHMENT_MAX_MB * 1024 * 1024) return true;
-      toast.error(`${file.name} supera el límite de ${ATTACHMENT_MAX_MB} MB.`);
-      return false;
-    });
-    if (accepted.length) {
-      onChange([...files, ...accepted.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }))]);
+    if (selectedFiles.length) {
+      onChange([...files, ...selectedFiles.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }))]);
     }
   };
   const visibleFiles = filterKind === "all" ? files : files.filter((file) => file.kind === filterKind);
@@ -129,11 +126,21 @@ export function PendingAttachmentsPanel({
         <ul className="grid w-full grid-cols-1 gap-2">
           {visibleFiles.map(({ id, file, kind: fileKind }) => (
             <li key={id} className="min-w-0">
-              <AttachmentFileCard
-                file={{ name: file.name, contentType: file.type || "application/octet-stream", sizeBytes: file.size, kind: fileKind, url: null }}
-                onRemove={() => onChange(files.filter((item) => item.id !== id))}
-                removeDisabled={retrying}
-              />
+              {file.size > ATTACHMENT_MAX_MB * 1024 * 1024 ? (
+                <OversizedAttachmentCard
+                  file={file}
+                  kind={fileKind}
+                  onReplace={(replacement) => onChange(files.map((item) => item.id === id ? { ...item, file: replacement } : item))}
+                  onRemove={() => onChange(files.filter((item) => item.id !== id))}
+                />
+              ) : (
+                <AttachmentFileCard
+                  uploading={uploadingIds?.has(id)}
+                  file={{ name: file.name, contentType: file.type || "application/octet-stream", sizeBytes: file.size, kind: fileKind, url: null }}
+                  onRemove={() => onChange(files.filter((item) => item.id !== id))}
+                  removeDisabled={retrying}
+                />
+              )}
             </li>
           ))}
         </ul>
