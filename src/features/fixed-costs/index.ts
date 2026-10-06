@@ -28,18 +28,15 @@ export { FixedCostNotesSection } from "./sections/form/FixedCostNotesSection";
 export type { FixedCostResultsSectionProps } from "./sections/list/FixedCostResultsSection";
 export { FixedCostResultsSection } from "./sections/list/FixedCostResultsSection";
 export { FixedCostScheduleSection } from "./sections/form/FixedCostScheduleSection";
-export { getFixedCostColumns } from "./sections/list/fixed-cost-columns";
+export { getFixedCostColumns } from "./lib/fixed-cost-columns";
 export type {
   FixedCostGroupBy,
   CatalogName,
   FixedCostActions,
 } from "./types/fixed-cost-types";
-export type { FixedCostDetailViewProps } from "./views/FixedCostDetailView";
-export { FixedCostDetailView } from "./views/FixedCostDetailView";
-export {
-  FixedCostListView,
-  FixedCostListPage,
-} from "./views/FixedCostListView";
+export type { FixedCostDetailPageProps } from "./pages/FixedCostDetailPage";
+export { FixedCostDetailPage } from "./pages/FixedCostDetailPage";
+export { FixedCostListPage } from "./pages/FixedCostListPage";
 export { useFixedCostTable } from "./hooks/useFixedCostTable";
 export { useFixedCostBulkActions } from "./hooks/useFixedCostBulkActions";
 export { FixedCostBulkActionsSection } from "./sections/list/FixedCostBulkActionsSection";
@@ -52,5 +49,8 @@ export { FIXED_COST_GROUP_VALUES } from "./constants/grouping";
 export { FixedCostToolbar, FixedCostViewBar } from "./sections/list/FixedCostToolbar";
 export type { FixedCostToolbarProps } from "./sections/list/FixedCostToolbar";
 export { FixedCostPeriodSelector, FixedCostRecordCount } from "./components/header";
+export { FixedCostInstallmentsView } from "./views/FixedCostInstallmentsView";
+export { FixedCostStatusBoard } from "./views/FixedCostStatusBoard";
+export { FixedCostEmptyMonthView } from "./views/FixedCostEmptyMonthView";
 export { FIXED_COST_VIEWS } from "./lib/fixed-cost-views";
 export type { FixedCostView } from "./lib/fixed-cost-views";

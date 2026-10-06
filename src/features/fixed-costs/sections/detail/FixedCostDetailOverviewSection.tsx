@@ -41,19 +41,20 @@ export function FixedCostDetailOverviewSection({
   const plan = parseInstallment(fixedCost.installment);
   return (
     <div className={cn("min-w-0 space-y-5 p-4", className)}>
-      <section className="rounded-2xl border bg-muted/20 p-4">
-        <p className="eyebrow mb-2">Monto del registro</p>
-        <div className="text-2xl font-semibold tracking-tight tabular-nums">
-          <CurrencyDisplay
-            amount={fixedCost.amount}
-            currency={fixedCost.currency}
-            amountInPEN={fixedCost.amountInPen}
-            othersShare={fixedCost.othersShare}
-          />
+      <section className="flex flex-wrap items-end justify-between gap-4 rounded-2xl border bg-muted/20 p-4">
+        <div className="min-w-0">
+          <p className="eyebrow mb-1">Monto del registro</p>
+          <div className="text-3xl font-semibold tracking-tight tabular-nums">
+            <CurrencyDisplay
+              amount={fixedCost.amount}
+              currency={fixedCost.currency}
+              amountInPEN={fixedCost.amountInPen}
+              othersShare={fixedCost.othersShare}
+            />
+          </div>
         </div>
+        {actions}
       </section>
-
-      {actions}
 
       <dl
         className="space-y-1 rounded-2xl border p-3"
@@ -90,11 +91,7 @@ export function FixedCostDetailOverviewSection({
               : "Sin vencimiento"
           }
         />
-        <FixedCostDetailRow
-          icon={Repeat2}
-          label="Cuotas"
-          value={fixedCost.installment ?? "No aplica"}
-        />
+        {!plan && <FixedCostDetailRow icon={Repeat2} label="Cuotas" value="No aplica" />}
         {fixedCost.exchangeRate != null && (
           <FixedCostDetailRow
             icon={Wallet}

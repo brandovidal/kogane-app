@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { CloudUpload, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { ATTACHMENT_ACCEPT, ATTACHMENT_KIND_LABELS, ATTACHMENT_MAX_MB } from "@/features/attachments/constants/attachments";
 import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
+import type { Attachment } from "@/shared/api/types";
 import { Button } from "@/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { AttachmentFileCard } from "./AttachmentFileCard";
@@ -13,31 +14,52 @@ export function PendingAttachmentsPanel({
   onRetry,
   retrying = false,
   dropzone = false,
+  kind,
+  onKindChange,
+  showKindSelect = true,
+  filterKind = "all",
+  listToolbar,
 }: {
   files: PendingAttachmentUpload[];
   onChange: (files: PendingAttachmentUpload[]) => void;
   onRetry?: () => void;
   retrying?: boolean;
   dropzone?: boolean;
+  kind?: Attachment["kind"];
+  onKindChange?: (kind: Attachment["kind"]) => void;
+  showKindSelect?: boolean;
+  filterKind?: Attachment["kind"] | "all";
+  listToolbar?: ReactNode;
 }) {
   const input = useRef<HTMLInputElement>(null);
-  const [kind, setKind] = useState<PendingAttachmentUpload["kind"]>("boleta");
+  const [localKind, setLocalKind] = useState<PendingAttachmentUpload["kind"]>("boleta");
+  const selectedKind = kind ?? localKind;
+  const changeKind = (next: PendingAttachmentUpload["kind"]) => {
+    onKindChange?.(next);
+    if (kind === undefined) setLocalKind(next);
+  };
   const [dragging, setDragging] = useState(false);
 
-  const add = (file?: File) => {
+  const add = (selected: FileList | File[]) => {
+    // FileList is live and tied to the input; snapshot it before clearing the
+    // input so the same file can be selected again later.
+    const selectedFiles = Array.from(selected);
     if (input.current) input.current.value = "";
-    if (!file) return;
-    if (file.size > ATTACHMENT_MAX_MB * 1024 * 1024) {
-      toast.error(`El archivo debe pesar como máximo ${ATTACHMENT_MAX_MB} MB.`);
-      return;
+    const accepted = selectedFiles.filter((file) => {
+      if (file.size <= ATTACHMENT_MAX_MB * 1024 * 1024) return true;
+      toast.error(`${file.name} supera el límite de ${ATTACHMENT_MAX_MB} MB.`);
+      return false;
+    });
+    if (accepted.length) {
+      onChange([...files, ...accepted.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }))]);
     }
-    onChange([...files, { id: crypto.randomUUID(), file, kind }]);
   };
+  const visibleFiles = filterKind === "all" ? files : files.filter((file) => file.kind === filterKind);
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <Select value={kind} onValueChange={(value) => setKind(value as typeof kind)}>
+      {(showKindSelect || dropzone) && <div className="flex flex-wrap items-center gap-2">
+        {showKindSelect && <Select value={selectedKind} onValueChange={(value) => changeKind(value as PendingAttachmentUpload["kind"])}>
           <SelectTrigger className="h-9 w-[130px]" aria-label="Tipo de archivo">
             <SelectValue />
           </SelectTrigger>
@@ -46,15 +68,15 @@ export function PendingAttachmentsPanel({
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select>}
         {!dropzone && (
           <Button type="button" size="sm" className="h-9" onClick={() => input.current?.click()}>
             <Paperclip className="mr-1.5 size-4" /> Adjuntar
           </Button>
         )}
-        <input ref={input} type="file" accept={ATTACHMENT_ACCEPT} className="hidden" onChange={(event) => add(event.target.files?.[0])} />
-        {!dropzone && <span className="text-xs text-muted-foreground">Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB</span>}
-      </div>
+        <input ref={input} type="file" multiple accept={ATTACHMENT_ACCEPT} className="hidden" onChange={(event) => event.target.files && add(event.target.files)} />
+        {!dropzone && showKindSelect && <span className="text-xs text-muted-foreground">Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB</span>}
+      </div>}
       {dropzone && (
         <div
           onDragOver={(event) => {
@@ -65,29 +87,47 @@ export function PendingAttachmentsPanel({
           onDrop={(event) => {
             event.preventDefault();
             setDragging(false);
-            add(event.dataTransfer.files[0]);
+            add(event.dataTransfer.files);
           }}
-          className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-5 text-center transition-colors ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
+          onPaste={(event) => {
+            const pastedFiles = event.clipboardData.files;
+            if (pastedFiles.length) {
+              event.preventDefault();
+              add(pastedFiles);
+            }
+          }}
+          tabIndex={0}
+          aria-label="Suelta o pega archivos aquí para adjuntarlos"
+          className={`flex min-h-[4.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-3 py-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:text-left ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
         >
-          <span className="flex size-9 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
             <CloudUpload aria-hidden="true" className="size-4" />
           </span>
-          <div className="text-sm font-medium">
-            Arrastra archivos o{" "}
-            <button
-              type="button"
-              onClick={() => input.current?.click()}
-              className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              selecciónalos
-            </button>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">
+              Arrastra, pega con ⌘V o{" "}
+              <button
+                type="button"
+                disabled={retrying}
+                onClick={() => input.current?.click()}
+                className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                selecciónalos
+              </button>
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno
+            </p>
           </div>
-          <span className="text-xs text-muted-foreground">Imagen, PDF o documento · hasta {ATTACHMENT_MAX_MB} MB</span>
+          <Button type="button" size="sm" variant="outline" className="h-8 shrink-0 px-3" disabled={retrying} onClick={() => input.current?.click()}>
+            Subir
+          </Button>
         </div>
       )}
-      {files.length > 0 && (
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {files.map(({ id, file, kind: fileKind }) => (
+      {listToolbar}
+      {visibleFiles.length > 0 && (
+        <ul className="grid w-full grid-cols-1 gap-2">
+          {visibleFiles.map(({ id, file, kind: fileKind }) => (
             <li key={id} className="min-w-0">
               <AttachmentFileCard
                 file={{ name: file.name, contentType: file.type || "application/octet-stream", sizeBytes: file.size, kind: fileKind, url: null }}
@@ -97,6 +137,9 @@ export function PendingAttachmentsPanel({
             </li>
           ))}
         </ul>
+      )}
+      {files.length > 0 && visibleFiles.length === 0 && filterKind !== "all" && (
+        <p className="text-sm text-muted-foreground">No hay archivos pendientes de este tipo.</p>
       )}
       {onRetry && files.length > 0 && (
         <Button type="button" variant="outline" size="sm" disabled={retrying} onClick={onRetry}>

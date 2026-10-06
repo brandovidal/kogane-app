@@ -120,6 +120,7 @@ export function useFixedCostForm({
             if (!fixedCost && !createdId) {
               const id = (saved as FixedCost | undefined)?.id;
               if (id) {
+                reset(values);
                 setCreatedId(id);
                 setActiveTab("notes");
                 if (pendingAttachments.length) void uploadPendingAttachments(id, pendingAttachments);

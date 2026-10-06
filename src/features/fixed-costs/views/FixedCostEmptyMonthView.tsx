@@ -7,7 +7,7 @@ import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
 import type { ViewMode } from "@/shared/types/data-view";
 
-export function FixedCostEmptyMonth({
+export function FixedCostEmptyMonthView({
   month,
   year,
   onCreate,

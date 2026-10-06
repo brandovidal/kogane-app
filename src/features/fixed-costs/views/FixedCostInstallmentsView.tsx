@@ -14,13 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/ui/table";
-import { FixedCostDue } from "../../components/list/FixedCostDue";
+import { FixedCostDue } from "../components/list/FixedCostDue";
 import {
   findFixedCostSort,
   monthIndexLabel,
   type InstallmentSeries,
-} from "../../lib/fixed-cost-views";
-import type { CatalogName } from "../../types/fixed-cost-types";
+} from "../lib/fixed-cost-views";
+import type { CatalogName } from "../types/fixed-cost-types";
 import { AttachmentRecordThumbnail } from "@/features/attachments/components/AttachmentRecordThumbnail";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 

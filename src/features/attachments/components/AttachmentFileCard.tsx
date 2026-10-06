@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LoaderCircle, Trash2 } from "lucide-react";
+import { Download, LoaderCircle, Trash2 } from "lucide-react";
 import type { Attachment as AttachmentRecord } from "@/shared/api/types";
 import { getFileIcon } from "@/shared/lib/file-icons";
 import {
@@ -41,11 +41,24 @@ export function AttachmentFileCard({ file, uploading, onRemove, onPreview, remov
           </AttachmentDescription>
         </AttachmentContent>
         {file.url && !uploading && onPreview && <AttachmentTrigger aria-label={`Ver archivo ${file.name}`} onClick={onPreview} />}
-        {onRemove && (
+        {(onRemove || (file.url && !uploading)) && (
           <AttachmentActions>
-            <AttachmentAction type="button" aria-label={`Eliminar ${file.name}`} disabled={removeDisabled || uploading} className="text-destructive" onClick={onRemove}>
-              <Trash2 aria-hidden="true" />
-            </AttachmentAction>
+            {file.url && !uploading && (
+              <a
+                href={file.url}
+                download={file.name}
+                aria-label={`Descargar ${file.name}`}
+                title="Descargar archivo"
+                className="relative z-20 inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Download aria-hidden="true" className="size-4" />
+              </a>
+            )}
+            {onRemove && (
+              <AttachmentAction type="button" aria-label={`Eliminar ${file.name}`} disabled={removeDisabled || uploading} className="text-destructive" onClick={onRemove}>
+                <Trash2 aria-hidden="true" />
+              </AttachmentAction>
+            )}
           </AttachmentActions>
         )}
       </Attachment>

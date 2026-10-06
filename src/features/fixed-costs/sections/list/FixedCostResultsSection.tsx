@@ -14,7 +14,7 @@ import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { isCompletedFixedCost } from "../../lib/fixed-cost-summary";
 import type { useFixedCostTable } from "../../hooks/useFixedCostTable";
 import { FixedCostCard } from "../../components/list/FixedCostCard";
-import { FixedCostEmptyState } from "./FixedCostEmptyState";
+import { FixedCostEmptyState } from "../../components/list/FixedCostEmptyState";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import { FIXED_COST_FILTER_KEYS } from "../../lib/fixed-cost-filters";

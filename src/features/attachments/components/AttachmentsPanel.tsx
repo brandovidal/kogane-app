@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { CloudUpload, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,8 +30,20 @@ export interface AttachmentsPanelProps {
   refType: AttachmentRefType;
   refId: string;
   defaultKind?: Attachment["kind"];
+  kind?: Attachment["kind"];
+  onKindChange?: (kind: Attachment["kind"]) => void;
+  showKindSelect?: boolean;
   onUploaded?: (attachment: Attachment) => void;
   dropzone?: boolean;
+  filterKind?: Attachment["kind"] | "all";
+  listToolbar?: ReactNode;
+  emptyMessage?: string | null;
+}
+
+interface UploadingAttachment {
+  id: string;
+  file: File;
+  kind: Attachment["kind"];
 }
 
 // Boletas, recibos and contracts of a record, kept in R2 (D100). The links are signed and last a few minutes
@@ -39,44 +51,81 @@ export function AttachmentsPanel({
   refType,
   refId,
   defaultKind = "boleta",
+  kind,
+  onKindChange,
+  showKindSelect = true,
   onUploaded,
   dropzone = false,
+  filterKind = "all",
+  listToolbar,
+  emptyMessage = "Sin archivos todavía.",
 }: AttachmentsPanelProps) {
   const {
     data: files = [],
     isLoading,
     isError,
   } = useAttachments(refType, refId);
-  const upload = useUploadAttachment();
+  const upload = useUploadAttachment({ quiet: true });
   const remove = useDeleteAttachment();
-  const [kind, setKind] = useState<Attachment["kind"]>(defaultKind);
-  const [uploadingFile, setUploadingFile] = useState<File | null>(null);
+  const [localKind, setLocalKind] = useState<Attachment["kind"]>(defaultKind);
+  const selectedKind = kind ?? localKind;
+  const changeKind = (next: Attachment["kind"]) => {
+    onKindChange?.(next);
+    if (kind === undefined) setLocalKind(next);
+  };
+  const [uploadingFiles, setUploadingFiles] = useState<UploadingAttachment[]>([]);
   const [deletingFile, setDeletingFile] = useState<Attachment | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const previewIndex = files.findIndex((file) => file.id === previewId);
   const input = useRef<HTMLInputElement>(null);
 
-  const pick = (file: File | undefined) => {
+  const pick = (selected: FileList | File[]) => {
+    // Snapshot the live FileList before resetting the input. Otherwise clearing
+    // input.value also clears the selected files before they are queued.
+    const selectedFiles = Array.from(selected);
     if (input.current) input.current.value = "";
-    if (!file) return;
-    if (file.size > ATTACHMENT_MAX_MB * 1024 * 1024) {
-      toast.error(`El archivo debe pesar como máximo ${ATTACHMENT_MAX_MB} MB.`);
-      return;
-    }
-    setUploadingFile(file);
-    upload.mutate(
-      { file, refType, refId, kind },
-      { onSuccess: onUploaded, onSettled: () => setUploadingFile(null) },
-    );
+    const accepted = selectedFiles.filter((file) => {
+      if (file.size <= ATTACHMENT_MAX_MB * 1024 * 1024) return true;
+      toast.error(`${file.name} supera el límite de ${ATTACHMENT_MAX_MB} MB.`);
+      return false;
+    });
+    if (!accepted.length) return;
+    const batch = accepted.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }));
+    setUploadingFiles((current) => [...current, ...batch]);
+    void (async () => {
+      let uploaded = 0;
+      for (const queued of batch) {
+        try {
+          const attachment = await upload.mutateAsync({ file: queued.file, refType, refId, kind: queued.kind });
+          uploaded += 1;
+          onUploaded?.(attachment);
+        } catch {
+          toast.error(`No se pudo subir «${queued.file.name}».`);
+        } finally {
+          setUploadingFiles((current) => current.filter((item) => item.id !== queued.id));
+        }
+      }
+      if (uploaded) toast.success(uploaded === 1 ? "Archivo adjuntado" : `${uploaded} archivos adjuntados`);
+    })();
   };
+
+  const visibleFiles = filterKind === "all" ? files : files.filter((file) => file.kind === filterKind);
+  const previewIndex = visibleFiles.findIndex((file) => file.id === previewId);
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <Select
-          value={kind}
-          onValueChange={(value) => setKind(value as Attachment["kind"])}
+      <input
+        ref={input}
+        type="file"
+        multiple
+        accept={ATTACHMENT_ACCEPT}
+        className="hidden"
+        onChange={(event) => event.target.files && pick(event.target.files)}
+      />
+      {(showKindSelect || !dropzone) && <div className="flex flex-wrap items-center gap-2">
+        {showKindSelect && <Select
+          value={selectedKind}
+          onValueChange={(value) => changeKind(value as Attachment["kind"])}
         >
           <SelectTrigger
             className="h-9 w-[130px]"
@@ -92,7 +141,7 @@ export function AttachmentsPanel({
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select>}
         {!dropzone && (
           <Button
             type="button"
@@ -105,17 +154,10 @@ export function AttachmentsPanel({
             {upload.isPending ? "Subiendo…" : "Adjuntar"}
           </Button>
         )}
-        <input
-          ref={input}
-          type="file"
-          accept={ATTACHMENT_ACCEPT}
-          className="hidden"
-          onChange={(event) => pick(event.target.files?.[0])}
-        />
-        <span className="text-xs text-muted-foreground">
+        {!dropzone && <span className="text-xs text-muted-foreground">
           Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB
-        </span>
-      </div>
+        </span>}
+      </div>}
 
       {dropzone && (
         <div
@@ -127,42 +169,54 @@ export function AttachmentsPanel({
           onDrop={(event) => {
             event.preventDefault();
             setDragging(false);
-            pick(event.dataTransfer.files[0]);
+            pick(event.dataTransfer.files);
           }}
-          className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-5 text-center transition-colors ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
+          onPaste={(event) => {
+            const pastedFiles = event.clipboardData.files;
+            if (pastedFiles.length) {
+              event.preventDefault();
+              pick(pastedFiles);
+            }
+          }}
+          tabIndex={0}
+          aria-label="Suelta o pega archivos aquí para adjuntarlos"
+          className={`flex min-h-[4.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-3 py-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:text-left ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
         >
-          <span className="flex size-9 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
             <CloudUpload aria-hidden="true" className="size-4" />
           </span>
-          <div className="text-sm font-medium">
-            Arrastra archivos o{" "}
-            <button
-              type="button"
-              disabled={upload.isPending}
-              onClick={() => input.current?.click()}
-              className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              selecciónalos
-            </button>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">
+              Arrastra, pega con ⌘V o{" "}
+              <button
+                type="button"
+                disabled={upload.isPending}
+                onClick={() => input.current?.click()}
+                className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                selecciónalos
+              </button>
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno · varios a la vez
+            </p>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Imagen, PDF o documento · hasta {ATTACHMENT_MAX_MB} MB
-          </span>
+          <Button type="button" size="sm" variant="outline" className="h-8 shrink-0 px-3" disabled={upload.isPending} onClick={() => input.current?.click()}>
+            {upload.isPending ? "Subiendo…" : "Subir"}
+          </Button>
         </div>
       )}
 
-      {uploadingFile && (
-        <AttachmentFileCard
-          uploading
-          file={{
-            name: uploadingFile.name,
-            contentType: uploadingFile.type,
-            sizeBytes: uploadingFile.size,
-            kind,
-            url: null,
-          }}
-        />
-      )}
+      {uploadingFiles.map(({ id, file, kind }) => (
+        <AttachmentFileCard key={id} uploading file={{
+          name: file.name,
+          contentType: file.type || "application/octet-stream",
+          sizeBytes: file.size,
+          kind,
+          url: null,
+        }} />
+      ))}
+      {listToolbar}
       {isLoading ? (
         <p role="status" className="text-sm text-muted-foreground">
           Cargando archivos…
@@ -171,11 +225,15 @@ export function AttachmentsPanel({
         <p role="alert" className="text-sm text-destructive">
           No se pudieron cargar los archivos.
         </p>
-      ) : files.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sin archivos todavía.</p>
+      ) : visibleFiles.length === 0 ? (
+        emptyMessage && (
+          <p className="text-sm text-muted-foreground">
+            {filterKind === "all" ? emptyMessage : "No hay archivos de este tipo."}
+          </p>
+        )
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {files.map((file) => (
+        <ul className="grid w-full grid-cols-1 gap-2">
+          {visibleFiles.map((file) => (
             <li key={file.id} className="min-w-0">
               <AttachmentFileCard
                 file={file}
@@ -208,7 +266,7 @@ export function AttachmentsPanel({
       />
       {previewIndex >= 0 && (
         <AttachmentPreviewDialog
-          files={files}
+          files={visibleFiles}
           initialIndex={previewIndex}
           onClose={() => setPreviewId(null)}
         />

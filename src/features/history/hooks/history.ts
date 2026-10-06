@@ -20,9 +20,14 @@ export const useHistory = (filter: HistoryFilter) =>
   });
 
 // The timeline of one record (the ⋯ of a row)
-export const useRecordHistory = (entity: string, id: string) =>
+export const useRecordHistory = (
+  entity: string,
+  id: string,
+  options: { enabled?: boolean } = {},
+) =>
   useQuery({
     queryKey: historyKeys.record(entity, id),
     queryFn: () => unwrap(api.GET("/v1/history/{entity}/{id}", { params: { path: { entity, id } } })),
     staleTime: 0,
+    enabled: options.enabled ?? true,
   });

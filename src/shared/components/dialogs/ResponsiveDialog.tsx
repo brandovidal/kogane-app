@@ -27,6 +27,7 @@ export interface ResponsiveDialogProps {
   children: ReactNode;
   footer?: ReactNode;
   contentClassName?: string;
+  overlayClassName?: string;
 }
 
 export function ResponsiveDialog({
@@ -38,13 +39,14 @@ export function ResponsiveDialog({
   children,
   footer,
   contentClassName,
+  overlayClassName,
 }: ResponsiveDialogProps) {
   const isDesktop = useIsDesktop();
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className={cn("sm:max-w-lg max-h-[90vh] overflow-y-auto", contentClassName)}>
+        <DialogContent className={cn("sm:max-w-lg max-h-[90vh] overflow-y-auto", contentClassName)} overlayClassName={overlayClassName}>
           <DialogHeader>
             <DialogTitle className={cn(icon && "flex items-center gap-2")}>
               {icon}

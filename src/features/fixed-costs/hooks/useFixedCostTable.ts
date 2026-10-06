@@ -3,7 +3,7 @@ import type { RowSelectionState } from "@tanstack/react-table";
 import type { Category, FixedCost } from "@/shared/api/types";
 import { useDataTable } from "@/shared/hooks/useDataTable";
 import { toDataTableColumns } from "@/shared/lib/data-table-columns";
-import { getFixedCostColumns } from "../sections/list/fixed-cost-columns";
+import { getFixedCostColumns } from "../lib/fixed-cost-columns";
 import type { CatalogName, FixedCostActions } from "../types/fixed-cost-types";
 
 export function useFixedCostTable({

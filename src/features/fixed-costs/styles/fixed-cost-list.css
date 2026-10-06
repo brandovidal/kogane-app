@@ -3,6 +3,13 @@
   background-color: var(--card);
 }
 
+.dark .fixed-costs-dialog-overlay {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(72, 94, 180, 0.16), transparent 44%),
+    radial-gradient(ellipse at 90% 85%, rgba(45, 150, 135, 0.11), transparent 38%),
+    rgba(0, 0, 0, 0.38);
+}
+
 .fixed-costs-table [data-slot="table"] {
   min-width: 52rem;
   table-layout: fixed;

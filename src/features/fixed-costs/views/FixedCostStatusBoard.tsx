@@ -10,13 +10,13 @@ import {
 import { formatCurrency } from "@/shared/lib/currency";
 import { cn } from "@/shared/utils/cn";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
-import { FixedCostDue } from "../../components/list/FixedCostDue";
-import { FIXED_COST_STATUSES } from "../../constants/statuses";
-import { parseInstallment } from "../../lib/fixed-cost-views";
+import { FixedCostDue } from "../components/list/FixedCostDue";
+import { FIXED_COST_STATUSES } from "../constants/statuses";
+import { parseInstallment } from "../lib/fixed-cost-views";
 import type {
   CatalogName,
   FixedCostGroupBy,
-} from "../../types/fixed-cost-types";
+} from "../types/fixed-cost-types";
 import { ChevronRight } from "lucide-react";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 

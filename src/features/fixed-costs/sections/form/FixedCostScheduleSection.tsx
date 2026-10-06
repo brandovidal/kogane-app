@@ -1,33 +1,63 @@
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { CalendarClock, CalendarDays, CalendarRange } from "lucide-react";
+import { CalendarClock, CalendarDays, ChartNoAxesColumnIncreasing } from "lucide-react";
 import { InstallmentFields } from "@/features/expenses/components/forms/InstallmentFields";
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { FormField } from "@/shared/components/forms/FormField";
-import {
-  PERIOD_MONTH_OPTIONS,
-  PERIOD_YEAR_OPTIONS,
-} from "@/shared/constants/period";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { MonthYearPicker } from "@/shared/components/navigation/MonthYearPicker";
 import { Switch } from "@/ui/switch";
+import { parseInstallment } from "@/features/expenses/lib/installments";
+import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
+import { localTodayKey, relativeDueLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
+import { cn } from "@/shared/utils/cn";
 import type {
   FixedCostForm,
   FixedCostValues,
 } from "@/features/fixed-costs/lib/fixed-cost-form";
 
 export function FixedCostScheduleSection() {
+  const [todayKey, setTodayKey] = useState("");
   const {
     watch,
     setValue,
     formState: { errors },
   } = useFormContext<FixedCostForm, unknown, FixedCostValues>();
   const hasInstallments = watch("hasInstallments");
+  const installment = watch("installment");
+  const { current, total } = parseInstallment(installment);
+  const currentInstallment = Number(current);
+  const totalInstallments = Number(total);
+  const hasValidInstallment =
+    currentInstallment > 0 &&
+    totalInstallments > 0 &&
+    currentInstallment <= totalInstallments;
+  const paidInstallments = hasValidInstallment ? currentInstallment - 1 : 0;
+  const remainingInstallments = hasValidInstallment
+    ? totalInstallments - paidInstallments
+    : 0;
+  const progress = hasValidInstallment
+    ? Math.round((paidInstallments / totalInstallments) * 100)
+    : 0;
+  const periodMonth = watch("paymentMonth");
+  const periodYear = watch("paymentYear");
+  const dueDate = watch("dueDate");
+  const daysToDue = dueDate && todayKey ? daysUntilDue(dueDate, todayKey) : null;
+  const dueRelativeLabel = relativeDueLabel(daysToDue);
+  const dueMessage = daysToDue == null || !dueRelativeLabel
+    ? null
+    : daysToDue < 0
+      ? dueRelativeLabel.replace(/^v/, "V")
+      : daysToDue === 0
+        ? "Vence hoy"
+        : `Vence ${dueRelativeLabel}`;
+  const finishDate = new Date(periodYear, periodMonth - 1 + remainingInstallments - 1, 1);
+  const finishLabel = finishDate.toLocaleDateString("es-PE", {
+    month: "short",
+    year: "numeric",
+  });
+
+  useEffect(() => setTodayKey(localTodayKey()), []);
 
   return (
     <div className="space-y-3">
@@ -43,41 +73,16 @@ export function FixedCostScheduleSection() {
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             label="Periodo del registro"
-            icon={CalendarRange}
             error={errors.paymentMonth?.message ?? errors.paymentYear?.message}
           >
-            <div className="grid grid-cols-[minmax(0,1fr)_6rem] gap-2">
-              <Select
-                value={String(watch("paymentMonth"))}
-                onValueChange={(value) => setValue("paymentMonth", Number(value))}
-              >
-                <SelectTrigger id="fixed-cost-month" aria-label="Mes del registro">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PERIOD_MONTH_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                value={String(watch("paymentYear"))}
-                onValueChange={(value) => setValue("paymentYear", Number(value))}
-              >
-                <SelectTrigger id="fixed-cost-year" aria-label="Año del registro">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PERIOD_YEAR_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <MonthYearPicker
+              ariaLabel="Periodo del registro"
+              value={{ month: periodMonth, year: periodYear }}
+              onChange={({ month, year }) => {
+                setValue("paymentMonth", month, { shouldValidate: true });
+                setValue("paymentYear", year, { shouldValidate: true });
+              }}
+            />
           </FormField>
           <FormField
             label="Vencimiento"
@@ -86,12 +91,24 @@ export function FixedCostScheduleSection() {
           >
             <DatePicker
               ariaLabel="Fecha de vencimiento"
-              value={watch("dueDate")}
+              value={dueDate}
               onChange={(date) =>
                 setValue("dueDate", date, { shouldValidate: true })
               }
               placeholder="Sin fecha de vencimiento"
             />
+            {dueMessage && daysToDue != null && (
+              <p
+                className={cn(
+                  "mt-1 text-xs",
+                  daysToDue < 0
+                    ? "text-destructive"
+                    : "text-amber-600 dark:text-amber-300",
+                )}
+              >
+                {dueMessage}
+              </p>
+            )}
           </FormField>
         </div>
       </section>
@@ -114,18 +131,58 @@ export function FixedCostScheduleSection() {
           />
         </div>
         {hasInstallments && (
-          <InstallmentFields
-            value={watch("installment")}
-            onChange={(value) =>
-              setValue("installment", value ?? "", {
-                shouldDirty: true,
-                shouldValidate: true,
-              })
-            }
-            error={errors.installment?.message}
-          />
+          <div className="space-y-4">
+            <div className="grid gap-4 lg:grid-cols-[minmax(15rem,0.9fr)_minmax(0,1.1fr)] lg:items-end">
+              <InstallmentFields
+                compact
+                value={installment}
+                onChange={(value) =>
+                  setValue("installment", value ?? "", {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+                error={errors.installment?.message}
+              />
+              <div className="space-y-2 pb-1">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <ChartNoAxesColumnIncreasing aria-hidden="true" className="size-3.5" />
+                    Avance
+                  </span>
+                  <span>{hasValidInstallment ? `${progress}%` : "—"}</span>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-label="Avance de cuotas pagadas"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={progress}
+                  className="h-2 overflow-hidden rounded-full bg-muted"
+                >
+                  <div className="h-full rounded-full bg-brand transition-[width]" style={{ width: `${progress}%` }} />
+                </div>
+              </div>
+            </div>
+            {hasValidInstallment && (
+              <div className="grid grid-cols-3 gap-2">
+                <InstallmentSummary label="Pagadas" value={String(paidInstallments)} />
+                <InstallmentSummary label="Restantes" value={String(remainingInstallments)} />
+                <InstallmentSummary label="Termina" value={finishLabel} />
+              </div>
+            )}
+          </div>
         )}
       </section>
+    </div>
+  );
+}
+
+function InstallmentSummary({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-lg bg-muted/50 px-3 py-2">
+      <div className="text-[11px] text-muted-foreground">{label}</div>
+      <div className="truncate text-sm font-semibold tabular-nums">{value}</div>
     </div>
   );
 }

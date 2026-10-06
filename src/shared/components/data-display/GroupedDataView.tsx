@@ -7,6 +7,13 @@ import { DATA_TABLE_PAGE_SIZE, DATA_TABLE_PAGE_SIZES } from "@/shared/constants/
 import { Button } from "@/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
+interface GroupPaginationState {
+  pageIndex: number;
+  pageSize: number;
+  hidden: boolean;
+  label: string;
+}
+
 function GroupSection<T>({
   label,
   count,
@@ -16,7 +23,8 @@ function GroupSection<T>({
   rows,
   paginate,
   groupId,
-  onPaginationVisibilityChange,
+  pagination,
+  onPaginationChange,
   collapsible,
   initiallyOpen,
   primary,
@@ -29,17 +37,18 @@ function GroupSection<T>({
   rows: T[];
   paginate: boolean;
   groupId: string;
-  onPaginationVisibilityChange?: (groupId: string, hidden: boolean) => void;
+  pagination: GroupPaginationState;
+  onPaginationChange: (groupId: string, pagination: GroupPaginationState) => void;
   collapsible: boolean;
   initiallyOpen: boolean;
   primary: boolean;
 }) {
   const [open, setOpen] = useState(initiallyOpen);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DATA_TABLE_PAGE_SIZE);
-  const [paginationHidden, setPaginationHidden] = useState(false);
+  const { pageIndex, pageSize, hidden: paginationHidden } = pagination;
   const pageCount = Math.max(1, Math.ceil(count / pageSize));
   const currentPage = Math.min(pageIndex, pageCount - 1);
+  const updatePagination = (changes: Partial<GroupPaginationState>) =>
+    onPaginationChange(groupId, { ...pagination, ...changes });
   const visibleRows = paginate && !paginationHidden
     ? rows.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
     : rows;
@@ -55,10 +64,7 @@ function GroupSection<T>({
           size="sm"
           className="h-7 gap-1.5 px-2 text-brand"
           aria-label="Mostrar paginación del grupo"
-          onClick={() => {
-            setPaginationHidden(false);
-            onPaginationVisibilityChange?.(groupId, false);
-          }}
+          onClick={() => updatePagination({ hidden: false })}
         >
           <Eye aria-hidden="true" className="size-3.5" />
           Mostrar paginación
@@ -72,10 +78,9 @@ function GroupSection<T>({
             <span>Por página</span>
             <Select
               value={String(pageSize)}
-              onValueChange={(value) => {
-                setPageSize(Number(value));
-                setPageIndex(0);
-              }}
+              onValueChange={(value) =>
+                updatePagination({ pageSize: Number(value), pageIndex: 0 })
+              }
             >
               <SelectTrigger size="sm" aria-label="Registros por página del grupo" className="h-8">
                 <SelectValue />
@@ -96,7 +101,7 @@ function GroupSection<T>({
               className="size-8"
               aria-label="Página anterior del grupo"
               disabled={currentPage === 0}
-              onClick={() => setPageIndex(currentPage - 1)}
+              onClick={() => updatePagination({ pageIndex: currentPage - 1 })}
             >
               <ChevronLeft aria-hidden="true" className="size-4" />
             </Button>
@@ -107,7 +112,7 @@ function GroupSection<T>({
               className="size-8"
               aria-label="Página siguiente del grupo"
               disabled={currentPage >= pageCount - 1}
-              onClick={() => setPageIndex(currentPage + 1)}
+              onClick={() => updatePagination({ pageIndex: currentPage + 1 })}
             >
               <ChevronRight aria-hidden="true" className="size-4" />
             </Button>
@@ -117,11 +122,7 @@ function GroupSection<T>({
             variant="ghost"
             size="sm"
             className="h-7 gap-1.5 px-2"
-            onClick={() => {
-              setPaginationHidden(true);
-              setPageIndex(0);
-              onPaginationVisibilityChange?.(groupId, true);
-            }}
+            onClick={() => updatePagination({ hidden: true, pageIndex: 0 })}
           >
             <EyeOff aria-hidden="true" className="size-3.5" />
             Ocultar paginación
@@ -203,8 +204,8 @@ export function GroupedDataView<T>({
   comparePrimaryGroups?: (left: T[], right: T[]) => number;
 }) {
   const calculationState = useDataTableCalculations(calculationStorageKey, calculationDefaults);
-  const [hiddenPaginationGroups, setHiddenPaginationGroups] = useState<
-    Map<string, string>
+  const [paginationByGroup, setPaginationByGroup] = useState<
+    Map<string, GroupPaginationState>
   >(() => new Map());
   const fields = Array.isArray(groupBy)
     ? groupBy
@@ -234,6 +235,7 @@ export function GroupedDataView<T>({
     );
   let firstGroup = true;
   let primaryGroupCount = 0;
+  let primaryGroupIds = new Set<string>();
   const renderGroups = (rows: T[], depth: number): ReactNode => {
     const field = fields[depth];
     const groups = new Map<string, T[]>();
@@ -246,7 +248,12 @@ export function GroupedDataView<T>({
         ? comparePrimaryGroups(left, right)
         : 0,
     );
-    if (depth === 0) primaryGroupCount = orderedGroups.length;
+    if (depth === 0) {
+      primaryGroupCount = orderedGroups.length;
+      primaryGroupIds = new Set(
+        orderedGroups.map(([key]) => `${field}:${key}`),
+      );
+    }
     return (
       <div className={depth ? "ml-3 space-y-3 border-l pl-3 sm:ml-5 sm:pl-5" : "space-y-4"}>
         {orderedGroups.map(([key, groupedRows], groupIndex) => {
@@ -264,12 +271,17 @@ export function GroupedDataView<T>({
               primary={depth === primaryGroupDepth}
               rows={groupedRows}
               paginate={paginatePrimaryGroups && depth === 0}
-              groupId={key}
-              onPaginationVisibilityChange={(groupId, hidden) => {
-                setHiddenPaginationGroups((current) => {
+              groupId={`${field}:${key}`}
+              pagination={paginationByGroup.get(`${field}:${key}`) ?? {
+                pageIndex: 0,
+                pageSize: DATA_TABLE_PAGE_SIZE,
+                hidden: false,
+                label: String(groupLabel(key, field)),
+              }}
+              onPaginationChange={(groupId, pagination) => {
+                setPaginationByGroup((current) => {
                   const next = new Map(current);
-                  if (hidden) next.set(groupId, String(groupLabel(groupId, field)));
-                  else next.delete(groupId);
+                  next.set(groupId, pagination);
                   return next;
                 });
               }}
@@ -315,18 +327,23 @@ export function GroupedDataView<T>({
       </div>
     );
   };
+  const renderedGroups = renderGroups(items, 0);
+  const hiddenGroups = [...paginationByGroup.entries()].filter(
+    ([groupId, pagination]) =>
+      primaryGroupIds.has(groupId) && pagination.hidden,
+  );
   return (
     <div className="space-y-4">
-      {renderGroups(items, 0)}
+      {renderedGroups}
       {paginatePrimaryGroups && (
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span>
             {footer ?? "Agrupado por mes · más recientes primero · cada mes se pagina por separado"}
           </span>
           <span>
-            {items.length} registros · Paginación por mes: {hiddenPaginationGroups.size === primaryGroupCount ? "oculta" : "visible"}
-            {hiddenPaginationGroups.size > 0 && (
-              <> ({[...hiddenPaginationGroups.values()].join(", ")} {hiddenPaginationGroups.size === 1 ? "oculta" : "ocultos"})</>
+            {items.length} registros · Paginación por mes: {hiddenGroups.length === primaryGroupCount ? "oculta" : "visible"}
+            {hiddenGroups.length > 0 && (
+              <> ({hiddenGroups.map(([, pagination]) => pagination.label).join(", ")} {hiddenGroups.length === 1 ? "oculta" : "ocultos"})</>
             )}
           </span>
         </div>

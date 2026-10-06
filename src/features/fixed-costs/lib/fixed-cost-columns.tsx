@@ -13,8 +13,8 @@ const shiftedMonthLabel = (cost: FixedCost, delta: number) => {
   const index = cost.paymentYear * 12 + cost.paymentMonth - 1 + delta;
   return `${getMonthName((index % 12) + 1)} ${Math.floor(index / 12)}`;
 };
-import { FixedCostName } from "../../components/list/FixedCostName";
-import { FixedCostDue } from "../../components/list/FixedCostDue";
+import { FixedCostName } from "../components/list/FixedCostName";
+import { FixedCostDue } from "../components/list/FixedCostDue";
 import type {
   CatalogName,
   FixedCostActions,

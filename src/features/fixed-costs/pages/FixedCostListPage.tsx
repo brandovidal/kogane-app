@@ -7,7 +7,7 @@ import { useFixedCostTable } from "../hooks/useFixedCostTable";
 import { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
 import { useFixedCostViewGroup } from "../hooks/useFixedCostViewGroup";
 
-import { FixedCostDetailView } from "./FixedCostDetailView";
+import { FixedCostDetailPage } from "./FixedCostDetailPage";
 
 import { FixedCostResultsSection } from "../sections/list/FixedCostResultsSection";
 import { FixedCostBulkActionsSection } from "../sections/list/FixedCostBulkActionsSection";
@@ -16,15 +16,15 @@ import {
   FixedCostToolbar,
   FixedCostViewBar,
 } from "../sections/list/FixedCostToolbar";
-import { FixedCostInstallmentsView } from "../sections/list/FixedCostInstallmentsView";
-import { FixedCostStatusBoard } from "../sections/list/FixedCostStatusBoard";
-import { FixedCostEmptyMonth } from "../sections/list/FixedCostEmptyMonth";
+import { FixedCostInstallmentsView } from "../views/FixedCostInstallmentsView";
+import { FixedCostStatusBoard } from "../views/FixedCostStatusBoard";
+import { FixedCostEmptyMonthView } from "../views/FixedCostEmptyMonthView";
 
 import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
 import { FixedCostDialog } from "../components/dialogs/FixedCostDialog";
 import { FixedCostPeriodSelector } from "../components/header/FixedCostPeriodSelector";
 
-export function FixedCostListView() {
+function FixedCostListPageContent() {
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const list = useFixedCostList();
   const interaction = useFixedCostActions();
@@ -135,7 +135,7 @@ export function FixedCostListView() {
     list.scope === "all"
   )
     body = (
-      <FixedCostEmptyMonth
+      <FixedCostEmptyMonthView
         month={Number(list.filters.month)}
         year={Number(list.filters.year)}
         view={list.view}
@@ -236,7 +236,7 @@ export function FixedCostListView() {
         onOpenChange={interaction.setDialogOpen}
         fixedCost={interaction.editingItem}
       />
-      <FixedCostDetailView
+      <FixedCostDetailPage
         fixedCost={openedItem}
         categoryName={
           list.categories.find(
@@ -247,6 +247,10 @@ export function FixedCostListView() {
         accountName={list.accountName(openedItem?.paymentMethodId)}
         onClose={interaction.onCloseDetail}
         onEdit={interaction.onEditDetail}
+        onStatusChange={(cost, status) => interaction.actions.onStatusChange(cost, status)}
+        onDelete={(cost) => interaction.actions.onDelete(cost)}
+        items={list.filtered}
+        onNavigate={(cost) => interaction.actions.onOpen(cost, "detail")}
         initialTab={interaction.openedTab}
       />
       {interaction.moving && (
@@ -260,4 +264,4 @@ export function FixedCostListView() {
   );
 }
 
-export const FixedCostListPage = withQuery(FixedCostListView);
+export const FixedCostListPage = withQuery(FixedCostListPageContent);
