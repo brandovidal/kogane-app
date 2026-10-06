@@ -11,3 +11,5 @@ export { DataTableComplex } from "./DataTableComplex";
 export { DataTableColumnSelector } from "./DataTableColumnSelector";
 export { DataTablePagination } from "./DataTablePagination";
 export { DataTableColumnCalculation } from "./DataTableColumnCalculation";
+export type { SummaryCardProps } from "./SummaryCard";
+export { SummaryCard } from "./SummaryCard";

@@ -6,3 +6,4 @@ export { useFixedCostList } from "./useFixedCostList";
 export { useFixedCostTable } from "./useFixedCostTable";
 export { useFixedCostBulkActions } from "./useFixedCostBulkActions";
 export { useFixedCostPeriodMode } from "./useFixedCostPeriodMode";
+export { useFixedCostViewGroup } from "./useFixedCostViewGroup";

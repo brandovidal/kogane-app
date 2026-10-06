@@ -27,6 +27,7 @@ import {
   filterByMonthRange,
   findFixedCostSort,
   isFixedCostView,
+  installmentSeries,
   localTodayKey,
   payableByUrgency,
   type FixedCostView,
@@ -107,9 +108,13 @@ export function useFixedCostList() {
           : filterFixedCostsByScope(baseFiltered, scope),
     [baseFiltered, scope, page],
   );
+  const installments = useMemo(() => installmentSeries(baseFiltered), [baseFiltered]);
   useEffect(() => {
-    fixedCostHeaderStore.getState().setShown(query.isLoading ? null : filtered.length);
-  }, [filtered.length, query.isLoading]);
+    fixedCostHeaderStore.getState().setShown(
+      query.isLoading ? null : page === "cuotas" ? installments.length : filtered.length,
+      page === "cuotas" ? "deuda" : page === "por-pagar" ? "pendiente" : "registro",
+    );
+  }, [filtered.length, installments.length, query.isLoading, page]);
   const [view, setView] = useViewMode("fixed-costs", "table");
   const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
   const groupBy = (groupParams.group?.split(",") ?? []).filter(
@@ -143,6 +148,7 @@ export function useFixedCostList() {
     filters,
     setFilters,
     filtered,
+    installments,
     baseFiltered,
     page,
     setPage,

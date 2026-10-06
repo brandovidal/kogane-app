@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
 import { withQuery } from "@/shared/api/query";
-import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
-import { FixedCostDialog } from "../components/dialogs/FixedCostDialog";
+
 import { useFixedCostActions } from "../hooks/useFixedCostActions";
 import { useFixedCostList } from "../hooks/useFixedCostList";
-import { FixedCostResultsSection } from "../sections/list/FixedCostResultsSection";
-import { FixedCostDetailView } from "./FixedCostDetailView";
 import { useFixedCostTable } from "../hooks/useFixedCostTable";
 import { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
+import { useFixedCostViewGroup } from "../hooks/useFixedCostViewGroup";
+
+import { FixedCostDetailView } from "./FixedCostDetailView";
+
+import { FixedCostResultsSection } from "../sections/list/FixedCostResultsSection";
 import { FixedCostBulkActionsSection } from "../sections/list/FixedCostBulkActionsSection";
 import { FixedCostMonthOverview } from "../sections/list/FixedCostMonthOverview";
 import {
@@ -17,14 +18,10 @@ import {
 import { FixedCostInstallmentsView } from "../sections/list/FixedCostInstallmentsView";
 import { FixedCostStatusBoard } from "../sections/list/FixedCostStatusBoard";
 import { FixedCostEmptyMonth } from "../sections/list/FixedCostEmptyMonth";
+
+import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
+import { FixedCostDialog } from "../components/dialogs/FixedCostDialog";
 import { FixedCostPeriodSelector } from "../components/header/FixedCostPeriodSelector";
-import {
-  URGENCY_GROUPS,
-  localTodayKey,
-  monthGroupKey,
-  monthGroupLabel,
-  urgencyOf,
-} from "../lib/fixed-cost-views";
 
 export function FixedCostListView() {
   const list = useFixedCostList();
@@ -45,13 +42,11 @@ export function FixedCostListView() {
       : undefined,
   });
 
-  const [todayKey, setTodayKey] = useState("");
-  useEffect(() => setTodayKey(localTodayKey()), []);
-
   const openedItem =
     list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ??
     interaction.openedItem;
   const page = list.page;
+  const viewGroup = useFixedCostViewGroup(page);
   const periodLabel =
     list.periodScope === "year"
       ? "del año"
@@ -80,7 +75,7 @@ export function FixedCostListView() {
       onViewChange={list.setView}
       table={dataTable.table}
       canGroup={page !== "cuotas" && page !== "estado"}
-      canSort={page !== "cuotas" && page !== "estado"}
+      canSort={page !== "estado"}
       canChangeLayout={page !== "cuotas" && page !== "estado"}
       showPeriodInFilters
     />
@@ -90,11 +85,13 @@ export function FixedCostListView() {
   if (page === "cuotas")
     body = (
       <FixedCostInstallmentsView
-        items={list.baseFiltered}
+        series={list.installments}
         categories={list.categories}
         personName={list.personName}
         loading={list.loading}
         onOpen={interaction.actions.onOpen}
+        toolbar={toolbar}
+        sort={list.sort?.value}
       />
     );
   else if (page === "estado")
@@ -150,32 +147,7 @@ export function FixedCostListView() {
               ? "No tienes costos fijos pendientes. Todo está al día."
               : undefined
           }
-          viewGroup={
-            page === "por-pagar"
-              ? {
-                  field: "urgency",
-                  key: (cost) => urgencyOf(cost, todayKey || localTodayKey()),
-                  label: (key) => {
-                    const group = URGENCY_GROUPS.find((item) => item.value === key);
-                    const dotColor = key === "overdue"
-                      ? "bg-destructive"
-                      : key === "week"
-                        ? "bg-amber-400"
-                        : key === "month"
-                          ? "bg-brand"
-                          : "bg-muted-foreground/60";
-                    return (
-                      <span className="inline-flex items-center gap-2">
-                        <span aria-hidden="true" className={`size-2 rounded-full ${dotColor}`} />
-                        {group?.label ?? key}
-                      </span>
-                    );
-                  },
-                }
-              : page === "todos"
-                ? { field: "month", key: monthGroupKey, label: monthGroupLabel }
-                : undefined
-          }
+          viewGroup={viewGroup}
         />
       </>
     );
