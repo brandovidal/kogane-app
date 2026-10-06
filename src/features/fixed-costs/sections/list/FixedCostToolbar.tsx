@@ -27,7 +27,10 @@ import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filte
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import type { FixedCost } from "@/shared/api/types";
 import { SearchField } from "@/shared/components/filters/SearchField";
-import { ExportMenu, type ExportMenuItem } from "@/shared/components/toolbar/ExportMenu";
+import {
+  ExportMenu,
+  type ExportMenuItem,
+} from "@/shared/components/toolbar/ExportMenu";
 import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
 import type { ViewMode } from "@/shared/types/data-view";
 import { cn } from "@/shared/utils/cn";
@@ -121,19 +124,23 @@ export function FixedCostViewBar({
           size="icon-sm"
           title="Más vistas: próximamente"
           aria-label="Más vistas, próximamente"
-          className="rounded-md border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
-          onClick={() => toast.info("La creación de vistas personalizadas estará disponible próximamente.")}
+          className="rounded-sm border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
+          onClick={() =>
+            toast.info(
+              "La creación de vistas personalizadas estará disponible próximamente.",
+            )
+          }
         >
           <Plus className="size-4" />
         </Button>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center justify-end gap-2">
         <ExportMenu items={exportItems} label="Más opciones" iconOnly />
         <div className="inline-flex items-center">
           <Button
             type="button"
             size="sm"
-            className="fixed-costs-create-button h-9 gap-1 rounded-l-lg rounded-r-none px-4"
+            className="fixed-costs-create-button h-9 gap-1 rounded-l-sm rounded-r-none px-4"
             onClick={onCreate}
             aria-label="Crear costo fijo"
           >
@@ -145,7 +152,7 @@ export function FixedCostViewBar({
               <Button
                 type="button"
                 size="icon"
-                className="fixed-costs-create-button fixed-costs-create-menu-button h-9 w-9 rounded-l-none rounded-r-lg border-l"
+                className="fixed-costs-create-button fixed-costs-create-menu-button h-9 w-9 rounded-l-none rounded-r-sm border-l"
                 aria-label="Más opciones para crear"
               >
                 <ChevronDown className="size-4" />
@@ -157,7 +164,9 @@ export function FixedCostViewBar({
                 Costo fijo
               </DropdownMenuItem>
               <DropdownMenuItem
-                onSelect={() => newExpenseStore.getState().openWith({ destination: "daily" })}
+                onSelect={() =>
+                  newExpenseStore.getState().openWith({ destination: "daily" })
+                }
               >
                 <ReceiptText className="size-4" />
                 Gasto general
@@ -171,7 +180,9 @@ export function FixedCostViewBar({
 }
 
 const PERIOD_KEYS = new Set(["month", "year"]);
-const panelFields = FIXED_COST_FILTER_KEYS.filter((key) => !PERIOD_KEYS.has(key) && key !== "q");
+const panelFields = FIXED_COST_FILTER_KEYS.filter(
+  (key) => !PERIOD_KEYS.has(key) && key !== "q",
+);
 
 function ToolbarButton({
   icon: Icon,
@@ -190,13 +201,18 @@ function ToolbarButton({
       type="button"
       variant="ghost"
       size="sm"
-      className={cn("h-8 gap-1.5 rounded-md border border-transparent px-2 text-muted-foreground hover:border-border/60 hover:text-foreground", active && "border-border/70 bg-accent text-foreground")}
+      className={cn(
+        "h-8 gap-1.5 rounded-sm border border-transparent px-2 text-muted-foreground hover:border-border/60 hover:text-foreground",
+        active && "border-border/70 bg-accent text-foreground",
+      )}
       {...props}
     >
       <Icon className="size-4" />
       <span className="hidden sm:inline">{label}</span>
       {count != null && count !== 0 && (
-        <span className="text-xs font-semibold tabular-nums text-brand">{count}</span>
+        <span className="text-xs font-semibold tabular-nums text-brand">
+          {count}
+        </span>
       )}
     </Button>
   );
@@ -250,37 +266,72 @@ export function FixedCostToolbar({
   const filterCount = countActiveExpenseFilters(filters, panelFields);
   const sortOption = findFixedCostSort(sort);
   const appliedCount = filterCount + (sortOption ? 1 : 0) + groupBy.length;
-  const hasViewSettings = filterCount > 0 || !!filters.q?.trim() || !!sortOption || groupBy.length > 0;
-  const hideable = table?.getAllLeafColumns().filter((column) => column.getCanHide()) ?? [];
+  const hasViewSettings =
+    filterCount > 0 ||
+    !!filters.q?.trim() ||
+    !!sortOption ||
+    groupBy.length > 0;
+  const hideable =
+    table?.getAllLeafColumns().filter((column) => column.getCanHide()) ?? [];
   const visible = hideable.filter((column) => column.getIsVisible()).length;
-  const filtersWithoutPeriod = { ...filters, month: undefined, year: undefined };
+  const filtersWithoutPeriod = {
+    ...filters,
+    month: undefined,
+    year: undefined,
+  };
   const clearFilters = () =>
     onFiltersChange({ month: filters.month, year: filters.year, q: filters.q });
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div role="toolbar" aria-label="Herramientas de la tabla" className="flex min-w-0 flex-wrap items-center gap-1">
+        <div
+          role="toolbar"
+          aria-label="Herramientas de la tabla"
+          className="flex min-w-0 flex-wrap items-center gap-1"
+        >
           <SearchField
             className="w-full sm:w-56"
             placeholder="Buscar"
             shortcut="/"
             value={filters.q ?? ""}
-            onChange={(next) => onFiltersChange({ ...filters, q: next || undefined })}
+            onChange={(next) =>
+              onFiltersChange({ ...filters, q: next || undefined })
+            }
           />
-          <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-border sm:block" />
-          <ToolbarButton icon={SlidersHorizontal} label="Filtros" count={filterCount} onClick={() => setSheetOpen(true)} />
+          <span
+            aria-hidden="true"
+            className="mx-1 hidden h-5 w-px bg-border sm:block"
+          />
+          <ToolbarButton
+            icon={SlidersHorizontal}
+            label="Filtros"
+            count={filterCount}
+            onClick={() => setSheetOpen(true)}
+          />
           {canSort && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <ToolbarButton icon={ArrowDownUp} label="Ordenar" count={sortOption ? 1 : 0} />
+                <ToolbarButton
+                  icon={ArrowDownUp}
+                  label="Ordenar"
+                  count={sortOption ? 1 : 0}
+                />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-60">
                 <DropdownMenuLabel>Ordenar por</DropdownMenuLabel>
-                <DropdownMenuRadioGroup value={sort ?? ""} onValueChange={(next) => onSortChange(next || undefined)}>
-                  <DropdownMenuRadioItem value="">Orden original</DropdownMenuRadioItem>
+                <DropdownMenuRadioGroup
+                  value={sort ?? ""}
+                  onValueChange={(next) => onSortChange(next || undefined)}
+                >
+                  <DropdownMenuRadioItem value="">
+                    Orden original
+                  </DropdownMenuRadioItem>
                   {FIXED_COST_SORTS.map((option) => (
-                    <DropdownMenuRadioItem key={option.value} value={option.value}>
+                    <DropdownMenuRadioItem
+                      key={option.value}
+                      value={option.value}
+                    >
                       {option.label}
                     </DropdownMenuRadioItem>
                   ))}
@@ -291,11 +342,18 @@ export function FixedCostToolbar({
           {canGroup && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <ToolbarButton icon={Layers} label="Agrupar" count={groupBy.length} />
+                <ToolbarButton
+                  icon={Layers}
+                  label="Agrupar"
+                  count={groupBy.length}
+                />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuLabel>Agrupar por (en orden)</DropdownMenuLabel>
-                <DropdownMenuCheckboxItem checked={!groupBy.length} onCheckedChange={() => onGroupByChange([])}>
+                <DropdownMenuCheckboxItem
+                  checked={!groupBy.length}
+                  onCheckedChange={() => onGroupByChange([])}
+                >
                   Sin agrupar
                 </DropdownMenuCheckboxItem>
                 {FIXED_COST_GROUP_OPTIONS.map((option) => {
@@ -307,12 +365,18 @@ export function FixedCostToolbar({
                       checked={position >= 0}
                       onSelect={(event) => event.preventDefault()}
                       onCheckedChange={(checked) =>
-                        onGroupByChange(checked ? [...groupBy, field] : groupBy.filter((item) => item !== field))
+                        onGroupByChange(
+                          checked
+                            ? [...groupBy, field]
+                            : groupBy.filter((item) => item !== field),
+                        )
                       }
                     >
                       {option.label}
                       {position >= 0 && groupBy.length > 1 && (
-                        <span className="ml-auto text-xs text-muted-foreground">{position + 1}°</span>
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {position + 1}°
+                        </span>
                       )}
                     </DropdownMenuCheckboxItem>
                   );
@@ -322,16 +386,26 @@ export function FixedCostToolbar({
           )}
           {appliedCount > 0 && (
             <>
-              <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-border sm:block" />
+              <span
+                aria-hidden="true"
+                className="mx-1 hidden h-5 w-px bg-border sm:block"
+              />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 aria-expanded={showApplied}
                 onClick={() => setShowApplied(!showApplied)}
-                className={cn("h-8 gap-1 px-2 text-xs text-muted-foreground", showApplied && "bg-accent text-foreground")}
+                className={cn(
+                  "h-8 gap-1 px-2 text-xs text-muted-foreground",
+                  showApplied && "bg-accent text-foreground",
+                )}
               >
-                {showApplied ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+                {showApplied ? (
+                  <ChevronDown className="size-4" />
+                ) : (
+                  <ChevronRight className="size-4" />
+                )}
                 {showApplied ? "Ocultar aplicados" : "Ver aplicados"}
               </Button>
             </>
@@ -341,7 +415,11 @@ export function FixedCostToolbar({
           {table && hideable.length > 0 && view === "table" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <ToolbarButton icon={Columns3} label="Columnas" count={`${visible}/${hideable.length}`} />
+                <ToolbarButton
+                  icon={Columns3}
+                  label="Columnas"
+                  count={`${visible}/${hideable.length}`}
+                />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuLabel>Columnas visibles</DropdownMenuLabel>
@@ -351,7 +429,9 @@ export function FixedCostToolbar({
                     key={column.id}
                     checked={column.getIsVisible()}
                     onSelect={(event) => event.preventDefault()}
-                    onCheckedChange={(checked) => column.toggleVisibility(checked)}
+                    onCheckedChange={(checked) =>
+                      column.toggleVisibility(checked)
+                    }
                   >
                     {column.columnDef.meta?.label ?? column.id}
                   </DropdownMenuCheckboxItem>
@@ -360,7 +440,9 @@ export function FixedCostToolbar({
                 <DropdownMenuCheckboxItem
                   checked={visible === hideable.length}
                   onSelect={(event) => event.preventDefault()}
-                  onCheckedChange={() => hideable.forEach((column) => column.toggleVisibility(true))}
+                  onCheckedChange={() =>
+                    hideable.forEach((column) => column.toggleVisibility(true))
+                  }
                 >
                   Mostrar todas
                 </DropdownMenuCheckboxItem>
@@ -368,7 +450,11 @@ export function FixedCostToolbar({
             </DropdownMenu>
           )}
           {canChangeLayout && (
-            <div role="radiogroup" aria-label="Diseño" className="flex items-center gap-0.5 rounded-md border border-border/80 p-0.5">
+            <div
+              role="radiogroup"
+              aria-label="Diseño"
+              className="flex items-center gap-0.5 rounded-sm border border-border/80 p-0.5"
+            >
               {(
                 [
                   ["table", "Tabla", Table2],
@@ -383,7 +469,8 @@ export function FixedCostToolbar({
                   onClick={() => onViewChange(mode)}
                   className={cn(
                     "inline-flex h-7 items-center gap-1.5 rounded-sm px-2 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                    view === mode && "bg-accent text-foreground ring-1 ring-border/70",
+                    view === mode &&
+                      "bg-accent text-foreground ring-1 ring-border/70",
                   )}
                 >
                   <Icon className="size-4" />
@@ -396,18 +483,24 @@ export function FixedCostToolbar({
       </div>
 
       {showApplied && appliedCount > 0 && (
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-dashed px-3 py-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-sm border border-dashed px-3 py-2">
           {sortOption && (
             <div className="flex items-center gap-2 border-r pr-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Orden</span>
-              <span className="inline-flex h-7 items-center gap-1 rounded-full border border-brand/40 bg-brand/10 pl-2.5 pr-1 text-xs font-medium text-brand">
-                {sortOption.desc ? <ArrowDown className="size-3" /> : <ArrowUp className="size-3" />}
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Orden
+              </span>
+              <span className="inline-flex h-6 items-center gap-1 rounded-full border border-brand/40 bg-brand/10 px-2 text-xs font-medium text-brand">
+                {sortOption.desc ? (
+                  <ArrowDown className="size-3.5" />
+                ) : (
+                  <ArrowUp className="size-3.5" />
+                )}
                 {sortOption.label.split(":")[0]}
                 <button
                   type="button"
                   aria-label="Quitar orden"
                   onClick={() => onSortChange(undefined)}
-                  className="inline-flex size-5 items-center justify-center rounded-full hover:bg-brand/20"
+                  className="inline-flex size-4 items-center justify-center rounded-full hover:bg-brand/20"
                 >
                   <X className="size-3" />
                 </button>
@@ -416,7 +509,9 @@ export function FixedCostToolbar({
           )}
           {groupBy.length > 0 && (
             <div className="flex items-center gap-2 border-r pr-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Agrupar</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Agrupar
+              </span>
               <ActiveExpenseFilterChips
                 fields={[]}
                 value={filtersWithoutPeriod}
@@ -432,15 +527,25 @@ export function FixedCostToolbar({
           )}
           {filterCount > 0 && (
             <div className="flex min-w-0 items-center gap-2 border-r pr-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Filtros</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Filtros
+              </span>
               <ActiveExpenseFilterChips
                 fields={panelFields}
                 value={filtersWithoutPeriod}
-                onChange={(next) => onFiltersChange({ ...next, month: filters.month, year: filters.year, q: filters.q })}
+                onChange={(next) =>
+                  onFiltersChange({
+                    ...next,
+                    month: filters.month,
+                    year: filters.year,
+                    q: filters.q,
+                  })
+                }
                 me={me}
                 tone="brand"
                 maxVisibleItems={3}
                 collapsible={false}
+                showClearAll={false}
               />
             </div>
           )}
@@ -507,12 +612,17 @@ function FixedCostFilterSheet({
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0">
+      <SheetContent
+        side="right"
+        className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0"
+      >
         <SheetHeader className="gap-2 border-b p-5 pr-12">
           <SheetTitle className="flex items-center gap-2">
             Filtros
             {filterCount > 0 && (
-              <span className="rounded-full bg-brand/15 px-2 text-xs font-semibold text-brand">{filterCount}</span>
+              <span className="rounded-full bg-brand/15 px-2 text-xs font-semibold text-brand">
+                {filterCount}
+              </span>
             )}
           </SheetTitle>
           <SheetDescription>
@@ -521,7 +631,14 @@ function FixedCostFilterSheet({
           <ActiveExpenseFilterChips
             fields={panelFields}
             value={{ ...filters, month: undefined, year: undefined }}
-            onChange={(next) => onFiltersChange({ ...next, month: filters.month, year: filters.year, q: filters.q })}
+            onChange={(next) =>
+              onFiltersChange({
+                ...next,
+                month: filters.month,
+                year: filters.year,
+                q: filters.q,
+              })
+            }
             me={me}
             tone="brand"
             maxVisibleItems={3}
@@ -550,11 +667,22 @@ function FixedCostFilterSheet({
           </section>
         </div>
         <SheetFooter className="flex-row items-center justify-between border-t bg-background p-4">
-          <Button type="button" variant="ghost" size="sm" disabled={filterCount === 0} onClick={onClear}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={filterCount === 0}
+            onClick={onClear}
+          >
             <Trash2 className="size-4" />
             Limpiar todo
           </Button>
-          <Button type="button" size="sm" className="h-9 px-4" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            size="sm"
+            className="h-9 px-4"
+            onClick={() => onOpenChange(false)}
+          >
             Ver {shown} {shown === 1 ? "resultado" : "resultados"}
           </Button>
         </SheetFooter>

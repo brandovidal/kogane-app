@@ -39,7 +39,10 @@ export function AppliedFilterChips({
     maxVisibleItems && !showAllItems ? items.slice(0, maxVisibleItems) : items;
   const hiddenCount = items.length - visibleItems.length;
   return (
-    <div className="flex min-w-0 items-center gap-2 py-0.5" aria-label={ariaLabel}>
+    <div
+      className="flex min-w-0 items-center gap-2 py-0.5"
+      aria-label={ariaLabel}
+    >
       {collapsible && (
         <Button
           type="button"
@@ -51,14 +54,19 @@ export function AppliedFilterChips({
         >
           <SlidersHorizontal aria-hidden="true" className="size-3.5" />
           <span>{expanded ? "Ocultar" : "Mostrar"}</span>
-          <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">{items.length}</span>
-          <ChevronDown aria-hidden="true" className={`size-3 transition-transform ${expanded ? "rotate-180" : ""}`} />
+          <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">
+            {items.length}
+          </span>
+          <ChevronDown
+            aria-hidden="true"
+            className={`size-3 transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
         </Button>
       )}
       {onClearAll && (
         <Button
           type="button"
-          variant="destructive"
+          variant="outline"
           size="xs"
           onClick={onClearAll}
           className="shrink-0 gap-1"
@@ -72,20 +80,29 @@ export function AppliedFilterChips({
           {visibleItems.map((item, index) => (
             <span key={item.key} className="contents">
               {item.kind === "group" && index > 0 && (
-                <span aria-hidden="true" className="mx-1 inline-block h-5 border-l" />
+                <span
+                  aria-hidden="true"
+                  className="mx-1 inline-block h-5 border-l"
+                />
               )}
               <Button
-                variant={tone === "brand" || item.kind === "group" ? "outline" : "secondary"}
+                variant={
+                  tone === "brand" || item.kind === "group"
+                    ? "outline"
+                    : "secondary"
+                }
                 size="xs"
                 className={cn(
                   "max-w-56",
-                  tone === "brand" && "border-brand/40 bg-brand/10 text-brand hover:bg-brand/20",
+                  tone === "brand" &&
+                    "border-brand/40 bg-brand/10 text-brand hover:bg-brand/20",
                 )}
                 onClick={item.onRemove}
                 aria-label={`Quitar ${item.kind === "group" ? "agrupación" : "filtro"} ${item.label}`}
                 title={item.label}
               >
-                <span className="truncate">{item.label}</span><X className="size-3.5" />
+                <span className="truncate">{item.label}</span>
+                <X className="size-3.5" />
               </Button>
             </span>
           ))}
@@ -101,17 +118,19 @@ export function AppliedFilterChips({
               +{hiddenCount} más
             </Button>
           )}
-          {showAllItems && maxVisibleItems && items.length > maxVisibleItems && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="xs"
-              onClick={() => setShowAllItems(false)}
-              className="shrink-0 text-muted-foreground"
-            >
-              Ver menos
-            </Button>
-          )}
+          {showAllItems &&
+            maxVisibleItems &&
+            items.length > maxVisibleItems && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                onClick={() => setShowAllItems(false)}
+                className="shrink-0 text-muted-foreground"
+              >
+                Ver menos
+              </Button>
+            )}
         </div>
       )}
     </div>

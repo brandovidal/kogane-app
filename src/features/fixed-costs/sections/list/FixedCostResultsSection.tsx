@@ -100,6 +100,7 @@ export function FixedCostResultsSection({
         rowKey={(cost) => cost.id}
         view={view}
         groupBy={fields}
+        primaryGroupDepth={viewGroup && groupBy.length ? 1 : 0}
         compactCards
         cardRenderer={(cost) => (
           <FixedCostCard

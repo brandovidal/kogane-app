@@ -25,7 +25,9 @@ import {
 } from "@/shared/components/filters/AppliedFilterChips";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 
-export interface ActiveExpenseFilterChipsProps<T extends string | string[] = string> {
+export interface ActiveExpenseFilterChipsProps<
+  T extends string | string[] = string,
+> {
   fields: ExpenseFilterKey[];
   value: ExpenseFilterValues;
   onChange: (value: ExpenseFilterValues) => void;
@@ -39,6 +41,7 @@ export interface ActiveExpenseFilterChipsProps<T extends string | string[] = str
   maxVisibleItems?: number;
   collapsible?: boolean;
   showClearAll?: boolean;
+  onClearAll?: () => void;
 }
 
 export function ActiveExpenseFilterChips<T extends string | string[] = string>({
@@ -55,6 +58,7 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   maxVisibleItems,
   collapsible = true,
   showClearAll = true,
+  onClearAll,
 }: ActiveExpenseFilterChipsProps<T>) {
   const categories = useCategories().data ?? [];
   const methods = usePaymentMethods().data ?? [];
@@ -67,13 +71,16 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
     year: value.year ? `Año: ${value.year}` : undefined,
     person:
       value.person && value.person !== PERSON_ALL
-        ? `Persona: ${value.person === PERSON_ME ? PERSON_FILTER_LABELS.ME : value.person === me ? (people.find((person) => person.id === me)?.name ?? PERSON_FILTER_LABELS.ME) : (people.find((person) => person.id === value.person)?.name ?? value.person)}`
+        ? `Persona: ${value.person === PERSON_ME ? (people.find((person) => person.id === me)?.name ?? PERSON_FILTER_LABELS.ME) : value.person === me ? (people.find((person) => person.id === me)?.name ?? PERSON_FILTER_LABELS.ME) : (people.find((person) => person.id === value.person)?.name ?? value.person)}`
         : undefined,
     category: value.category
       ? `Categoría: ${value.category
           .split(",")
           .filter(Boolean)
-          .map((id) => categories.find((category) => category.id === id)?.name ?? id)
+          .map(
+            (id) =>
+              categories.find((category) => category.id === id)?.name ?? id,
+          )
           .join(", ")}`
       : undefined,
     method: value.method
@@ -138,7 +145,7 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
       chips.push({
         key: "group-by",
         label: labels.join(" › "),
-        onRemove: () => onGroupByChange([] as T),
+        onRemove: () => onGroupByChange([] as unknown as T),
         kind: "group",
       });
     } else {
@@ -147,7 +154,8 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
       chips.push({
         key: `group-by-${field}`,
         label: `Agrupar: ${label}`,
-        onRemove: () => onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T),
+        onRemove: () =>
+          onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T),
         kind: "group",
       });
     }
@@ -159,12 +167,19 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
       collapsible={collapsible}
       tone={tone}
       maxVisibleItems={maxVisibleItems}
-      onClearAll={showClearAll ? () => {
-        onChange({});
-        if (isGrouped && onGroupByChange) {
-          onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T);
-        }
-      } : undefined}
+      onClearAll={
+        showClearAll
+          ? () => {
+              if (onClearAll) onClearAll();
+              else {
+                onChange({});
+                if (isGrouped && onGroupByChange) {
+                  onGroupByChange((Array.isArray(groupBy) ? [] : "none") as T);
+                }
+              }
+            }
+          : undefined
+      }
     />
   );
 }

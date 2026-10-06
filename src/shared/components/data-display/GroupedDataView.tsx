@@ -11,6 +11,7 @@ export function GroupedDataView<T>({
   groupBy = "none",
   groupKey,
   groupLabel,
+  primaryGroupDepth = 0,
   summaryForGroup,
   calculationStorageKey,
   calculationDefaults,
@@ -26,6 +27,7 @@ export function GroupedDataView<T>({
   groupBy?: string | readonly string[];
   groupKey: (item: T, field: string) => string;
   groupLabel: (key: string, field: string) => string;
+  primaryGroupDepth?: number;
   summaryForGroup?: (items: T[]) => DataViewSummary;
 }) {
   const calculationState = useDataTableCalculations(calculationStorageKey, calculationDefaults);
@@ -88,12 +90,12 @@ export function GroupedDataView<T>({
               />;
           return (
             <section key={`${field}:${key}`} className="space-y-2">
-              <h2 className={`flex items-baseline justify-between gap-3 ${depth ? "text-sm font-medium" : "font-medium"}`}>
+              <h2 className={`flex items-baseline justify-between gap-3 ${depth === primaryGroupDepth ? "text-base font-bold tracking-tight" : "text-sm font-medium"}`}>
                 <span className="min-w-0 truncate">
                   {groupLabel(key, field)}
                   <span className="ml-2 text-xs text-muted-foreground">{groupedRows.length}</span>
                 </span>
-                {view === "cards" && summary?.label}
+                {summary?.label}
               </h2>
               {content}
             </section>

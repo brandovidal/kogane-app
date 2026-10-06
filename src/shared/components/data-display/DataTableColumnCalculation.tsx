@@ -4,6 +4,7 @@ import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -39,8 +40,20 @@ const shortLabels: Record<DataTableCalculation, string> = {
   range: "RNG",
 };
 
-const countCalculations: DataTableCalculation[] = ["count", "count-values", "count-unique", "count-empty"];
-const numberCalculations: DataTableCalculation[] = ["sum", "average", "median", "min", "max", "range"];
+const countCalculations: DataTableCalculation[] = [
+  "count",
+  "count-values",
+  "count-unique",
+  "count-empty",
+];
+const numberCalculations: DataTableCalculation[] = [
+  "sum",
+  "average",
+  "median",
+  "min",
+  "max",
+  "range",
+];
 
 export function DataTableColumnCalculation({
   value,
@@ -57,7 +70,13 @@ export function DataTableColumnCalculation({
   formattedValue?: string;
   copyValue: string;
 }) {
-  const formatted = formattedValue ?? (value == null ? "—" : new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 }).format(value));
+  const formatted =
+    formattedValue ??
+    (value == null
+      ? "—"
+      : new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 }).format(
+          value,
+        ));
 
   const copyCalculation = async () => {
     try {
@@ -69,54 +88,95 @@ export function DataTableColumnCalculation({
   };
 
   return (
-    <div className="inline-flex max-w-full items-center">
+    <div className="inline-flex max-w-full items-center gap-0">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
             variant="ghost"
             size="xs"
-            aria-label={calculation === "none" ? "Elegir cálculo de columna" : `${labels[calculation]}: ${formatted}`}
+            aria-label={
+              calculation === "none"
+                ? "Elegir cálculo de columna"
+                : `${labels[calculation]}: ${formatted}`
+            }
             title={calculation === "none" ? "Calcular" : labels[calculation]}
-            className={calculation === "none"
-              ? "h-7 gap-1 px-1.5 text-xs font-normal text-muted-foreground opacity-0 transition-opacity hover:opacity-100 group-hover/calculation-cell:opacity-100 group-focus-within/calculation-cell:opacity-100 focus-visible:opacity-100"
-              : "h-7 max-w-full gap-1 px-1.5 text-xs font-normal text-muted-foreground hover:text-foreground"}
+            className={
+              calculation === "none"
+                ? "h-7 gap-1 px-1.5 text-xs font-normal text-muted-foreground opacity-0 transition-opacity hover:opacity-100 group-hover/calculation-cell:opacity-100 group-focus-within/calculation-cell:opacity-100 focus-visible:opacity-100"
+                : "h-7 max-w-full gap-1 px-1.5 text-xs font-normal text-muted-foreground hover:text-foreground"
+            }
           >
             {calculation === "none" ? (
               <span>Calcular</span>
             ) : (
-              <span className="text-[10px] uppercase leading-none tracking-wide">{shortLabels[calculation]}</span>
+              <span className="text-[10px] uppercase leading-none tracking-wide">
+                {shortLabels[calculation]}
+              </span>
             )}
             <ChevronDown aria-hidden="true" className="size-3" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
-          <DropdownMenuRadioGroup value={calculation} onValueChange={(next) => onChange(next as DataTableCalculation)}>
-            <DropdownMenuRadioItem value="none">{labels.none}</DropdownMenuRadioItem>
+          <DropdownMenuRadioGroup
+            value={calculation}
+            onValueChange={(next) => onChange(next as DataTableCalculation)}
+          >
+            <DropdownMenuRadioItem value="none">
+              {labels.none}
+            </DropdownMenuRadioItem>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+              Conteo
+            </DropdownMenuLabel>
             {countCalculations.map((option) => (
-              <DropdownMenuRadioItem key={option} value={option}>{labels[option]}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem key={option} value={option}>
+                {labels[option]}
+              </DropdownMenuRadioItem>
             ))}
             {numeric && <DropdownMenuSeparator />}
-            {numeric && numberCalculations.map((option) => (
-              <DropdownMenuRadioItem key={option} value={option}>{labels[option]}</DropdownMenuRadioItem>
-            ))}
+            {numeric && (
+              <DropdownMenuLabel className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                Valores numéricos
+              </DropdownMenuLabel>
+            )}
+            {numeric &&
+              numberCalculations.map((option) => (
+                <DropdownMenuRadioItem key={option} value={option}>
+                  {labels[option]}
+                </DropdownMenuRadioItem>
+              ))}
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
       {calculation !== "none" && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="xs"
-          aria-label={`Copiar ${labels[calculation]}: ${copyValue}`}
-          title="Copiar cálculo"
-          onClick={copyCalculation}
-          className="h-7 max-w-full gap-1 px-1.5 font-normal text-foreground"
-        >
-          <span className="truncate tabular-nums">{formatted}</span>
-          <Copy aria-hidden="true" className="size-3 shrink-0 text-muted-foreground" />
-        </Button>
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            aria-label={`Copiar ${labels[calculation]}: ${copyValue}`}
+            title="Copiar cálculo"
+            onClick={copyCalculation}
+            className="size-5 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover/calculation-cell:opacity-100 group-focus-within/calculation-cell:opacity-100 focus-visible:opacity-100"
+          >
+            <Copy
+              aria-hidden="true"
+              className="size-2.5 shrink-0 text-muted-foreground"
+            />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            aria-label={`Copiar ${labels[calculation]}: ${copyValue}`}
+            title="Copiar cálculo"
+            onClick={copyCalculation}
+            className="h-6 max-w-full px-1 text-xs font-normal text-foreground hover:bg-accent/60"
+          >
+            <span className="truncate tabular-nums">{formatted}</span>
+          </Button>
+        </>
       )}
     </div>
   );
