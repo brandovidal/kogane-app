@@ -4,6 +4,6 @@ packages:
 # pnpm 12 fails the install on build scripts it was not told about (Workers Builds and CI run it)
 allowBuilds:
   esbuild: true
-  msw: set this to true or false
+  msw: true
   sharp: true
   workerd: true

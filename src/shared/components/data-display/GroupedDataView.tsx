@@ -26,9 +26,9 @@ export function GroupedDataView<T>({
 }: DataViewProps<T> & {
   groupBy?: string | readonly string[];
   groupKey: (item: T, field: string) => string;
-  groupLabel: (key: string, field: string) => string;
+  groupLabel: (key: string, field: string) => ReactNode;
   primaryGroupDepth?: number;
-  summaryForGroup?: (items: T[]) => DataViewSummary;
+  summaryForGroup?: (items: T[], key?: string, field?: string) => DataViewSummary;
 }) {
   const calculationState = useDataTableCalculations(calculationStorageKey, calculationDefaults);
   const fields = Array.isArray(groupBy)
@@ -68,7 +68,7 @@ export function GroupedDataView<T>({
     return (
       <div className={depth ? "ml-3 space-y-3 border-l pl-3 sm:ml-5 sm:pl-5" : "space-y-4"}>
         {[...groups].map(([key, groupedRows]) => {
-          const summary = summaryForGroup?.(groupedRows);
+          const summary = summaryForGroup?.(groupedRows, key, field);
           const content = depth + 1 < fields.length
             ? renderGroups(groupedRows, depth + 1)
             : <DataView

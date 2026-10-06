@@ -10,7 +10,10 @@ import { useFixedCostTable } from "../hooks/useFixedCostTable";
 import { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
 import { FixedCostBulkActionsSection } from "../sections/list/FixedCostBulkActionsSection";
 import { FixedCostMonthOverview } from "../sections/list/FixedCostMonthOverview";
-import { FixedCostToolbar, FixedCostViewBar } from "../sections/list/FixedCostToolbar";
+import {
+  FixedCostToolbar,
+  FixedCostViewBar,
+} from "../sections/list/FixedCostToolbar";
 import { FixedCostInstallmentsView } from "../sections/list/FixedCostInstallmentsView";
 import { FixedCostStatusBoard } from "../sections/list/FixedCostStatusBoard";
 import { FixedCostEmptyMonth } from "../sections/list/FixedCostEmptyMonth";
@@ -37,16 +40,24 @@ export function FixedCostListView() {
     rowSelection: bulk.selection,
     onSelectionChange: bulk.setSelection,
     pending: bulk.pending,
-    sorting: list.sort ? { column: list.sort.column, desc: list.sort.desc } : undefined,
+    sorting: list.sort
+      ? { column: list.sort.column, desc: list.sort.desc }
+      : undefined,
   });
+
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
+
   const openedItem =
     list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ??
     interaction.openedItem;
   const page = list.page;
   const periodLabel =
-    list.periodScope === "year" ? "del año" : list.filters.month && list.filters.year ? "del mes" : "del período";
+    list.periodScope === "year"
+      ? "del año"
+      : list.filters.month && list.filters.year
+        ? "del mes"
+        : "del período";
 
   const toolbar = (
     <FixedCostToolbar
@@ -71,7 +82,7 @@ export function FixedCostListView() {
       canGroup={page !== "cuotas" && page !== "estado"}
       canSort={page !== "cuotas" && page !== "estado"}
       canChangeLayout={page !== "cuotas" && page !== "estado"}
-      showPeriodInFilters={list.periodScope !== "none"}
+      showPeriodInFilters
     />
   );
 
@@ -111,7 +122,11 @@ export function FixedCostListView() {
         year={Number(list.filters.year)}
         onCreate={interaction.onCreate}
         onGoTo={(month, year) =>
-          list.setFilters({ ...list.filters, month: String(month), year: String(year) })
+          list.setFilters({
+            ...list.filters,
+            month: String(month),
+            year: String(year),
+          })
         }
       />
     );
@@ -130,13 +145,32 @@ export function FixedCostListView() {
           loading={list.loading}
           error={list.error}
           pending={bulk.pending}
-          emptyDescription={page === "por-pagar" ? "No tienes costos fijos pendientes. Todo está al día." : undefined}
+          emptyDescription={
+            page === "por-pagar"
+              ? "No tienes costos fijos pendientes. Todo está al día."
+              : undefined
+          }
           viewGroup={
             page === "por-pagar"
               ? {
                   field: "urgency",
                   key: (cost) => urgencyOf(cost, todayKey || localTodayKey()),
-                  label: (key) => URGENCY_GROUPS.find((group) => group.value === key)?.label ?? key,
+                  label: (key) => {
+                    const group = URGENCY_GROUPS.find((item) => item.value === key);
+                    const dotColor = key === "overdue"
+                      ? "bg-destructive"
+                      : key === "week"
+                        ? "bg-amber-400"
+                        : key === "month"
+                          ? "bg-brand"
+                          : "bg-muted-foreground/60";
+                    return (
+                      <span className="inline-flex items-center gap-2">
+                        <span aria-hidden="true" className={`size-2 rounded-full ${dotColor}`} />
+                        {group?.label ?? key}
+                      </span>
+                    );
+                  },
                 }
               : page === "todos"
                 ? { field: "month", key: monthGroupKey, label: monthGroupLabel }
@@ -162,8 +196,9 @@ export function FixedCostListView() {
           items={page === "por-pagar" ? list.filtered : list.baseFiltered}
           scope={page === "por-pagar" ? "payable" : list.scope}
           onScopeChange={page === "por-pagar" ? () => undefined : list.setScope}
-          periodLabel={page === "por-pagar" ? "pendiente" : periodLabel}
+          periodLabel={periodLabel}
           loading={list.loading}
+          variant={page === "por-pagar" ? "payable" : "period"}
         />
       )}
       {page !== "cuotas" && toolbar}

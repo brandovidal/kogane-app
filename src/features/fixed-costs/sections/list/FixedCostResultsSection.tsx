@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Category, FixedCost } from "@/shared/api/types";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { type ViewMode } from "@/shared/types/data-view";
@@ -25,11 +26,10 @@ export interface FixedCostResultsSectionProps {
   loading: boolean;
   error: boolean;
   pending: boolean;
-  /** Extra grouping set by the view (urgency in "Por pagar", month in "Todos"), before the user's groups. */
   viewGroup?: {
     field: string;
     key: (cost: FixedCost) => string;
-    label: (key: string) => string;
+    label: (key: string) => ReactNode;
   };
   emptyDescription?: string;
 }
@@ -50,13 +50,22 @@ export function FixedCostResultsSection({
 }: FixedCostResultsSectionProps) {
   const emptyMessage =
     emptyDescription ??
-    (totalRecords ? "No hay costos fijos con estos filtros" : "No hay costos fijos en este período");
+    (totalRecords
+      ? "No hay costos fijos con estos filtros"
+      : "No hay costos fijos en este período");
   const fields = viewGroup ? [viewGroup.field, ...groupBy] : groupBy;
-  const summaryFor = (records: FixedCost[]) => {
+  const summaryFor = (records: FixedCost[], key?: string, field?: string) => {
     const subtotal = totalsOf(records);
+    const tone = field === "urgency"
+      ? key === "overdue"
+        ? "text-destructive"
+        : key === "week" || key === "month"
+          ? "text-amber-600 dark:text-amber-300"
+          : "text-muted-foreground"
+      : "text-foreground";
     return {
       label: (
-        <div className="whitespace-nowrap text-right text-sm font-semibold">
+        <div className={`whitespace-nowrap text-right text-sm font-semibold ${tone}`}>
           Total: {formatCurrency(subtotal.paid)}
           <OwnPart {...subtotal} />
         </div>
@@ -134,11 +143,11 @@ export function FixedCostResultsSection({
           viewGroup && field === viewGroup.field
             ? viewGroup.label(key)
             : key === "none"
-            ? "Sin asignar"
-            : field === "person"
-              ? personName(key)
-              : (categories.find((category) => category.id === key)?.name ??
-                "Sin categoría")
+              ? "Sin asignar"
+              : field === "person"
+                ? personName(key)
+                : (categories.find((category) => category.id === key)?.name ??
+                  "Sin categoría")
         }
       />
       <DataTablePagination table={dataTable.table} disabled={pending} />

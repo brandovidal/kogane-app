@@ -9,11 +9,12 @@ import {
   ChevronRight,
   Columns3,
   KanbanSquare,
+  Layers,
   LayoutGrid,
   ListChecks,
+  ListFilter,
   CalendarDays,
   Clock,
-  Layers,
   Plus,
   ReceiptText,
   SlidersHorizontal,
@@ -304,7 +305,7 @@ export function FixedCostToolbar({
             className="mx-1 hidden h-5 w-px bg-border sm:block"
           />
           <ToolbarButton
-            icon={SlidersHorizontal}
+            icon={ListFilter}
             label="Filtros"
             count={filterCount}
             onClick={() => setSheetOpen(true)}
@@ -449,6 +450,17 @@ export function FixedCostToolbar({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Configurar filtros"
+            title="Configurar filtros"
+            onClick={() => setSheetOpen(true)}
+            className="size-8 rounded-md text-muted-foreground hover:text-foreground"
+          >
+            <SlidersHorizontal className="size-4" />
+          </Button>
           {canChangeLayout && (
             <div
               role="radiogroup"

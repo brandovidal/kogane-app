@@ -27,7 +27,6 @@ export function useFixedCostTable({
   rowSelection: RowSelectionState;
   onSelectionChange: (selection: RowSelectionState) => void;
   pending: boolean;
-  /** Column and direction chosen in "Ordenar"; undefined keeps the order of the view. */
   sorting?: { column: string; desc: boolean };
 }) {
   const columns = useMemo(

@@ -52,7 +52,7 @@ export function useFixedCostList() {
   const sort = findFixedCostSort(viewParams.orden);
   const setSort = (next: string | undefined) => setViewParams({ ...viewParams, orden: next });
   const periodScope = FIXED_COST_VIEW_PERIOD[page];
-  const hasRange = periodScope === "month" && !!(viewParams.desde || viewParams.hasta);
+  const hasRange = !!(viewParams.desde || viewParams.hasta);
   const month = Number(filters.month);
   const year = Number(filters.year);
   const hasPeriod =
@@ -64,14 +64,14 @@ export function useFixedCostList() {
     Number.isInteger(year) &&
     year >= 1 &&
     year <= 9999;
-  // One month asks the API for that month; years, ranges and the cross-month views load every record.
+  // One-month views request just that month; year, range and all-period modes load the data they need locally.
   const query = useExpenses(
     EXPENSE_RESOURCES.fixedCost,
     hasPeriod ? { month, year } : undefined,
   );
   const fixedCosts = query.data ?? EMPTY_COSTS;
   const periodFilters = useMemo<ExpenseFilterValues>(() => {
-    if (periodScope === "none" || hasRange) return { ...filters, month: undefined, year: undefined };
+    if (hasRange) return { ...filters, month: undefined, year: undefined };
     if (periodScope === "year")
       return { ...filters, month: undefined, year: filters.year || String(getCurrentYear()) };
     return filters;

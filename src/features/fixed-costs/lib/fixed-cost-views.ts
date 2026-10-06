@@ -17,15 +17,15 @@ export const isFixedCostView = (value: unknown): value is FixedCostView =>
   FIXED_COST_VIEWS.some((view) => view.value === value);
 
 /**
- * How each view uses the period of the header: one month, one year,
- * or every month (Por pagar and Cuotas look across months).
+ * How each view uses the global period selector. Every view supports the month,
+ * year, range and all-period modes; "Todos" starts with a year selected.
  */
-export const FIXED_COST_VIEW_PERIOD: Record<FixedCostView, "month" | "year" | "none"> = {
+export const FIXED_COST_VIEW_PERIOD: Record<FixedCostView, "month" | "year"> = {
   mes: "month",
   estado: "month",
   todos: "year",
-  "por-pagar": "none",
-  cuotas: "none",
+  "por-pagar": "month",
+  cuotas: "month",
 };
 
 /** `YYYY-MM` → month index (year * 12 + month - 1), or null when invalid. */

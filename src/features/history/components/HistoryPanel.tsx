@@ -88,7 +88,6 @@ const MODULES = [
 const KEYS = ["module", "entity", "source", "from", "to", "page"] as const;
 type HistoryFilters = Partial<Record<(typeof KEYS)[number], string>>;
 
-// Configuración ▸ Historial: every change, paginated; the filters go in a side panel and stay in the URL (D98)
 export function HistoryPanel() {
   const [filters, setFilters] = useUrlFilters<HistoryFilters>([...KEYS]);
   const [open, setOpen] = useState(false);

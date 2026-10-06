@@ -12,6 +12,15 @@ export interface AppliedFilterChip {
   kind?: "filter" | "group";
 }
 
+export interface AppliedFilterChipsProps {
+  items: AppliedFilterChip[];
+  ariaLabel?: string;
+  collapsible?: boolean;
+  onClearAll?: () => void;
+  tone?: "default" | "brand";
+  maxVisibleItems?: number;
+}
+
 export function AppliedFilterChips({
   items,
   ariaLabel = "Filtros activos",
@@ -19,25 +28,22 @@ export function AppliedFilterChips({
   onClearAll,
   tone = "default",
   maxVisibleItems,
-}: {
-  items: AppliedFilterChip[];
-  ariaLabel?: string;
-  collapsible?: boolean;
-  onClearAll?: () => void;
-  tone?: "default" | "brand";
-  maxVisibleItems?: number;
-}) {
+}: AppliedFilterChipsProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [expanded, setExpanded] = useState(!collapsible);
   const [showAllItems, setShowAllItems] = useState(false);
+
   useEffect(() => {
     if (collapsible) setExpanded(isDesktop);
   }, [collapsible, isDesktop]);
   useEffect(() => setShowAllItems(false), [items.length]);
+
   if (!items.length) return null;
+
   const visibleItems =
     maxVisibleItems && !showAllItems ? items.slice(0, maxVisibleItems) : items;
   const hiddenCount = items.length - visibleItems.length;
+
   return (
     <div
       className="flex min-w-0 items-center gap-2 py-0.5"
