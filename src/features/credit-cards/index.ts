@@ -1,6 +1,6 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { CardsPage } from "./components/CardsPage";
-export { CreditCardDetail } from "./components/CreditCardDetail";
+export { CreditCardDetail } from "./pages/CardDetailPage";
 export { CreditCardOverview } from "./components/CreditCardOverview";
 export { StatementMinimumCard } from "./components/StatementMinimumCard";
 export { StatementTotalCard } from "./components/StatementTotalCard";

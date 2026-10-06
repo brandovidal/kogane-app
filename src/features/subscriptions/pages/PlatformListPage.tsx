@@ -54,7 +54,7 @@ function PlatformListPageContent() {
     <div className="flex justify-end sm:hidden"><PlatformPeriodSelector /></div>
     <PlatformViewBar view={list.view} onViewChange={list.setView} onCreate={actions.onCreate} exportItems={exportData.items} />
     <PlatformOverview items={list.filtered} todayKey={todayKey} loading={list.loading} />
-    <PlatformToolbar filters={list.filters} onFiltersChange={list.setFilters} groupBy={list.groupBy} onGroupByChange={list.setGroupBy} table={tableState.table} />
+    {list.view !== "calendar" && <PlatformToolbar filters={list.filters} onFiltersChange={list.setFilters} groupBy={list.groupBy} onGroupByChange={list.setGroupBy} table={tableState.table} />}
     <PlatformBulkActions bulk={bulk} />
     <PlatformResults
       items={list.filtered}
@@ -71,6 +71,7 @@ function PlatformListPageContent() {
       onSelectionChange={(next) => bulk.setSelection(Object.fromEntries([...next].map((id) => [id, true])))}
       onCreate={actions.onCreate}
       onEdit={actions.onOpen}
+      actions={actions}
     />
     <PlatformDetailPage
       item={openedItem}
@@ -84,7 +85,7 @@ function PlatformListPageContent() {
       onDelete={(item) => actions.onDelete(item)}
       onNavigate={(item) => actions.onOpen(item)}
     />
-    <SubscriptionDialog open={actions.dialogOpen} onOpenChange={actions.setDialogOpen} subscription={actions.editing} />
+    <SubscriptionDialog open={actions.dialogOpen} onOpenChange={actions.setDialogOpen} subscription={actions.editing} platformMode />
     {actions.moving && <MoveSeriesDialog key={actions.moving.id} source={actions.moving} onClose={() => actions.setMoving(null)} />}
   </div>;
 }

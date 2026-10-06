@@ -30,3 +30,147 @@
 .dark .platform-create-button:hover {
   background-color: #e9eaed;
 }
+
+.platform-card,
+.platform-period-column,
+.platform-upcoming {
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+}
+
+.platform-card {
+  min-height: 15rem;
+  padding: 1rem;
+  transition: border-color 150ms, background-color 150ms;
+}
+
+.platform-card:hover,
+.platform-period-item:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--border));
+  background: color-mix(in srgb, var(--card) 93%, var(--foreground) 7%);
+}
+
+.platform-card-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: .5rem;
+  border-style: dashed;
+  color: var(--muted-foreground);
+  font-size: .875rem;
+}
+
+.platform-period-column {
+  min-height: 26rem;
+  padding: 1rem;
+}
+
+.platform-period-item {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  padding: .75rem;
+  text-align: left;
+  transition: border-color 150ms, background-color 150ms;
+}
+
+.platform-calendar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  gap: 1rem;
+  align-items: start;
+}
+
+.platform-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+}
+
+.platform-calendar-weekday {
+  border-bottom: 1px solid var(--border);
+  padding: .55rem .4rem;
+  background: color-mix(in srgb, var(--card) 95%, var(--foreground) 5%);
+  color: var(--muted-foreground);
+  font-size: .65rem;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.platform-calendar-day {
+  min-width: 0;
+  min-height: 6rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: .4rem;
+}
+
+.platform-calendar-day:nth-child(7n) { border-right: 0; }
+
+.platform-calendar-charge {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: .25rem;
+  margin-top: .3rem;
+  padding: .2rem .35rem;
+  border-radius: .35rem;
+  background: #e64b59;
+  color: white;
+  font-size: .65rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.platform-calendar-charge:nth-of-type(2n) { background: #6462e7; }
+.platform-upcoming { padding: 1rem; }
+
+.platform-form-dialog { padding: 1.5rem; }
+.platform-form-dialog .platform-form { padding-block: .5rem; }
+.platform-form-dialog .platform-form > div { gap: .75rem; }
+.platform-form-dialog .platform-form label { display: block; font-weight: 600; }
+.platform-form-dialog .platform-form input,
+.platform-form-dialog .platform-form button[role="combobox"] { min-height: 2.75rem; }
+.platform-form-dialog [data-slot="dialog-title"] { font-size: 1.35rem; }
+.platform-form-dialog [data-slot="dialog-description"] { font-size: .9rem; }
+
+@media (max-width: 1024px) {
+  .platform-calendar-layout { grid-template-columns: minmax(0, 1fr); }
+  .platform-upcoming { max-width: none; }
+}
+
+@media (max-width: 640px) {
+  .platform-calendar-day { min-height: 4.5rem; padding: .2rem; }
+  .platform-calendar-charge { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .platform-calendar-charge span:last-child { display: none; }
+  .platform-form-dialog .platform-form .grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (min-width: 640px) {
+  .platform-form-dialog[data-slot="dialog-content"] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+  }
+
+  .platform-form-dialog[data-slot="dialog-content"] .platform-form {
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: .25rem;
+  }
+
+  .platform-form-dialog[data-slot="dialog-content"] [data-slot="dialog-footer"] {
+    flex: none;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+}

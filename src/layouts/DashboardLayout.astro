@@ -25,12 +25,11 @@ const hasLocalPeriodControl = [
   "/",
   "/resumen",
   "/calendario",
-  "/tarjetas",
   "/dia-a-dia",
   "/recurrentes",
   "/categorias",
   "/configuracion",
-].some((path) => currentPath === path || (path === "/tarjetas" && currentPath.startsWith("/tarjetas/")));
+].some((path) => currentPath === path);
 ---
 
 <Layout title={title}>

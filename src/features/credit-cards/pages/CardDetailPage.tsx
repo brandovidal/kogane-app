@@ -12,10 +12,8 @@ import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
-import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { type Column } from "@/shared/types/data-view";
@@ -23,11 +21,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, ArrowLeft, HandCoins, FileText, ChartPie, List, Wallet } from "lucide-react";
+import { ChartPie, List, Wallet } from "lucide-react";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { duplicateBody, nextMonthBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
-import { formatDate, getMonthName } from "@/shared/lib/dates";
+import { formatDate } from "@/shared/lib/dates";
 import { ATTACHMENT_KIND_LABELS } from "@/features/attachments/constants/attachments";
 import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
@@ -37,9 +35,9 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
-import { StatementMinimumCard } from "./StatementMinimumCard";
-import { StatementTotalCard } from "./StatementTotalCard";
-import { CardCategoryBreakdown } from "./CardCategoryBreakdown";
+import { StatementMinimumCard } from "../components/StatementMinimumCard";
+import { StatementTotalCard } from "../components/StatementTotalCard";
+import { CardCategoryBreakdown } from "../components/CardCategoryBreakdown";
 import { StatementBalanceSummary } from "@/features/statements/components/StatementBalanceSummary";
 import { StatementPaymentSummary } from "@/features/statements/components/StatementPaymentSummary";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/ui/alert-dialog";
@@ -47,6 +45,9 @@ import { api, unwrap } from "@/shared/api/client";
 import { expenseKeys } from "@/features/expenses/hooks/expenses";
 import { isPaidStatus } from "@/features/expenses/lib/expense-actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import { CardDetailHeader } from "../sections/detail/CardDetailHeader";
+import { CardDetailMetrics } from "../sections/detail/CardDetailMetrics";
+import { CardEditorDialog } from "../components/CardEditorDialog";
 
 const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
 const GROUP_BY_OPTIONS = [
@@ -85,6 +86,8 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [payingSelected, setPayingSelected] = useState(false);
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [paymentProofKind, setPaymentProofKind] = useState<Attachment["kind"]>("boleta");
+  const [activeTab, setActiveTab] = useState<"expenses" | "card-detail" | "payment">("expenses");
+  const [editingCard, setEditingCard] = useState(false);
 
   const card = creditCards?.find((c) => c.code === cardCode || c.id === cardCode);
   const statements = useStatements().data ?? [];
@@ -103,12 +106,10 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     (b.processDate ?? "").localeCompare(a.processDate ?? ""),
   );
   const selectedPending = cardExpenses.filter((expense) => selectedExpenses.has(expense.id) && !isPaidStatus(expense.paymentStatus));
-  const monthlyByCurrency = new Map<string, number>();
-  for (const expense of ofCard) {
-    const currency = expense.currency || "PEN";
-    monthlyByCurrency.set(currency, (monthlyByCurrency.get(currency) ?? 0) + expense.amount);
-  }
-  const currencySummary = [...monthlyByCurrency.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const activeCategories = [...new Set(ofCard.map((expense) => expense.categoryId ?? "none"))];
+  const categoryTotals = new Map<string, number>();
+  for (const expense of ofCard) categoryTotals.set(expense.categoryId ?? "none", (categoryTotals.get(expense.categoryId ?? "none") ?? 0) + (expense.amountInPen ?? expense.amount));
+  const largestCategoryId = [...categoryTotals].sort((a, b) => b[1] - a[1])[0]?.[0];
 
   const registerSelectedPayment = async () => {
     if (!selectedPending.length) return;
@@ -182,6 +183,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       role: "amount",
       cell: (exp) => <CurrencyDisplay amount={exp.amount} currency={exp.currency} amountInPEN={exp.amountInPen} othersShare={exp.othersShare} />,
     },
+    { key: "category", header: "Categoría", cell: (exp) => <span className="text-sm">{categoryName(exp.categoryId)}</span> },
     {
       key: "status",
       header: "Estado",
@@ -251,60 +253,12 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-        <a href="/tarjetas" aria-label="Volver a tarjetas">
-          <Button variant="outline" size="icon" className="rounded-full"><ArrowLeft className="h-4 w-4" /></Button>
-        </a>
-        <div className="flex min-w-0 items-center justify-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: card.color ?? "#6B7280" }} />
-          <h2 className="truncate text-center text-xl font-semibold sm:text-2xl">Pago de tarjeta · {card.name}</h2>
-        </div>
-        <span className="w-9" aria-hidden="true" />
-      </div>
+      <CardDetailHeader name={card.name} color={card.color} movementCount={ofCard.length} month={selectedMonth} year={selectedYear} onNewExpense={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })} onRegisterPayment={() => setConfirmPayment(true)} onEdit={() => setEditingCard(true)} canRegisterPayment={selectedPending.length > 0} />
 
-      <RecordListToolbar
-        primary={
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className={`h-2 w-2 rounded-full ${statement ? "bg-emerald-500" : "bg-muted-foreground"}`} />
-              {statement ? "Estado de cuenta cargado" : "Consumo registrado"} · {getMonthName(selectedMonth)} {selectedYear}
-            </span>
-            {currencySummary.length ? (
-              <div className="flex flex-wrap items-center gap-1.5">
-                {currencySummary.map(([currency, amount]) => (
-                  <span key={currency} className="inline-flex items-baseline gap-1 rounded-md border bg-muted/30 px-2 py-1 tabular-nums">
-                    <strong className="text-sm font-semibold">{formatCurrency(amount, currency)}</strong>
-                    <span className="text-[10px] text-muted-foreground">{currency}</span>
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <span className="text-xs text-muted-foreground">Sin consumos en este período</span>
-            )}
-            {statement?.dueDate && (
-              <span className="text-xs text-muted-foreground">Vence {formatDate(statement.dueDate)}</span>
-            )}
-          </div>
-        }
-        actions={
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <a href="/importacion" className="inline-flex">
-              <Button variant="outline" size="sm"><FileText className="mr-1 h-4 w-4" /> Estados de cuenta</Button>
-            </a>
-            <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card", paymentMethodId: card.id })}>
-              <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
-            </Button>
-            <Button variant="outline" size="sm" disabled={selectedPending.length === 0} onClick={() => setConfirmPayment(true)}>
-              <HandCoins className="mr-1 h-4 w-4" /> Registrar pago{selectedPending.length ? ` (${selectedPending.length})` : ""}
-            </Button>
-          </div>
-        }
-      />
-
-      <Tabs defaultValue="expenses" className="w-full">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="w-full">
         <TabsList
           aria-label="Secciones del detalle de tarjeta"
-          className="grid h-auto w-full grid-cols-3 sm:flex sm:w-fit"
+          className="grid h-auto w-full grid-cols-3 bg-transparent p-0 sm:flex sm:w-fit"
         >
           <TabsTrigger value="expenses" className="h-auto whitespace-normal py-2 text-xs sm:text-sm">
             <List aria-hidden="true" /> Movimientos
@@ -316,6 +270,8 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
             <Wallet aria-hidden="true" /> Pago de tarjeta
           </TabsTrigger>
         </TabsList>
+
+        <div className="mt-4"><CardDetailMetrics view={activeTab} month={selectedMonth} year={selectedYear} amount={ofCard.reduce((sum, expense) => sum + (expense.amountInPen ?? expense.amount), 0)} categories={activeCategories.length} largestCategory={largestCategoryId ? categoryName(largestCategoryId === "none" ? null : largestCategoryId) : "—"} statement={statementDetail} /></div>
 
         <TabsContent value="expenses" className="mt-3 space-y-3">
           <ExpenseFilters
@@ -390,6 +346,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         resource={EXPENSE_RESOURCES.creditCard}
         expense={editing}
       />
+      {editingCard && <CardEditorDialog card={card} onClose={() => setEditingCard(false)} />}
 
       <AlertDialog open={confirmPayment} onOpenChange={(open) => {
         setConfirmPayment(open);

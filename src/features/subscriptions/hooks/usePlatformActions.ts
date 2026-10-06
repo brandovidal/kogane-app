@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useDeleteExpense, useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { duplicateBody, nextMonthBody } from "@/features/expenses/lib/expense-actions";
 import type { MoveSource } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
-import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
 
 export function usePlatformActions() {
@@ -27,11 +26,11 @@ export function usePlatformActions() {
       setOpenedTab(tab);
     },
     onCloseDetail: () => setOpenedItem(undefined),
-    onCreate: () => newExpenseStore.getState().openWith({
-      destination: "subscription",
-      period: "monthly",
-      kind: null,
-    }),
+    onCreate: () => {
+      setEditing(undefined);
+      setOpenedItem(undefined);
+      setDialogOpen(true);
+    },
     onEdit: (item: Subscription) => {
       setEditing(item);
       setOpenedItem(undefined);

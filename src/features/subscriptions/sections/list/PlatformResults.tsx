@@ -7,14 +7,18 @@ import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadin
 import { formatCurrency } from "@/shared/lib/currency";
 import { Button } from "@/ui/button";
 import { PlatformCalendarView } from "../../views/PlatformCalendarView";
+import { PlatformCardsView } from "../../views/PlatformCardsView";
+import { PlatformPeriodView } from "../../views/PlatformPeriodView";
 import type { PlatformView } from "./PlatformViewBar";
 import { layoutForPlatformView } from "./PlatformViewBar";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../../constants/subscriptions";
 import { platformAmount } from "../../lib/platform-summary";
+import { localTodayKey } from "@/features/fixed-costs/lib/fixed-cost-views";
 import type { usePlatformTable } from "../../hooks/usePlatformTable";
+import type { usePlatformActions } from "../../hooks/usePlatformActions";
 
 export function PlatformResults({
-  items, total, view, groupBy, tableState, personName, loading, error, month, year, selected, onSelectionChange, onCreate, onEdit,
+  items, total, view, groupBy, tableState, personName, loading, error, month, year, selected, onSelectionChange, onCreate, onEdit, actions,
 }: {
   items: Subscription[];
   total: number;
@@ -29,17 +33,28 @@ export function PlatformResults({
   selected: Set<string>;
   onSelectionChange: (selection: Set<string>) => void;
   onCreate: () => void;
-  onEdit: (item: Subscription) => void;
+  onEdit: (item: Subscription, tab?: "detail" | "files" | "history") => void;
+  actions: ReturnType<typeof usePlatformActions>;
 }) {
   const empty = <EmptyState title={total ? "Sin resultados" : "Aún no hay plataformas"} description={total ? "Prueba con otros filtros o cambia el período." : "Agrega tu primera plataforma para ver sus cobros aquí."} action={!total && <Button type="button" size="sm" onClick={onCreate}>Nueva plataforma</Button>} />;
   if (view === "calendar") {
     if (loading) return <DataLoadingSkeleton variant="cards" />;
     if (error) return <p role="alert" className="py-8 text-center text-sm text-destructive">No se pudieron cargar las plataformas.</p>;
-    return items.length ? <PlatformCalendarView items={items} month={month} year={year} onOpen={onEdit} /> : empty;
+    return items.length || !total ? <PlatformCalendarView items={items} month={month} year={year} onOpen={onEdit} /> : empty;
   }
-  const effectiveGroup: string | string[] = view === "period"
-    ? groupBy === "none" || groupBy === "period" ? ["period"] : ["period", groupBy]
-    : groupBy;
+  if (view === "cards" || view === "period") {
+    if (loading) return <DataLoadingSkeleton variant="cards" />;
+    if (error) return <p role="alert" className="py-8 text-center text-sm text-destructive">No se pudieron cargar las plataformas.</p>;
+    if (!items.length && total) return empty;
+    const visibleItems = tableState.table.getRowModel().rows.map((row) => row.original);
+    return <div className="space-y-4">
+      {view === "cards"
+        ? <PlatformCardsView items={visibleItems} personName={personName} todayKey={localTodayKey()} onOpen={onEdit} onCreate={onCreate} onEdit={actions.onEdit} onDuplicate={actions.onDuplicate} onNextMonth={actions.onNextMonth} onMove={actions.onMove} onDelete={actions.onDelete} onStatusChange={actions.onStatusChange} />
+        : <PlatformPeriodView items={visibleItems} personName={personName} todayKey={localTodayKey()} onOpen={onEdit} onCreate={onCreate} />}
+      {items.length > 0 && <DataTablePagination table={tableState.table} />}
+    </div>;
+  }
+  const effectiveGroup = groupBy;
   const isGrouped = Array.isArray(effectiveGroup) || effectiveGroup !== "none";
   const layout = layoutForPlatformView(view);
   if (layout === "table" && !isGrouped) return <DataTableComplex table={tableState.table} className="platform-table" calculationStorageKey={items.length ? "platforms" : undefined} calculationDefaults={{ description: "count", amount: "sum" }} pagination={items.length > 0} loading={loading} error={error ? "No se pudieron cargar las plataformas." : undefined} emptyMessage={empty} />;

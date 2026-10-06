@@ -3110,6 +3110,10 @@ export interface components {
                 supportsAmortization: boolean;
                 supportsCashback: boolean;
                 bank: string | null;
+                network: string | null;
+                currency: "PEN" | "USD" | null;
+                creditLimit: number | null;
+                comment: string | null;
                 color: string | null;
             }[];
         };
@@ -3126,6 +3130,10 @@ export interface components {
             supportsAmortization?: boolean;
             supportsCashback?: boolean;
             bank?: string | null;
+            network?: string | null;
+            currency?: "PEN" | "USD" | null;
+            creditLimit?: number | null;
+            comment?: string | null;
             color?: string | null;
         };
         PaymentMethodResponseDto: {
@@ -3152,6 +3160,10 @@ export interface components {
                 supportsAmortization: boolean;
                 supportsCashback: boolean;
                 bank: string | null;
+                network: string | null;
+                currency: "PEN" | "USD" | null;
+                creditLimit: number | null;
+                comment: string | null;
                 color: string | null;
             };
         };
@@ -3168,6 +3180,10 @@ export interface components {
             supportsAmortization?: boolean;
             supportsCashback?: boolean;
             bank?: string | null;
+            network?: string | null;
+            currency?: "PEN" | "USD" | null;
+            creditLimit?: number | null;
+            comment?: string | null;
             color?: string | null;
         };
         CategoryListResponseDto: {

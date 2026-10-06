@@ -1,0 +1,10 @@
+.credit-card-surface { border: 1px solid var(--border); border-radius: 1.1rem; background: var(--card); }
+
+.card-metric-active { background: color-mix(in srgb, var(--card) 90%, var(--brand) 10%); box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent); }
+.card-payment-chip { display: inline-flex; align-items: center; flex-wrap: wrap; gap: .45rem; border: 1px solid var(--border); border-radius: 999px; background: color-mix(in srgb, var(--card) 95%, var(--foreground) 5%); padding: .35rem .7rem; font-size: .8rem; }
+.card-payment-chip:hover { border-color: var(--brand); }
+.card-payment-chip-first { border-color: color-mix(in srgb, var(--brand) 50%, var(--border)); background: color-mix(in srgb, var(--card) 90%, var(--brand) 10%); }
+.card-overview-tile { transition: border-color 150ms, background-color 150ms; }
+.card-overview-tile:hover { border-color: color-mix(in srgb, var(--brand) 45%, var(--border)); background: color-mix(in srgb, var(--card) 96%, var(--foreground) 4%); }
+.dark .card-primary-button { background: #fff; color: #101114; }
+.dark .card-primary-button:hover { background: #e9eaed; }

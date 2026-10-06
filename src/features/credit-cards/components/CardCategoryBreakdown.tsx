@@ -82,12 +82,11 @@ export function CardCategoryBreakdown({ expenses }: { expenses: CreditCardExpens
 
   return (
     <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-2">
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Consumo por categoría</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Despliega una categoría para ver sus movimientos o abre el detalle completo.
-          </p>
+          <p className="text-sm text-muted-foreground">Distribución del consumo de este ciclo.</p>
         </CardHeader>
         <CardContent className="space-y-2">
           {groups.map((group) => {
@@ -138,6 +137,7 @@ export function CardCategoryBreakdown({ expenses }: { expenses: CreditCardExpens
                     <Eye className="size-4" />
                   </Button>
                 </div>
+                <div className="mx-3 mb-2 h-1 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full" style={{ width: `${totalPEN ? Math.min(100, ((group.currencyTotals.get("PEN") ?? 0) / totalPEN) * 100) : 0}%`, backgroundColor: group.fill }} /></div>
                 <ul
                   id={panelId}
                   hidden={!expanded}
@@ -172,7 +172,7 @@ export function CardCategoryBreakdown({ expenses }: { expenses: CreditCardExpens
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <PieChartIcon className="size-4 text-muted-foreground" />
-              Distribución por categoría · PEN
+              Distribución por categoría
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -226,6 +226,9 @@ export function CardCategoryBreakdown({ expenses }: { expenses: CreditCardExpens
           </CardContent>
         </Card>
       )}
+      </div>
+
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">Categorías disponibles</CardTitle><p className="text-sm text-muted-foreground">Categorías configuradas para clasificar tus movimientos.</p></CardHeader><CardContent className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">{categories.map((category) => <div key={category.id} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><span className="size-3 rounded-sm" style={{ backgroundColor: category.color }} /><span className="truncate">{category.name}</span></div>)}</CardContent></Card>
 
       <Sheet
         open={!!categoryDetail}
