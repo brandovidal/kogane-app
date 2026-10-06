@@ -37,6 +37,8 @@ import { cn } from "@/shared/utils/cn";
 export interface FixedCostDetailPageProps {
   fixedCost?: FixedCost;
   categoryName: string;
+  categoryIcon?: string | null;
+  categoryColor?: string | null;
   personName: string;
   accountName: string;
   onClose: () => void;
@@ -52,6 +54,8 @@ export type DetailTab = "detail" | "files" | "history";
 export function FixedCostDetailPage({
   fixedCost,
   categoryName,
+  categoryIcon,
+  categoryColor,
   personName,
   accountName,
   onClose,
@@ -155,6 +159,8 @@ export function FixedCostDetailPage({
               <FixedCostDetailOverviewSection
                 fixedCost={fixedCost}
                 categoryName={categoryName}
+                categoryIcon={categoryIcon}
+                categoryColor={categoryColor}
                 personName={personName}
                 accountName={accountName}
                 showFiles={false}

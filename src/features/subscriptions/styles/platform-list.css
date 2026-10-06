@@ -1,0 +1,32 @@
+.platform-table {
+  border-radius: 1.25rem;
+  background-color: var(--card);
+  overflow-x: auto;
+}
+
+.platform-table [data-slot="table"] {
+  min-width: 64rem;
+  table-layout: fixed;
+}
+
+.platform-table [data-slot="table-header"],
+.platform-table [data-slot="table-footer"] {
+  background-color: color-mix(in srgb, var(--card) 97%, var(--foreground) 3%);
+}
+
+.platform-table [data-slot="table-head"] {
+  color: var(--muted-foreground);
+}
+
+.platform-table [data-slot="table-cell"] {
+  padding-block: 0.65rem;
+}
+
+.dark .platform-create-button {
+  background-color: #fff;
+  color: #101114;
+}
+
+.dark .platform-create-button:hover {
+  background-color: #e9eaed;
+}

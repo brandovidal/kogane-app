@@ -1,4 +1,9 @@
-export const SUBSCRIPTION_STATUSES = ["not_started", "pending", "paid", "waived"];
+export const SUBSCRIPTION_STATUSES = [
+  "not_started",
+  "pending",
+  "paid",
+  "waived",
+];
 
 export const SUBSCRIPTION_PERIOD_LABELS: Record<string, string> = {
   biweekly: "Quincenal",
@@ -9,7 +14,6 @@ export const SUBSCRIPTION_PERIOD_LABELS: Record<string, string> = {
 };
 export const SUBSCRIPTION_PERIODS = Object.keys(SUBSCRIPTION_PERIOD_LABELS);
 
-// exp_subscriptions.kind (D107): Plataformas shows platform, Recurrentes the other three
 export const SUBSCRIPTION_KIND_LABELS: Record<string, string> = {
   platform: "Plataforma",
   service: "Servicio",

@@ -47,6 +47,9 @@ function FixedCostListPageContent() {
   const openedItem =
     list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ??
     interaction.openedItem;
+  const openedCategory = list.categories.find(
+    (category) => category.id === openedItem?.categoryId,
+  );
   const page = list.page;
   const viewGroup = useFixedCostViewGroup(page);
   const periodLabel =
@@ -238,11 +241,9 @@ function FixedCostListPageContent() {
       />
       <FixedCostDetailPage
         fixedCost={openedItem}
-        categoryName={
-          list.categories.find(
-            (category) => category.id === openedItem?.categoryId,
-          )?.name ?? "Sin categoría"
-        }
+        categoryName={openedCategory?.name ?? "Sin categoría"}
+        categoryIcon={openedCategory?.icon}
+        categoryColor={openedCategory?.color}
         personName={list.personName(openedItem?.personId)}
         accountName={list.accountName(openedItem?.paymentMethodId)}
         onClose={interaction.onCloseDetail}

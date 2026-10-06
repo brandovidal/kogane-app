@@ -1,8 +1,13 @@
 ---
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
-import { SubscriptionList } from "@/features/subscriptions/components/SubscriptionList";
+import { PlatformListPage } from "@/features/subscriptions/pages/PlatformListPage";
+import { PlatformPeriodSelector } from "@/features/subscriptions/components/header/PlatformPeriodSelector";
+import { PlatformRecordCount } from "@/features/subscriptions/components/header/PlatformRecordCount";
+import "@/features/subscriptions/styles/platform-list.css";
 ---
 
-<DashboardLayout title="Plataformas">
-  <SubscriptionList client:load group="platform" />
+<DashboardLayout title="Plataformas" section="Gastos" mainClass="app-gradient platform-canvas">
+  <PlatformRecordCount slot="title-extra" client:load />
+  <div slot="header-actions" class="hidden sm:block"><PlatformPeriodSelector client:load /></div>
+  <PlatformListPage client:load />
 </DashboardLayout>

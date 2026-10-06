@@ -18,10 +18,13 @@ import { AttachmentGallery } from "@/features/attachments/components/AttachmentG
 import { LinkifiedText } from "@/shared/components/data-display/LinkifiedText";
 import { cn } from "@/shared/utils/cn";
 import { parseInstallment } from "../../lib/fixed-cost-views";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
 export interface FixedCostDetailOverviewSectionProps {
   fixedCost: FixedCost;
   categoryName: string;
+  categoryIcon?: string | null;
+  categoryColor?: string | null;
   personName: string;
   accountName: string;
   actions?: ReactNode;
@@ -33,6 +36,8 @@ export interface FixedCostDetailOverviewSectionProps {
 export function FixedCostDetailOverviewSection({
   fixedCost,
   categoryName,
+  categoryIcon,
+  categoryColor,
   personName,
   accountName,
   actions,
@@ -64,7 +69,14 @@ export function FixedCostDetailOverviewSection({
         <FixedCostDetailRow
           icon={Tags}
           label="Categoría"
-          value={categoryName}
+          value={
+            <CategoryLabel
+              name={categoryName}
+              icon={categoryIcon}
+              color={categoryColor}
+              className="justify-end"
+            />
+          }
         />
         <FixedCostDetailRow
           icon={UserRound}
