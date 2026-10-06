@@ -7,8 +7,10 @@ export function useExpenses<R extends ExpenseResource>(
   resource: R,
   period?: { month: number; year: number },
   kind?: SubscriptionGroup,
+  enabled = true,
 ) {
   return useQuery({
+    enabled,
     queryKey: expenseKeys.list(resource, period?.month, period?.year, kind),
     queryFn: async () =>
       (await unwrap(

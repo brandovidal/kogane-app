@@ -34,7 +34,7 @@ export interface DataTableBasicProps<T> {
   className?: string;
   loading?: boolean;
   error?: ReactNode;
-  emptyMessage?: string;
+  emptyMessage?: ReactNode;
   footer?: ReactNode;
   calculationStorageKey?: string;
   calculationDefaults?: Record<string, import("./data-table-calculation").DataTableCalculation>;

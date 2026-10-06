@@ -99,10 +99,12 @@ export function DataTableBasic<T>({
               >
                 {error ? (
                   <div role="alert">{error}</div>
+                ) : loading ? (
+                  <span role="status">Cargando registros…</span>
                 ) : (
-                  <span role="status">
-                    {loading ? "Cargando registros…" : emptyMessage}
-                  </span>
+                  <div role="status" className="w-full whitespace-normal">
+                    {emptyMessage}
+                  </div>
                 )}
               </TableCell>
             </TableRow>

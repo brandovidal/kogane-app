@@ -109,8 +109,8 @@ export function FixedCostMonthOverview({
   const metric = (
     key: FixedCostStatusScope,
     label: string,
-    amount: number,
-    detail: ReactNode,
+    amount: number | "—",
+    detail?: ReactNode,
     amountClass?: string,
     dotClass?: string,
   ) => (
@@ -131,30 +131,37 @@ export function FixedCostMonthOverview({
         </span>
         {scope === key && <span className="text-xs font-medium text-brand">Mostrando</span>}
       </div>
-      <div className={cn("mt-1.5 text-2xl font-semibold tracking-tight tabular-nums", amountClass)}>{formatCurrency(amount)}</div>
-      <div className="mt-1.5 text-xs text-muted-foreground">{detail}</div>
+      <div className={cn("mt-1.5 text-2xl font-semibold tracking-tight tabular-nums", amountClass)}>{amount === "—" ? amount : formatCurrency(amount)}</div>
+      {detail && <div className="mt-1.5 text-xs text-muted-foreground">{detail}</div>}
     </button>
   );
 
   return (
     <section aria-label="Resumen del período" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-      {metric("all", `Total ${periodLabel}`, summary.total, `${summary.totalCount} costos · todos los estados`)}
+      {metric(
+        "all",
+        `Total ${periodLabel}`,
+        summary.total,
+        summary.totalCount
+          ? `${summary.totalCount} costos · todos los estados`
+          : "Sin costos · todos los estados",
+      )}
       {metric(
         "payable",
         "Por pagar",
-        summary.payable,
-        <span className="flex flex-wrap gap-1.5">
+        summary.totalCount ? summary.payable : "—",
+        summary.totalCount ? <span className="flex flex-wrap gap-1.5">
           <span className="rounded-full border px-2 py-0.5 leading-none">Por iniciar {summary.notStartedCount}</span>
           <span className="rounded-full border px-2 py-0.5 leading-none">En curso {summary.inProgressCount}</span>
-        </span>,
+        </span> : undefined,
         summary.payableCount ? "text-amber-600 dark:text-amber-300" : undefined,
         "bg-amber-400",
       )}
       {metric(
         "completed",
         "Completado",
-        summary.completed,
-        <>
+        summary.totalCount ? summary.completed : "—",
+        summary.totalCount ? <>
           <span className="mb-1 block h-1 overflow-hidden rounded-full bg-muted">
             <span
               className="block h-full rounded-full bg-brand"
@@ -163,20 +170,20 @@ export function FixedCostMonthOverview({
           </span>
           {summary.completedCount} de {summary.totalCount}
           {summary.totalCount > 0 && summary.completedCount === summary.totalCount ? " · todo al día" : " · pagado, abonado o exonerado"}
-        </>,
+        </> : undefined,
         summary.completedCount ? "text-emerald-600 dark:text-emerald-400" : undefined,
         "bg-emerald-400",
       )}
       <div className="min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5">
         <div className="eyebrow">Próximo vencimiento</div>
         <div className="mt-1.5 truncate text-xl font-semibold tracking-tight">
-          {summary.nextDue ? `${summary.nextDue.description} · ${dueDisplay}` : "Sin pendientes"}
+          {summary.nextDue ? `${summary.nextDue.description} · ${dueDisplay}` : summary.totalCount ? "Sin pendientes" : "—"}
         </div>
-        <div className={cn("mt-1.5 text-xs", summary.nextDue ? "text-amber-600 dark:text-amber-300" : "text-muted-foreground")}>
+        {summary.totalCount > 0 && <div className={cn("mt-1.5 text-xs", summary.nextDue ? "text-amber-600 dark:text-amber-300" : "text-muted-foreground")}>
           {summary.nextDue
             ? `${dueLabel(days)} · ${formatCurrency(summary.nextDue.amountInPen ?? summary.nextDue.amount)}`
             : "Todo pagado en este período"}
-        </div>
+        </div>}
       </div>
     </section>
   );

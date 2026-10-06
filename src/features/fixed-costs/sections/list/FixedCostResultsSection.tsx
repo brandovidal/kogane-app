@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { Category, FixedCost } from "@/shared/api/types";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { type ViewMode } from "@/shared/types/data-view";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { OwnPart } from "@/features/expenses/components/OwnPart";
 import type {
   CatalogName,
@@ -12,8 +11,13 @@ import { DataTableComplex } from "@/shared/components/data-display/DataTableComp
 import { DataTablePagination } from "@/shared/components/data-display/DataTablePagination";
 import { formatCurrency } from "@/shared/lib/currency";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
+import { isCompletedFixedCost } from "../../lib/fixed-cost-summary";
 import type { useFixedCostTable } from "../../hooks/useFixedCostTable";
 import { FixedCostCard } from "../../components/list/FixedCostCard";
+import { FixedCostEmptyState } from "./FixedCostEmptyState";
+import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import { FIXED_COST_FILTER_KEYS } from "../../lib/fixed-cost-filters";
 
 export interface FixedCostResultsSectionProps {
   items: FixedCost[];
@@ -32,6 +36,18 @@ export interface FixedCostResultsSectionProps {
     label: (key: string) => ReactNode;
   };
   emptyDescription?: string;
+  emptyTitle?: string;
+  filters: ExpenseFilterValues;
+  onFiltersChange: (filters: ExpenseFilterValues) => void;
+  me?: string;
+  periodLabel: string;
+  periodCount: number;
+  hasScopeFilter?: boolean;
+  onOpenFilters: () => void;
+  onClearFilters: () => void;
+  onClearSearch: () => void;
+  onSearchAllMonths: () => void;
+  onCreate: () => void;
 }
 
 export function FixedCostResultsSection({
@@ -47,6 +63,18 @@ export function FixedCostResultsSection({
   pending,
   viewGroup,
   emptyDescription,
+  emptyTitle,
+  filters,
+  onFiltersChange,
+  me,
+  periodLabel,
+  periodCount,
+  hasScopeFilter = false,
+  onOpenFilters,
+  onClearFilters,
+  onClearSearch,
+  onSearchAllMonths,
+  onCreate,
 }: FixedCostResultsSectionProps) {
   const emptyMessage =
     emptyDescription ??
@@ -54,6 +82,31 @@ export function FixedCostResultsSection({
       ? "No hay costos fijos con estos filtros"
       : "No hay costos fijos en este período");
   const fields = viewGroup ? [viewGroup.field, ...groupBy] : groupBy;
+  const hasSearch = !!filters.q?.trim();
+  const filterFields = FIXED_COST_FILTER_KEYS.filter(
+    (key) => key !== "month" && key !== "year",
+  );
+  const hasActiveFilters =
+    countActiveExpenseFilters(filters, filterFields) > 0 || hasScopeFilter;
+  const emptyKind = hasSearch ? "search" : hasActiveFilters ? "filters" : "period";
+  const emptyState = (
+    <FixedCostEmptyState
+      view={view}
+      kind={emptyKind}
+      filters={filters}
+      me={me}
+      periodLabel={periodLabel}
+      periodCount={periodCount}
+      titleOverride={emptyTitle}
+      descriptionOverride={emptyDescription}
+      onFiltersChange={onFiltersChange}
+      onOpenFilters={onOpenFilters}
+      onClearFilters={onClearFilters}
+      onClearSearch={onClearSearch}
+      onSearchAllMonths={onSearchAllMonths}
+      onCreate={onCreate}
+    />
+  );
   const summaryFor = (records: FixedCost[], key?: string, field?: string) => {
     const subtotal = totalsOf(records);
     const tone = field === "urgency"
@@ -77,11 +130,12 @@ export function FixedCostResultsSection({
       <DataTableComplex
         table={dataTable.table}
         className="fixed-costs-table"
-        calculationStorageKey="fixed-costs"
+        calculationStorageKey={items.length ? "fixed-costs" : undefined}
         calculationDefaults={{ description: "count", amount: "sum" }}
+        pagination={items.length > 0}
         loading={loading}
         error={error ? "No se pudieron cargar los costos fijos." : undefined}
-        emptyMessage={emptyMessage}
+        emptyMessage={items.length ? emptyMessage : emptyState}
       />
     );
   if (loading)
@@ -99,7 +153,11 @@ export function FixedCostResultsSection({
         No se pudieron cargar los costos fijos.
       </p>
     );
-  if (!items.length) return <EmptyState description={emptyMessage} />;
+  if (!items.length) {
+    if (view === "cards")
+      return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">{emptyState}</div>;
+    return emptyState;
+  }
 
   return (
     <div className="space-y-3">
@@ -109,7 +167,27 @@ export function FixedCostResultsSection({
         rowKey={(cost) => cost.id}
         view={view}
         groupBy={fields}
-        primaryGroupDepth={viewGroup && groupBy.length ? 1 : 0}
+        primaryGroupDepth={
+          viewGroup?.field === "month"
+            ? 0
+            : viewGroup && groupBy.length
+              ? 1
+              : 0
+        }
+        collapsiblePrimaryGroups={viewGroup?.field === "month"}
+        initialOpenPrimaryGroups={2}
+        groupDetailsFor={(groupItems, _key, field) => {
+          if (field !== "month") return null;
+          const completed = groupItems.filter(isCompletedFixedCost).length;
+          const allCompleted = completed === groupItems.length;
+          return (
+            <span
+              className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${allCompleted ? "bg-emerald-500/15 text-emerald-400" : "bg-amber-400/15 text-amber-300"}`}
+            >
+              {allCompleted ? "completo" : `${completed} de ${groupItems.length} pagados`}
+            </span>
+          );
+        }}
         compactCards
         cardRenderer={(cost) => (
           <FixedCostCard

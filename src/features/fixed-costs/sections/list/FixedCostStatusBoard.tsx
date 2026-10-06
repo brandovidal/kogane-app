@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Category, FixedCost } from "@/shared/api/types";
 import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
@@ -10,7 +10,8 @@ import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { FixedCostDue } from "../../components/list/FixedCostDue";
 import { FIXED_COST_STATUSES } from "../../constants/statuses";
 import { parseInstallment } from "../../lib/fixed-cost-views";
-import type { CatalogName } from "../../types/fixed-cost-types";
+import type { CatalogName, FixedCostGroupBy } from "../../types/fixed-cost-types";
+import { ChevronRight } from "lucide-react";
 
 const COLUMNS = [
   { group: PAYMENT_STATUS_GROUPS[0], dot: "bg-slate-400", drop: "not_started" },
@@ -27,6 +28,7 @@ export function FixedCostStatusBoard({
   items,
   categories,
   personName,
+  groupBy,
   loading,
   onOpen,
   onStatusChange,
@@ -34,12 +36,126 @@ export function FixedCostStatusBoard({
   items: FixedCost[];
   categories: Category[];
   personName: CatalogName;
+  groupBy: FixedCostGroupBy;
   loading: boolean;
   onOpen: (cost: FixedCost) => void;
   onStatusChange: (cost: FixedCost, status: string) => void;
 }) {
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<number | null>(null);
+
+  const renderCostCard = (cost: FixedCost) => {
+    const category = categories.find((entry) => entry.id === cost.categoryId);
+    const plan = parseInstallment(cost.installment);
+    return (
+      <article
+        key={cost.id}
+        draggable
+        onDragStart={(event) => {
+          event.dataTransfer.effectAllowed = "move";
+          setDragging(cost.id);
+        }}
+        onDragEnd={() => {
+          setDragging(null);
+          setOver(null);
+        }}
+        className={cn(
+          "group cursor-grab overflow-hidden rounded-xl border bg-card transition-colors hover:border-brand/35 active:cursor-grabbing",
+          dragging === cost.id && "opacity-50",
+        )}
+      >
+        <AttachmentRecordThumbnail
+          refType="fixed_cost"
+          refId={cost.id}
+          label={cost.description}
+          showPlaceholder
+          variant="cover"
+        />
+        <div className="space-y-2.5 p-3.5">
+          <div className="flex items-start justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => onOpen(cost)}
+              className="min-w-0 truncate text-left font-semibold hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {cost.description}
+            </button>
+            <span className="shrink-0">
+              <StatusBadge status={cost.paymentStatus} />
+            </span>
+          </div>
+          <div className="rounded-md bg-muted/45 px-2.5 py-1 text-xl font-semibold tracking-tight tabular-nums">
+            {formatCurrency(cost.amountInPen ?? cost.amount)}
+          </div>
+          {plan && (
+            <div className="h-1 overflow-hidden rounded-full bg-muted">
+              <span
+                className="block h-full rounded-full bg-brand"
+                style={{ width: `${plan.percent}%` }}
+              />
+            </div>
+          )}
+          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+            {category && (
+              <CategoryLabel
+                name={category.name}
+                icon={category.icon}
+                color={category.color}
+              />
+            )}
+            <span aria-hidden="true">·</span>
+            <span>{personName(cost.personId)}</span>
+            {cost.installment && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="tabular-nums">Cuota {cost.installment}</span>
+              </>
+            )}
+          </div>
+          <div className="flex items-center justify-between gap-2 border-t pt-2 text-xs text-muted-foreground">
+            <span className="truncate">
+              Vence <FixedCostDue cost={cost} />
+            </span>
+            {plan && <span className="shrink-0 tabular-nums">{plan.percent}%</span>}
+          </div>
+        </div>
+      </article>
+    );
+  };
+
+  const renderGroupedCards = (groupedCards: FixedCost[], depth = 0): ReactNode => {
+    if (depth >= groupBy.length) return groupedCards.map(renderCostCard);
+
+    const field = groupBy[depth];
+    const groups = new Map<string, FixedCost[]>();
+    groupedCards.forEach((cost) => {
+      const key = field === "person" ? cost.personId ?? "none" : cost.categoryId ?? "none";
+      groups.set(key, [...(groups.get(key) ?? []), cost]);
+    });
+    return [...groups].map(([key, fieldItems]) => {
+      const category = field === "category" ? categories.find((entry) => entry.id === key) : undefined;
+      const label = key === "none"
+        ? "Sin asignar"
+        : field === "person"
+          ? personName(key)
+          : category?.name ?? "Sin categoría";
+      return (
+        <section key={`${field}:${key}`} className="space-y-2">
+          <header className="flex items-center gap-2 px-1 text-xs font-semibold text-muted-foreground">
+            <ChevronRight className="size-3.5" />
+            <span className="truncate">{label}</span>
+            <span className="rounded-full border px-1.5 py-0.5 font-medium">
+              {fieldItems.length} {fieldItems.length === 1 ? "gasto" : "gastos"}
+            </span>
+            <span className="ml-auto tabular-nums">
+              {formatCurrency(totalsOf(fieldItems).paid)}
+            </span>
+          </header>
+          <div className="space-y-2">{renderGroupedCards(fieldItems, depth + 1)}</div>
+        </section>
+      );
+    });
+  };
 
   if (loading)
     return (
@@ -72,7 +188,7 @@ export function FixedCostStatusBoard({
               if (cost && !statuses.includes(cost.paymentStatus)) onStatusChange(cost, column.drop);
             }}
             className={cn(
-              "flex min-h-72 flex-col gap-2.5 rounded-2xl border bg-muted/40 p-3 transition-colors",
+              "flex min-h-[24rem] flex-col gap-2.5 rounded-2xl border bg-card/55 p-3 transition-colors",
               over === index && "border-brand/60 bg-brand/5",
             )}
           >
@@ -80,7 +196,7 @@ export function FixedCostStatusBoard({
               <span className={cn("size-2 rounded-full", column.dot)} />
               <h3 className="text-sm font-semibold">{column.group.label}</h3>
               <span className="text-xs text-muted-foreground">{cards.length}</span>
-              <span className="ml-auto text-sm font-medium tabular-nums">{formatCurrency(totalsOf(cards).paid)}</span>
+              <span className="ml-auto text-sm font-semibold tabular-nums">{formatCurrency(totalsOf(cards).paid)}</span>
             </header>
             <div className="flex flex-wrap gap-1.5 px-1">
               {allowed.map((status) => (
@@ -90,58 +206,9 @@ export function FixedCostStatusBoard({
                 </span>
               ))}
             </div>
-            {cards.map((cost) => {
-              const category = categories.find((entry) => entry.id === cost.categoryId);
-              const plan = parseInstallment(cost.installment);
-              return (
-                <article
-                  key={cost.id}
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.effectAllowed = "move";
-                    setDragging(cost.id);
-                  }}
-                  onDragEnd={() => {
-                    setDragging(null);
-                    setOver(null);
-                  }}
-                  className={cn(
-                    "cursor-grab space-y-2 rounded-xl border bg-card p-3 active:cursor-grabbing",
-                    dragging === cost.id && "opacity-50",
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <AttachmentRecordThumbnail refType="fixed_cost" refId={cost.id} label={cost.description} />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <button
-                          type="button"
-                          onClick={() => onOpen(cost)}
-                          className="truncate text-left font-medium hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          {cost.description}
-                        </button>
-                        <span className="shrink-0 font-semibold tabular-nums">{formatCurrency(cost.amountInPen ?? cost.amount)}</span>
-                      </div>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                        {category && <CategoryLabel name={category.name} icon={category.icon} color={category.color} />}
-                        <span>{personName(cost.personId)}</span>
-                        {cost.installment && <span className="tabular-nums">Cuota {cost.installment}</span>}
-                      </div>
-                    </div>
-                  </div>
-                  {plan && (
-                    <div className="h-1 overflow-hidden rounded-full bg-muted">
-                      <span className="block h-full rounded-full bg-brand" style={{ width: `${plan.percent}%` }} />
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between gap-2">
-                    <StatusBadge status={cost.paymentStatus} />
-                    <FixedCostDue cost={cost} />
-                  </div>
-                </article>
-              );
-            })}
+            {groupBy.length > 0 && cards.length ? (
+              <div className="space-y-2">{renderGroupedCards(cards)}</div>
+            ) : cards.map(renderCostCard)}
             {!cards.length && (
               <p className="rounded-xl border border-dashed p-4 text-center text-xs leading-5 text-muted-foreground">
                 {index === 0

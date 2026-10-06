@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { withQuery } from "@/shared/api/query";
 
 import { useFixedCostActions } from "../hooks/useFixedCostActions";
@@ -24,6 +25,7 @@ import { FixedCostDialog } from "../components/dialogs/FixedCostDialog";
 import { FixedCostPeriodSelector } from "../components/header/FixedCostPeriodSelector";
 
 export function FixedCostListView() {
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const list = useFixedCostList();
   const interaction = useFixedCostActions();
   const bulk = useFixedCostBulkActions(list.filtered, list.scopeKey);
@@ -53,6 +55,18 @@ export function FixedCostListView() {
       : list.filters.month && list.filters.year
         ? "del mes"
         : "del período";
+  const emptyPeriodLabel =
+    page === "todos"
+      ? `el año ${list.filters.year || new Date().getFullYear()}`
+      : "este período";
+  const hasNonPeriodCriteria = Object.entries(list.filters).some(
+    ([key, value]) =>
+      key !== "month" &&
+      key !== "year" &&
+      value != null &&
+      value !== "",
+  );
+  const hasEmptyCriteria = hasNonPeriodCriteria || list.scope !== "all";
 
   const toolbar = (
     <FixedCostToolbar
@@ -74,10 +88,12 @@ export function FixedCostListView() {
       view={list.view}
       onViewChange={list.setView}
       table={dataTable.table}
-      canGroup={page !== "cuotas" && page !== "estado"}
-      canSort={page !== "estado"}
+      canGroup={page !== "cuotas"}
+      canSort
       canChangeLayout={page !== "cuotas" && page !== "estado"}
       showPeriodInFilters
+      filterSheetOpen={filterSheetOpen}
+      onFilterSheetOpenChange={setFilterSheetOpen}
     />
   );
 
@@ -97,9 +113,10 @@ export function FixedCostListView() {
   else if (page === "estado")
     body = (
       <FixedCostStatusBoard
-        items={list.baseFiltered}
+        items={dataTable.table.getSortedRowModel().rows.map((row) => row.original)}
         categories={list.categories}
         personName={list.personName}
+        groupBy={list.groupBy}
         loading={list.loading}
         onOpen={interaction.actions.onOpen}
         onStatusChange={interaction.actions.onStatusChange}
@@ -111,12 +128,26 @@ export function FixedCostListView() {
     !list.error &&
     list.fixedCosts.length === 0 &&
     list.filters.month &&
-    list.filters.year
+    list.filters.year &&
+    list.periodRecords.length === 0 &&
+    !hasNonPeriodCriteria &&
+    list.scope === "all"
   )
     body = (
       <FixedCostEmptyMonth
         month={Number(list.filters.month)}
         year={Number(list.filters.year)}
+        view={list.view}
+        previousCosts={list.previousMonthCosts}
+        previousLoading={list.previousMonthLoading}
+        copying={interaction.copying}
+        onCopy={(costs) =>
+          void interaction.copyToMonth(
+            costs,
+            Number(list.filters.month),
+            Number(list.filters.year),
+          )
+        }
         onCreate={interaction.onCreate}
         onGoTo={(month, year) =>
           list.setFilters({
@@ -133,7 +164,7 @@ export function FixedCostListView() {
         <FixedCostBulkActionsSection bulk={bulk} />
         <FixedCostResultsSection
           items={list.filtered}
-          totalRecords={list.fixedCosts.length}
+          totalRecords={list.periodRecords.length}
           categories={list.categories}
           personName={list.personName}
           view={list.view}
@@ -143,10 +174,34 @@ export function FixedCostListView() {
           error={list.error}
           pending={bulk.pending}
           emptyDescription={
-            page === "por-pagar"
+            page === "por-pagar" && !hasEmptyCriteria
               ? "No tienes costos fijos pendientes. Todo está al día."
               : undefined
           }
+          emptyTitle={
+            page === "por-pagar" && !hasEmptyCriteria
+              ? "Todo al día"
+              : undefined
+          }
+          filters={list.filters}
+          onFiltersChange={list.setFilters}
+          me={list.me}
+          periodLabel={emptyPeriodLabel}
+          periodCount={list.periodRecords.length}
+          hasScopeFilter={list.scope !== "all"}
+          onOpenFilters={() => setFilterSheetOpen(true)}
+          onClearFilters={() => {
+            list.setFilters({
+              month: list.filters.month,
+              year: list.filters.year,
+            });
+            list.setScope("all");
+          }}
+          onClearSearch={() =>
+            list.setFilters({ ...list.filters, q: undefined })
+          }
+          onSearchAllMonths={() => list.setPage("todos")}
+          onCreate={interaction.onCreate}
           viewGroup={viewGroup}
         />
       </>

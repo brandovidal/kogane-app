@@ -71,6 +71,32 @@ export function useFixedCostList() {
     hasPeriod ? { month, year } : undefined,
   );
   const fixedCosts = query.data ?? EMPTY_COSTS;
+  const previousMonthIndex = year * 12 + month - 2;
+  const shouldLoadPreviousMonth =
+    page === "mes" &&
+    hasPeriod &&
+    query.isSuccess &&
+    fixedCosts.length === 0;
+  const previousMonthQuery = useExpenses(
+    EXPENSE_RESOURCES.fixedCost,
+    shouldLoadPreviousMonth
+      ? {
+          month: (previousMonthIndex % 12) + 1,
+          year: Math.floor(previousMonthIndex / 12),
+        }
+      : undefined,
+    undefined,
+    shouldLoadPreviousMonth,
+  );
+  const periodRecords = useMemo(() => {
+    if (hasRange)
+      return filterByMonthRange(fixedCosts, viewParams.desde, viewParams.hasta);
+    if (periodScope === "year") {
+      const selectedYear = Number(filters.year) || getCurrentYear();
+      return fixedCosts.filter((cost) => cost.paymentYear === selectedYear);
+    }
+    return fixedCosts;
+  }, [fixedCosts, hasRange, periodScope, filters.year, viewParams.desde, viewParams.hasta]);
   const periodFilters = useMemo<ExpenseFilterValues>(() => {
     if (hasRange) return { ...filters, month: undefined, year: undefined };
     if (periodScope === "year")
@@ -141,6 +167,9 @@ export function useFixedCostList() {
 
   return {
     fixedCosts,
+    periodRecords,
+    previousMonthCosts: previousMonthQuery.data ?? EMPTY_COSTS,
+    previousMonthLoading: previousMonthQuery.isLoading,
     categories,
     personName,
     accountName,

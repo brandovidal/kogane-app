@@ -3,6 +3,11 @@
   background-color: var(--card);
 }
 
+.fixed-costs-table [data-slot="table"] {
+  min-width: 52rem;
+  table-layout: fixed;
+}
+
 .fixed-costs-table [data-slot="table-header"],
 .fixed-costs-table [data-slot="table-footer"] {
   background-color: color-mix(in srgb, var(--card) 97%, var(--foreground) 3%);

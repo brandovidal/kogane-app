@@ -35,6 +35,7 @@ export function getFixedCostColumns({
     {
       key: "description",
       header: "Descripción",
+      className: "w-[22%] min-w-[180px]",
       role: "title",
       accessor: (cost) => cost.description,
       cell: (cost) => (
@@ -47,6 +48,7 @@ export function getFixedCostColumns({
     {
       key: "category",
       header: "Categoría",
+      className: "w-[15%] min-w-[120px]",
       accessor: (cost) =>
         categories.find((item) => item.id === cost.categoryId)?.name,
       cell: (cost) => {
@@ -68,7 +70,7 @@ export function getFixedCostColumns({
       key: "amount",
       header: "Monto",
       role: "amount",
-      className: "text-right",
+      className: "w-[12%] min-w-[110px] text-right",
       calculationType: "number",
       formatCalculation: (value) => formatCurrency(value, "PEN"),
       accessor: (cost) => cost.amountInPen ?? cost.amount,
@@ -84,6 +86,7 @@ export function getFixedCostColumns({
     {
       key: "status",
       header: "Estado",
+      className: "w-[12%] min-w-[120px]",
       accessor: (cost) =>
         PAYMENT_STATUS_LABELS[cost.paymentStatus] ?? cost.paymentStatus,
       cell: (cost) => <StatusBadge status={cost.paymentStatus} />,
@@ -91,6 +94,7 @@ export function getFixedCostColumns({
     {
       key: "person",
       header: "Persona",
+      className: "w-[13%] min-w-[120px]",
       accessor: (cost) => personName(cost.personId),
       cell: (cost) => {
         const name = personName(cost.personId);
@@ -116,12 +120,14 @@ export function getFixedCostColumns({
     {
       key: "due",
       header: "Vencimiento",
+      className: "w-[14%] min-w-[120px]",
       accessor: (cost) => cost.dueDate,
       cell: (cost) => <FixedCostDue cost={cost} />,
     },
     {
       key: "account",
       header: "Cuenta",
+      className: "w-[12%] min-w-[100px]",
       accessor: (cost) => accountName(cost.paymentMethodId),
       cell: (cost) => (
         <span className="text-sm">{accountName(cost.paymentMethodId)}</span>
@@ -131,7 +137,7 @@ export function getFixedCostColumns({
       key: "actions",
       header: "",
       role: "actions",
-      className: "w-[50px]",
+      className: "w-12 min-w-12",
       cell: (cost) => (
         <RowActions
           label={cost.description}
