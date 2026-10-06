@@ -33,3 +33,27 @@ export type ExpenseFilterFieldsProps = Pick<
   | "personInPanel"
   | "searchInPanel"
 > & { panel: boolean };
+
+export interface ActiveExpenseFilterChipsOptions<
+  T extends string | string[] = string,
+> {
+  fields: ExpenseFilterKey[];
+  value: ExpenseFilterValues;
+  onChange: (value: ExpenseFilterValues) => void;
+  me?: string;
+  groupBy?: T;
+  onGroupByChange?: (value: T) => void;
+  groupByLabel?: string;
+  groupByLabels?: Record<string, string>;
+  periodChip?: { label: string; onRemove: () => void };
+  showClearAll?: boolean;
+  onClearAll?: () => void;
+}
+
+export interface ActiveExpenseFilterChipsProps<
+  T extends string | string[] = string,
+> extends ActiveExpenseFilterChipsOptions<T> {
+  tone?: "default" | "brand";
+  maxVisibleItems?: number;
+  collapsible?: boolean;
+}

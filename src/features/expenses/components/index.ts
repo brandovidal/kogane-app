@@ -14,7 +14,7 @@ export type { StatusBadgeProps } from "./StatusBadge";
 export { StatusBadge } from "./StatusBadge";
 export type { MoveSource } from "./dialogs/MoveSeriesDialog";
 export { MoveSeriesDialog } from "./dialogs/MoveSeriesDialog";
-export type { ActiveExpenseFilterChipsProps } from "./filters/ActiveExpenseFilterChips";
+export type { ActiveExpenseFilterChipsProps } from "../types/expense-filter-props";
 export { ActiveExpenseFilterChips } from "./filters/ActiveExpenseFilterChips";
 export { ExpenseFilterFields } from "./filters/ExpenseFilterFields";
 export { ExpenseFilters } from "./filters/ExpenseFilters";
