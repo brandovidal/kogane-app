@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Paperclip } from "lucide-react";
+import { CloudUpload, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -31,6 +31,7 @@ export interface AttachmentsPanelProps {
   refId: string;
   defaultKind?: Attachment["kind"];
   onUploaded?: (attachment: Attachment) => void;
+  dropzone?: boolean;
 }
 
 // Boletas, recibos and contracts of a record, kept in R2 (D100). The links are signed and last a few minutes
@@ -39,6 +40,7 @@ export function AttachmentsPanel({
   refId,
   defaultKind = "boleta",
   onUploaded,
+  dropzone = false,
 }: AttachmentsPanelProps) {
   const {
     data: files = [],
@@ -51,6 +53,7 @@ export function AttachmentsPanel({
   const [uploadingFile, setUploadingFile] = useState<File | null>(null);
   const [deletingFile, setDeletingFile] = useState<Attachment | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
   const previewIndex = files.findIndex((file) => file.id === previewId);
   const input = useRef<HTMLInputElement>(null);
 
@@ -90,16 +93,18 @@ export function AttachmentsPanel({
             ))}
           </SelectContent>
         </Select>
-        <Button
-          type="button"
-          size="sm"
-          className="h-9"
-          disabled={upload.isPending}
-          onClick={() => input.current?.click()}
-        >
-          <Paperclip className="mr-1.5 h-4 w-4" />{" "}
-          {upload.isPending ? "Subiendo…" : "Adjuntar"}
-        </Button>
+        {!dropzone && (
+          <Button
+            type="button"
+            size="sm"
+            className="h-9"
+            disabled={upload.isPending}
+            onClick={() => input.current?.click()}
+          >
+            <Paperclip className="mr-1.5 h-4 w-4" />{" "}
+            {upload.isPending ? "Subiendo…" : "Adjuntar"}
+          </Button>
+        )}
         <input
           ref={input}
           type="file"
@@ -111,6 +116,40 @@ export function AttachmentsPanel({
           Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB
         </span>
       </div>
+
+      {dropzone && (
+        <div
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(event) => {
+            event.preventDefault();
+            setDragging(false);
+            pick(event.dataTransfer.files[0]);
+          }}
+          className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-5 text-center transition-colors ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
+        >
+          <span className="flex size-9 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
+            <CloudUpload aria-hidden="true" className="size-4" />
+          </span>
+          <div className="text-sm font-medium">
+            Arrastra archivos o{" "}
+            <button
+              type="button"
+              disabled={upload.isPending}
+              onClick={() => input.current?.click()}
+              className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              selecciónalos
+            </button>
+          </div>
+          <span className="text-xs text-muted-foreground">
+            Imagen, PDF o documento · hasta {ATTACHMENT_MAX_MB} MB
+          </span>
+        </div>
+      )}
 
       {uploadingFile && (
         <AttachmentFileCard

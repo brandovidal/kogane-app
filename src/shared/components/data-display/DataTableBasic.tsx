@@ -2,6 +2,7 @@ import { flexRender } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import type { DataTableBasicProps } from "@/shared/types/data-table";
 import { DataTableColumnCalculation } from "./DataTableColumnCalculation";
+import { DataLoadingSkeleton } from "./DataLoadingSkeleton";
 import { useDataTableCalculations } from "@/shared/hooks/useDataTableCalculations";
 import { calculateTableColumn } from "@/shared/lib/data-table-calculations";
 import { DATA_TABLE_SELECTION_COLUMN } from "@/shared/constants/data-table";
@@ -91,7 +92,13 @@ export function DataTableBasic<T>({
           ))}
         </TableHeader>
         <TableBody>
-          {loading || error || !rows.length ? (
+          {loading ? (
+            <DataLoadingSkeleton
+              variant="table-rows"
+              columns={table.getVisibleLeafColumns().length}
+              rows={3}
+            />
+          ) : error || !rows.length ? (
             <TableRow className="group/calculation-footer">
               <TableCell
                 colSpan={table.getVisibleLeafColumns().length}
@@ -99,8 +106,6 @@ export function DataTableBasic<T>({
               >
                 {error ? (
                   <div role="alert">{error}</div>
-                ) : loading ? (
-                  <span role="status">Cargando registros…</span>
                 ) : (
                   <div role="status" className="w-full whitespace-normal">
                     {emptyMessage}

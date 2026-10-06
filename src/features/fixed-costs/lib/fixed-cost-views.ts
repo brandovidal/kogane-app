@@ -213,6 +213,25 @@ export function installmentSeries(costs: FixedCost[]): InstallmentSeries[] {
 export const monthGroupKey = (cost: FixedCost) =>
   monthIndexKey(costMonthIndex(cost));
 
+/** Orders year-view months by urgency, keeping chronological order within each tier. */
+export function compareFixedCostMonthGroups(
+  left: FixedCost[],
+  right: FixedCost[],
+  today = new Date(),
+) {
+  const currentIndex = today.getFullYear() * 12 + today.getMonth();
+  const priority = (costs: FixedCost[]) => {
+    const monthIndex = costMonthIndex(costs[0]);
+    const completed = costs.every(isCompletedFixedCost);
+    if (completed) return 3;
+    if (monthIndex === currentIndex) return 1;
+    if (monthIndex < currentIndex) return 0;
+    return 2;
+  };
+  return priority(left) - priority(right) ||
+    costMonthIndex(left[0]) - costMonthIndex(right[0]);
+}
+
 export function monthGroupLabel(key: string) {
   const index = monthKeyIndex(key);
   if (index == null) return key;

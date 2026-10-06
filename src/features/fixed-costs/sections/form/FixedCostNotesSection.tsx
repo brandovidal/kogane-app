@@ -30,8 +30,8 @@ export function FixedCostNotesSection({
   >();
 
   return (
-    <div className="space-y-5">
-      <section className="space-y-3 rounded-lg border p-4">
+    <div className="space-y-3">
+      <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
         <div>
           <h3 className="text-sm font-semibold">
             <FieldLabel icon={NotebookPen}>Observaciones</FieldLabel>
@@ -42,11 +42,12 @@ export function FixedCostNotesSection({
         </div>
         <Textarea
           aria-label="Observaciones del costo fijo"
+          className="min-h-24 resize-y bg-background/50"
           {...register("notes")}
           placeholder="Escribe una nota…"
         />
       </section>
-      <section className="space-y-3 rounded-lg border p-4">
+      <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
         <h3 className="text-sm font-semibold">
           <FieldLabel icon={Paperclip}>Archivos</FieldLabel>
         </h3>
@@ -62,15 +63,17 @@ export function FixedCostNotesSection({
               )
                 setValue("paymentStatus", "paid", { shouldDirty: true });
             }}
+            dropzone
           />
         ) : (
-          <p className="text-sm text-muted-foreground">Los archivos se adjuntarán al crear el costo fijo.</p>
+          <p className="text-xs text-muted-foreground">Los archivos se adjuntarán al crear el costo fijo.</p>
         )}
         <PendingAttachmentsPanel
           files={pendingAttachments}
           onChange={onPendingAttachmentsChange}
           onRetry={fixedCostId ? onRetryPendingAttachments : undefined}
           retrying={retryingAttachments}
+          dropzone
         />
       </section>
     </div>

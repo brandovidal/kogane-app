@@ -34,6 +34,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import type { FixedCost } from "@/shared/api/types";
 import { SearchField } from "@/shared/components/filters/SearchField";
+import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 import {
   ExportMenu,
   type ExportMenuItem,
@@ -247,6 +248,7 @@ export interface FixedCostToolbarProps {
   showPeriodInFilters?: boolean;
   filterSheetOpen?: boolean;
   onFilterSheetOpenChange?: (open: boolean) => void;
+  loading?: boolean;
 }
 
 /**
@@ -273,6 +275,7 @@ export function FixedCostToolbar({
   showPeriodInFilters = true,
   filterSheetOpen,
   onFilterSheetOpenChange,
+  loading = false,
 }: FixedCostToolbarProps) {
   const isDesktopSettings = useMediaQuery("(min-width: 1024px)");
   const [internalSheetOpen, setInternalSheetOpen] = useState(false);
@@ -337,6 +340,8 @@ export function FixedCostToolbar({
       </button>
     );
   };
+
+  if (loading) return <DataLoadingSkeleton variant="toolbar" />;
 
   return (
     <div className="space-y-2">

@@ -30,114 +30,101 @@ export function FixedCostScheduleSection() {
   const hasInstallments = watch("hasInstallments");
 
   return (
-    <div className="space-y-5">
-      <section className="space-y-3 rounded-lg border p-4">
+    <div className="space-y-3">
+      <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
         <div>
           <h3 className="text-sm font-semibold">
-            <FieldLabel icon={CalendarRange}>Periodo del registro</FieldLabel>
+            <FieldLabel icon={CalendarClock}>Periodo y vencimiento</FieldLabel>
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Indica el mes al que pertenece este costo fijo.
+            Define el mes al que pertenece el costo y cuándo vence.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField
-            label="Mes"
-            icon={CalendarDays}
-            htmlFor="fixed-cost-month"
-            error={errors.paymentMonth?.message}
+            label="Periodo del registro"
+            icon={CalendarRange}
+            error={errors.paymentMonth?.message ?? errors.paymentYear?.message}
           >
-            <Select
-              value={String(watch("paymentMonth"))}
-              onValueChange={(value) => setValue("paymentMonth", Number(value))}
-            >
-              <SelectTrigger
-                id="fixed-cost-month"
-                aria-label="Mes del registro"
+            <div className="grid grid-cols-[minmax(0,1fr)_6rem] gap-2">
+              <Select
+                value={String(watch("paymentMonth"))}
+                onValueChange={(value) => setValue("paymentMonth", Number(value))}
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PERIOD_MONTH_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger id="fixed-cost-month" aria-label="Mes del registro">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERIOD_MONTH_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={String(watch("paymentYear"))}
+                onValueChange={(value) => setValue("paymentYear", Number(value))}
+              >
+                <SelectTrigger id="fixed-cost-year" aria-label="Año del registro">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERIOD_YEAR_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </FormField>
           <FormField
-            label="Año"
-            icon={CalendarRange}
-            htmlFor="fixed-cost-year"
-            error={errors.paymentYear?.message}
+            label="Vencimiento"
+            icon={CalendarDays}
+            error={errors.dueDate?.message}
           >
-            <Select
-              value={String(watch("paymentYear"))}
-              onValueChange={(value) => setValue("paymentYear", Number(value))}
-            >
-              <SelectTrigger id="fixed-cost-year" aria-label="Año del registro">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PERIOD_YEAR_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DatePicker
+              ariaLabel="Fecha de vencimiento"
+              value={watch("dueDate")}
+              onChange={(date) =>
+                setValue("dueDate", date, { shouldValidate: true })
+              }
+              placeholder="Sin fecha de vencimiento"
+            />
           </FormField>
         </div>
       </section>
-      <section className="space-y-3 rounded-lg border p-4">
-        <div>
-          <h3 className="text-sm font-semibold">
-            <FieldLabel icon={CalendarClock}>Vencimiento y cuotas</FieldLabel>
-          </h3>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Programa cuándo vence y registra el avance de pagos en cuotas.
-          </p>
-        </div>
-        <FormField
-          label="Fecha de vencimiento"
-          icon={CalendarDays}
-          error={errors.dueDate?.message}
-        >
-          <DatePicker
-            ariaLabel="Fecha de vencimiento"
-            value={watch("dueDate")}
-            onChange={(date) =>
-              setValue("dueDate", date, { shouldValidate: true })
+      <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-semibold">Se paga en cuotas</h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Lleva el avance del préstamo o financiamiento.
+            </p>
+          </div>
+          <Switch
+            aria-label="Se paga en cuotas"
+            checked={hasInstallments}
+            onCheckedChange={(checked) =>
+              setValue("hasInstallments", checked, {
+                shouldValidate: !checked,
+              })
             }
-            placeholder="Sin fecha de vencimiento"
           />
-        </FormField>
-        <div className="space-y-3 rounded-md bg-muted/30 p-3">
-          <label className="flex items-center justify-between gap-3 text-sm font-medium">
-            Se paga en cuotas
-            <Switch
-              checked={hasInstallments}
-              onCheckedChange={(checked) =>
-                setValue("hasInstallments", checked, {
-                  shouldValidate: !checked,
-                })
-              }
-            />
-          </label>
-          {hasInstallments && (
-            <InstallmentFields
-              value={watch("installment")}
-              onChange={(value) =>
-                setValue("installment", value ?? "", {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
-              error={errors.installment?.message}
-            />
-          )}
         </div>
+        {hasInstallments && (
+          <InstallmentFields
+            value={watch("installment")}
+            onChange={(value) =>
+              setValue("installment", value ?? "", {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            error={errors.installment?.message}
+          />
+        )}
       </section>
     </div>
   );

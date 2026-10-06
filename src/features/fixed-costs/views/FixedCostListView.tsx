@@ -94,6 +94,7 @@ export function FixedCostListView() {
       showPeriodInFilters
       filterSheetOpen={filterSheetOpen}
       onFilterSheetOpenChange={setFilterSheetOpen}
+      loading={list.loading}
     />
   );
 

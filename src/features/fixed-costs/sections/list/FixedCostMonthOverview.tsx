@@ -10,6 +10,7 @@ import {
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { formatDayMonth } from "@/shared/lib/dates";
 import { localTodayKey, urgencyOf } from "../../lib/fixed-cost-views";
+import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 
 function dueLabel(days: number | null) {
   if (days == null) return "Fecha por confirmar";
@@ -36,18 +37,7 @@ export function FixedCostMonthOverview({
 }) {
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
-  if (loading)
-    return (
-      <section aria-label={variant === "payable" ? "Resumen de costos por pagar" : "Resumen del período"} aria-busy="true" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }, (_, index) => (
-          <div key={index} className="space-y-3 rounded-xl border border-border/80 bg-card px-4 py-3.5">
-            <div className="h-3 w-24 animate-pulse rounded bg-muted" />
-            <div className="h-7 w-32 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-20 animate-pulse rounded bg-muted" />
-          </div>
-        ))}
-      </section>
-    );
+  if (loading) return <DataLoadingSkeleton variant="summary" />;
   const summary = summarizeFixedCosts(items);
   const dueDate = summary.nextDue?.dueDate;
   const days = dueDate && todayKey ? daysUntilDue(dueDate, todayKey) : null;

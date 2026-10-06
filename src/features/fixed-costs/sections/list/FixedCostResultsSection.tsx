@@ -18,6 +18,8 @@ import { FixedCostEmptyState } from "./FixedCostEmptyState";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import { FIXED_COST_FILTER_KEYS } from "../../lib/fixed-cost-filters";
+import { compareFixedCostMonthGroups } from "../../lib/fixed-cost-views";
+import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 
 export interface FixedCostResultsSectionProps {
   items: FixedCost[];
@@ -88,7 +90,11 @@ export function FixedCostResultsSection({
   );
   const hasActiveFilters =
     countActiveExpenseFilters(filters, filterFields) > 0 || hasScopeFilter;
-  const emptyKind = hasSearch ? "search" : hasActiveFilters ? "filters" : "period";
+  const emptyKind = hasSearch
+    ? "search"
+    : hasActiveFilters
+      ? "filters"
+      : "period";
   const emptyState = (
     <FixedCostEmptyState
       view={view}
@@ -109,17 +115,20 @@ export function FixedCostResultsSection({
   );
   const summaryFor = (records: FixedCost[], key?: string, field?: string) => {
     const subtotal = totalsOf(records);
-    const tone = field === "urgency"
-      ? key === "overdue"
-        ? "text-destructive"
-        : key === "week" || key === "month"
-          ? "text-amber-600 dark:text-amber-300"
-          : "text-muted-foreground"
-      : "text-foreground";
+    const tone =
+      field === "urgency"
+        ? key === "overdue"
+          ? "text-destructive"
+          : key === "week" || key === "month"
+            ? "text-amber-600 dark:text-amber-300"
+            : "text-muted-foreground"
+        : "text-foreground";
     return {
       label: (
-        <div className={`whitespace-nowrap text-right text-sm font-semibold ${tone}`}>
-          Total: {formatCurrency(subtotal.paid)}
+        <div
+          className={`whitespace-nowrap text-right text-sm font-semibold ${tone}`}
+        >
+          {formatCurrency(subtotal.paid)}
           <OwnPart {...subtotal} />
         </div>
       ),
@@ -140,12 +149,10 @@ export function FixedCostResultsSection({
     );
   if (loading)
     return (
-      <p
-        role="status"
-        className="py-8 text-center text-sm text-muted-foreground"
-      >
-        Cargando registros…
-      </p>
+      <DataLoadingSkeleton
+        variant={view === "table" ? "table" : "cards"}
+        columns={dataTable.visibleColumns.length}
+      />
     );
   if (error)
     return (
@@ -155,27 +162,35 @@ export function FixedCostResultsSection({
     );
   if (!items.length) {
     if (view === "cards")
-      return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">{emptyState}</div>;
+      return (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {emptyState}
+        </div>
+      );
     return emptyState;
   }
 
   return (
     <div className="space-y-3">
       <GroupedDataView
-        items={dataTable.table.getRowModel().rows.map((row) => row.original)}
+        items={dataTable.table
+          .getPrePaginationRowModel()
+          .rows.map((row) => row.original)}
         columns={dataTable.visibleColumns}
         rowKey={(cost) => cost.id}
         view={view}
         groupBy={fields}
         primaryGroupDepth={
-          viewGroup?.field === "month"
-            ? 0
-            : viewGroup && groupBy.length
-              ? 1
-              : 0
+          viewGroup?.field === "month" ? 0 : viewGroup && groupBy.length ? 1 : 0
         }
         collapsiblePrimaryGroups={viewGroup?.field === "month"}
         initialOpenPrimaryGroups={2}
+        paginatePrimaryGroups={viewGroup?.field === "month"}
+        comparePrimaryGroups={
+          viewGroup?.field === "month"
+            ? (left, right) => compareFixedCostMonthGroups(left, right)
+            : undefined
+        }
         groupDetailsFor={(groupItems, _key, field) => {
           if (field !== "month") return null;
           const completed = groupItems.filter(isCompletedFixedCost).length;
@@ -184,7 +199,9 @@ export function FixedCostResultsSection({
             <span
               className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${allCompleted ? "bg-emerald-500/15 text-emerald-400" : "bg-amber-400/15 text-amber-300"}`}
             >
-              {allCompleted ? "completo" : `${completed} de ${groupItems.length} pagados`}
+              {allCompleted
+                ? "completo"
+                : `${completed} de ${groupItems.length} pagados`}
             </span>
           );
         }}
@@ -228,7 +245,9 @@ export function FixedCostResultsSection({
                   "Sin categoría")
         }
       />
-      <DataTablePagination table={dataTable.table} disabled={pending} />
+      {viewGroup?.field !== "month" && (
+        <DataTablePagination table={dataTable.table} disabled={pending} />
+      )}
     </div>
   );
 }

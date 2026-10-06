@@ -22,6 +22,7 @@ import {
 } from "../../lib/fixed-cost-views";
 import type { CatalogName } from "../../types/fixed-cost-types";
 import { AttachmentRecordThumbnail } from "@/features/attachments/components/AttachmentRecordThumbnail";
+import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 
 export function FixedCostInstallmentsView({
   series,
@@ -69,12 +70,11 @@ export function FixedCostInstallmentsView({
 
   if (loading)
     return (
-      <p
-        role="status"
-        className="py-8 text-center text-sm text-muted-foreground"
-      >
-        Cargando cuotas…
-      </p>
+      <div className="space-y-4">
+        <DataLoadingSkeleton variant="summary" />
+        {toolbar}
+        <DataLoadingSkeleton variant="table" columns={9} rows={4} />
+      </div>
     );
 
   return (
@@ -86,10 +86,12 @@ export function FixedCostInstallmentsView({
         <SummaryCard
           label="Cuotas activas"
           value={String(active.length)}
-          detail={active
-            .map((item) => item.latest.description)
-            .slice(0, 3)
-            .join(" · ") || "Sin deudas en cuotas"}
+          detail={
+            active
+              .map((item) => item.latest.description)
+              .slice(0, 3)
+              .join(" · ") || "Sin deudas en cuotas"
+          }
         />
         <SummaryCard
           label="Pago mensual en cuotas"
@@ -110,7 +112,7 @@ export function FixedCostInstallmentsView({
           }
           detail={
             nextToEnd
-            ? `${nextToEnd.remaining} ${nextToEnd.remaining === 1 ? "cuota" : "cuotas"} por pagar`
+              ? `${nextToEnd.remaining} ${nextToEnd.remaining === 1 ? "cuota" : "cuotas"} por pagar`
               : "No hay cuotas activas"
           }
         />
