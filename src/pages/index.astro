@@ -1,8 +1,10 @@
 ---
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
 import { DashboardPage } from "@/features/dashboard/components/DashboardPage";
+import { DashboardPeriodHeader } from "@/features/dashboard/components/DashboardPeriodHeader";
 ---
 
-<DashboardLayout title="Dashboard">
+<DashboardLayout title="Dashboard" section="Inicio">
+  <DashboardPeriodHeader client:load slot="header-actions" />
   <DashboardPage client:load />
 </DashboardLayout>
