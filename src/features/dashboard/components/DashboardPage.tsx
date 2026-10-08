@@ -9,7 +9,6 @@ import { usePeriod } from "@/shared/stores/period.store";
 import { useCreditCardSummaries } from "@/features/dashboard/hooks/useCreditCardSummaries";
 import { BillingCycleCard } from "./BillingCycleCard";
 
-// Inicio (D78): your budget of the month and the cards; the same pieces as the Resumen, without the detail
 function DashboardPageView() {
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);

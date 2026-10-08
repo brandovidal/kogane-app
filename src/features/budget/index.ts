@@ -1,5 +1,7 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { BudgetDonut } from "./components/BudgetDonut";
+export { BudgetCategoryDetail } from "./components/BudgetCategoryDetail";
+export { BudgetKpiCard } from "./components/BudgetKpiCard";
 export { BudgetGroupsCard } from "./components/BudgetGroupsCard";
 export { BudgetKpis } from "./components/BudgetKpis";
 export { BudgetVsActual } from "./components/BudgetVsActual";
