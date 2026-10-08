@@ -50,7 +50,7 @@ import { SUBSCRIPTION_STATUSES } from "../../constants/subscriptions";
 import { useMe } from "@/shared/api/hooks/catalogs";
 import type { PlatformView } from "./PlatformViewBar";
 
-export function PlatformToolbar({
+export function PlatformFilterSheet({
   filters,
   onFiltersChange,
   groupBy,
@@ -84,11 +84,12 @@ export function PlatformToolbar({
     PLATFORM_FILTER_KEYS,
   );
   const personCounts = useMemo(
-    () => items.reduce<Record<string, number>>((counts, item) => {
-      const id = item.personId ?? "__unassigned__";
-      counts[id] = (counts[id] ?? 0) + 1;
-      return counts;
-    }, {}),
+    () =>
+      items.reduce<Record<string, number>>((counts, item) => {
+        const id = item.personId ?? "__unassigned__";
+        counts[id] = (counts[id] ?? 0) + 1;
+        return counts;
+      }, {}),
     [items],
   );
   const columns = table
@@ -127,9 +128,9 @@ export function PlatformToolbar({
           />
           <ExpensePersonFilter
             compact
-          value={filters.person}
-          onChange={(person) => onFiltersChange({ ...filters, person })}
-          counts={personCounts}
+            value={filters.person}
+            onChange={(person) => onFiltersChange({ ...filters, person })}
+            counts={personCounts}
           />
           <Button
             type="button"
@@ -426,7 +427,7 @@ export function PlatformToolbar({
               personCounts={personCounts}
             />
           </div>
-          <SheetFooter className="border-t p-4">
+          <SheetFooter className="flex-row items-center justify-between border-t p-4">
             <Button
               type="button"
               variant="outline"

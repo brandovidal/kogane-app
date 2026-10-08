@@ -2,10 +2,8 @@ import type { ReactNode } from "react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/ui/sheet";
 import { cn } from "@/shared/utils/cn";
@@ -23,7 +21,6 @@ interface FilterSheetShellProps {
   footerClassName?: string;
 }
 
-/** Shared sheet frame for filter panels; each feature provides its own fields and actions. */
 export function FilterSheetShell({
   open,
   onOpenChange,
@@ -46,9 +43,7 @@ export function FilterSheetShell({
           contentClassName,
         )}
       >
-        <SheetHeader className={headerClassName}>
-          {header}
-        </SheetHeader>
+        <SheetHeader className={headerClassName}>{header}</SheetHeader>
         <div className={cn("min-h-0 flex-1 overflow-y-auto", bodyClassName)}>
           {children}
         </div>

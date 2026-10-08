@@ -10,7 +10,7 @@ import { SubscriptionDialog } from "../components/SubscriptionDialog";
 import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
 import { PlatformViewBar } from "../sections/list/PlatformViewBar";
 import { PlatformOverview } from "../sections/list/PlatformOverview";
-import { PlatformToolbar } from "../sections/list/PlatformToolbar";
+import { PlatformFilterSheet } from "../sections/list/PlatformFilterSheet";
 import { PlatformResults } from "../sections/list/PlatformResults";
 import { PlatformBulkActions } from "../sections/list/PlatformBulkActions";
 import { PlatformDetailPage } from "./PlatformDetailPage";
@@ -88,7 +88,7 @@ function PlatformListPageContent() {
         loading={list.loading}
       />
       {list.view !== "calendar" && (
-        <PlatformToolbar
+        <PlatformFilterSheet
           filters={list.filters}
           onFiltersChange={list.setFilters}
           groupBy={list.groupBy}
