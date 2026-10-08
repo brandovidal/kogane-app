@@ -11,6 +11,7 @@ export type { FixedCostExportData } from "./lib/fixed-cost-export";
 export { buildFixedCostExport } from "./lib/fixed-cost-export";
 export {
   FIXED_COST_FILTER_KEYS,
+  FIXED_COST_PANEL_FILTER_KEYS,
   FIXED_COST_GROUP_OPTIONS,
   FIXED_COST_GROUP_LABELS,
 } from "./lib/fixed-cost-filters";
@@ -46,7 +47,8 @@ export type {
   FixedCostBulkFailure,
 } from "./types/fixed-cost-types";
 export { FIXED_COST_GROUP_VALUES } from "./constants/grouping";
-export { FixedCostToolbar, FixedCostViewBar } from "./sections/list/FixedCostToolbar";
+export { FixedCostToolbar } from "./sections/list/FixedCostToolbar";
+export { FixedCostViewBar } from "./sections/list/FixedCostViewBar";
 export type { FixedCostToolbarProps } from "./sections/list/FixedCostToolbar";
 export { FixedCostPeriodSelector, FixedCostRecordCount } from "./components/header";
 export { FixedCostInstallmentsView } from "./views/FixedCostInstallmentsView";

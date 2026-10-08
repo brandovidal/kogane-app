@@ -5,7 +5,6 @@ import {
   Coins,
   ListFilter,
   Tags,
-  UserRound,
   UsersRound,
   WalletCards,
 } from "lucide-react";
@@ -18,6 +17,7 @@ import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/s
 import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
+import { ExpensePersonFilter } from "./ExpensePersonFilter";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFields";
@@ -28,10 +28,7 @@ import { entriesOf } from "@/shared/utils/entries";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
 import type { ExpenseFilterFieldsProps } from "../../types/expense-filter-props";
-import { useExpensePersonOptions } from "../../hooks/useExpensePersonOptions";
 import {
-  PERSON_ALL,
-  PERSON_FILTER_LABELS,
   CURRENCY_FILTER_OPTIONS,
   SHARED_FILTER_OPTIONS,
   PANEL_FILTER_KEYS,
@@ -46,11 +43,11 @@ export function ExpenseFilterFields({
   personInPanel,
   panel,
   searchInPanel = false,
+  personCounts,
 }: ExpenseFilterFieldsProps) {
   const categories = useCategories().data ?? [];
   const methods =
     usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
-  const personOptions = useExpensePersonOptions();
   const set = (key: ExpenseFilterKey, next: string | undefined) =>
     onChange({ ...value, [key]: next || undefined });
   const width = panel ? "w-full" : undefined;
@@ -71,17 +68,12 @@ export function ExpenseFilterFields({
           </div>
         )}
         {personInPanel && has("person") && (
-          <FilterSelect
-            label="Persona"
-            icon={UserRound}
-            value={value.person ?? PERSON_ALL}
-            options={personOptions}
+          <ExpensePersonFilter
+            value={value.person}
             onChange={(next) => set("person", next)}
-            allValue={PERSON_ALL}
-            allLabel={PERSON_FILTER_LABELS.ALL}
             width={width}
             searchable={panel}
-            labelClassName="text-sm font-medium"
+            counts={personCounts}
           />
         )}
         {has("category") && (
@@ -262,7 +254,7 @@ export function ExpenseFilterFields({
         </section>
       )}
       {additional.length > 0 && (
-        <MoreFilters activeCount={countActiveExpenseFilters(value, additional)}>
+        <MoreFilters activeCount={countActiveExpenseFilters(value, additional)} defaultOpen={panel}>
           <div className="grid grid-cols-2 gap-3">
             {renderFields(additional)}
           </div>

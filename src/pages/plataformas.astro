@@ -6,8 +6,14 @@ import { PlatformRecordCount } from "@/features/subscriptions/components/header/
 import "@/features/subscriptions/styles/platform-list.css";
 ---
 
-<DashboardLayout title="Plataformas" section="Gastos" mainClass="app-gradient platform-canvas">
+<DashboardLayout
+  title="Plataformas"
+  section="Gastos"
+  mainClass="app-gradient platform-canvas"
+>
   <PlatformRecordCount slot="title-extra" client:load />
-  <div slot="header-actions" class="hidden sm:block"><PlatformPeriodSelector client:load /></div>
+  <div slot="header-actions" class="hidden sm:block">
+    <PlatformPeriodSelector client:load />
+  </div>
   <PlatformListPage client:load />
 </DashboardLayout>

@@ -9,6 +9,7 @@ import { CardOverviewMetrics } from "../sections/overview/CardOverviewMetrics";
 import { CardOverviewToolbar } from "../sections/overview/CardOverviewToolbar";
 import { CardOverviewResults } from "../sections/overview/CardOverviewResults";
 import { CardOverviewMovements } from "../sections/overview/CardOverviewMovements";
+import { CardOverviewPeriodView } from "../sections/overview/CardOverviewPeriodView";
 
 function CardOverviewPageContent() {
   const data = useCardOverview();
@@ -21,7 +22,7 @@ function CardOverviewPageContent() {
     <CardOverviewViewBar view={view} onViewChange={setView} onNewExpense={() => openNewExpense({ destination: "credit_card" })} onNewCard={() => setCreatingCard(true)} />
     <CardOverviewMetrics rows={data.rows} movements={data.filtered.length} total={data.total} loading={data.loading} />
     <CardOverviewToolbar filters={data.filters} onFiltersChange={data.setFilters} layout={layout} onLayoutChange={setLayout} />
-    {view === "summary" ? <CardOverviewResults rows={data.rows} layout={layout} loading={data.loading} error={data.error} /> : <CardOverviewMovements expenses={data.filtered} cards={data.cards} personName={data.personName} installmentsOnly={view === "installments"} />}
+    {view === "summary" ? <CardOverviewResults rows={data.rows} layout={layout} loading={data.loading} error={data.error} /> : view === "period" ? <CardOverviewPeriodView rows={data.rows} onNewCard={() => setCreatingCard(true)} loading={data.loading} error={data.error} /> : <CardOverviewMovements expenses={data.filtered} cards={data.cards} personName={data.personName} installmentsOnly={view === "installments"} />}
     {creatingCard && <CardEditorDialog onClose={() => setCreatingCard(false)} />}
   </div>;
 }

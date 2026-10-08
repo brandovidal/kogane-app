@@ -30,11 +30,11 @@ export function usePlatformList() {
     () => applyExpenseFilters(items, filters, me),
     [items, filters, me],
   );
-  const groupBy: "none" | "person" | "period" = groupParams.group === "person" || groupParams.group === "period"
-    ? groupParams.group
-    : "none";
-  const setGroupBy = (next: "none" | "person" | "period") =>
-    setGroupParams(next === "none" ? {} : { group: next });
+  const groupBy = (groupParams.group?.split(",") ?? []).filter(
+    (field): field is "person" | "period" => field === "person" || field === "period",
+  );
+  const setGroupBy = (next: Array<"person" | "period">) =>
+    setGroupParams(next.length ? { group: next.join(",") } : {});
 
   useEffect(() => {
     platformHeaderStore.getState().setCount(query.isLoading ? null : items.length);

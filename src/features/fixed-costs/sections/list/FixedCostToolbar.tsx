@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/shared/utils/cn";
+
 import type { Table } from "@tanstack/react-table";
 import {
   ArrowDownUp,
@@ -10,17 +12,12 @@ import {
   ChevronRight,
   Columns3,
   Eye,
-  KanbanSquare,
   Layers,
   LayoutGrid,
   Link2,
-  Activity,
   ListFilter,
-  CalendarDays,
   Check,
-  Clock,
   Plus,
-  ReceiptText,
   SlidersHorizontal,
   RotateCcw,
   Table2,
@@ -29,19 +26,16 @@ import {
 } from "lucide-react";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { ExpenseFilterFields } from "@/features/expenses/components/filters/ExpenseFilterFields";
+import { FixedCostFilterSheet } from "./FixedCostFilterSheet";
+import { FixedCostToolbarButton } from "./FixedCostToolbarButton";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import type { FixedCost } from "@/shared/api/types";
+import { PERSON_UNASSIGNED } from "@/features/expenses/constants/expense-filters";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
-import {
-  ExportMenu,
-  type ExportMenuItem,
-} from "@/shared/components/toolbar/ExportMenu";
-import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
 import type { ViewMode } from "@/shared/types/data-view";
-import { cn } from "@/shared/utils/cn";
 import { Button } from "@/ui/button";
 import {
   DropdownMenu,
@@ -61,172 +55,21 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/ui/sheet";
 import { FixedCostPeriodSelector } from "../../components/header/FixedCostPeriodSelector";
 import { FIXED_COST_STATUSES } from "../../constants/statuses";
 import {
-  FIXED_COST_FILTER_KEYS,
+  FIXED_COST_PANEL_FILTER_KEYS,
   FIXED_COST_GROUP_LABELS,
   FIXED_COST_GROUP_OPTIONS,
 } from "../../lib/fixed-cost-filters";
 import {
   FIXED_COST_SORTS,
-  FIXED_COST_VIEWS,
-  type FixedCostView,
   findFixedCostSort,
 } from "../../lib/fixed-cost-views";
 import type { FixedCostGroupBy } from "../../types/fixed-cost-types";
-
-const VIEW_ICONS: Record<FixedCostView, typeof CalendarDays> = {
-  mes: CalendarDays,
-  "por-pagar": Clock,
-  cuotas: Activity,
-  estado: KanbanSquare,
-  todos: Table2,
-};
-
-export function FixedCostViewBar({
-  page,
-  onPageChange,
-  exportItems,
-  onCreate,
-}: {
-  page: FixedCostView;
-  onPageChange: (page: FixedCostView) => void;
-  exportItems: ExportMenuItem[];
-  onCreate: () => void;
-}) {
-  return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 items-center gap-1">
-        <div
-          role="tablist"
-          aria-label="Vistas"
-          className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 pb-1 sm:pb-0 [scrollbar-width:none]"
-        >
-          {FIXED_COST_VIEWS.map((view) => {
-            const Icon = VIEW_ICONS[view.value];
-            const active = view.value === page;
-            return (
-              <button
-                key={view.value}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => onPageChange(view.value)}
-                className={cn(
-                  "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active && "bg-accent text-foreground ring-1 ring-border/70",
-                )}
-              >
-                <Icon className="size-4" />
-                {view.label}
-              </button>
-            );
-          })}
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          title="Más vistas: próximamente"
-          aria-label="Más vistas, próximamente"
-          className="rounded-sm border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
-          onClick={() =>
-            toast.info(
-              "La creación de vistas personalizadas estará disponible próximamente.",
-            )
-          }
-        >
-          <Plus className="size-4" />
-        </Button>
-      </div>
-      <div className="flex shrink-0 items-center justify-end gap-2">
-        <ExportMenu items={exportItems} label="Más opciones" iconOnly />
-        <div className="inline-flex items-center">
-          <Button
-            type="button"
-            size="sm"
-            className="fixed-costs-create-button h-9 gap-1 rounded-l-sm rounded-r-none px-4"
-            onClick={onCreate}
-            aria-label="Crear costo fijo"
-          >
-            <Plus className="size-4" />
-            Crear
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                size="icon"
-                className="fixed-costs-create-button fixed-costs-create-menu-button h-9 w-9 rounded-l-none rounded-r-sm border-l"
-                aria-label="Más opciones para crear"
-              >
-                <ChevronDown className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-44">
-              <DropdownMenuItem onSelect={onCreate}>
-                <CalendarDays className="size-4" />
-                Costo fijo
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() =>
-                  newExpenseStore.getState().openWith({ destination: "daily" })
-                }
-              >
-                <ReceiptText className="size-4" />
-                Gasto general
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const PERIOD_KEYS = new Set(["month", "year"]);
-const panelFields = FIXED_COST_FILTER_KEYS.filter(
-  (key) => !PERIOD_KEYS.has(key) && key !== "q",
-);
-
-function ToolbarButton({
-  icon: Icon,
-  label,
-  count,
-  active,
-  ...props
-}: React.ComponentProps<typeof Button> & {
-  icon: typeof SlidersHorizontal;
-  label: string;
-  count?: number | string;
-  active?: boolean;
-}) {
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="sm"
-      className={cn(
-        "h-8 gap-1.5 rounded-sm border border-transparent px-2 text-muted-foreground hover:border-border/60 hover:text-foreground",
-        active && "border-border/70 bg-accent text-foreground",
-      )}
-      {...props}
-    >
-      <Icon className="size-4" />
-      <span className="hidden sm:inline">{label}</span>
-      {count != null && count !== 0 && (
-        <span className="text-xs font-semibold tabular-nums text-brand">
-          {count}
-        </span>
-      )}
-    </Button>
-  );
-}
 
 export interface FixedCostToolbarProps {
   filters: ExpenseFilterValues;
@@ -249,12 +92,9 @@ export interface FixedCostToolbarProps {
   filterSheetOpen?: boolean;
   onFilterSheetOpenChange?: (open: boolean) => void;
   loading?: boolean;
+  personRecords?: FixedCost[];
 }
 
-/**
- * The tools of the table, right above it: search, filters, sort, group and the
- * applied ones behind "Ver aplicados"; columns and table/cards on the right.
- */
 export function FixedCostToolbar({
   filters,
   onFiltersChange,
@@ -276,6 +116,7 @@ export function FixedCostToolbar({
   filterSheetOpen,
   onFilterSheetOpenChange,
   loading = false,
+  personRecords = [],
 }: FixedCostToolbarProps) {
   const isDesktopSettings = useMediaQuery("(min-width: 1024px)");
   const [internalSheetOpen, setInternalSheetOpen] = useState(false);
@@ -290,7 +131,19 @@ export function FixedCostToolbar({
   >("overview");
   const [columnSearch, setColumnSearch] = useState("");
   const [showApplied, setShowApplied] = useState(false);
-  const filterCount = countActiveExpenseFilters(filters, panelFields);
+  const filterCount = countActiveExpenseFilters(
+    filters,
+    FIXED_COST_PANEL_FILTER_KEYS,
+  );
+  const personCounts = useMemo(
+    () =>
+      personRecords.reduce<Record<string, number>>((counts, record) => {
+        const id = record.personId ?? PERSON_UNASSIGNED;
+        counts[id] = (counts[id] ?? 0) + 1;
+        return counts;
+      }, {}),
+    [personRecords],
+  );
   const sortOption = findFixedCostSort(sort);
   const appliedCount = filterCount + (sortOption ? 1 : 0) + groupBy.length;
   const hasViewSettings =
@@ -364,7 +217,7 @@ export function FixedCostToolbar({
             aria-hidden="true"
             className="mx-1 hidden h-5 w-px bg-border sm:block"
           />
-          <ToolbarButton
+          <FixedCostToolbarButton
             icon={ListFilter}
             label="Filtros"
             count={filterCount}
@@ -373,7 +226,7 @@ export function FixedCostToolbar({
           {canSort && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <ToolbarButton
+                <FixedCostToolbarButton
                   icon={ArrowDownUp}
                   label="Ordenar"
                   count={sortOption ? 1 : 0}
@@ -405,7 +258,7 @@ export function FixedCostToolbar({
           {canGroup && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <ToolbarButton
+                <FixedCostToolbarButton
                   icon={Layers}
                   label="Agrupar"
                   count={groupBy.length}
@@ -478,7 +331,7 @@ export function FixedCostToolbar({
           {table && hideable.length > 0 && view === "table" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <ToolbarButton
+                <FixedCostToolbarButton
                   icon={Columns3}
                   label="Columnas"
                   count={`${visible}/${hideable.length}`}
@@ -634,7 +487,9 @@ export function FixedCostToolbar({
                       <DropdownMenuRadioGroup
                         value={sort ?? "__original__"}
                         onValueChange={(next) =>
-                          onSortChange(next === "__original__" ? undefined : next)
+                          onSortChange(
+                            next === "__original__" ? undefined : next,
+                          )
                         }
                       >
                         <DropdownMenuRadioItem
@@ -847,7 +702,7 @@ export function FixedCostToolbar({
                 Filtros
               </span>
               <ActiveExpenseFilterChips
-                fields={panelFields}
+                fields={FIXED_COST_PANEL_FILTER_KEYS}
                 value={filtersWithoutPeriod}
                 onChange={(next) =>
                   onFiltersChange({
@@ -898,6 +753,7 @@ export function FixedCostToolbar({
         filterCount={filterCount}
         onClear={clearFilters}
         showPeriod={showPeriodInFilters}
+        personCounts={personCounts}
       />
       {!isDesktopSettings && (
         <Sheet
@@ -907,449 +763,351 @@ export function FixedCostToolbar({
             if (open) setSettingsSection("overview");
           }}
         >
-        <SheetContent
-          side="right"
-          className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0"
-        >
-          <SheetHeader className="border-b p-5 pr-12">
-            <div className="flex items-center gap-2">
-              {settingsSection !== "overview" && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Volver a ajustes de vista"
-                  onClick={() => setSettingsSection("overview")}
-                >
-                  <ChevronLeft className="size-4" />
-                </Button>
-              )}
-              <SheetTitle>{settingsSectionTitle}</SheetTitle>
-            </div>
-            <SheetDescription>
-              Configura cómo se muestran los costos fijos en esta vista.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
-            {settingsSection === "overview" && (
-              <>
-                {canChangeLayout && (
-                  <section className="space-y-2">
-                    <h3 className="eyebrow">Diseño</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(
-                        [
-                          ["table", "Tabla", Table2],
-                          ["cards", "Tarjetas", LayoutGrid],
-                        ] as const
-                      ).map(([mode, label, Icon]) => (
-                        <Button
-                          key={mode}
-                          type="button"
-                          variant={view === mode ? "secondary" : "outline"}
-                          aria-pressed={view === mode}
-                          onClick={() => onViewChange(mode)}
-                          className="justify-start gap-2"
-                        >
-                          <Icon className="size-4" />
-                          {label}
-                        </Button>
-                      ))}
-                    </div>
-                  </section>
+          <SheetContent
+            side="right"
+            className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0"
+          >
+            <SheetHeader className="border-b p-5 pr-12">
+              <div className="flex items-center gap-2">
+                {settingsSection !== "overview" && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Volver a ajustes de vista"
+                    onClick={() => setSettingsSection("overview")}
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
                 )}
-
-                <section className="space-y-1">
-                  <h3 className="eyebrow px-2 pb-1">Ajustes</h3>
-                  {table &&
-                    hideable.length > 0 &&
-                    settingsRow(
-                      Eye,
-                      "Columnas visibles",
-                      `${visible} de ${hideable.length}`,
-                      () => setSettingsSection("columns"),
-                    )}
-                  {settingsRow(
-                    ListFilter,
-                    "Filtros",
-                    filterCount ? `${filterCount} activos` : "Ninguno",
-                    () => setSettingsSection("filters"),
-                  )}
-                  {canSort &&
-                    settingsRow(
-                      ArrowDownUp,
-                      "Orden",
-                      sortOption ? sortOption.label : "Predeterminado",
-                      () => setSettingsSection("sort"),
-                    )}
-                  {canGroup &&
-                    settingsRow(
-                      Layers,
-                      "Agrupar",
-                      groupBy.length
-                        ? groupBy
-                            .map((field) => FIXED_COST_GROUP_LABELS[field])
-                            .join(" › ")
-                        : "Sin agrupar",
-                      () => setSettingsSection("group"),
-                    )}
-                  {settingsRow(
-                    SlidersHorizontal,
-                    "Color condicional",
-                    "Próximamente",
-                    () => {},
-                    true,
-                  )}
-                  {settingsRow(
-                    Columns3,
-                    "Totales del pie",
-                    "Próximamente",
-                    () => {},
-                    true,
-                  )}
-                </section>
-
-                <div className="space-y-1 border-t pt-3">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start gap-2"
-                    onClick={() =>
-                      void navigator.clipboard
-                        .writeText(window.location.href)
-                        .then(() => toast.success("Enlace copiado"))
-                        .catch(() => toast.error("No se pudo copiar el enlace"))
-                    }
-                  >
-                    <Link2 className="size-4" />
-                    Copiar enlace a la vista
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start gap-2"
-                    onClick={() =>
-                      toast.info(
-                        "Guardar vistas personalizadas estará disponible próximamente.",
-                      )
-                    }
-                  >
-                    <Plus className="size-4" />
-                    Guardar como nueva vista
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={!hasViewSettings}
-                    onClick={() => {
-                      onResetView();
-                      setSettingsOpen(false);
-                    }}
-                    className="w-full justify-start gap-2 text-muted-foreground"
-                  >
-                    <RotateCcw className="size-4" />
-                    Restablecer vista
-                  </Button>
-                </div>
-              </>
-            )}
-
-            {settingsSection === "columns" && table && (
-              <>
-                <SearchField
-                  placeholder="Buscar columna..."
-                  value={columnSearch}
-                  onChange={setColumnSearch}
-                />
-                <h3 className="eyebrow">Columnas visibles</h3>
-                {hideable
-                  .filter((column) =>
-                    (column.columnDef.meta?.label ?? column.id)
-                      .toLowerCase()
-                      .includes(columnSearch.trim().toLowerCase()),
-                  )
-                  .map((column) => (
-                    <label
-                      key={column.id}
-                      className="flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-md px-2 text-sm hover:bg-accent"
-                    >
-                      <span>{column.columnDef.meta?.label ?? column.id}</span>
-                      <input
-                        type="checkbox"
-                        checked={column.getIsVisible()}
-                        onChange={(event) =>
-                          column.toggleVisibility(event.target.checked)
-                        }
-                        aria-label={`Mostrar columna ${column.columnDef.meta?.label ?? column.id}`}
-                        className="size-4 accent-brand"
-                      />
-                    </label>
-                  ))}
-                <div className="flex justify-between border-t pt-3">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      hideable.forEach((column) =>
-                        column.toggleVisibility(true),
-                      )
-                    }
-                  >
-                    Mostrar todas
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      hideable.forEach((column) =>
-                        column.toggleVisibility(false),
-                      )
-                    }
-                  >
-                    Ocultar todas
-                  </Button>
-                </div>
-              </>
-            )}
-
-            {settingsSection === "filters" && (
-              <>
-                <ActiveExpenseFilterChips
-                  fields={panelFields}
-                  value={{ ...filters, month: undefined, year: undefined }}
-                  onChange={(next) =>
-                    onFiltersChange({
-                      ...next,
-                      month: filters.month,
-                      year: filters.year,
-                      q: filters.q,
-                    })
-                  }
-                  me={me}
-                  tone="brand"
-                  maxVisibleItems={3}
-                  collapsible={false}
-                />
-                {showPeriodInFilters && (
-                  <section className="space-y-2">
-                    <h3 className="eyebrow">Período</h3>
-                    <FixedCostPeriodSelector />
-                  </section>
-                )}
-                <section className="space-y-3">
-                  <h3 className="eyebrow">Filtros disponibles</h3>
-                  <ExpenseFilterFields
-                    fields={panelFields}
-                    value={filters}
-                    onChange={onFiltersChange}
-                    statuses={FIXED_COST_STATUSES}
-                    panel
-                    personInPanel
-                  />
-                </section>
-                <div className="flex justify-between border-t pt-3">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={filterCount === 0}
-                    onClick={clearFilters}
-                  >
-                    <Trash2 className="size-4" />
-                    Limpiar filtros
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => setSettingsOpen(false)}
-                  >
-                    Ver {shown} {shown === 1 ? "resultado" : "resultados"}
-                  </Button>
-                </div>
-              </>
-            )}
-
-            {settingsSection === "group" && (
-              <>
-                <label className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-md px-2 text-sm hover:bg-accent">
-                  <input
-                    type="checkbox"
-                    checked={!groupBy.length}
-                    onChange={() => onGroupByChange([])}
-                    className="size-4 accent-brand"
-                  />
-                  Sin agrupar
-                </label>
-                {FIXED_COST_GROUP_OPTIONS.map((option) => {
-                  const field = option.value as FixedCostGroupBy[number];
-                  return (
-                    <label
-                      key={option.value}
-                      className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-md px-2 text-sm hover:bg-accent"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={groupBy.includes(field)}
-                        onChange={(event) =>
-                          onGroupByChange(
-                            event.target.checked
-                              ? [...groupBy, field]
-                              : groupBy.filter((item) => item !== field),
-                          )
-                        }
-                        className="size-4 accent-brand"
-                      />
-                      {option.label}
-                    </label>
-                  );
-                })}
-              </>
-            )}
-
-            {settingsSection === "sort" && (
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  onClick={() => onSortChange(undefined)}
-                  className={cn(
-                    "flex min-h-10 w-full items-center rounded-md px-2 text-left text-sm hover:bg-accent",
-                    !sortOption && "bg-accent font-medium",
-                  )}
-                >
-                  Orden original
-                </button>
-                {FIXED_COST_SORTS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => onSortChange(option.value)}
-                    className={cn(
-                      "flex min-h-10 w-full items-center justify-between rounded-md px-2 text-left text-sm hover:bg-accent",
-                      sort === option.value && "bg-accent font-medium",
-                    )}
-                  >
-                    {option.label}
-                    {sort === option.value && (
-                      <Check aria-hidden="true" className="size-4 text-brand" />
-                    )}
-                  </button>
-                ))}
+                <SheetTitle>{settingsSectionTitle}</SheetTitle>
               </div>
-            )}
-          </div>
-        </SheetContent>
+              <SheetDescription>
+                Configura cómo se muestran los costos fijos en esta vista.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+              {settingsSection === "overview" && (
+                <>
+                  {canChangeLayout && (
+                    <section className="space-y-2">
+                      <h3 className="eyebrow">Diseño</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {(
+                          [
+                            ["table", "Tabla", Table2],
+                            ["cards", "Tarjetas", LayoutGrid],
+                          ] as const
+                        ).map(([mode, label, Icon]) => (
+                          <Button
+                            key={mode}
+                            type="button"
+                            variant={view === mode ? "secondary" : "outline"}
+                            aria-pressed={view === mode}
+                            onClick={() => onViewChange(mode)}
+                            className="justify-start gap-2"
+                          >
+                            <Icon className="size-4" />
+                            {label}
+                          </Button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  <section className="space-y-1">
+                    <h3 className="eyebrow px-2 pb-1">Ajustes</h3>
+                    {table &&
+                      hideable.length > 0 &&
+                      settingsRow(
+                        Eye,
+                        "Columnas visibles",
+                        `${visible} de ${hideable.length}`,
+                        () => setSettingsSection("columns"),
+                      )}
+                    {settingsRow(
+                      ListFilter,
+                      "Filtros",
+                      filterCount ? `${filterCount} activos` : "Ninguno",
+                      () => setSettingsSection("filters"),
+                    )}
+                    {canSort &&
+                      settingsRow(
+                        ArrowDownUp,
+                        "Orden",
+                        sortOption ? sortOption.label : "Predeterminado",
+                        () => setSettingsSection("sort"),
+                      )}
+                    {canGroup &&
+                      settingsRow(
+                        Layers,
+                        "Agrupar",
+                        groupBy.length
+                          ? groupBy
+                              .map((field) => FIXED_COST_GROUP_LABELS[field])
+                              .join(" › ")
+                          : "Sin agrupar",
+                        () => setSettingsSection("group"),
+                      )}
+                    {settingsRow(
+                      SlidersHorizontal,
+                      "Color condicional",
+                      "Próximamente",
+                      () => {},
+                      true,
+                    )}
+                    {settingsRow(
+                      Columns3,
+                      "Totales del pie",
+                      "Próximamente",
+                      () => {},
+                      true,
+                    )}
+                  </section>
+
+                  <div className="space-y-1 border-t pt-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start gap-2"
+                      onClick={() =>
+                        void navigator.clipboard
+                          .writeText(window.location.href)
+                          .then(() => toast.success("Enlace copiado"))
+                          .catch(() =>
+                            toast.error("No se pudo copiar el enlace"),
+                          )
+                      }
+                    >
+                      <Link2 className="size-4" />
+                      Copiar enlace a la vista
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start gap-2"
+                      onClick={() =>
+                        toast.info(
+                          "Guardar vistas personalizadas estará disponible próximamente.",
+                        )
+                      }
+                    >
+                      <Plus className="size-4" />
+                      Guardar como nueva vista
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={!hasViewSettings}
+                      onClick={() => {
+                        onResetView();
+                        setSettingsOpen(false);
+                      }}
+                      className="w-full justify-start gap-2 text-muted-foreground"
+                    >
+                      <RotateCcw className="size-4" />
+                      Restablecer vista
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {settingsSection === "columns" && table && (
+                <>
+                  <SearchField
+                    placeholder="Buscar columna..."
+                    value={columnSearch}
+                    onChange={setColumnSearch}
+                  />
+                  <h3 className="eyebrow">Columnas visibles</h3>
+                  {hideable
+                    .filter((column) =>
+                      (column.columnDef.meta?.label ?? column.id)
+                        .toLowerCase()
+                        .includes(columnSearch.trim().toLowerCase()),
+                    )
+                    .map((column) => (
+                      <label
+                        key={column.id}
+                        className="flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-md px-2 text-sm hover:bg-accent"
+                      >
+                        <span>{column.columnDef.meta?.label ?? column.id}</span>
+                        <input
+                          type="checkbox"
+                          checked={column.getIsVisible()}
+                          onChange={(event) =>
+                            column.toggleVisibility(event.target.checked)
+                          }
+                          aria-label={`Mostrar columna ${column.columnDef.meta?.label ?? column.id}`}
+                          className="size-4 accent-brand"
+                        />
+                      </label>
+                    ))}
+                  <div className="flex justify-between border-t pt-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        hideable.forEach((column) =>
+                          column.toggleVisibility(true),
+                        )
+                      }
+                    >
+                      Mostrar todas
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        hideable.forEach((column) =>
+                          column.toggleVisibility(false),
+                        )
+                      }
+                    >
+                      Ocultar todas
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {settingsSection === "filters" && (
+                <>
+                  <ActiveExpenseFilterChips
+                    fields={FIXED_COST_PANEL_FILTER_KEYS}
+                    value={{ ...filters, month: undefined, year: undefined }}
+                    onChange={(next) =>
+                      onFiltersChange({
+                        ...next,
+                        month: filters.month,
+                        year: filters.year,
+                        q: filters.q,
+                      })
+                    }
+                    me={me}
+                    tone="brand"
+                    maxVisibleItems={3}
+                    collapsible={false}
+                  />
+                  {showPeriodInFilters && (
+                    <section className="space-y-2">
+                      <h3 className="eyebrow">Período</h3>
+                      <FixedCostPeriodSelector />
+                    </section>
+                  )}
+                  <section className="space-y-3">
+                    <h3 className="eyebrow">Filtros disponibles</h3>
+                    <ExpenseFilterFields
+                      fields={FIXED_COST_PANEL_FILTER_KEYS}
+                      value={filters}
+                      onChange={onFiltersChange}
+                      statuses={FIXED_COST_STATUSES}
+                      panel
+                      personInPanel
+                      personCounts={personCounts}
+                    />
+                  </section>
+                  <div className="flex justify-between border-t pt-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={filterCount === 0}
+                      onClick={clearFilters}
+                    >
+                      <Trash2 className="size-4" />
+                      Limpiar filtros
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => setSettingsOpen(false)}
+                    >
+                      Ver {shown} {shown === 1 ? "resultado" : "resultados"}
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {settingsSection === "group" && (
+                <>
+                  <label className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-md px-2 text-sm hover:bg-accent">
+                    <input
+                      type="checkbox"
+                      checked={!groupBy.length}
+                      onChange={() => onGroupByChange([])}
+                      className="size-4 accent-brand"
+                    />
+                    Sin agrupar
+                  </label>
+                  {FIXED_COST_GROUP_OPTIONS.map((option) => {
+                    const field = option.value as FixedCostGroupBy[number];
+                    return (
+                      <label
+                        key={option.value}
+                        className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-md px-2 text-sm hover:bg-accent"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={groupBy.includes(field)}
+                          onChange={(event) =>
+                            onGroupByChange(
+                              event.target.checked
+                                ? [...groupBy, field]
+                                : groupBy.filter((item) => item !== field),
+                            )
+                          }
+                          className="size-4 accent-brand"
+                        />
+                        {option.label}
+                      </label>
+                    );
+                  })}
+                </>
+              )}
+
+              {settingsSection === "sort" && (
+                <div className="space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => onSortChange(undefined)}
+                    className={cn(
+                      "flex min-h-10 w-full items-center rounded-md px-2 text-left text-sm hover:bg-accent",
+                      !sortOption && "bg-accent font-medium",
+                    )}
+                  >
+                    Orden original
+                  </button>
+                  {FIXED_COST_SORTS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => onSortChange(option.value)}
+                      className={cn(
+                        "flex min-h-10 w-full items-center justify-between rounded-md px-2 text-left text-sm hover:bg-accent",
+                        sort === option.value && "bg-accent font-medium",
+                      )}
+                    >
+                      {option.label}
+                      {sort === option.value && (
+                        <Check
+                          aria-hidden="true"
+                          className="size-4 text-brand"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </SheetContent>
         </Sheet>
       )}
     </div>
-  );
-}
-
-function FixedCostFilterSheet({
-  open,
-  onOpenChange,
-  filters,
-  onFiltersChange,
-  me,
-  shown,
-  total,
-  filterCount,
-  onClear,
-  showPeriod,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  filters: ExpenseFilterValues;
-  onFiltersChange: (filters: ExpenseFilterValues) => void;
-  me?: string;
-  shown: number;
-  total: number;
-  filterCount: number;
-  onClear: () => void;
-  showPeriod: boolean;
-}) {
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0"
-      >
-        <SheetHeader className="gap-2 border-b p-5 pr-12">
-          <SheetTitle className="flex items-center gap-2">
-            Filtros
-            {filterCount > 0 && (
-              <span className="rounded-full bg-brand/15 px-2 text-xs font-semibold text-brand">
-                {filterCount}
-              </span>
-            )}
-          </SheetTitle>
-          <SheetDescription>
-            Mostrando {shown} de {total} costos fijos
-          </SheetDescription>
-          <ActiveExpenseFilterChips
-            fields={panelFields}
-            value={{ ...filters, month: undefined, year: undefined }}
-            onChange={(next) =>
-              onFiltersChange({
-                ...next,
-                month: filters.month,
-                year: filters.year,
-                q: filters.q,
-              })
-            }
-            me={me}
-            tone="brand"
-            maxVisibleItems={3}
-            collapsible={false}
-          />
-        </SheetHeader>
-        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
-          {showPeriod && (
-            <section className="space-y-2">
-              <h3 className="eyebrow">Período</h3>
-              <FixedCostPeriodSelector />
-            </section>
-          )}
-          <section className="space-y-3">
-            <h3 className="eyebrow">Filtros</h3>
-            <div className="flex flex-col gap-3">
-              <ExpenseFilterFields
-                fields={panelFields}
-                value={filters}
-                onChange={onFiltersChange}
-                statuses={FIXED_COST_STATUSES}
-                panel
-                personInPanel
-              />
-            </div>
-          </section>
-        </div>
-        <SheetFooter className="flex-row items-center justify-between border-t bg-background p-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={filterCount === 0}
-            onClick={onClear}
-          >
-            <Trash2 className="size-4" />
-            Limpiar todo
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="h-9 px-4"
-            onClick={() => onOpenChange(false)}
-          >
-            Ver {shown} {shown === 1 ? "resultado" : "resultados"}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
   );
 }

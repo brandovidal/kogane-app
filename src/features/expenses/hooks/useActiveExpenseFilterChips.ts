@@ -15,6 +15,7 @@ import {
   PERSON_ALL,
   PERSON_FILTER_LABELS,
   PERSON_ME,
+  PERSON_UNASSIGNED,
   SHARED_FILTER,
 } from "../constants/expense-filters";
 import type {
@@ -50,10 +51,15 @@ export function useActiveExpenseFilterChips<
       ? `Mes: ${getMonthName(Number(value.month))}`
       : undefined,
     year: value.year ? `Año: ${value.year}` : undefined,
-    person:
-      value.person && value.person !== PERSON_ALL
-        ? `Persona: ${value.person === PERSON_ME || value.person === me ? meName : personName(value.person)}`
-        : undefined,
+    person: value.person && value.person !== PERSON_ALL
+      ? `Persona: ${value.person.split(",").filter(Boolean).map((id) =>
+          id === PERSON_UNASSIGNED
+            ? "Sin asignar"
+            : id === PERSON_ME || id === me
+              ? meName
+              : personName(id),
+        ).join(", ")}`
+      : undefined,
     category: value.category
       ? `Categoría: ${value.category
           .split(",")

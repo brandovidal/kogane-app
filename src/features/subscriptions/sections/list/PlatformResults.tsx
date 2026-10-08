@@ -23,7 +23,7 @@ export function PlatformResults({
   items: Subscription[];
   total: number;
   view: PlatformView;
-  groupBy: "none" | "person" | "period";
+  groupBy: Array<"person" | "period">;
   tableState: ReturnType<typeof usePlatformTable>;
   personName: (id: string | null | undefined) => string;
   loading: boolean;
@@ -55,7 +55,7 @@ export function PlatformResults({
     </div>;
   }
   const effectiveGroup = groupBy;
-  const isGrouped = Array.isArray(effectiveGroup) || effectiveGroup !== "none";
+  const isGrouped = effectiveGroup.length > 0;
   const layout = layoutForPlatformView(view);
   if (layout === "table" && !isGrouped) return <DataTableComplex table={tableState.table} className="platform-table" calculationStorageKey={items.length ? "platforms" : undefined} calculationDefaults={{ description: "count", amount: "sum" }} pagination={items.length > 0} loading={loading} error={error ? "No se pudieron cargar las plataformas." : undefined} emptyMessage={empty} />;
   if (loading) return <DataLoadingSkeleton variant={layout === "table" ? "table" : "cards"} columns={tableState.columns.length} />;

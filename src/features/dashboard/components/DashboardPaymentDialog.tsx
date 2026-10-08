@@ -17,6 +17,7 @@ import { Checkbox } from "@/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
 type PaymentTab = "card" | "fixed" | "collect" | "debt";
+type PaymentCalendarEvent = CalendarEvent & { displayDate?: string | null; unscheduled?: boolean };
 const TAB_ITEMS: { id: PaymentTab; label: string }[] = [
   { id: "card", label: "Tarjeta" },
   { id: "fixed", label: "Costos fijos" },
@@ -44,9 +45,11 @@ export function DashboardPaymentDialog({ open, onOpenChange, initialTab = "card"
   const month = usePeriod((state) => state.month);
   const year = usePeriod((state) => state.year);
   const { from, to } = gridRange(month, year);
-  const events = useCalendar(from, to).data ?? [];
+  const calendarQuery = useCalendar(from, to);
+  const events = calendarQuery.data ?? [];
   const cardExpenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
-  const fixedCosts = useExpenses(EXPENSE_RESOURCES.fixedCost, { month, year }).data ?? [];
+  const fixedCostsQuery = useExpenses(EXPENSE_RESOURCES.fixedCost, { month, year });
+  const fixedCosts = fixedCostsQuery.data ?? [];
   const subscriptions = useExpenses(EXPENSE_RESOURCES.subscription, { month, year }).data ?? [];
   const cards = useCreditCards().data ?? [];
   const categories = useCategories().data ?? [];
@@ -56,7 +59,33 @@ export function DashboardPaymentDialog({ open, onOpenChange, initialTab = "card"
   const [submitting, setSubmitting] = useState(false);
   const [selectionInitialized, setSelectionInitialized] = useState(false);
 
-  const payable = useMemo(() => events.filter(isPayable).filter((event) => tabOf(event) === tab), [events, tab]);
+  const fixedCostEvents = useMemo<PaymentCalendarEvent[]>(() => fixedCosts
+    .filter((cost) => !["paid", "waived", "amortized", "cashback", "skipped"].includes(cost.paymentStatus))
+    .map((cost) => {
+      const displayDate = cost.dueDate?.slice(0, 10) ?? null;
+      const placeholderDate = displayDate ?? `${cost.paymentYear}-${String(cost.paymentMonth).padStart(2, "0")}-01`;
+      const late = displayDate ? daysUntil(displayDate) < 0 : false;
+      return {
+        date: placeholderDate,
+        displayDate,
+        unscheduled: displayDate == null,
+        kind: "fixed_cost",
+        name: cost.description,
+        personName: null,
+        installment: cost.installment,
+        amount: cost.amountInPen ?? cost.amount,
+        currency: cost.currency,
+        status: late ? "late" : "pending",
+        refType: "fixed_cost",
+        refId: cost.id,
+        color: null,
+      };
+    }), [fixedCosts]);
+  const payable = useMemo<PaymentCalendarEvent[]>(() => {
+    if (tab !== "fixed") return events.filter(isPayable).filter((event) => tabOf(event) === tab);
+    const platformEvents = events.filter((event) => isPayable(event) && event.refType === "subscription");
+    return [...platformEvents, ...fixedCostEvents];
+  }, [events, fixedCostEvents, tab]);
   const selectedEvents = payable.filter((event) => selected.has(eventKey(event)));
   const total = selectedEvents.reduce((sum, event) => sum + (event.amount ?? 0), 0);
 
@@ -94,15 +123,16 @@ export function DashboardPaymentDialog({ open, onOpenChange, initialTab = "card"
   }, [open, initialTab]);
 
   useEffect(() => {
-    if (!open || !events.length || selectionInitialized) return;
-    const defaults = events.filter((event) => {
+    if (!open || !calendarQuery.isSuccess || !fixedCostsQuery.isSuccess || selectionInitialized) return;
+    const defaults = [...events.filter((event) => event.refType !== "fixed_cost"), ...fixedCostEvents].filter((event) => {
       const category = tabOf(event);
       if (!category || !isPayable(event)) return false;
+      if ("unscheduled" in event && event.unscheduled) return false;
       return event.status === "late" || daysUntil(event.date) <= 7;
     });
     setSelected(new Set(defaults.map(eventKey)));
     setSelectionInitialized(true);
-  }, [events, open, selectionInitialized]);
+  }, [calendarQuery.isSuccess, events, fixedCostsQuery.isSuccess, fixedCostEvents, open, selectionInitialized]);
 
   const toggle = (event: CalendarEvent, checked: boolean) => {
     setSelected((current) => {
@@ -150,8 +180,9 @@ export function DashboardPaymentDialog({ open, onOpenChange, initialTab = "card"
                   <div className="max-h-64 divide-y overflow-y-auto rounded-xl border">
                     {rows.map((event) => {
                       const checked = selected.has(eventKey(event));
-                      const due = daysUntil(event.date);
-                      const isLate = event.status === "late" || due < 0;
+                        const paymentEvent = event as PaymentCalendarEvent;
+                        const due = paymentEvent.displayDate ? daysUntil(paymentEvent.displayDate) : daysUntil(event.date);
+                        const isLate = event.status === "late" || due < 0;
                       const Icon = id === "card" ? CreditCard : id === "fixed" ? ReceiptText : HandCoins;
                       return (
                         <label key={eventKey(event)} className={`flex cursor-pointer items-center gap-3 px-3.5 py-3 transition-colors ${checked ? "bg-muted/60" : "hover:bg-muted/30"}`}>
@@ -159,7 +190,7 @@ export function DashboardPaymentDialog({ open, onOpenChange, initialTab = "card"
                           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted"><Icon className="size-4 text-muted-foreground" /></div>
                           <div className="min-w-0 flex-1">
                             <span className="flex flex-wrap items-center gap-2 text-sm font-medium">{eventLabel(event)}{isLate && <Badge variant="destructive" className="px-2 py-0">Retrasado</Badge>}</span>
-                            <span className="block truncate text-xs text-muted-foreground">{isLate ? `Venció ${formatDate(event.date)} · retrasado ${Math.abs(due)} días` : `Vence ${formatDate(event.date)}`}</span>
+                            <span className="block truncate text-xs text-muted-foreground">{paymentEvent.displayDate === null ? "Sin fecha de vencimiento" : isLate ? `Venció ${formatDate(paymentEvent.displayDate ?? event.date)} · retrasado ${Math.abs(due)} días` : `Vence ${formatDate(paymentEvent.displayDate ?? event.date)}`}</span>
                             <span className="block truncate text-xs text-muted-foreground">{expenseClassification(event)}</span>
                           </div>
                           <span className="shrink-0 text-sm font-semibold tabular-nums">{event.amount == null ? "—" : formatCurrency(event.amount, event.currency)}</span>

@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import { Check, ChevronDown, Search, type LucideIcon } from "lucide-react";
+import { Check, ChevronDown, Minus, Search, type LucideIcon } from "lucide-react";
 
 import {
   Combobox,
@@ -31,6 +31,7 @@ export interface FilterSelectOption {
   label: string;
   decoration?: ReactNode;
   searchTerms?: readonly string[];
+  count?: number;
 }
 
 export interface FilterSelectProps {
@@ -42,11 +43,17 @@ export interface FilterSelectProps {
   width?: string;
   description?: string;
   labelClassName?: string;
+  containerClassName?: string;
+  triggerClassName?: string;
   allLabel?: string;
+  allTriggerLabel?: string;
   allValue?: string;
   searchable?: boolean;
   active?: boolean;
   multiple?: boolean;
+  compactSelectionSummary?: boolean;
+  multipleFooter?: boolean;
+  emptyDescription?: string;
 }
 
 const ALL = "__all__";
@@ -67,11 +74,17 @@ export function FilterSelect({
   width = "w-[150px]",
   description,
   labelClassName = "text-xs font-medium text-muted-foreground",
+  containerClassName,
+  triggerClassName,
   allLabel = "Todos",
+  allTriggerLabel,
   allValue = ALL,
   searchable = false,
   active,
   multiple = false,
+  compactSelectionSummary = false,
+  multipleFooter = false,
+  emptyDescription,
 }: FilterSelectProps) {
   const isActive = active ?? (value != null && value !== "" && value !== allValue);
   const activeControlClass = isActive
@@ -87,15 +100,20 @@ export function FilterSelect({
   );
   const selectedOption = options.find((option) => option.value === value);
   const selectedValues = multiple
-    ? (value?.split(",").filter(Boolean) ?? [])
+    ? (value?.split(",").filter((item) => item && item !== allValue) ?? [])
     : [];
   const selectedOptions = multiple
     ? options.filter((option) => selectedValues.includes(option.value))
     : [];
+  const selectedLabel = selectedOptions.length
+    ? compactSelectionSummary && selectedOptions.length > 1
+      ? `${selectedOptions[0].label} +${selectedOptions.length - 1}`
+      : selectedOptions.map((option) => option.label).join(", ")
+    : (allTriggerLabel ?? allLabel);
   const hasSearchTerms = options.some((option) => option.searchTerms?.length);
 
   return (
-    <div className="block min-w-0 space-y-1.5">
+    <div className={cn("block min-w-0 space-y-1.5", containerClassName)}>
       <div className={labelClassName}>
         <FieldLabel icon={icon} className={isActive ? "text-brand" : undefined}>{label}</FieldLabel>
       </div>
@@ -107,23 +125,29 @@ export function FilterSelect({
           items={items}
           filter={hasSearchTerms ? matchesOption : undefined}
           multiple={multiple}
-          value={multiple ? selectedValues : value ?? allValue}
+          value={multiple ? (selectedValues.length ? selectedValues : [allValue]) : value ?? allValue}
           onValueChange={(next) => {
             if (multiple) {
-              const nextValues = Array.isArray(next) ? next.map(String) : [];
-              if (nextValues.includes(allValue)) return onChange(undefined);
+              const rawValues = Array.isArray(next) ? next.map(String) : [];
+              if (rawValues.includes(allValue) && selectedValues.length > 0) {
+                return onChange(undefined);
+              }
+              const nextValues = rawValues.filter((item) => item !== allValue);
               return onChange(nextValues.length ? nextValues.join(",") : undefined);
             }
             onChange(next == null || next === allValue ? undefined : String(next));
           }}
           autoHighlight
         >
-          <ComboboxTrigger aria-label={label} className={cn(width, activeControlClass)}>
+          <ComboboxTrigger aria-label={label} className={cn(width, activeControlClass, triggerClassName)}>
             {!multiple && selectedOption?.decoration}
-            <span className="min-w-0 flex-1 truncate text-left">
+            <span className={cn(
+              "min-w-0 flex-1 truncate text-left",
+              multiple && selectedValues.length > 0 && "text-brand",
+            )}>
               {multiple
-                ? selectedOptions.map((option) => option.label).join(", ") || allLabel
-                : <ComboboxValue placeholder={allLabel} />}
+                ? selectedLabel
+                : <ComboboxValue placeholder={allTriggerLabel ?? allLabel} />}
             </span>
             <ChevronDown className="size-4 shrink-0 opacity-50" />
           </ComboboxTrigger>
@@ -143,18 +167,43 @@ export function FilterSelect({
             </div>
             <ComboboxList className="max-h-60 overflow-y-auto p-1">
               {(option: FilterSelectOption) => (
-                  <ComboboxItem key={option.value} value={option.value}>
+                <ComboboxItem key={option.value} value={option.value}>
+                  {multiple && (
+                    <span className="relative inline-flex size-5 shrink-0 items-center justify-center rounded-[4px] border border-input bg-background">
+                      {option.value === allValue && selectedValues.length > 0 ? (
+                        <Minus className="size-3.5" />
+                      ) : (
+                        <ComboboxItemIndicator>
+                          <Check className="size-3.5" />
+                        </ComboboxItemIndicator>
+                      )}
+                    </span>
+                  )}
                   {option.decoration}
-                  {option.label}
-                  <ComboboxItemIndicator>
-                    <Check className="size-4" />
-                  </ComboboxItemIndicator>
+                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  {option.count != null && (
+                    <span className="text-xs tabular-nums text-muted-foreground">{option.count}</span>
+                  )}
+                  {!multiple && <ComboboxItemIndicator><Check className="size-4" /></ComboboxItemIndicator>}
                 </ComboboxItem>
               )}
             </ComboboxList>
             <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">
-              No se encontraron opciones.
+              {emptyDescription ?? "No se encontraron opciones."}
             </ComboboxEmpty>
+            {multipleFooter && (
+              <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
+                <span>{selectedValues.length ? `${selectedValues.length} seleccionadas` : "Sin filtro · se muestran todas"}</span>
+                <button
+                  type="button"
+                  className="font-medium text-foreground disabled:cursor-default disabled:opacity-50"
+                  disabled={!selectedValues.length}
+                  onClick={() => onChange(undefined)}
+                >
+                  Limpiar
+                </button>
+              </div>
+            )}
           </ComboboxContent>
         </Combobox>
       ) : (
@@ -164,7 +213,7 @@ export function FilterSelect({
             onChange(next === allValue ? undefined : next)
           }
         >
-          <SelectTrigger className={cn("h-9", width, activeControlClass)} aria-label={label}>
+          <SelectTrigger className={cn("h-9", width, activeControlClass, triggerClassName)} aria-label={label}>
             {selectedOption?.decoration}
             <SelectValue placeholder={label}>
               {selectedOption?.label}

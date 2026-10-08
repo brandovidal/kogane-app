@@ -12,10 +12,8 @@ import { FixedCostDetailPage } from "./FixedCostDetailPage";
 import { FixedCostResultsSection } from "../sections/list/FixedCostResultsSection";
 import { FixedCostBulkActionsSection } from "../sections/list/FixedCostBulkActionsSection";
 import { FixedCostMonthOverview } from "../sections/list/FixedCostMonthOverview";
-import {
-  FixedCostToolbar,
-  FixedCostViewBar,
-} from "../sections/list/FixedCostToolbar";
+import { FixedCostToolbar } from "../sections/list/FixedCostToolbar";
+import { FixedCostViewBar } from "../sections/list/FixedCostViewBar";
 import { FixedCostInstallmentsView } from "../views/FixedCostInstallmentsView";
 import { FixedCostStatusBoard } from "../views/FixedCostStatusBoard";
 import { FixedCostEmptyMonthView } from "../views/FixedCostEmptyMonthView";
@@ -98,6 +96,7 @@ function FixedCostListPageContent() {
       filterSheetOpen={filterSheetOpen}
       onFilterSheetOpenChange={setFilterSheetOpen}
       loading={list.loading}
+      personRecords={list.fixedCosts}
     />
   );
 

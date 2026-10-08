@@ -32,7 +32,7 @@ export type ExpenseFilterFieldsProps = Pick<
   | "statuses"
   | "personInPanel"
   | "searchInPanel"
-> & { panel: boolean };
+> & { panel: boolean; personCounts?: Record<string, number> };
 
 export interface ActiveExpenseFilterChipsOptions<
   T extends string | string[] = string,

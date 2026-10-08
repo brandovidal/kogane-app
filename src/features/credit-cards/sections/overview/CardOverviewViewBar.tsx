@@ -1,13 +1,14 @@
-import { Activity, ChevronDown, LayoutGrid, ListFilter, MoreHorizontal, Plus } from "lucide-react";
+import { Activity, ChevronDown, Columns3, LayoutGrid, ListFilter, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { cn } from "@/shared/utils/cn";
 
-export type CardOverviewView = "summary" | "movements" | "installments";
+export type CardOverviewView = "summary" | "movements" | "installments" | "period";
 const VIEWS = [
   { value: "summary", label: "Resumen", Icon: LayoutGrid },
   { value: "movements", label: "Movimientos", Icon: ListFilter },
   { value: "installments", label: "Cuotas", Icon: Activity },
+  { value: "period", label: "Por período", Icon: Columns3 },
 ] as const;
 
 export function CardOverviewViewBar({ view, onViewChange, onNewExpense, onNewCard }: {

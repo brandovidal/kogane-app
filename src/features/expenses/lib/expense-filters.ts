@@ -1,6 +1,7 @@
 import {
   PERSON_ALL,
   PERSON_ME,
+  PERSON_UNASSIGNED,
   INSTALLMENT_FILTER,
   SHARED_FILTER,
   PANEL_FILTER_KEYS,
@@ -40,18 +41,19 @@ export function applyExpenseFilters<T extends FilterableExpense>(
   me?: string,
 ): T[] {
   const q = filters.q?.trim() ? fold(filters.q.trim()) : null;
-  const person =
-    !filters.person || filters.person === PERSON_ALL
-      ? null
-      : filters.person === PERSON_ME
-        ? (me ?? null)
-        : filters.person;
+  const selectedPeople = filters.person
+    ?.split(",")
+    .filter((person) => person && person !== PERSON_ALL)
+    .map((person) => (person === PERSON_ME ? me : person))
+    .filter((person): person is string => !!person);
   const dueFrom = filters.dueFrom || null;
   const dueTo = filters.dueTo || null;
   const categories = filters.category?.split(",").filter(Boolean) ?? [];
   return records.filter(
     (record) =>
-      (!person || record.personId === person) &&
+      (!selectedPeople?.length || selectedPeople.some((person) =>
+        person === PERSON_UNASSIGNED ? !record.personId : record.personId === person,
+      )) &&
       (!q ||
         [record.description, record.merchant, record.notes].some(
           (text) => text && fold(text).includes(q),

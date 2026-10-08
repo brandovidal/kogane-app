@@ -9,7 +9,7 @@ export type SharedFilterValue =
   (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
 
 export interface ExpenseFilterValues {
-  person?: string; // Empty or PERSON_ALL = everyone, PERSON_ME = default person, or a person's id.
+  person?: string; // Comma-separated person ids; PERSON_ME and PERSON_UNASSIGNED are special values.
   q?: string;
   category?: string;
   method?: string;

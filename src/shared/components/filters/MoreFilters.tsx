@@ -11,11 +11,12 @@ import { cn } from "@/shared/utils/cn";
 
 export interface MoreFiltersProps {
   activeCount?: number;
+  defaultOpen?: boolean;
   children: ReactNode;
 }
 
-export function MoreFilters({ activeCount = 0, children }: MoreFiltersProps) {
-  const [open, setOpen] = useState(false);
+export function MoreFilters({ activeCount = 0, defaultOpen = false, children }: MoreFiltersProps) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger

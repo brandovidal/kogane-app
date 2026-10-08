@@ -40,6 +40,11 @@ export function usePlatformActions() {
       save.mutate({ body: duplicateBody(EXPENSE_RESOURCES.subscription, item) }),
     onNextMonth: (item: Subscription) =>
       save.mutate({ id: item.id, body: nextMonthBody(item) }),
+    onPaymentPeriodChange: (item: Subscription, period: { month: number; year: number }) =>
+      save.mutate(
+        { id: item.id, body: { paymentMonth: period.month, paymentYear: period.year } },
+        { onSuccess: () => setOpenedItem((current) => current?.id === item.id ? { ...current, ...period } : current) },
+      ),
     onMove: (item: Subscription) => setMoving({
       resource: EXPENSE_RESOURCES.subscription,
       id: item.id,
