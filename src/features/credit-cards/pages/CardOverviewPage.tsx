@@ -105,6 +105,11 @@ function CardOverviewPageContent() {
       {editing && (
         <CardEditorDialog
           card={editing.card}
+          movements={editing.count}
+          onArchive={() => {
+            setArchiving(editing);
+            setEditing(null);
+          }}
           onClose={() => setEditing(null)}
         />
       )}

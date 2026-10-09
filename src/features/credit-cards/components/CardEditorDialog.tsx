@@ -8,6 +8,7 @@ import {
 import type { PaymentMethod } from "@/shared/api/types";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
+import { Archive } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import {
@@ -51,9 +52,15 @@ const validDay = (value: string) =>
 
 export function CardEditorDialog({
   card,
+  movements,
+  onArchive,
   onClose,
 }: {
   card?: PaymentMethod;
+  /** How many movements the card has, for the warning when editing */
+  movements?: number;
+  /** Archive in place of deleting (the API only deactivates a card) */
+  onArchive?: () => void;
   onClose: () => void;
 }) {
   const [form, setForm] = useState(() => fromCard(card));
@@ -168,6 +175,17 @@ export function CardEditorDialog({
       contentClassName="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-xl"
       footer={
         <>
+          {card && onArchive && (
+            <Button
+              variant="ghost"
+              className="mr-auto text-destructive hover:text-destructive"
+              onClick={onArchive}
+              disabled={busy}
+            >
+              <Archive aria-hidden="true" />
+              Archivar
+            </Button>
+          )}
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
@@ -180,6 +198,9 @@ export function CardEditorDialog({
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto py-2 pr-1">
         {card && (
           <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300">
+            {movements
+              ? `Esta tarjeta tiene ${movements} ${movements === 1 ? "movimiento" : "movimientos"}. `
+              : ""}
             Cambiar los días de cierre o pago no modifica los movimientos ya
             registrados.
           </p>
@@ -191,7 +212,7 @@ export function CardEditorDialog({
             id="card-name"
             value={form.name}
             onChange={(event) => set({ name: event.target.value })}
-            placeholder="Ej.: CMR"
+            placeholder="Ej: CMR, Visa Oro, Amex…"
             autoFocus
             aria-invalid={submitted && errors.name}
           />,
@@ -281,7 +302,7 @@ export function CardEditorDialog({
               aria-invalid={submitted && errors.last4}
             />,
             "Ingresa 4 dígitos",
-            "Ayuda a identificar las compras en el estado de cuenta.",
+            "Solo para reconocerla; nunca guardamos el número completo.",
           )}
           {field(
             "personId",
@@ -323,6 +344,7 @@ export function CardEditorDialog({
               aria-invalid={submitted && errors.closeDay}
             />,
             "Ingresa un día entre 1 y 31",
+            "Día del mes en que cierra el estado de cuenta.",
           )}
           {field(
             "payDay",
@@ -338,6 +360,7 @@ export function CardEditorDialog({
               aria-invalid={submitted && errors.payDay}
             />,
             "Ingresa un día entre 1 y 31",
+            "Día límite para pagar sin intereses.",
           )}
         </div>
         {field(
