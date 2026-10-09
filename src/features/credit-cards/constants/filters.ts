@@ -3,6 +3,7 @@ import type { ExpenseFilterKey } from "@/features/expenses/types/expense-filters
 export const CARD_OVERVIEW_FILTER_KEYS = [
   "person",
   "q",
+  "method",
   "installments",
   "category",
   "currency",
@@ -31,3 +32,13 @@ export const CARD_DETAIL_GROUP_OPTIONS = [
 
 export type CardDetailGroupBy =
   (typeof CARD_DETAIL_GROUP_OPTIONS)[number]["value"];
+
+export const CARD_OVERVIEW_GROUP_OPTIONS = [
+  { value: "bank", label: "Banco" },
+  { value: "currency", label: "Moneda" },
+  { value: "installments", label: "Cuotas" },
+  { value: "person", label: "Persona" },
+] as const;
+
+export type CardOverviewGroupBy =
+  (typeof CARD_OVERVIEW_GROUP_OPTIONS)[number]["value"];

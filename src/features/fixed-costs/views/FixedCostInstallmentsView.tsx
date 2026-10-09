@@ -66,7 +66,7 @@ export function FixedCostInstallmentsView({
     0,
   );
   const balance = active.reduce((sum, item) => sum + item.estimatedBalance, 0);
-  const nextToEnd = active[0];
+  const nextToEnd = [...active].sort((a, b) => a.endIndex - b.endIndex)[0];
 
   if (loading)
     return (

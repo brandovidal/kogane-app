@@ -15,13 +15,27 @@ export type FixedCostView = (typeof FIXED_COST_VIEWS)[number]["value"];
 export const isFixedCostView = (value: unknown): value is FixedCostView =>
   FIXED_COST_VIEWS.some((view) => view.value === value);
 
-export const FIXED_COST_VIEW_PERIOD: Record<FixedCostView, "month" | "year"> = {
+export const FIXED_COST_VIEW_PERIOD: Record<
+  FixedCostView,
+  "month" | "year" | "all"
+> = {
   mes: "month",
   estado: "month",
   todos: "year",
-  "por-pagar": "month",
-  cuotas: "month",
+  "por-pagar": "all",
+  cuotas: "all",
 };
+
+export const PAYABLE_HORIZONS = [
+  { value: "today", label: "Hasta hoy" },
+  { value: "30-days", label: "30 días" },
+  { value: "all", label: "Todo" },
+] as const;
+
+export type PayableHorizon = (typeof PAYABLE_HORIZONS)[number]["value"];
+
+export const isPayableHorizon = (value: unknown): value is PayableHorizon =>
+  PAYABLE_HORIZONS.some((horizon) => horizon.value === value);
 
 export function monthKeyIndex(value: string | undefined) {
   const match = /^(\d{4})-(\d{2})$/.exec(value ?? "");
@@ -161,6 +175,20 @@ export function payableByUrgency(costs: FixedCost[], todayKey: string) {
           (order.get(urgencyOf(b, todayKey)) ?? 0) ||
         (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999"),
     );
+}
+
+export function filterPayableByHorizon(
+  costs: FixedCost[],
+  todayKey: string,
+  horizon: PayableHorizon,
+) {
+  if (horizon === "all") return costs;
+  return costs.filter((cost) => {
+    const days = cost.dueDate ? daysUntilDue(cost.dueDate, todayKey) : null;
+    if (days == null) return false;
+    if (horizon === "today") return days <= 0;
+    return days <= 30;
+  });
 }
 
 export interface InstallmentSeries {

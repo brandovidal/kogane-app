@@ -53,9 +53,11 @@ function FixedCostListPageContent() {
   const periodLabel =
     list.periodScope === "year"
       ? "del año"
-      : list.filters.month && list.filters.year
-        ? "del mes"
-        : "del período";
+      : list.periodScope === "all"
+        ? "de cualquier mes"
+        : list.filters.month && list.filters.year
+          ? "del mes"
+          : "del período";
   const emptyPeriodLabel =
     page === "todos"
       ? `el año ${list.filters.year || new Date().getFullYear()}`
@@ -219,15 +221,23 @@ function FixedCostListPageContent() {
         onPageChange={list.setPage}
         exportItems={list.exportItems}
         onCreate={interaction.onCreate}
+        payableHorizon={list.payableHorizon}
+        onPayableHorizonChange={list.setPayableHorizon}
       />
       {page !== "cuotas" && (
         <FixedCostMonthOverview
-          items={page === "por-pagar" ? list.filtered : list.baseFiltered}
+          items={page === "por-pagar" ? list.payable : list.baseFiltered}
           scope={page === "por-pagar" ? "payable" : list.scope}
           onScopeChange={page === "por-pagar" ? () => undefined : list.setScope}
           periodLabel={periodLabel}
           loading={list.loading}
-          variant={page === "por-pagar" ? "payable" : "period"}
+          variant={
+            page === "por-pagar"
+              ? "payable"
+              : page === "todos"
+                ? "year"
+                : "period"
+          }
         />
       )}
       {page !== "cuotas" && toolbar}

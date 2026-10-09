@@ -25,6 +25,7 @@ import { Button } from "@/ui/button";
 import { DropdownMenuItem } from "@/ui/dropdown-menu";
 import { CARD_DETAIL_GROUP_OPTIONS } from "../../constants/filters";
 import { CREDIT_CARD_STATUSES } from "../../constants/statuses";
+import type { CardDetailGroupBy } from "../../constants/filters";
 
 const SORT_OPTIONS = [
   { value: "date-desc", label: "Fecha: más reciente" },
@@ -39,8 +40,8 @@ export interface CardDetailToolbarProps {
   onFiltersChange: (filters: ExpenseFilterValues) => void;
   shown: number;
   total: number;
-  groupBy: string;
-  onGroupByChange: (groupBy: string) => void;
+  groupBy: CardDetailGroupBy[];
+  onGroupByChange: (groupBy: CardDetailGroupBy[]) => void;
   sort?: string;
   onSortChange: (sort: string | undefined) => void;
   view: ViewMode;
@@ -69,8 +70,7 @@ export function CardDetailToolbar({
   const [showApplied, setShowApplied] = useState(false);
   const me = useMe();
   const filterCount = countActiveExpenseFilters(filters, fields);
-  const appliedCount =
-    filterCount + (sort ? 1 : 0) + (groupBy !== "none" ? 1 : 0);
+  const appliedCount = filterCount + (sort ? 1 : 0) + groupBy.length;
   const sortLabel = SORT_OPTIONS.find((option) => option.value === sort)?.label;
   const visibleColumnCount = columns.filter((column) => column.visible).length;
 
@@ -83,8 +83,6 @@ export function CardDetailToolbar({
         statuses={CREDIT_CARD_STATUSES}
         shown={shown}
         total={total}
-        groupBy={groupBy}
-        onGroupByChange={onGroupByChange}
         personInPanel
         installmentsInPanel
         filterOpen={filterOpen}
@@ -110,12 +108,15 @@ export function CardDetailToolbar({
               value={groupBy}
               onChange={onGroupByChange}
               options={[...CARD_DETAIL_GROUP_OPTIONS]}
+              multiple
+              ordered
+              maxSelected={2}
               align="start"
               trigger={
                 <CountedToolbarButton
                   icon={<Layers className="size-4" />}
                   label="Agrupar"
-                  count={groupBy === "none" ? 0 : 1}
+                  count={groupBy.length}
                   variant="ghost"
                   className="h-8 gap-1.5 text-muted-foreground"
                 />
@@ -184,11 +185,13 @@ export function CardDetailToolbar({
               onRemove={() => onSortChange(undefined)}
             />
           )}
-          {groupBy !== "none" && (
+          {groupBy.length > 0 && (
             <AppliedGroupChips
-              value={[groupBy]}
+              value={groupBy}
               options={CARD_DETAIL_GROUP_OPTIONS}
-              onChange={(next) => onGroupByChange(next[0] ?? "none")}
+              onChange={(next) =>
+                onGroupByChange(next.slice(0, 2) as CardDetailGroupBy[])
+              }
             />
           )}
           {filterCount > 0 && (

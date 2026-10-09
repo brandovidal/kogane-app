@@ -5,6 +5,7 @@ import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { DataView } from "@/shared/components/data-display/DataView";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 import type { Column } from "@/shared/types/data-view";
+import type { CardOverviewGroupBy } from "../../constants/filters";
 
 function CardSwatch({ color }: { color: string | null }) {
   return (
@@ -59,13 +60,15 @@ function CardOverviewTile({ row }: { row: CardOverviewRow }) {
 export function CardOverviewResults({
   rows,
   layout,
-  groupBy = "none",
+  groupBy = [],
+  personName,
   loading,
   error,
 }: {
   rows: CardOverviewRow[];
   layout: "cards" | "table";
-  groupBy?: "none" | "bank";
+  groupBy?: CardOverviewGroupBy[];
+  personName: (id: string | null | undefined) => string;
   loading: boolean;
   error: boolean;
 }) {
@@ -141,16 +144,55 @@ export function CardOverviewResults({
       ),
     },
   ];
-  const groups =
-    groupBy === "bank"
-      ? Array.from(
-          rows.reduce((map, row) => {
-            const label = row.card.bank?.trim() || "Sin banco";
-            map.set(label, [...(map.get(label) ?? []), row]);
-            return map;
-          }, new Map<string, CardOverviewRow[]>()),
-        )
-      : [];
+  const groupKey = (row: CardOverviewRow, field: CardOverviewGroupBy) => {
+    if (field === "bank") return row.card.bank?.trim() || "none";
+    if (field === "currency") return row.card.currency || "PEN";
+    if (field === "person")
+      return (
+        row.expenses.find((expense) => expense.personId)?.personId ?? "none"
+      );
+    return row.expenses.some((expense) => expense.installment)
+      ? "installments"
+      : "without-installments";
+  };
+  const groupLabel = (key: string, field: CardOverviewGroupBy) => {
+    if (key === "none") return field === "bank" ? "Sin banco" : "Sin asignar";
+    if (field === "currency")
+      return key === "USD" ? "Dólares (USD)" : "Soles (PEN)";
+    if (field === "installments")
+      return key === "installments" ? "Con cuotas" : "Sin cuotas";
+    if (field === "person") return personName(key);
+    return key;
+  };
+  const renderGrouped = (items: CardOverviewRow[], depth = 0) => {
+    if (depth >= groupBy.length) return renderView(items);
+    const field = groupBy[depth];
+    const grouped = new Map<string, CardOverviewRow[]>();
+    items.forEach((row) => {
+      const key = groupKey(row, field);
+      grouped.set(key, [...(grouped.get(key) ?? []), row]);
+    });
+    return (
+      <div className="space-y-4">
+        {[...grouped.entries()].map(([key, groupRows]) => (
+          <section key={`${field}:${key}`} aria-label={groupLabel(key, field)}>
+            <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+              {groupLabel(key, field)}
+              <span className="text-xs font-normal text-muted-foreground">
+                {groupRows.length}
+              </span>
+              <span className="ml-auto text-sm font-semibold tabular-nums">
+                {formatCurrency(
+                  groupRows.reduce((sum, row) => sum + row.total, 0),
+                )}
+              </span>
+            </h2>
+            {renderGrouped(groupRows, depth + 1)}
+          </section>
+        ))}
+      </div>
+    );
+  };
   const renderView = (items: CardOverviewRow[]) => (
     <DataView
       items={items}
@@ -162,20 +204,5 @@ export function CardOverviewResults({
     />
   );
 
-  if (groupBy === "none") return renderView(rows);
-  return (
-    <div className="space-y-5">
-      {groups.map(([label, items]) => (
-        <section key={label} aria-label={`Tarjetas de ${label}`}>
-          <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold">
-            {label}
-            <span className="text-xs font-normal text-muted-foreground">
-              {items.length}
-            </span>
-          </h2>
-          {renderView(items)}
-        </section>
-      ))}
-    </div>
-  );
+  return groupBy.length ? renderGrouped(rows) : renderView(rows);
 }

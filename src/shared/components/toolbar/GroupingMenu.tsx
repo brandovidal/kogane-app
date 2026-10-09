@@ -17,6 +17,7 @@ export interface GroupingMenuProps<
   options: { value: string; label: string }[];
   multiple?: boolean;
   ordered?: boolean;
+  maxSelected?: number;
   floatingCount?: boolean;
   trigger?: ReactElement;
   align?: "start" | "center" | "end";
@@ -29,6 +30,7 @@ export function GroupingMenu<T extends string | readonly string[]>({
   options,
   multiple = false,
   ordered = false,
+  maxSelected,
   floatingCount = false,
   trigger,
   align = "end",
@@ -82,7 +84,9 @@ export function GroupingMenu<T extends string | readonly string[]>({
               change(
                 checked
                   ? multiple
-                    ? [...selected, option.value]
+                    ? maxSelected && selected.length >= maxSelected
+                      ? selected
+                      : [...selected, option.value]
                     : [option.value]
                   : selected.filter((item) => item !== option.value),
               )

@@ -26,6 +26,8 @@ import {
 } from "@/shared/components/toolbar/ExportMenu";
 import {
   FIXED_COST_VIEWS,
+  PAYABLE_HORIZONS,
+  type PayableHorizon,
   type FixedCostView,
 } from "../../lib/fixed-cost-views";
 
@@ -42,11 +44,15 @@ export function FixedCostViewBar({
   onPageChange,
   exportItems,
   onCreate,
+  payableHorizon,
+  onPayableHorizonChange,
 }: {
   page: FixedCostView;
   onPageChange: (page: FixedCostView) => void;
   exportItems: ExportMenuItem[];
   onCreate: () => void;
+  payableHorizon: PayableHorizon;
+  onPayableHorizonChange: (horizon: PayableHorizon) => void;
 }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -94,6 +100,29 @@ export function FixedCostViewBar({
         </Button>
       </div>
       <div className="flex shrink-0 items-center justify-end gap-2">
+        {page === "por-pagar" && (
+          <div
+            role="group"
+            aria-label="Filtrar vencimientos"
+            className="inline-flex items-center gap-0.5 rounded-lg border p-0.5"
+          >
+            {PAYABLE_HORIZONS.map((horizon) => (
+              <Button
+                key={horizon.value}
+                type="button"
+                size="sm"
+                variant={
+                  payableHorizon === horizon.value ? "secondary" : "ghost"
+                }
+                className="h-7 px-2.5 text-xs"
+                aria-pressed={payableHorizon === horizon.value}
+                onClick={() => onPayableHorizonChange(horizon.value)}
+              >
+                {horizon.label}
+              </Button>
+            ))}
+          </div>
+        )}
         <ExportMenu items={exportItems} label="Más opciones" iconOnly />
         <div className="inline-flex items-center">
           <Button

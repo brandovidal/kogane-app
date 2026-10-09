@@ -14,12 +14,14 @@ export function CardOverviewFilterSheet({
   filters,
   onFiltersChange,
   fields,
+  paymentMethodCounts,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
   fields: ExpenseFilterKey[];
+  paymentMethodCounts: Record<string, number>;
 }) {
   return (
     <FilterSheetShell
@@ -51,6 +53,8 @@ export function CardOverviewFilterSheet({
         value={filters}
         onChange={onFiltersChange}
         statuses={CREDIT_CARD_STATUSES}
+        paymentMethodCounts={paymentMethodCounts}
+        methodLabel="Tarjeta"
         panel
         personInPanel
       />

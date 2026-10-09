@@ -4,12 +4,17 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { cn } from "@/shared/utils/cn";
 import {
   daysUntilDue,
+  isCompletedFixedCost,
   summarizeFixedCosts,
   type FixedCostStatusScope,
 } from "../../lib/fixed-cost-summary";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { formatDayMonth, localTodayKey } from "@/shared/lib/dates";
-import { urgencyOf } from "../../lib/fixed-cost-views";
+import {
+  costMonthIndex,
+  monthIndexLabel,
+  urgencyOf,
+} from "../../lib/fixed-cost-views";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
@@ -36,7 +41,7 @@ export function FixedCostMonthOverview({
   /** "del mes", "del año", "del período"… used in the first card. */
   periodLabel?: string;
   loading?: boolean;
-  variant?: "period" | "payable";
+  variant?: "period" | "payable" | "year";
 }) {
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
@@ -50,6 +55,101 @@ export function FixedCostMonthOverview({
         month: "2-digit",
       })
     : null;
+
+  if (variant === "year") {
+    const byMonth = new Map<number, FixedCost[]>();
+    items.forEach((cost) => {
+      const index = costMonthIndex(cost);
+      byMonth.set(index, [...(byMonth.get(index) ?? []), cost]);
+    });
+    const monthlyTotals = [...byMonth.entries()].map(([index, costs]) => ({
+      index,
+      total: totalsOf(costs).paid,
+    }));
+    const highestMonth = monthlyTotals.reduce<
+      (typeof monthlyTotals)[number] | undefined
+    >(
+      (highest, month) =>
+        !highest || month.total > highest.total ? month : highest,
+      undefined,
+    );
+    const annualAverage = byMonth.size ? summary.total / byMonth.size : 0;
+    const monthsWithPending = [...byMonth.entries()]
+      .filter(([, costs]) => costs.some((cost) => !isCompletedFixedCost(cost)))
+      .map(([index]) => monthIndexLabel(index));
+    const metrics = [
+      {
+        label: "Total registrado",
+        value: formatCurrency(summary.total),
+        detail: "Suma de todos los meses",
+      },
+      {
+        label: "Promedio mensual",
+        value: formatCurrency(annualAverage),
+        detail: `${byMonth.size} ${byMonth.size === 1 ? "mes con registro" : "meses con registros"}`,
+      },
+      {
+        label: "Mes más alto",
+        value: highestMonth
+          ? `${monthIndexLabel(highestMonth.index)} · ${formatCurrency(highestMonth.total)}`
+          : "—",
+        detail: "De los meses cargados aquí",
+      },
+      {
+        label: "Pendiente acumulado",
+        value: formatCurrency(summary.payable),
+        detail: monthsWithPending.length
+          ? `${monthsWithPending.join(", ")} ${monthsWithPending.length === 1 ? "tiene" : "tienen"} pendientes`
+          : "Todo está al día",
+      },
+    ];
+    const summaryLabel = `${formatCurrency(summary.total)} · ${items.length} ${items.length === 1 ? "costo" : "costos"}`;
+    return (
+      <IndicatorsDisclosure
+        ariaLabel="indicadores anuales de costos fijos"
+        defaultOpen={false}
+        summary={summaryLabel}
+        collapsedLabel="Expandir"
+        collapsedContent={
+          <IndicatorsCollapsedSummary
+            summary={summaryLabel}
+            metrics={metrics.map(({ label, value }) => ({ label, value }))}
+          />
+        }
+      >
+        <section
+          aria-label="Resumen anual de costos fijos"
+          className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
+        >
+          {metrics.map((metric, index) => (
+            <div
+              key={metric.label}
+              className={cn(
+                "min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5",
+                index === 0 &&
+                  "border-brand/50 bg-brand/10 ring-2 ring-brand/15 dark:bg-indigo-300/10",
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="eyebrow">{metric.label}</span>
+                {index === 0 && (
+                  <span className="text-xs font-medium text-brand">
+                    Mostrando
+                  </span>
+                )}
+              </div>
+              <div className="mt-1.5 truncate text-xl font-semibold tracking-tight tabular-nums">
+                {metric.value}
+              </div>
+              <div className="mt-1.5 text-xs text-muted-foreground">
+                {metric.detail}
+              </div>
+            </div>
+          ))}
+        </section>
+      </IndicatorsDisclosure>
+    );
+  }
 
   if (variant === "payable") {
     const today = todayKey || localTodayKey();

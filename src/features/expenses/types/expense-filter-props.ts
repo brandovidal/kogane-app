@@ -45,6 +45,7 @@ export type ExpenseFilterFieldsProps = Pick<
   wrapAdditionalFilters?: boolean;
   statusAllLabel?: string;
   sharedOwnLabel?: string;
+  methodLabel?: string;
 };
 
 export interface ActiveExpenseFilterChipsOptions<

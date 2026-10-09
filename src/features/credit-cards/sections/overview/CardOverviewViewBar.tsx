@@ -1,6 +1,7 @@
 import {
   Activity,
   ChevronDown,
+  CircleDollarSign,
   CreditCard,
   LayoutGrid,
   ListFilter,
@@ -17,11 +18,11 @@ import {
 import { cn } from "@/shared/utils/cn";
 
 export type CardOverviewView =
-  "summary" | "movements" | "installments" | "period";
+  "summary" | "movements" | "currency" | "installments" | "period";
 const VIEWS = [
   { value: "summary", label: "Resumen", Icon: LayoutGrid },
   { value: "movements", label: "Movimientos", Icon: ListFilter },
-  { value: "installments", label: "Cuotas", Icon: Activity },
+  { value: "currency", label: "Por moneda", Icon: CircleDollarSign },
 ] as const;
 
 export function CardOverviewViewBar({
@@ -59,14 +60,14 @@ export function CardOverviewViewBar({
             {label}
           </button>
         ))}
-        {view === "period" && (
+        {(view === "period" || view === "installments") && (
           <button
             type="button"
             role="tab"
             aria-selected="true"
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-accent px-2.5 text-sm font-medium text-foreground ring-1 ring-border/70"
           >
-            Por período
+            {view === "period" ? "Por período" : "Cuotas"}
           </button>
         )}
         <Button
@@ -95,6 +96,9 @@ export function CardOverviewViewBar({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => onViewChange("period")}>
               Vista por período
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onViewChange("installments")}>
+              <Activity className="size-4" /> Cuotas
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={onNewCard}>
               Nueva tarjeta

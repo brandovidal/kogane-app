@@ -86,7 +86,10 @@ import { cardHeaderStore } from "../stores/card-header.store";
 import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 import { NameAvatar } from "@/shared/components/data-display/NameAvatar";
 
-import { CARD_DETAIL_FILTER_KEYS } from "../constants/filters";
+import {
+  CARD_DETAIL_FILTER_KEYS,
+  type CardDetailGroupBy,
+} from "../constants/filters";
 
 interface CreditCardDetailProps {
   cardCode: string;
@@ -117,7 +120,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>([
     ...CARD_DETAIL_FILTER_KEYS,
   ]);
-  const [groupBy, setGroupBy] = useState<string>("none");
+  const [groupBy, setGroupBy] = useState<CardDetailGroupBy[]>([]);
   const [sort, setSort] = useState<string | undefined>("date-desc");
   const [hiddenColumnKeys, setHiddenColumnKeys] = useState<string[]>([]);
   const me = useMe();
@@ -450,7 +453,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   );
   const resetView = () => {
     setFilters({});
-    setGroupBy("none");
+    setGroupBy([]);
     setSort("date-desc");
     setHiddenColumnKeys([]);
     setView("table");

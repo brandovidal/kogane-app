@@ -28,11 +28,14 @@ import {
 import {
   FIXED_COST_VIEW_PERIOD,
   costMonthIndex,
+  filterPayableByHorizon,
   filterByMonthRange,
   findFixedCostSort,
+  isPayableHorizon,
   isFixedCostView,
   installmentSeries,
   payableByUrgency,
+  type PayableHorizon,
   type FixedCostView,
 } from "../lib/fixed-cost-views";
 import { fixedCostHeaderStore } from "../stores/fixed-cost-header.store";
@@ -49,7 +52,8 @@ export function useFixedCostList() {
     orden?: string;
     desde?: string;
     hasta?: string;
-  }>(["vista", "orden", "desde", "hasta"]);
+    plazo?: string;
+  }>(["vista", "orden", "desde", "hasta", "plazo"]);
   const page: FixedCostView = isFixedCostView(viewParams.vista)
     ? viewParams.vista
     : "mes";
@@ -58,6 +62,14 @@ export function useFixedCostList() {
   const sort = findFixedCostSort(viewParams.orden);
   const setSort = (next: string | undefined) =>
     setViewParams({ ...viewParams, orden: next });
+  const payableHorizon: PayableHorizon = isPayableHorizon(viewParams.plazo)
+    ? viewParams.plazo
+    : "30-days";
+  const setPayableHorizon = (next: PayableHorizon) =>
+    setViewParams({
+      ...viewParams,
+      plazo: next === "30-days" ? undefined : next,
+    });
   const periodScope = FIXED_COST_VIEW_PERIOD[page];
   const hasRange = !!(viewParams.desde || viewParams.hasta);
   const month = Number(filters.month);
@@ -116,6 +128,8 @@ export function useFixedCostList() {
         month: undefined,
         year: filters.year || String(getCurrentYear()),
       };
+    if (periodScope === "all")
+      return { ...filters, month: undefined, year: undefined };
     return filters;
   }, [filters, periodScope, hasRange]);
   const categories = useCategories().data ?? [];
@@ -147,16 +161,20 @@ export function useFixedCostList() {
       : "all";
   const setScope = (next: FixedCostStatusScope) =>
     setScopeParams(next === "all" ? {} : { scope: next });
+  const payable = useMemo(
+    () => payableByUrgency(baseFiltered, localTodayKey()),
+    [baseFiltered],
+  );
   const filtered = useMemo(
     () =>
       page === "por-pagar"
-        ? payableByUrgency(baseFiltered, localTodayKey())
+        ? filterPayableByHorizon(payable, localTodayKey(), payableHorizon)
         : page === "todos"
           ? [...filterFixedCostsByScope(baseFiltered, scope)].sort(
               (a, b) => costMonthIndex(b) - costMonthIndex(a),
             )
           : filterFixedCostsByScope(baseFiltered, scope),
-    [baseFiltered, scope, page],
+    [baseFiltered, payable, scope, page, payableHorizon],
   );
   const installments = useMemo(
     () => installmentSeries(baseFiltered),
@@ -202,7 +220,7 @@ export function useFixedCostList() {
       categories,
       personName,
       accountName,
-      filters,
+      filters: periodFilters,
     }),
   );
 
@@ -218,10 +236,13 @@ export function useFixedCostList() {
     filters,
     setFilters,
     filtered,
+    payable,
     installments,
     baseFiltered,
     page,
     setPage,
+    payableHorizon,
+    setPayableHorizon,
     sort,
     setSort,
     periodScope,

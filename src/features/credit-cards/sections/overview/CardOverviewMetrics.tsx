@@ -2,6 +2,8 @@ import type { CardOverviewRow } from "../../types/card-overview";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName, localTodayKey } from "@/shared/lib/dates";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
+import type { CreditCardExpense } from "@/shared/api/types";
+import type { CardOverviewView } from "./CardOverviewViewBar";
 
 function daysToPayment(day: number): number {
   const nowKey = localTodayKey();
@@ -22,13 +24,95 @@ export function CardOverviewMetrics({
   total,
   loading,
   month,
+  view = "summary",
+  expenses = [],
 }: {
   rows: CardOverviewRow[];
   movements: number;
   total: number;
   loading: boolean;
   month: number;
+  view?: CardOverviewView;
+  expenses?: CreditCardExpense[];
 }) {
+  if (view === "currency") {
+    const soles = expenses.filter((expense) => expense.currency === "PEN");
+    const dollars = expenses.filter((expense) => expense.currency === "USD");
+    const totalPEN = soles.reduce((sum, expense) => sum + expense.amount, 0);
+    const totalUSD = dollars.reduce((sum, expense) => sum + expense.amount, 0);
+    const equivalentPEN = expenses.reduce((sum, expense) => {
+      if (expense.currency === "PEN") return sum + expense.amount;
+      const converted =
+        expense.amountInPen ??
+        (expense.exchangeRate ? expense.amount * expense.exchangeRate : 0);
+      return sum + converted;
+    }, 0);
+    const largest = rows.reduce<CardOverviewRow | undefined>(
+      (current, row) =>
+        !current || row.pending > current.pending ? row : current,
+      undefined,
+    );
+    const cardCount = (currency: string) =>
+      new Set(
+        expenses
+          .filter((expense) => expense.currency === currency)
+          .map((expense) => expense.paymentMethodId),
+      ).size;
+    return (
+      <IndicatorsDisclosure
+        ariaLabel="indicadores por moneda de tarjetas"
+        defaultOpen={false}
+        summary={`${formatCurrency(equivalentPEN)} · ${expenses.length} movimientos`}
+        collapsedLabel="Expandir"
+      >
+        <section
+          aria-label="Resumen por moneda"
+          className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
+        >
+          <div className="credit-card-surface card-metric-active min-w-0 p-4">
+            <div className="eyebrow">Total en soles</div>
+            <div className="mt-1 text-2xl font-semibold tabular-nums">
+              {loading ? "—" : formatCurrency(totalPEN)}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {soles.length} movimientos · {cardCount("PEN")} tarjetas
+            </div>
+          </div>
+          <div className="credit-card-surface min-w-0 p-4">
+            <div className="eyebrow">Total en dólares</div>
+            <div className="mt-1 text-2xl font-semibold tabular-nums">
+              {loading ? "—" : formatCurrency(totalUSD, "USD")}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {dollars.length}{" "}
+              {dollars.length === 1 ? "movimiento" : "movimientos"}
+            </div>
+          </div>
+          <div className="credit-card-surface min-w-0 p-4">
+            <div className="eyebrow">Equivalente en soles</div>
+            <div className="mt-1 text-2xl font-semibold tabular-nums">
+              {loading ? "—" : formatCurrency(equivalentPEN)}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              Según el tipo de cambio guardado en cada movimiento
+            </div>
+          </div>
+          <div className="credit-card-surface min-w-0 p-4">
+            <div className="eyebrow">Mayor saldo pendiente</div>
+            <div className="mt-1 truncate text-2xl font-semibold">
+              {largest?.card.name ?? "—"}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {largest
+                ? formatCurrency(largest.pending)
+                : "Sin saldos pendientes"}
+            </div>
+          </div>
+        </section>
+      </IndicatorsDisclosure>
+    );
+  }
+
   const upcoming = rows
     .filter((row) => row.pending > 0 && row.payDay)
     .sort((a, b) => daysToPayment(a.payDay!) - daysToPayment(b.payDay!));

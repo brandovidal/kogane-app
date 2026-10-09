@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Layers, ListFilter } from "lucide-react";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { useMe } from "@/shared/api/hooks/catalogs";
 import { CardOverviewFilterSheet } from "./CardOverviewFilterSheet";
-import { CARD_OVERVIEW_FILTER_KEYS } from "../../constants/filters";
+import {
+  CARD_OVERVIEW_FILTER_KEYS,
+  CARD_OVERVIEW_GROUP_OPTIONS,
+  type CardOverviewGroupBy,
+} from "../../constants/filters";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import {
   AppliedFilterSection,
@@ -17,8 +21,7 @@ import {
   ViewModeToggle,
 } from "@/shared/components/toolbar";
 import { Button } from "@/ui/button";
-
-const GROUP_OPTIONS = [{ value: "bank", label: "Banco" }];
+import type { CreditCardExpense } from "@/shared/api/types";
 
 export function CardOverviewToolbar({
   filters,
@@ -27,22 +30,34 @@ export function CardOverviewToolbar({
   onLayoutChange,
   groupBy,
   onGroupByChange,
+  paymentMethodRecords,
 }: {
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
   layout: "cards" | "table";
   onLayoutChange: (layout: "cards" | "table") => void;
-  groupBy: "none" | "bank";
-  onGroupByChange: (groupBy: "none" | "bank") => void;
+  groupBy: CardOverviewGroupBy[];
+  onGroupByChange: (groupBy: CardOverviewGroupBy[]) => void;
+  paymentMethodRecords: Pick<CreditCardExpense, "paymentMethodId">[];
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [showApplied, setShowApplied] = useState(false);
   const me = useMe();
+  const paymentMethodCounts = useMemo(
+    () =>
+      paymentMethodRecords.reduce<Record<string, number>>((counts, expense) => {
+        if (expense.paymentMethodId)
+          counts[expense.paymentMethodId] =
+            (counts[expense.paymentMethodId] ?? 0) + 1;
+        return counts;
+      }, {}),
+    [paymentMethodRecords],
+  );
   const filterCount = countActiveExpenseFilters(
     filters,
     CARD_OVERVIEW_FILTER_KEYS,
   );
-  const appliedCount = filterCount + (groupBy === "bank" ? 1 : 0);
+  const appliedCount = filterCount + groupBy.length;
 
   return (
     <>
@@ -74,7 +89,10 @@ export function CardOverviewToolbar({
           <GroupingMenu
             value={groupBy}
             onChange={onGroupByChange}
-            options={GROUP_OPTIONS}
+            options={[...CARD_OVERVIEW_GROUP_OPTIONS]}
+            multiple
+            ordered
+            maxSelected={2}
             align="start"
             trigger={
               <Button
@@ -85,8 +103,10 @@ export function CardOverviewToolbar({
               >
                 <Layers className="size-4" />
                 <span className="text-sm">Agrupar</span>
-                {groupBy === "bank" && (
-                  <span className="text-xs font-semibold text-brand">1</span>
+                {!!groupBy.length && (
+                  <span className="text-xs font-semibold text-brand">
+                    {groupBy.length}
+                  </span>
                 )}
               </Button>
             }
@@ -108,16 +128,16 @@ export function CardOverviewToolbar({
           onAddFilter={() => setFilterOpen(true)}
           onReset={() => {
             onFiltersChange({});
-            onGroupByChange("none");
+            onGroupByChange([]);
           }}
           resetDisabled={appliedCount === 0}
         >
-          {groupBy === "bank" && (
+          {!!groupBy.length && (
             <AppliedGroupChips
-              value={[groupBy]}
-              options={GROUP_OPTIONS}
+              value={groupBy}
+              options={CARD_OVERVIEW_GROUP_OPTIONS}
               onChange={(next) =>
-                onGroupByChange(next.includes("bank") ? "bank" : "none")
+                onGroupByChange(next.slice(0, 2) as CardOverviewGroupBy[])
               }
             />
           )}
@@ -132,6 +152,9 @@ export function CardOverviewToolbar({
                 maxVisibleItems={3}
                 collapsible={false}
                 showClearAll={false}
+                formatFilterLabel={(key, label) =>
+                  key === "method" ? "Tarjeta" : label
+                }
               />
             </AppliedFilterSection>
           )}
@@ -143,6 +166,7 @@ export function CardOverviewToolbar({
         filters={filters}
         onFiltersChange={onFiltersChange}
         fields={CARD_OVERVIEW_FILTER_KEYS.filter((field) => field !== "q")}
+        paymentMethodCounts={paymentMethodCounts}
       />
     </>
   );

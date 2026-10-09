@@ -46,6 +46,7 @@ export function ExpenseFilterFields({
   wrapAdditionalFilters = true,
   statusAllLabel = "Todos",
   sharedOwnLabel,
+  methodLabel = "Medio de pago",
 }: ExpenseFilterFieldsProps) {
   const set = (key: ExpenseFilterKey, next: string | undefined) =>
     onChange({ ...value, [key]: next || undefined });
@@ -91,7 +92,7 @@ export function ExpenseFilterFields({
         )}
         {has("method") && (
           <PaymentMethodFilterFields
-            label="Medio de pago"
+            label={methodLabel}
             icon={showIcons ? WalletCards : undefined}
             value={value.method}
             onChange={(next) => set("method", next)}

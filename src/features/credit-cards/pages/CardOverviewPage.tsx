@@ -13,12 +13,13 @@ import { CardOverviewToolbar } from "../sections/overview/CardOverviewToolbar";
 import { CardOverviewResults } from "../sections/overview/CardOverviewResults";
 import { CardOverviewMovements } from "../sections/overview/CardOverviewMovements";
 import { CardOverviewPeriodView } from "../sections/overview/CardOverviewPeriodView";
+import type { CardOverviewGroupBy } from "../constants/filters";
 
 function CardOverviewPageContent() {
   const data = useCardOverview();
   const [view, setView] = useState<CardOverviewView>("summary");
   const [layout, setLayout] = useState<"cards" | "table">("cards");
-  const [groupBy, setGroupBy] = useState<"none" | "bank">("none");
+  const [groupBy, setGroupBy] = useState<CardOverviewGroupBy[]>([]);
   const [creatingCard, setCreatingCard] = useState(false);
   const openNewExpense = useNewExpense((state) => state.openWith);
   return (
@@ -38,6 +39,8 @@ function CardOverviewPageContent() {
         total={data.total}
         loading={data.loading}
         month={data.month}
+        view={view}
+        expenses={data.filtered}
       />
       <CardOverviewToolbar
         filters={data.filters}
@@ -46,14 +49,25 @@ function CardOverviewPageContent() {
         onLayoutChange={setLayout}
         groupBy={groupBy}
         onGroupByChange={setGroupBy}
+        paymentMethodRecords={data.filtered}
       />
       {view === "summary" ? (
         <CardOverviewResults
           rows={data.rows}
           layout={layout}
           groupBy={groupBy}
+          personName={data.personName}
           loading={data.loading}
           error={data.error}
+        />
+      ) : view === "currency" ? (
+        <CardOverviewMovements
+          expenses={data.filtered}
+          cards={data.cards}
+          personName={data.personName}
+          groupBy={groupBy}
+          layout={layout}
+          currencyView
         />
       ) : view === "period" ? (
         <CardOverviewPeriodView
@@ -67,6 +81,8 @@ function CardOverviewPageContent() {
           expenses={data.filtered}
           cards={data.cards}
           personName={data.personName}
+          groupBy={groupBy}
+          layout={layout}
           installmentsOnly={view === "installments"}
         />
       )}
