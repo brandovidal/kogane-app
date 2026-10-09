@@ -8,13 +8,11 @@ import {
   Inbox,
   Mic,
   MessageSquare,
-  Pencil,
   Plus,
   RotateCw,
   Send,
   Trash2,
   Upload,
-  X,
 } from "lucide-react";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
@@ -26,7 +24,10 @@ import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column, type ViewMode } from "@/shared/types/data-view";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { getDraft } from "@/features/drafts/services/draft.service";
+import {
+  draftMediaKind,
+  useOpenDraftMedia,
+} from "@/features/drafts/hooks/draft-media";
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import {
   useDiscardDraft,
@@ -38,16 +39,20 @@ import {
   type DraftFields,
   type DraftTab,
 } from "@/features/drafts/hooks/drafts";
-import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import type { Schemas } from "@/shared/api/client";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { toDraftBody } from "@/features/drafts/lib/draft-form";
-import { readyDrafts, summarizeDrafts } from "@/features/drafts/lib/draft-view";
+import {
+  missingLabels,
+  readyDrafts,
+  summarizeDrafts,
+} from "@/features/drafts/lib/draft-view";
 import { DraftCard } from "./DraftCard";
-import { DraftFailedRow } from "./DraftFailedRow";
+import { DraftActionsMenu } from "./DraftActionsMenu";
+import { DraftFailedCard, failureReason } from "./DraftFailedCard";
 import { DraftForm } from "./DraftForm";
 import { DraftIndicators } from "./DraftIndicators";
 
@@ -144,7 +149,7 @@ function DraftsPageView() {
                 <RotateCw className="size-4" /> Reintentar todos
               </Button>
             )}
-            {tab !== "failed" && <ViewToggle value={view} onChange={setView} />}
+            <ViewToggle value={view} onChange={setView} />
           </div>
         </div>
         {(["review", "failed", "discarded"] as const).map((value) => (
@@ -236,6 +241,24 @@ function DraftList({
         </div>
       ),
     },
+    ...(tab === "review"
+      ? [
+          {
+            key: "state",
+            header: "Estado",
+            cell: (draft: Draft) =>
+              draft.missingFields.length ? (
+                <span className="text-xs text-amber-600 dark:text-amber-400">
+                  Falta: {missingLabels(draft).join(", ").toLowerCase()}
+                </span>
+              ) : (
+                <Badge variant="outline" className="text-emerald-600">
+                  Listo
+                </Badge>
+              ),
+          },
+        ]
+      : []),
     {
       key: "amount",
       header: "Monto",
@@ -299,10 +322,10 @@ function DraftList({
               <ChannelIcon className="h-3 w-3" />
               {formatDate(draft.createdAt)}
             </Badge>
-            {draft.inputType !== "text" && draft.inputType !== "manual" && (
+            {draftMediaKind(draft.inputType) && (
               <MediaLink
                 draftId={draft.id}
-                kind={draft.inputType === "audio" ? "audio" : "image"}
+                kind={draftMediaKind(draft.inputType)!}
               />
             )}
           </span>
@@ -314,15 +337,16 @@ function DraftList({
       header: "",
       role: "actions",
       cell: (draft) => (
-        <div className="flex flex-wrap justify-end gap-1">
+        <div className="flex items-center justify-end gap-1">
           {tab === "failed" ? (
             <Button
               size="sm"
               variant="outline"
+              className="gap-1.5"
               onClick={() => retryDraft.mutate(draft.id)}
               disabled={retryDraft.isPending}
             >
-              <RotateCw className="mr-1 h-3.5 w-3.5" /> Reintentar
+              <RotateCw className="size-3.5" /> Reintentar
             </Button>
           ) : (
             <Button
@@ -333,44 +357,67 @@ function DraftList({
               <Check className="mr-1 h-3.5 w-3.5" /> Guardar
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="outline"
-            aria-label="Editar"
-            onClick={() => onEdit(draft)}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          {tab !== "discarded" && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-destructive"
-              aria-label="Descartar"
-              onClick={() => discardDraft.mutate(draft.id)}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          )}
+          <DraftActionsMenu
+            draft={draft}
+            tab={tab}
+            label={draft.description ?? draft.rawText ?? "borrador"}
+            onSave={() => saveDraft.mutate(draft.id)}
+            onRetry={() => retryDraft.mutate(draft.id)}
+            onEdit={() => onEdit(draft)}
+            onDiscard={() => discardDraft.mutate(draft.id)}
+          />
         </div>
       ),
     },
   ];
 
+  const actionsColumn = columns[columns.length - 1];
+  const failedColumns: Column<Draft>[] = [
+    {
+      key: "concept",
+      header: "Descripción",
+      role: "title",
+      cell: (draft) => (
+        <p className="truncate font-medium">
+          {draft.description ?? draft.rawText ?? "Sin descripción"}
+        </p>
+      ),
+    },
+    {
+      key: "reason",
+      header: "Motivo",
+      cell: (draft) => (
+        <span className="text-xs text-destructive">{failureReason(draft)}</span>
+      ),
+    },
+    columns.find((column) => column.key === "origin")!,
+    {
+      key: "date",
+      header: "Fecha",
+      cell: (draft) => (
+        <span className="text-sm">{formatDate(draft.createdAt)}</span>
+      ),
+    },
+    actionsColumn,
+  ];
+
   if (tab === "failed")
     return (
-      <div className="space-y-3">
-        {items.map((draft) => (
-          <DraftFailedRow
-            key={draft.id}
+      <DataView
+        items={items}
+        columns={failedColumns}
+        rowKey={(draft) => draft.id}
+        view={view}
+        cardRenderer={(draft) => (
+          <DraftFailedCard
             draft={draft}
             busy={retryDraft.isPending}
             onRetry={() => retryDraft.mutate(draft.id)}
             onWriteManually={() => onEdit(draft)}
             onDiscard={() => discardDraft.mutate(draft.id)}
           />
-        ))}
-      </div>
+        )}
+      />
     );
 
   const cardRows = (draft: Draft) =>
@@ -419,7 +466,6 @@ function DraftList({
   );
 }
 
-// The screenshot or voice note lives in R2 (D58): a 10 minute link is asked for only when opened
 function MediaLink({
   draftId,
   kind,
@@ -427,20 +473,12 @@ function MediaLink({
   draftId: string;
   kind: "image" | "audio";
 }) {
-  const open = async () => {
-    try {
-      const draft = await getDraft(draftId);
-      if (draft.mediaUrl) window.open(draft.mediaUrl, "_blank", "noopener");
-      else toast.info("El archivo ya expiró (7 días) o no se guardó.");
-    } catch (error) {
-      toast.error(errorMessage(error));
-    }
-  };
+  const openMedia = useOpenDraftMedia();
   const Icon = kind === "audio" ? Mic : ImageIcon;
   return (
     <button
       type="button"
-      onClick={open}
+      onClick={() => void openMedia(draftId)}
       className="flex items-center gap-1 text-xs text-primary hover:underline"
     >
       <Icon className="h-3.5 w-3.5" />{" "}

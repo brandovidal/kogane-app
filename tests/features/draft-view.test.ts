@@ -43,3 +43,13 @@ describe("draft view", () => {
     expect(readyDrafts([ready, incomplete])).toEqual([ready]);
   });
 });
+
+describe("draftMediaKind", () => {
+  it("solo imagen y audio tienen archivo", async () => {
+    const { draftMediaKind } =
+      await import("@/features/drafts/hooks/draft-media");
+    expect(draftMediaKind("audio")).toBe("audio");
+    expect(draftMediaKind("image")).toBe("image");
+    expect(draftMediaKind("text")).toBeNull();
+  });
+});
