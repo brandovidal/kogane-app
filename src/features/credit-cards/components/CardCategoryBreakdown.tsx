@@ -31,8 +31,11 @@ interface CategoryGroup {
 // la lista y el sheet muestran cada moneda en su unidad original.
 export function CardCategoryBreakdown({
   expenses,
+  onCategorize,
 }: {
   expenses: CreditCardExpense[];
+  /** Takes the user to the movements without category (board TarjetaCategorias) */
+  onCategorize?: () => void;
 }) {
   const categories = useCategories().data ?? [];
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -84,6 +87,13 @@ export function CardCategoryBreakdown({
 
   if (!groups.length) return null;
 
+  const uncategorized = groupsByKey.get("none")?.expenses.length ?? 0;
+  const top = slices.reduce<(typeof slices)[number] | undefined>(
+    (best, slice) => (!best || slice.value > best.value ? slice : best),
+    undefined,
+  );
+  const inUse = new Set(groupsByKey.keys());
+
   const currencyAmounts = (totals: Map<string, number>) =>
     [...totals.entries()].sort(([a], [b]) => a.localeCompare(b));
 
@@ -92,10 +102,36 @@ export function CardCategoryBreakdown({
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Consumo por categoría</CardTitle>
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <CardTitle className="text-base">Consumo por categoría</CardTitle>
+              {onCategorize && uncategorized > 0 && (
+                <Button size="sm" variant="outline" onClick={onCategorize}>
+                  Categorizar {uncategorized}{" "}
+                  {uncategorized === 1 ? "pendiente" : "pendientes"}
+                </Button>
+              )}
+            </div>
             <p className="text-sm text-muted-foreground">
-              Distribución del consumo de este ciclo.
+              Despliega una categoría para ver sus movimientos o abre el detalle
+              completo.
             </p>
+            {(top || uncategorized > 0) && (
+              <p className="text-xs text-muted-foreground">
+                {top && (
+                  <>
+                    Mayor categoría:{" "}
+                    <span className="font-medium text-foreground">
+                      {top.name}
+                    </span>{" "}
+                    · {formatCurrency(top.value)} ·{" "}
+                    {totalPEN ? Math.round((top.value / totalPEN) * 100) : 0}%
+                  </>
+                )}
+                {top && uncategorized > 0 && " · "}
+                {uncategorized > 0 &&
+                  `${uncategorized} ${uncategorized === 1 ? "consumo" : "consumos"} sin categoría`}
+              </p>
+            )}
           </CardHeader>
           <CardContent className="space-y-2">
             {groups.map((group) => {
@@ -302,9 +338,18 @@ export function CardCategoryBreakdown({
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Categorías disponibles</CardTitle>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <CardTitle className="text-base">Categorías disponibles</CardTitle>
+            <a
+              href="/categorias"
+              className="text-sm text-primary hover:underline"
+            >
+              Administrar categorías
+            </a>
+          </div>
           <p className="text-sm text-muted-foreground">
-            Categorías configuradas para clasificar tus movimientos.
+            Las mismas categorías de los movimientos de tarjeta. «Sin categoría»
+            la asigna el sistema.
           </p>
         </CardHeader>
         <CardContent className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -317,7 +362,12 @@ export function CardCategoryBreakdown({
                 className="size-3 rounded-sm"
                 style={{ backgroundColor: category.color }}
               />
-              <span className="truncate">{category.name}</span>
+              <span className="min-w-0 flex-1 truncate">{category.name}</span>
+              {inUse.has(category.id) && (
+                <Badge variant="secondary" className="shrink-0 text-[10px]">
+                  en uso
+                </Badge>
+              )}
             </div>
           ))}
         </CardContent>

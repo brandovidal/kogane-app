@@ -590,7 +590,13 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         </TabsContent>
 
         <TabsContent value="card-detail" className="mt-3">
-          <CardCategoryBreakdown expenses={ofCard} />
+          <CardCategoryBreakdown
+            expenses={ofCard}
+            onCategorize={() => {
+              setGroupBy(["category"]);
+              setActiveTab("expenses");
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="payment" className="mt-3">
