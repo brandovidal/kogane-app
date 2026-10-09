@@ -21,11 +21,13 @@ export function PlatformFilterFields({
   filters,
   onFiltersChange,
   personCounts,
+  paymentMethodCounts,
   statuses,
 }: {
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
   personCounts: Record<string, number>;
+  paymentMethodCounts: Record<string, number>;
   statuses: string[];
 }) {
   const set = (key: ExpenseFilterKey, value: string | undefined) =>
@@ -57,6 +59,7 @@ export function PlatformFilterFields({
           label="Cuenta de cobro"
           value={filters.method}
           onChange={(method) => set("method", method)}
+          counts={paymentMethodCounts}
           width="w-full"
           allLabel="Todas las cuentas"
           activeMarker

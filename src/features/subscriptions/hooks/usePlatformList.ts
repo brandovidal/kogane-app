@@ -52,9 +52,7 @@ export function usePlatformList() {
   const monthView = !hasRange && !!viewPeriod.month && !!viewPeriod.year;
   const query = useExpenses(
     EXPENSE_RESOURCES.subscription,
-    monthView
-      ? { month: Number(viewPeriod.month), year: Number(viewPeriod.year) }
-      : undefined,
+    undefined,
     "platform",
   );
   const sourceItems = query.data ?? EMPTY;
@@ -118,6 +116,17 @@ export function usePlatformList() {
       }, {}),
     [items],
   );
+  const paymentMethodCounts = useMemo(
+    () =>
+      items.reduce<Record<string, number>>((counts, item) => {
+        if (item.paymentMethodId) {
+          counts[item.paymentMethodId] =
+            (counts[item.paymentMethodId] ?? 0) + 1;
+        }
+        return counts;
+      }, {}),
+    [items],
+  );
   const filtered = useMemo(() => {
     const matches = applyExpenseFilters(items, filters, me);
     if (!filters.methodType) return matches;
@@ -133,6 +142,21 @@ export function usePlatformList() {
         ),
     );
   }, [items, filters, me, paymentMethods]);
+  const calendarItems = useMemo(() => {
+    const matches = applyExpenseFilters(sourceItems, filters, me);
+    if (!filters.methodType) return matches;
+    const methodTypes = new Map(
+      (paymentMethods ?? []).map((method) => [method.id, method.type]),
+    );
+    const selectedMethodTypes = filters.methodType.split(",").filter(Boolean);
+    return matches.filter(
+      (item) =>
+        item.paymentMethodId != null &&
+        selectedMethodTypes.includes(
+          methodTypes.get(item.paymentMethodId) ?? "",
+        ),
+    );
+  }, [sourceItems, filters, me, paymentMethods]);
   const groupBy = (groupParams.group?.split(",") ?? []).filter(
     (field): field is "person" | "period" =>
       field === "person" || field === "period",
@@ -149,6 +173,7 @@ export function usePlatformList() {
   return {
     items,
     filtered,
+    calendarItems,
     filters,
     setFilters,
     groupBy,
@@ -161,6 +186,7 @@ export function usePlatformList() {
     personName,
     accountName,
     personCounts,
+    paymentMethodCounts,
     loading: query.isLoading,
     error: query.isError,
     resetKey: JSON.stringify([month, year, viewPeriod, filters, groupBy]),

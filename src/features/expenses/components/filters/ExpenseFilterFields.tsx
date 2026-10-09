@@ -39,6 +39,7 @@ export function ExpenseFilterFields({
   panel,
   searchInPanel = false,
   personCounts,
+  paymentMethodCounts,
   activeMarkers = false,
   showIcons = true,
   fullWidth = false,
@@ -94,6 +95,7 @@ export function ExpenseFilterFields({
             icon={showIcons ? WalletCards : undefined}
             value={value.method}
             onChange={(next) => set("method", next)}
+            counts={paymentMethodCounts}
             width={width}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}

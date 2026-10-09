@@ -10,11 +10,46 @@ const monthsByPeriod: Record<Subscription["period"], number> = {
   annual: 12,
 };
 
+export type PlatformCurrencyTotals = Partial<Record<"PEN" | "USD", number>>;
+
+/** Amount shown on the platform itself, in the currency charged by the provider. */
+export const platformNativeAmount = (platform: Subscription) => platform.amount;
+
 export const platformAmount = (platform: Subscription) =>
   paidAndOwn(platform).paid;
 
 export const monthlyEquivalent = (platform: Subscription) =>
-  platformAmount(platform) / monthsByPeriod[platform.period];
+  platformNativeAmount(platform) / monthsByPeriod[platform.period];
+
+export function sumPlatformAmounts(
+  platforms: Subscription[],
+  valueOf: (platform: Subscription) => number = platformNativeAmount,
+): PlatformCurrencyTotals {
+  return platforms.reduce<PlatformCurrencyTotals>((totals, platform) => {
+    const currency = platform.currency === "USD" ? "USD" : "PEN";
+    totals[currency] = (totals[currency] ?? 0) + valueOf(platform);
+    return totals;
+  }, {});
+}
+
+export function formatPlatformTotals(totals: PlatformCurrencyTotals): string {
+  return (
+    (["PEN", "USD"] as const)
+      .filter((currency) => totals[currency] != null)
+      .map((currency) =>
+        formatPlatformCurrency(totals[currency] ?? 0, currency),
+      )
+      .join(" + ") || "—"
+  );
+}
+
+export function formatPlatformCurrency(amount: number, currency: string) {
+  const number = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+  return currency === "USD" ? `US$ ${number}` : `S/ ${number}`;
+}
 
 /** Keep the original billing day when projecting a recurring charge through short months. */
 export function nextPlatformChargeDate(
@@ -91,10 +126,11 @@ export function summarizePlatforms(
   platforms: Subscription[],
   todayKey: string,
 ) {
-  const monthly = platforms.reduce(
-    (sum, item) => sum + monthlyEquivalent(item),
-    0,
-  );
+  const monthly = sumPlatformAmounts(platforms, monthlyEquivalent);
+  const annual: PlatformCurrencyTotals = {
+    PEN: monthly.PEN == null ? undefined : monthly.PEN * 12,
+    USD: monthly.USD == null ? undefined : monthly.USD * 12,
+  };
   const mostExpensive = [...platforms].sort(
     (left, right) => platformAmount(right) - platformAmount(left),
   )[0];
@@ -110,7 +146,7 @@ export function summarizePlatforms(
   return {
     count: platforms.length,
     monthly,
-    annual: monthly * 12,
+    annual,
     mostExpensive,
     nextDue,
     nextDueDate,

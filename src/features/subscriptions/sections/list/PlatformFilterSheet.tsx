@@ -23,6 +23,7 @@ export function PlatformFilterSheet({
   resultCount,
   totalCount,
   personCounts,
+  paymentMethodCounts,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,6 +32,7 @@ export function PlatformFilterSheet({
   resultCount: number;
   totalCount: number;
   personCounts: Record<string, number>;
+  paymentMethodCounts: Record<string, number>;
 }) {
   const selectedMonth = usePeriod((state) => state.month);
   const selectedYear = usePeriod((state) => state.year);
@@ -113,6 +115,7 @@ export function PlatformFilterSheet({
         onFiltersChange={onFiltersChange}
         statuses={SUBSCRIPTION_STATUSES}
         personCounts={personCounts}
+        paymentMethodCounts={paymentMethodCounts}
       />
     </FilterSheetShell>
   );

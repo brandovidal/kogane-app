@@ -12,6 +12,7 @@ import { formatDayMonth, localTodayKey } from "@/shared/lib/dates";
 import { urgencyOf } from "../../lib/fixed-cost-views";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
+import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
 
 function dueLabel(days: number | null) {
   if (days == null) return "Fecha por confirmar";
@@ -107,7 +108,32 @@ export function FixedCostMonthOverview({
     return (
       <IndicatorsDisclosure
         ariaLabel="indicadores de costos fijos"
+        defaultOpen={false}
         summary={`${formatCurrency(totalAmount)} · ${items.length} ${items.length === 1 ? "costo" : "costos"}`}
+        collapsedLabel="Expandir"
+        collapsedContent={
+          <IndicatorsCollapsedSummary
+            summary={`${formatCurrency(totalAmount)} · ${items.length} ${items.length === 1 ? "costo" : "costos"}`}
+            metrics={[
+              {
+                label: "Total por pagar",
+                value: formatCurrency(totalAmount),
+              },
+              {
+                label: "Vencidos",
+                value: formatCurrency(groupAmount(overdue)),
+              },
+              {
+                label: "Esta semana",
+                value: formatCurrency(groupAmount(week)),
+              },
+              {
+                label: "Próximos 30 días",
+                value: formatCurrency(groupAmount(next30)),
+              },
+            ]}
+          />
+        }
       >
         <section
           aria-label="Resumen de costos por pagar"
@@ -201,7 +227,47 @@ export function FixedCostMonthOverview({
   return (
     <IndicatorsDisclosure
       ariaLabel="indicadores de costos fijos"
+      defaultOpen={false}
       summary={`${formatCurrency(summary.total)} · ${summary.totalCount} ${summary.totalCount === 1 ? "costo" : "costos"}`}
+      collapsedLabel="Expandir"
+      collapsedContent={
+        <IndicatorsCollapsedSummary
+          summary={`${formatCurrency(summary.total)} · ${summary.totalCount} ${summary.totalCount === 1 ? "costo" : "costos"}`}
+          metrics={[
+            {
+              label: `Total ${periodLabel}`,
+              value: formatCurrency(summary.total),
+            },
+            {
+              label: "Por pagar",
+              value: formatCurrency(summary.totalCount ? summary.payable : 0),
+              valueClass:
+                summary.payableCount > 0
+                  ? "text-amber-600 dark:text-amber-300"
+                  : undefined,
+            },
+            {
+              label: "Completado",
+              value: formatCurrency(summary.totalCount ? summary.completed : 0),
+              valueClass:
+                summary.completedCount > 0
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : undefined,
+            },
+            {
+              label: "Próximo vencimiento",
+              value: summary.nextDue
+                ? `${summary.nextDue.description} · ${dueDisplay}`
+                : summary.totalCount
+                  ? "Sin pendientes"
+                  : "—",
+              valueClass: summary.nextDue
+                ? "text-amber-600 dark:text-amber-300"
+                : undefined,
+            },
+          ]}
+        />
+      }
     >
       <section
         aria-label="Resumen del período"

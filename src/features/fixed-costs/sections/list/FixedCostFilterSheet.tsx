@@ -26,6 +26,7 @@ export function FixedCostFilterSheet({
   onClear,
   showPeriod,
   personCounts,
+  paymentMethodCounts,
 }: FixedCostFilterSheetProps) {
   const hasSelectedPeriod = !!(filters.month || filters.year);
   const appliedCount = filterCount + (showPeriod && hasSelectedPeriod ? 1 : 0);
@@ -132,6 +133,7 @@ export function FixedCostFilterSheet({
           value={filters}
           onChange={onFiltersChange}
           panel
+          paymentMethodCounts={paymentMethodCounts}
           activeMarkers
           showIcons={false}
           wrapAdditionalFilters={false}

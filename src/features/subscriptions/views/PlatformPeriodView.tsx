@@ -1,14 +1,16 @@
 import { Plus } from "lucide-react";
 import type { Subscription } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDayMonth } from "@/shared/lib/dates";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { PlatformMark } from "../components/PlatformMark";
 import {
+  formatPlatformTotals,
+  formatPlatformCurrency,
   monthlyEquivalent,
   nextPlatformChargeDate,
-  platformAmount,
+  platformNativeAmount,
+  sumPlatformAmounts,
 } from "../lib/platform-summary";
 
 const PERIODS = [
@@ -40,14 +42,8 @@ export function PlatformPeriodView({
           ["monthly", "semiannual", "annual"].includes(key),
       ).map(({ key, label, dot }) => {
         const group = items.filter((item) => item.period === key);
-        const sum = group.reduce(
-          (total, item) => total + platformAmount(item),
-          0,
-        );
-        const monthly = group.reduce(
-          (total, item) => total + monthlyEquivalent(item),
-          0,
-        );
+        const sum = sumPlatformAmounts(group);
+        const monthly = sumPlatformAmounts(group, monthlyEquivalent);
         return (
           <section key={key} className="platform-period-column">
             <div className="flex items-center justify-between gap-2 text-sm font-semibold">
@@ -58,10 +54,10 @@ export function PlatformPeriodView({
                   {group.length}
                 </span>
               </span>
-              <span className="tabular-nums">{formatCurrency(sum)}</span>
+              <span className="tabular-nums">{formatPlatformTotals(sum)}</span>
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground">
-              ≈ {formatCurrency(monthly)} al mes
+              ≈ {formatPlatformTotals(monthly)} al mes
             </p>
             <div className="mt-3 space-y-2">
               {group.map((item) => {
@@ -84,7 +80,10 @@ export function PlatformPeriodView({
                         {item.description}
                       </span>
                       <span className="shrink-0 font-semibold tabular-nums">
-                        {formatCurrency(platformAmount(item))}
+                        {formatPlatformCurrency(
+                          platformNativeAmount(item),
+                          item.currency,
+                        )}
                       </span>
                     </div>
                     <div className="mt-2 flex items-center justify-between text-xs">

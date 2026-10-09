@@ -2,6 +2,8 @@
 export { DataView } from "./DataView";
 export type { IndicatorsDisclosureProps } from "./IndicatorsDisclosure";
 export { IndicatorsDisclosure } from "./IndicatorsDisclosure";
+export type { IndicatorsCollapsedSummaryProps } from "./IndicatorsCollapsedSummary";
+export { IndicatorsCollapsedSummary } from "./IndicatorsCollapsedSummary";
 export type { NameAvatarProps } from "./NameAvatar";
 export { NameAvatar } from "./NameAvatar";
 export { CategoryIcon } from "./CategoryIcon";

@@ -10,15 +10,21 @@ import {
 export interface IndicatorsDisclosureProps {
   children: ReactNode;
   summary: string;
+  collapsedContent?: ReactNode;
   ariaLabel: string;
   defaultOpen?: boolean;
+  expandedLabel?: string;
+  collapsedLabel?: string;
 }
 
 export function IndicatorsDisclosure({
   children,
   summary,
+  collapsedContent,
   ariaLabel,
   defaultOpen = true,
+  expandedLabel = "Reducir",
+  collapsedLabel = "Ver",
 }: IndicatorsDisclosureProps) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -30,14 +36,16 @@ export function IndicatorsDisclosure({
         aria-label={`${open ? "Reducir" : "Mostrar"} ${ariaLabel}`}
       >
         <span className="text-sm font-medium">Indicadores</span>
-        <span className="flex min-w-0 items-center gap-2">
-          {!open && (
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          {!open && collapsedContent ? (
+            <div className="min-w-0 flex-1">{collapsedContent}</div>
+          ) : !open ? (
             <span className="truncate text-sm tabular-nums text-muted-foreground">
               {summary}
             </span>
-          )}
+          ) : null}
           <span className="shrink-0 text-xs text-muted-foreground">
-            {open ? "Reducir" : "Ver"}
+            {open ? expandedLabel : collapsedLabel}
           </span>
           <ChevronDown
             aria-hidden="true"
@@ -46,7 +54,7 @@ export function IndicatorsDisclosure({
               open && "rotate-180",
             )}
           />
-        </span>
+        </div>
       </CollapsibleTrigger>
       <CollapsibleContent className="pt-2">{children}</CollapsibleContent>
     </Collapsible>

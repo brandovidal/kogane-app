@@ -66,6 +66,7 @@ interface FixedCostMobileViewSettingsProps {
   showPeriodInFilters: boolean;
   filterCount: number;
   personCounts: Record<string, number>;
+  paymentMethodCounts: Record<string, number>;
   clearFilters: () => void;
   hasViewSettings: boolean;
 }
@@ -91,6 +92,7 @@ export function FixedCostMobileViewSettings({
   showPeriodInFilters,
   filterCount,
   personCounts,
+  paymentMethodCounts,
   clearFilters,
   hasViewSettings,
 }: FixedCostMobileViewSettingsProps) {
@@ -387,6 +389,7 @@ export function FixedCostMobileViewSettings({
                   panel
                   personInPanel
                   personCounts={personCounts}
+                  paymentMethodCounts={paymentMethodCounts}
                 />
               </section>
               <div className="flex justify-between border-t pt-3">

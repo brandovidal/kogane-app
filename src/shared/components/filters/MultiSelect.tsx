@@ -43,6 +43,7 @@ export interface MultiSelectProps {
   onChange: (value: string[] | null) => void;
   width?: string;
   allLabel?: string;
+  allCount?: number;
   searchable?: boolean;
   activeMarker?: boolean;
   icon?: LucideIcon;
@@ -101,6 +102,7 @@ export function MultiSelect({
   onChange,
   width = "w-full",
   allLabel = "Todos",
+  allCount,
   searchable = true,
   activeMarker = false,
   icon,
@@ -380,7 +382,7 @@ export function MultiSelect({
               <span className="flex-1">{allLabel}</span>
               {hierarchicalGroups && (
                 <span className="text-xs tabular-nums text-muted-foreground">
-                  {options.length}
+                  {allCount ?? options.length}
                 </span>
               )}
             </button>

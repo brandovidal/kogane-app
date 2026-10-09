@@ -38,6 +38,7 @@ export type ExpenseFilterFieldsProps = Pick<
 > & {
   panel: boolean;
   personCounts?: Record<string, number>;
+  paymentMethodCounts?: Record<string, number>;
   activeMarkers?: boolean;
   showIcons?: boolean;
   fullWidth?: boolean;

@@ -1,8 +1,6 @@
 import { Badge } from "@/ui/badge";
 import { RowActions } from "@/features/expenses/components/RowActions";
-import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import type { Subscription } from "@/shared/api/types";
 import type { Column } from "@/shared/types/data-view";
@@ -10,7 +8,10 @@ import { PLATFORM_PERIOD_COLORS } from "../constants/platforms";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
 import { SUBSCRIPTION_STATUSES } from "../constants/subscriptions";
 import { PlatformMark } from "../components/PlatformMark";
-import { platformAmount } from "./platform-summary";
+import {
+  formatPlatformCurrency,
+  platformNativeAmount,
+} from "./platform-summary";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
 import { nextPlatformChargeDate } from "./platform-summary";
 
@@ -71,17 +72,11 @@ export function getPlatformColumns({
       header: "Monto",
       role: "amount",
       className: "min-w-[110px] w-[12%] text-right",
-      calculationType: "number",
-      formatCalculation: (value) => formatCurrency(value),
-      accessor: platformAmount,
+      calculationType: false,
+      accessor: platformNativeAmount,
       cell: (item) => (
         <span className="font-semibold">
-          <CurrencyDisplay
-            amount={item.amount}
-            currency={item.currency}
-            amountInPEN={item.amountInPen}
-            othersShare={item.othersShare}
-          />
+          {formatPlatformCurrency(item.amount, item.currency)}
         </span>
       ),
     },

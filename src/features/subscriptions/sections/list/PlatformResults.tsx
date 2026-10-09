@@ -4,7 +4,10 @@ import { DataTableComplex } from "@/shared/components/data-display/DataTableComp
 import { DataTablePagination } from "@/shared/components/data-display/DataTablePagination";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
-import { formatCurrency } from "@/shared/lib/currency";
+import {
+  formatPlatformTotals,
+  sumPlatformAmounts,
+} from "../../lib/platform-summary";
 import { Button } from "@/ui/button";
 import { PlatformCalendarView } from "../../views/PlatformCalendarView";
 import { PlatformCardsView } from "../../views/PlatformCardsView";
@@ -12,13 +15,13 @@ import { PlatformPeriodView } from "../../views/PlatformPeriodView";
 import type { PlatformView } from "./PlatformViewBar";
 import { layoutForPlatformView } from "./PlatformViewBar";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../../constants/subscriptions";
-import { platformAmount } from "../../lib/platform-summary";
 import { localTodayKey } from "@/shared/lib/dates";
 import type { usePlatformTable } from "../../hooks/usePlatformTable";
 import type { usePlatformActions } from "../../hooks/usePlatformActions";
 
 export function PlatformResults({
   items,
+  calendarItems,
   total,
   view,
   groupBy,
@@ -35,6 +38,7 @@ export function PlatformResults({
   actions,
 }: {
   items: Subscription[];
+  calendarItems: Subscription[];
   total: number;
   view: PlatformView;
   groupBy: Array<"person" | "period">;
@@ -50,6 +54,20 @@ export function PlatformResults({
   onEdit: (item: Subscription, tab?: "detail" | "files" | "history") => void;
   actions: ReturnType<typeof usePlatformActions>;
 }) {
+  const totalsFooter = (
+    <div className="flex flex-wrap items-center gap-x-8 gap-y-1 text-xs text-muted-foreground">
+      <span>
+        <span className="mr-2 text-[10px] uppercase tracking-wider">Count</span>
+        <strong className="text-foreground">{items.length}</strong>
+      </span>
+      <span>
+        <span className="mr-2 text-[10px] uppercase tracking-wider">Sum</span>
+        <strong className="text-foreground tabular-nums">
+          {formatPlatformTotals(sumPlatformAmounts(items))}
+        </strong>
+      </span>
+    </div>
+  );
   const empty = (
     <EmptyState
       title={total ? "Sin resultados" : "Aún no hay plataformas"}
@@ -67,25 +85,6 @@ export function PlatformResults({
       }
     />
   );
-  if (view === "calendar") {
-    if (loading) return <DataLoadingSkeleton variant="cards" />;
-    if (error)
-      return (
-        <p role="alert" className="py-8 text-center text-sm text-destructive">
-          No se pudieron cargar las plataformas.
-        </p>
-      );
-    return items.length || !total ? (
-      <PlatformCalendarView
-        items={items}
-        month={month}
-        year={year}
-        onOpen={onEdit}
-      />
-    ) : (
-      empty
-    );
-  }
   if (view === "cards" || view === "period") {
     if (loading) return <DataLoadingSkeleton variant="cards" />;
     if (error)
@@ -127,6 +126,26 @@ export function PlatformResults({
       </div>
     );
   }
+  if (view === "calendar") {
+    if (loading) return <DataLoadingSkeleton variant="cards" />;
+    if (error)
+      return (
+        <p role="alert" className="py-8 text-center text-sm text-destructive">
+          No se pudieron cargar las plataformas.
+        </p>
+      );
+    return items.length || !total ? (
+      <PlatformCalendarView
+        items={items}
+        upcomingItems={calendarItems}
+        month={month}
+        year={year}
+        onOpen={onEdit}
+      />
+    ) : (
+      empty
+    );
+  }
   const effectiveGroup = groupBy;
   const isGrouped = effectiveGroup.length > 0;
   const layout = layoutForPlatformView(view);
@@ -135,8 +154,7 @@ export function PlatformResults({
       <DataTableComplex
         table={tableState.table}
         className="platform-table"
-        calculationStorageKey={items.length ? "platforms" : undefined}
-        calculationDefaults={{ description: "count", amount: "sum" }}
+        footer={totalsFooter}
         pagination={items.length > 0}
         loading={loading}
         error={error ? "No se pudieron cargar las plataformas." : undefined}
@@ -181,18 +199,12 @@ export function PlatformResults({
             : (groupItems) => ({
                 label: (
                   <span className="text-sm font-semibold tabular-nums">
-                    {formatCurrency(
-                      groupItems.reduce(
-                        (sum, item) => sum + platformAmount(item),
-                        0,
-                      ),
-                    )}
+                    {formatPlatformTotals(sumPlatformAmounts(groupItems))}
                   </span>
                 ),
               })
         }
-        calculationStorageKey="platforms"
-        calculationDefaults={{ description: "count", amount: "sum" }}
+        footer={totalsFooter}
         tableClassName="platform-table"
         compactCards
         selected={selected}

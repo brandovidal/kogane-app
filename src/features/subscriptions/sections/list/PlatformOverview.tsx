@@ -1,13 +1,15 @@
 import type { Subscription } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDayMonth } from "@/shared/lib/dates";
 import {
+  formatPlatformTotals,
+  formatPlatformCurrency,
   monthlyEquivalent,
-  platformAmount,
+  platformNativeAmount,
   summarizePlatforms,
 } from "../../lib/platform-summary";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../../constants/subscriptions";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
+import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
 
 export function PlatformOverview({
   items,
@@ -44,13 +46,52 @@ export function PlatformOverview({
   );
   const expensive = summary.mostExpensive;
   const next = summary.nextDue;
+  const expensiveCurrency = expensive?.currency === "USD" ? "USD" : "PEN";
+  const expensivePercentage = expensive
+    ? Math.round(
+        (monthlyEquivalent(expensive) /
+          (summary.monthly[expensiveCurrency] ?? 1)) *
+          100,
+      )
+    : 0;
+  const expensiveDetail = expensive
+    ? `${formatPlatformCurrency(platformNativeAmount(expensive), expensive.currency)} · ${(SUBSCRIPTION_PERIOD_LABELS[expensive.period] ?? expensive.period).toLowerCase()} · ${expensivePercentage}% del gasto en ${expensiveCurrency === "USD" ? "US$" : "S/"}`
+    : "Sin plataformas";
+  const nextDueLabel =
+    next && summary.nextDueDate
+      ? `${next.description} · ${formatDayMonth(summary.nextDueDate)}`
+      : "—";
+  const collapsedSummary = loading
+    ? "Cargando indicadores"
+    : `${formatPlatformTotals(summary.monthly)} · ${summary.count} ${summary.count === 1 ? "plataforma" : "plataformas"}`;
   return (
     <IndicatorsDisclosure
       ariaLabel="indicadores de plataformas"
-      summary={
-        loading
-          ? "Cargando indicadores"
-          : `${formatCurrency(summary.monthly)} · ${summary.count} ${summary.count === 1 ? "plataforma" : "plataformas"}`
+      defaultOpen={false}
+      collapsedLabel="Expandir"
+      summary={collapsedSummary}
+      collapsedContent={
+        <IndicatorsCollapsedSummary
+          summary={collapsedSummary}
+          metrics={[
+            {
+              label: "Equivalente mensual",
+              value: loading ? "—" : formatPlatformTotals(summary.monthly),
+            },
+            {
+              label: "Costo anual",
+              value: loading ? "—" : formatPlatformTotals(summary.annual),
+            },
+            {
+              label: "Más cara",
+              value: loading ? "—" : (expensive?.description ?? "—"),
+            },
+            {
+              label: "Próximo cobro",
+              value: loading ? "—" : nextDueLabel,
+            },
+          ]}
+        />
       }
     >
       <section
@@ -59,13 +100,13 @@ export function PlatformOverview({
       >
         {metric(
           "Equivalente mensual",
-          formatCurrency(summary.monthly),
+          formatPlatformTotals(summary.monthly),
           `${summary.count} ${summary.count === 1 ? "plataforma activa" : "plataformas activas"}`,
           true,
         )}
         {metric(
           "Costo anual",
-          formatCurrency(summary.annual),
+          formatPlatformTotals(summary.annual),
           "12 meses al ritmo actual",
         )}
         <div className="min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5">
@@ -74,23 +115,17 @@ export function PlatformOverview({
             {loading ? "—" : (expensive?.description ?? "—")}
           </div>
           <div className="mt-1 truncate text-xs text-muted-foreground">
-            {expensive
-              ? `${formatCurrency(platformAmount(expensive))} · ${(SUBSCRIPTION_PERIOD_LABELS[expensive.period] ?? expensive.period).toLowerCase()} · ${summary.annual ? Math.round((monthlyEquivalent(expensive) / summary.monthly) * 100) : 0}% del año`
-              : "Sin plataformas"}
+            {expensiveDetail}
           </div>
         </div>
         <div className="min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5">
           <div className="eyebrow">Próximo cobro</div>
           <div className="mt-1 truncate text-xl font-semibold tracking-tight">
-            {loading
-              ? "—"
-              : next && summary.nextDueDate
-                ? `${next.description} · ${formatDayMonth(summary.nextDueDate)}`
-                : "—"}
+            {loading ? "—" : nextDueLabel}
           </div>
           <div className="mt-1 truncate text-xs text-muted-foreground">
             {next
-              ? `${formatCurrency(platformAmount(next))} · ${summary.nextDueDays == null ? "sin fecha relativa" : summary.nextDueDays === 0 ? "hoy" : `en ${summary.nextDueDays} días`}`
+              ? `${formatPlatformCurrency(platformNativeAmount(next), next.currency)} · ${summary.nextDueDays == null ? "sin fecha relativa" : summary.nextDueDays === 0 ? "hoy" : `en ${summary.nextDueDays} días`}`
               : "Sin cobros programados"}
           </div>
         </div>

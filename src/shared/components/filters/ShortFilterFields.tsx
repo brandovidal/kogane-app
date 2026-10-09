@@ -85,7 +85,7 @@ export function ShortFilterFields({
     <span
       aria-hidden="true"
       className={cn(
-        "inline-flex size-[18px] shrink-0 items-center justify-center rounded-full border transition-colors",
+        "inline-flex size-4.5 shrink-0 items-center justify-center rounded-full border transition-colors",
         checked
           ? "border-foreground bg-foreground text-background"
           : "border-muted-foreground/60 bg-transparent",
@@ -139,7 +139,7 @@ export function ShortFilterFields({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-[var(--anchor-width)] min-w-56 overflow-hidden p-1"
+          className="w-(--anchor-width) min-w-56 overflow-hidden p-1"
         >
           <div className="max-h-72 overflow-y-auto">
             {isMulti ? (

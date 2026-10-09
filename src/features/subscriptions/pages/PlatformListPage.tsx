@@ -48,7 +48,7 @@ function PlatformListPageContent() {
     items.map((item) => [
       item.description,
       item.period,
-      String(item.amountInPen ?? item.amount),
+      String(item.amount),
       item.currency,
       item.paymentStatus,
       list.personName(item.personId),
@@ -88,32 +88,30 @@ function PlatformListPageContent() {
         todayKey={todayKey}
         loading={list.loading}
       />
-      {list.view !== "calendar" && (
-        <>
-          <PlatformToolbar
-            filters={list.filters}
-            onFiltersChange={list.setFilters}
-            groupBy={list.groupBy}
-            onGroupByChange={list.setGroupBy}
-            view={list.view}
-            onViewChange={list.setView}
-            table={tableState.table}
-            onOpenFilters={() => setFilterSheetOpen(true)}
-          />
-          <PlatformFilterSheet
-            open={filterSheetOpen}
-            onOpenChange={setFilterSheetOpen}
-            filters={list.filters}
-            onFiltersChange={list.setFilters}
-            resultCount={list.filtered.length}
-            totalCount={list.items.length}
-            personCounts={list.personCounts}
-          />
-        </>
-      )}
+      <PlatformToolbar
+        filters={list.filters}
+        onFiltersChange={list.setFilters}
+        groupBy={list.groupBy}
+        onGroupByChange={list.setGroupBy}
+        view={list.view}
+        onViewChange={list.setView}
+        table={tableState.table}
+        onOpenFilters={() => setFilterSheetOpen(true)}
+      />
+      <PlatformFilterSheet
+        open={filterSheetOpen}
+        onOpenChange={setFilterSheetOpen}
+        filters={list.filters}
+        onFiltersChange={list.setFilters}
+        resultCount={list.filtered.length}
+        totalCount={list.items.length}
+        personCounts={list.personCounts}
+        paymentMethodCounts={list.paymentMethodCounts}
+      />
       <PlatformBulkActions bulk={bulk} onExport={selectedExport.exportCsv} />
       <PlatformResults
         items={list.filtered}
+        calendarItems={list.calendarItems}
         total={list.items.length}
         view={list.view}
         groupBy={list.groupBy}

@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
+import type { PaymentMethod } from "@/shared/api/types";
 import { PaymentMethodIcon } from "@/shared/components/data-display/PaymentMethodIcon";
 import { MultiSelect } from "@/shared/components/filters/MultiSelect";
 import {
@@ -19,6 +20,7 @@ export interface PaymentMethodFilterFieldsProps {
   labelClassName?: string;
   presentation?: "popover" | "inline" | "responsive-sheet";
   primaryMethodId?: string;
+  counts?: Record<string, number>;
   multiple?: boolean;
   emptySelectionLabel?: string;
   allowEmptySelection?: boolean;
@@ -37,6 +39,7 @@ export function PaymentMethodFilterFields({
   labelClassName = "text-sm font-medium",
   presentation = "responsive-sheet",
   primaryMethodId,
+  counts,
   multiple = true,
   emptySelectionLabel = "Ninguna cuenta",
   allowEmptySelection = false,
@@ -53,35 +56,34 @@ export function PaymentMethodFilterFields({
           PAYMENT_METHOD_TYPE_ORDER.indexOf(right.type) ||
         left.name.localeCompare(right.name, "es"),
     );
-  const options = activeMethods.map((method) => ({
-    value: method.id,
-    label: method.name,
-    group: PAYMENT_METHOD_TYPE_LABELS[method.type],
-    groupDecoration: (
-      <PaymentMethodIcon
-        type={method.type}
-        className="size-4 rounded-sm bg-muted text-muted-foreground [&>svg]:size-2.5"
-      />
-    ),
-    decoration: <PaymentMethodIcon type={method.type} color={method.color} />,
-    searchTerms: [method.code ?? "", method.bank ?? "", method.network ?? ""],
-    searchAliases: method.aliases,
-    meta:
-      method.type === "credit_card" &&
-      (method.billingCloseDay != null || method.paymentDueDay != null)
-        ? [
-            method.billingCloseDay != null
-              ? `Cierra ${method.billingCloseDay}`
-              : undefined,
-            method.paymentDueDay != null
-              ? `vence ${method.paymentDueDay}`
-              : undefined,
-          ]
-            .filter(Boolean)
-            .join(" · ")
-        : undefined,
-    badge: method.id === primaryMethodId ? "Principal" : undefined,
-  }));
+  const options = activeMethods.map((method) => {
+    const withPrimary = method as PaymentMethod & { isPrimary?: boolean };
+    return {
+      value: method.id,
+      label: method.name,
+      group: PAYMENT_METHOD_TYPE_LABELS[method.type],
+      groupDecoration: (
+        <PaymentMethodIcon
+          type={method.type}
+          className="size-4 rounded-sm bg-muted text-muted-foreground [&>svg]:size-2.5"
+        />
+      ),
+      decoration: <PaymentMethodIcon type={method.type} color={method.color} />,
+      searchTerms: [method.code ?? "", method.bank ?? "", method.network ?? ""],
+      searchAliases: method.aliases,
+      badge:
+        method.id === primaryMethodId || withPrimary.isPrimary
+          ? "Principal"
+          : undefined,
+      count: counts?.[method.id],
+    };
+  });
+  const allCount =
+    counts &&
+    activeMethods.reduce(
+      (total, method) => total + (counts[method.id] ?? 0),
+      0,
+    );
 
   return (
     <MultiSelect
@@ -91,6 +93,7 @@ export function PaymentMethodFilterFields({
       onChange={(next) => onChange(next?.join(",") || undefined)}
       width={width}
       allLabel={allLabel}
+      allCount={allCount}
       emptySelectionLabel={emptySelectionLabel}
       activeMarker={activeMarker}
       icon={icon}

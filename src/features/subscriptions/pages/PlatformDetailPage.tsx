@@ -18,7 +18,6 @@ import {
   Wallet,
 } from "lucide-react";
 import type { Subscription } from "@/shared/api/types";
-import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
 import { useAttachments } from "@/features/attachments/hooks/attachments";
@@ -27,7 +26,6 @@ import { useRecordHistory } from "@/features/history/hooks/history";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import { LinkifiedText } from "@/shared/components/data-display/LinkifiedText";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
@@ -42,7 +40,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { PlatformDetailRow } from "../components/detail/PlatformDetailRow";
 import { PlatformMark } from "../components/PlatformMark";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
-import { nextPlatformChargeDate } from "../lib/platform-summary";
+import {
+  formatPlatformCurrency,
+  nextPlatformChargeDate,
+} from "../lib/platform-summary";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { SUBSCRIPTION_STATUSES } from "../constants/subscriptions";
 import { MonthYearPicker } from "@/shared/components/navigation/MonthYearPicker";
@@ -123,7 +124,7 @@ export function PlatformDetailPage({
             <SheetDescription className="wrap-anywhere">
               {SUBSCRIPTION_PERIOD_LABELS[item.period] ?? item.period} ·{" "}
               {getMonthName(item.paymentMonth)} {item.paymentYear} ·{" "}
-              {formatCurrency(item.amountInPen ?? item.amount)}
+              {formatPlatformCurrency(item.amount, item.currency)}
             </SheetDescription>
           </SheetHeader>
           <Button
@@ -188,12 +189,7 @@ export function PlatformDetailPage({
                   <div>
                     <p className="eyebrow mb-1">Monto del registro</p>
                     <div className="text-3xl font-semibold tracking-tight tabular-nums">
-                      <CurrencyDisplay
-                        amount={item.amount}
-                        currency={item.currency}
-                        amountInPEN={item.amountInPen}
-                        othersShare={item.othersShare}
-                      />
+                      {formatPlatformCurrency(item.amount, item.currency)}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

@@ -64,6 +64,7 @@ export interface FixedCostToolbarProps {
   onFilterSheetOpenChange?: (open: boolean) => void;
   loading?: boolean;
   personRecords?: FixedCost[];
+  paymentMethodRecords?: Pick<FixedCost, "paymentMethodId">[];
 }
 
 export function FixedCostToolbar({
@@ -88,6 +89,7 @@ export function FixedCostToolbar({
   onFilterSheetOpenChange,
   loading = false,
   personRecords = [],
+  paymentMethodRecords = [],
 }: FixedCostToolbarProps) {
   const isDesktopSettings = useMediaQuery("(min-width: 1024px)");
   const [internalSheetOpen, setInternalSheetOpen] = useState(false);
@@ -110,6 +112,17 @@ export function FixedCostToolbar({
         return counts;
       }, {}),
     [personRecords],
+  );
+  const paymentMethodCounts = useMemo(
+    () =>
+      paymentMethodRecords.reduce<Record<string, number>>((counts, record) => {
+        if (record.paymentMethodId) {
+          counts[record.paymentMethodId] =
+            (counts[record.paymentMethodId] ?? 0) + 1;
+        }
+        return counts;
+      }, {}),
+    [paymentMethodRecords],
   );
   const sortOption = findFixedCostSort(sort);
   const appliedCount = filterCount + (sortOption ? 1 : 0) + groupBy.length;
@@ -328,6 +341,7 @@ export function FixedCostToolbar({
         onClear={clearFilters}
         showPeriod={showPeriodInFilters}
         personCounts={personCounts}
+        paymentMethodCounts={paymentMethodCounts}
       />
       {!isDesktopSettings && (
         <FixedCostMobileViewSettings
@@ -351,6 +365,7 @@ export function FixedCostToolbar({
           showPeriodInFilters={showPeriodInFilters}
           filterCount={filterCount}
           personCounts={personCounts}
+          paymentMethodCounts={paymentMethodCounts}
           clearFilters={clearFilters}
           hasViewSettings={hasViewSettings}
         />

@@ -1,15 +1,17 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Subscription } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDayMonth, localTodayKey } from "@/shared/lib/dates";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
 import { periodStore } from "@/shared/stores/period.store";
 import { cn } from "@/shared/utils/cn";
 import { PlatformMark } from "../components/PlatformMark";
 import {
+  formatPlatformTotals,
+  formatPlatformCurrency,
   nextPlatformChargeDate,
-  platformAmount,
+  platformNativeAmount,
   platformChargesInMonth,
+  sumPlatformAmounts,
 } from "../lib/platform-summary";
 
 const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -36,11 +38,13 @@ function upcomingCharges(items: Subscription[], todayKey: string): Charge[] {
 
 export function PlatformCalendarView({
   items,
+  upcomingItems,
   month,
   year,
   onOpen,
 }: {
   items: Subscription[];
+  upcomingItems: Subscription[];
   month: number;
   year: number;
   onOpen: (item: Subscription) => void;
@@ -57,7 +61,7 @@ export function PlatformCalendarView({
     }
   }
   const monthCharges = [...byDay.values()].flat();
-  const upcoming = upcomingCharges(items, todayKey);
+  const upcoming = upcomingCharges(upcomingItems, todayKey);
   const monthName = new Intl.DateTimeFormat("es-PE", {
     month: "long",
     year: "numeric",
@@ -71,12 +75,7 @@ export function PlatformCalendarView({
             <span className="text-sm text-muted-foreground">
               {monthCharges.length}{" "}
               {monthCharges.length === 1 ? "cobro" : "cobros"} ·{" "}
-              {formatCurrency(
-                monthCharges.reduce(
-                  (sum, item) => sum + platformAmount(item),
-                  0,
-                ),
-              )}
+              {formatPlatformTotals(sumPlatformAmounts(monthCharges))}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -147,7 +146,10 @@ export function PlatformCalendarView({
                     >
                       <span className="truncate">{item.description}</span>
                       <span className="shrink-0 tabular-nums">
-                        {formatCurrency(platformAmount(item))}
+                        {formatPlatformCurrency(
+                          platformNativeAmount(item),
+                          item.currency,
+                        )}
                       </span>
                     </button>
                   ))}
@@ -181,7 +183,10 @@ export function PlatformCalendarView({
                   </span>
                 </span>
                 <span className="text-sm font-semibold tabular-nums">
-                  {formatCurrency(platformAmount(item))}
+                  {formatPlatformCurrency(
+                    platformNativeAmount(item),
+                    item.currency,
+                  )}
                 </span>
               </button>
             ))
@@ -194,8 +199,8 @@ export function PlatformCalendarView({
         <div className="flex justify-between border-t pt-3 text-xs">
           <span className="text-muted-foreground">Total 90 días</span>
           <span className="font-semibold tabular-nums">
-            {formatCurrency(
-              upcoming.reduce((sum, { item }) => sum + platformAmount(item), 0),
+            {formatPlatformTotals(
+              sumPlatformAmounts(upcoming.map(({ item }) => item)),
             )}
           </span>
         </div>

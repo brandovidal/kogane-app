@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import type { Subscription } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
@@ -11,7 +10,8 @@ import { PLATFORM_PERIOD_COLORS } from "../constants/platforms";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
 import {
   nextPlatformChargeDate,
-  platformAmount,
+  formatPlatformCurrency,
+  platformNativeAmount,
 } from "../lib/platform-summary";
 
 export function PlatformCardsView({
@@ -80,7 +80,10 @@ export function PlatformCardsView({
             >
               <div className="mt-4 flex items-baseline gap-1">
                 <span className="text-2xl font-semibold tabular-nums">
-                  {formatCurrency(platformAmount(item))}
+                  {formatPlatformCurrency(
+                    platformNativeAmount(item),
+                    item.currency,
+                  )}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   /{" "}
