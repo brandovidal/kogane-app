@@ -4,6 +4,7 @@ import type { FixedCostGroupField } from "@/features/fixed-costs/types/fixed-cos
 export const FIXED_COST_FILTER_KEYS: ExpenseFilterKey[] = [
   "month",
   "year",
+  "person",
   "q",
   "status",
   "category",

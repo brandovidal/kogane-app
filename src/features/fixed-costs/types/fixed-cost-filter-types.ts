@@ -10,5 +10,6 @@ export interface FixedCostFilterSheetProps {
   filterCount: number;
   onClear: () => void;
   showPeriod: boolean;
+  personCounts: Record<string, number>;
   paymentMethodCounts: Record<string, number>;
 }

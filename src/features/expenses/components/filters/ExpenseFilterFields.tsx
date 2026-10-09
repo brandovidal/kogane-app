@@ -74,6 +74,7 @@ export function ExpenseFilterFields({
             onChange={(next) => set("person", next)}
             width={width}
             counts={personCounts}
+            labelClassName="text-sm font-medium"
             activeMarker
             presentation={panel ? "popover" : "responsive-sheet"}
           />

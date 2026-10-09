@@ -65,6 +65,7 @@ interface FixedCostMobileViewSettingsProps {
   canChangeLayout: boolean;
   showPeriodInFilters: boolean;
   filterCount: number;
+  personCounts: Record<string, number>;
   paymentMethodCounts: Record<string, number>;
   clearFilters: () => void;
   hasViewSettings: boolean;
@@ -90,6 +91,7 @@ export function FixedCostMobileViewSettings({
   canChangeLayout,
   showPeriodInFilters,
   filterCount,
+  personCounts,
   paymentMethodCounts,
   clearFilters,
   hasViewSettings,
@@ -385,6 +387,8 @@ export function FixedCostMobileViewSettings({
                   onChange={onFiltersChange}
                   statuses={FIXED_COST_STATUSES}
                   panel
+                  personInPanel
+                  personCounts={personCounts}
                   paymentMethodCounts={paymentMethodCounts}
                 />
               </section>

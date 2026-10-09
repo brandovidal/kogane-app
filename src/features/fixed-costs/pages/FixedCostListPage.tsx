@@ -94,6 +94,7 @@ function FixedCostListPageContent() {
       filterSheetOpen={filterSheetOpen}
       onFilterSheetOpenChange={setFilterSheetOpen}
       loading={list.loading}
+      personRecords={list.fixedCosts}
       paymentMethodRecords={list.periodRecords}
     />
   );
