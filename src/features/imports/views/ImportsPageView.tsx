@@ -39,16 +39,18 @@ export function ImportsPageView() {
         <ImportUploadCard onRead={setSelected} />
       </div>
       <div className="space-y-4">
-        <ImportRecents
-          items={history}
-          onSelect={setSelected}
-          onViewAll={() => setShowHistory((value) => !value)}
-        />
-        {showHistory && (
+        {showHistory ? (
           <ImportHistoryCard
             items={history}
             current={current}
             onSelect={setSelected}
+            onClose={() => setShowHistory(false)}
+          />
+        ) : (
+          <ImportRecents
+            items={history}
+            onSelect={setSelected}
+            onViewAll={() => setShowHistory(true)}
           />
         )}
       </div>
