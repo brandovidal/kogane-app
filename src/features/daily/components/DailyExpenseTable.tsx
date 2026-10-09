@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import {
@@ -20,6 +20,7 @@ import { GroupedDataView } from "@/shared/components/data-display/GroupedDataVie
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column } from "@/shared/types/data-view";
+import { dayKey, dayLabel } from "../lib/day-label";
 import { DailyIndicators } from "./DailyIndicators";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
@@ -69,6 +70,9 @@ function DailyExpenseTableView() {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("daily", "table");
   const [groupBy, setGroupBy] = useState("none");
+  // Hoy/Ayer depend on the browser clock: only after mount, so the server HTML matches
+  const [today, setToday] = useState<Date | null>(null);
+  useEffect(() => setToday(new Date()), []);
   const me = useMe();
 
   const sorted = applyExpenseFilters(expenses, filters, me).sort((a, b) =>
@@ -183,6 +187,7 @@ function DailyExpenseTableView() {
           groupBy={groupBy}
           onGroupByChange={setGroupBy}
           groupByOptions={[
+            { value: "day", label: "Por día" },
             { value: "person", label: "Por persona" },
             { value: "category", label: "Por categoría" },
           ]}
@@ -233,14 +238,20 @@ function DailyExpenseTableView() {
           view={view}
           groupBy={groupBy}
           groupKey={(e, key) =>
-            key === "person" ? (e.personId ?? "none") : (e.categoryId ?? "none")
+            key === "day"
+              ? dayKey(e.spentAt)
+              : key === "person"
+                ? (e.personId ?? "none")
+                : (e.categoryId ?? "none")
           }
           groupLabel={(key, field) =>
-            key === "none"
-              ? "Sin asignar"
-              : field === "person"
-                ? personName(key)
-                : categoryName(key)
+            field === "day"
+              ? dayLabel(key, today)
+              : key === "none"
+                ? "Sin asignar"
+                : field === "person"
+                  ? personName(key)
+                  : categoryName(key)
           }
         />
       )}
