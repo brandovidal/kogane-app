@@ -157,6 +157,7 @@ function SubscriptionListView({
   );
   const recurrentPendingTotals = sumPlatformAmounts(recurrentPending);
   const recurrentPaidTotals = sumPlatformAmounts(recurrentPaid);
+  const recurrentTotals = sumPlatformAmounts(current);
   const todayKey = localTodayKey();
   const nextRecurring = [...current]
     .filter(
@@ -168,6 +169,13 @@ function SubscriptionListView({
     .sort((left, right) =>
       (left.dueDate ?? "").localeCompare(right.dueDate ?? ""),
     )[0];
+  const paidPercent = recurrentTotals.PEN
+    ? Math.round(((recurrentPaidTotals.PEN ?? 0) / recurrentTotals.PEN) * 100)
+    : 0;
+  const zeroTotals = (value: ReturnType<typeof sumPlatformAmounts>) =>
+    formatPlatformTotals(value) === "—"
+      ? "S/ 0.00"
+      : formatPlatformTotals(value);
   const [view, setView] = useViewMode(
     group === "recurring" ? "recurring" : "subscriptions",
     group === "recurring" ? "table" : "cards",
@@ -344,17 +352,14 @@ function SubscriptionListView({
       {group === "recurring" ? (
         <IndicatorsDisclosure
           ariaLabel="indicadores de recurrentes"
-          summary={`${formatPlatformTotals(sumPlatformAmounts(current))} · ${current.length} recurrentes`}
+          summary={`${zeroTotals(sumPlatformAmounts(current))} · ${current.length} recurrentes`}
           collapsedContent={
             <IndicatorsCollapsedSummary
               summary={`${current.length} recurrentes este mes`}
               metrics={[
                 {
                   label: "Total recurrente",
-                  value:
-                    current.length > 0
-                      ? formatPlatformTotals(sumPlatformAmounts(current))
-                      : "S/ 0.00",
+                  value: zeroTotals(sumPlatformAmounts(current)),
                 },
                 {
                   label: "Por pagar",
@@ -380,9 +385,14 @@ function SubscriptionListView({
         >
           <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-xl border border-brand/30 bg-brand/5 px-4 py-3.5 ring-1 ring-brand/20">
-              <div className="eyebrow">Total recurrente</div>
-              <div className="mt-1 text-xl font-semibold tabular-nums">
-                {formatPlatformTotals(sumPlatformAmounts(current))}
+              <div className="flex items-center justify-between gap-2">
+                <div className="eyebrow">Total recurrente</div>
+                <span className="text-xs font-medium text-brand">
+                  Mostrando
+                </span>
+              </div>
+              <div className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
+                {zeroTotals(sumPlatformAmounts(current))}
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
                 {current.length}{" "}
@@ -390,7 +400,10 @@ function SubscriptionListView({
               </div>
             </div>
             <div className="rounded-xl border border-border/80 bg-card px-4 py-3.5">
-              <div className="eyebrow">Por pagar</div>
+              <div className="eyebrow flex items-center gap-2">
+                <span className="size-1.5 rounded-full bg-amber-400" /> Por
+                pagar
+              </div>
               <div className="mt-1 text-xl font-semibold tabular-nums text-amber-400">
                 {formatPlatformTotals(recurrentPendingTotals)}
               </div>
@@ -399,17 +412,31 @@ function SubscriptionListView({
               </div>
             </div>
             <div className="rounded-xl border border-border/80 bg-card px-4 py-3.5">
-              <div className="eyebrow">Pagado</div>
-              <div className="mt-1 text-xl font-semibold tabular-nums">
-                {formatPlatformTotals(recurrentPaidTotals)}
+              <div className="eyebrow flex items-center gap-2">
+                <span className="size-1.5 rounded-full bg-emerald-400" /> Pagado
+              </div>
+              <div className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-emerald-300">
+                {recurrentPaid.length
+                  ? formatPlatformTotals(recurrentPaidTotals)
+                  : "S/ 0.00"}
+              </div>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted/80">
+                <div
+                  className="h-full rounded-full bg-emerald-400 transition-[width]"
+                  style={{ width: `${paidPercent}%` }}
+                />
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {recurrentPaid.length} de {current.length} recurrentes pagados
+                {recurrentPaid.length} de {current.length} · {paidPercent}% del
+                mes en S/
               </div>
             </div>
             <div className="rounded-xl border border-border/80 bg-card px-4 py-3.5">
-              <div className="eyebrow">Próximo cobro</div>
-              <div className="mt-1 truncate text-xl font-semibold">
+              <div className="eyebrow flex items-center gap-2">
+                <span className="size-1.5 rounded-full bg-amber-400" /> Próximo
+                cobro
+              </div>
+              <div className="mt-1 truncate text-xl font-semibold tracking-tight text-amber-300">
                 {nextRecurring?.description ?? "—"}
                 {nextRecurring?.dueDate && (
                   <span className="ml-1 text-base font-medium text-muted-foreground">
@@ -419,11 +446,8 @@ function SubscriptionListView({
                 )}
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {nextRecurring
-                  ? formatPlatformCurrency(
-                      nextRecurring.amount,
-                      nextRecurring.currency,
-                    )
+                {nextRecurring?.dueDate
+                  ? `${formatPlatformCurrency(nextRecurring.amount, nextRecurring.currency)} · ${relativeDueLabel(daysUntilDue(nextRecurring.dueDate, todayKey))}`
                   : "Sin cobros"}
               </div>
             </div>

@@ -40,7 +40,10 @@ import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConf
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { SlidersHorizontal } from "lucide-react";
 import type { ColumnVisibilityOption } from "@/shared/components/toolbar";
-import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import {
+  countActiveExpenseFilters,
+  PERSON_ALL,
+} from "@/features/expenses/lib/expense-filters";
 import { RecurringViewSettings } from "./RecurringViewSettings";
 import {
   AppliedFilterChips,
@@ -469,10 +472,11 @@ function RecurringListView() {
       label: `Estado: ${filters.status === "active" ? "Activa" : "Pausada"}`,
       onRemove: () => setFilters({ ...filters, status: undefined }),
     },
-    filters.person && {
+    filters.person?.split(",").some((person) => person && person !== PERSON_ALL) && {
       key: "person",
       label: `Persona: ${filters.person
         .split(",")
+        .filter((person) => person && person !== PERSON_ALL)
         .map((person) => personName(person))
         .join(", ")}`,
       onRemove: () => setFilters({ ...filters, person: undefined }),
@@ -529,8 +533,13 @@ function RecurringListView() {
     <div
       className={`min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5 ${activeCard ? "bg-brand/5 ring-2 ring-brand/30" : ""}`}
     >
-      <div className="eyebrow truncate">{label}</div>
-      <div className="mt-1 truncate text-xl font-semibold tabular-nums">
+      <div className="flex items-center justify-between gap-2">
+        <div className="eyebrow truncate">{label}</div>
+        {activeCard && (
+          <span className="text-xs font-medium text-brand">Mostrando</span>
+        )}
+      </div>
+      <div className="mt-1 truncate text-2xl font-semibold tracking-tight tabular-nums">
         {value}
       </div>
       <div className="mt-1 truncate text-xs text-muted-foreground">
