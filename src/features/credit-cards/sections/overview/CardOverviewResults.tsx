@@ -9,7 +9,7 @@ import type { Column } from "@/shared/types/data-view";
 function CardSwatch({ color }: { color: string | null }) {
   return (
     <span
-      className="size-7 shrink-0 rounded-md"
+      className="h-7 w-10 shrink-0 rounded-md"
       style={{ backgroundColor: color ?? "var(--muted)" }}
       aria-hidden="true"
     />
@@ -31,7 +31,7 @@ function CardOverviewTile({ row }: { row: CardOverviewRow }) {
           Ver detalle <ArrowRight className="size-3.5" />
         </span>
       </div>
-      <div className="mt-4 text-2xl font-semibold tabular-nums">
+      <div className="mt-4 text-3xl font-semibold tabular-nums">
         {formatCurrency(row.total)}
       </div>
       <dl className="mt-3 space-y-1.5 text-sm">
@@ -59,11 +59,13 @@ function CardOverviewTile({ row }: { row: CardOverviewRow }) {
 export function CardOverviewResults({
   rows,
   layout,
+  groupBy = "none",
   loading,
   error,
 }: {
   rows: CardOverviewRow[];
   layout: "cards" | "table";
+  groupBy?: "none" | "bank";
   loading: boolean;
   error: boolean;
 }) {
@@ -139,31 +141,41 @@ export function CardOverviewResults({
       ),
     },
   ];
-  const totalPending = rows.reduce((sum, row) => sum + row.pending, 0);
-  const footer = (
-    <div className="credit-card-surface flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-xs">
-      <span className="text-muted-foreground">
-        <span className="eyebrow mr-2">Count</span>
-        {rows.length}
-      </span>
-      <span className="text-muted-foreground">
-        <span className="eyebrow mr-2">Sum</span>
-        <strong className="text-sm text-foreground tabular-nums">
-          {formatCurrency(totalPending)}
-        </strong>
-      </span>
-    </div>
-  );
-
-  return (
+  const groups =
+    groupBy === "bank"
+      ? Array.from(
+          rows.reduce((map, row) => {
+            const label = row.card.bank?.trim() || "Sin banco";
+            map.set(label, [...(map.get(label) ?? []), row]);
+            return map;
+          }, new Map<string, CardOverviewRow[]>()),
+        )
+      : [];
+  const renderView = (items: CardOverviewRow[]) => (
     <DataView
-      items={rows}
+      items={items}
       columns={columns}
       rowKey={(row) => row.card.id}
       view={layout}
       tableClassName="credit-card-surface"
       cardRenderer={(row) => <CardOverviewTile row={row} />}
-      footer={loading ? undefined : footer}
     />
+  );
+
+  if (groupBy === "none") return renderView(rows);
+  return (
+    <div className="space-y-5">
+      {groups.map(([label, items]) => (
+        <section key={label} aria-label={`Tarjetas de ${label}`}>
+          <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+            {label}
+            <span className="text-xs font-normal text-muted-foreground">
+              {items.length}
+            </span>
+          </h2>
+          {renderView(items)}
+        </section>
+      ))}
+    </div>
   );
 }

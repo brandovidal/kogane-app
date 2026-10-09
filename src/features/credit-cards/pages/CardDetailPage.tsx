@@ -32,7 +32,6 @@ import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Input } from "@/ui/input";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
-import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { type Column } from "@/shared/types/data-view";
 import {
@@ -42,10 +41,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChartPie, List, Wallet } from "lucide-react";
+import { ChartPie, LayoutGrid, List, Wallet } from "lucide-react";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import {
   duplicateBody,
@@ -56,8 +55,6 @@ import { formatDate } from "@/shared/lib/dates";
 import { ATTACHMENT_KIND_LABELS } from "@/features/attachments/constants/attachments";
 import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
-import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
@@ -82,27 +79,31 @@ import { isPaidStatus } from "@/features/expenses/lib/expense-actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { CardDetailHeader } from "../sections/detail/CardDetailHeader";
 import { CardDetailMetrics } from "../sections/detail/CardDetailMetrics";
+import { CardDetailToolbar } from "../sections/detail/CardDetailToolbar";
 import { CardEditorDialog } from "../components/CardEditorDialog";
+import type { ColumnVisibilityOption } from "@/shared/components/toolbar";
+import { cardHeaderStore } from "../stores/card-header.store";
+import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
+import { NameAvatar } from "@/shared/components/data-display/NameAvatar";
 
-import {
-  CARD_DETAIL_FILTER_KEYS,
-  CARD_DETAIL_GROUP_OPTIONS,
-} from "../constants/filters";
+import { CARD_DETAIL_FILTER_KEYS } from "../constants/filters";
 
 interface CreditCardDetailProps {
   cardCode: string;
 }
+
+const EMPTY_CARD_EXPENSES: CreditCardExpense[] = [];
 
 // The card is a payment method of type credit_card (D62); the URL uses its code (CMR, IO…) or its id
 function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
   const { data: creditCards, isLoading } = useCreditCards();
-  const expenses =
-    useExpenses(EXPENSE_RESOURCES.creditCard, {
-      month: selectedMonth,
-      year: selectedYear,
-    }).data ?? [];
+  const expensesQuery = useExpenses(EXPENSE_RESOURCES.creditCard, {
+    month: selectedMonth,
+    year: selectedYear,
+  });
+  const expenses = expensesQuery.data ?? EMPTY_CARD_EXPENSES;
   const people = usePeople().data ?? [];
   const categories = useCategories().data ?? [];
   const personName = nameById(people);
@@ -117,6 +118,8 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     ...CARD_DETAIL_FILTER_KEYS,
   ]);
   const [groupBy, setGroupBy] = useState<string>("none");
+  const [sort, setSort] = useState<string | undefined>("date-desc");
+  const [hiddenColumnKeys, setHiddenColumnKeys] = useState<string[]>([]);
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
   const [editing, setEditing] = useState<CreditCardExpense | undefined>();
@@ -147,13 +150,42 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     : undefined;
   // The list only has the balances the bank stated; the breakdown (D95) comes from the full statement
   const { data: statementDetail } = useStatement(statement?.id ?? null);
+  useEffect(() => {
+    cardHeaderStore
+      .getState()
+      .setTitle(
+        card ? `Movimientos · ${card.code ?? card.name}` : "Movimientos",
+      );
+    if (isLoading || expensesQuery.isLoading) {
+      cardHeaderStore.getState().setCount(null);
+      return;
+    }
+    cardHeaderStore
+      .getState()
+      .setCount(
+        card
+          ? expenses.filter((expense) => expense.paymentMethodId === card.id)
+              .length
+          : 0,
+      );
+  }, [card, expenses, expensesQuery.isLoading, isLoading]);
   if (isLoading) return null;
   if (!card) return <EmptyState title="Tarjeta no encontrada" />;
 
   const ofCard = expenses.filter((e) => e.paymentMethodId === card.id);
-  const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) =>
-    (b.processDate ?? "").localeCompare(a.processDate ?? ""),
-  );
+  const cardExpenses = applyExpenseFilters(ofCard, filters, me).sort((a, b) => {
+    if (sort === "date-asc")
+      return (a.processDate ?? "").localeCompare(b.processDate ?? "");
+    if (sort === "amount-desc")
+      return (b.amountInPen ?? b.amount) - (a.amountInPen ?? a.amount);
+    if (sort === "amount-asc")
+      return (a.amountInPen ?? a.amount) - (b.amountInPen ?? b.amount);
+    if (sort === "description-asc")
+      return a.description.localeCompare(b.description, "es");
+    if (sort === "date-desc")
+      return (b.processDate ?? "").localeCompare(a.processDate ?? "");
+    return 0;
+  });
   const selectedPending = cardExpenses.filter(
     (expense) =>
       selectedExpenses.has(expense.id) && !isPaidStatus(expense.paymentStatus),
@@ -275,6 +307,21 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       ),
     },
     {
+      key: "category",
+      header: "Categoría",
+      cell: (exp) => {
+        const category = categories.find((item) => item.id === exp.categoryId);
+        return (
+          <CategoryLabel
+            name={category?.name ?? "Sin categoría"}
+            icon={category?.icon}
+            color={category?.color}
+            className="text-sm"
+          />
+        );
+      },
+    },
+    {
       key: "amount",
       header: "Monto",
       role: "amount",
@@ -285,13 +332,6 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           amountInPEN={exp.amountInPen}
           othersShare={exp.othersShare}
         />
-      ),
-    },
-    {
-      key: "category",
-      header: "Categoría",
-      cell: (exp) => (
-        <span className="text-sm">{categoryName(exp.categoryId)}</span>
       ),
     },
     {
@@ -323,9 +363,15 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     {
       key: "person",
       header: "Persona",
-      cell: (exp) => (
-        <span className="text-sm">{personName(exp.personId)}</span>
-      ),
+      cell: (exp) => {
+        const name = personName(exp.personId);
+        return (
+          <span className="inline-flex items-center gap-2 text-sm">
+            <NameAvatar name={name} unassigned={!exp.personId} />
+            {name}
+          </span>
+        );
+      },
     },
     {
       key: "date",
@@ -384,6 +430,32 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     },
   ];
 
+  const hideableColumns = columns.filter((column) => column.role !== "actions");
+  const columnVisibilityOptions: ColumnVisibilityOption[] = hideableColumns.map(
+    (column) => ({
+      id: column.key,
+      label: column.header,
+      visible: !hiddenColumnKeys.includes(column.key),
+      onVisibleChange: (visible) =>
+        setHiddenColumnKeys((current) =>
+          visible
+            ? current.filter((key) => key !== column.key)
+            : [...new Set([...current, column.key])],
+        ),
+    }),
+  );
+  const visibleColumns = columns.filter(
+    (column) =>
+      column.role === "actions" || !hiddenColumnKeys.includes(column.key),
+  );
+  const resetView = () => {
+    setFilters({});
+    setGroupBy("none");
+    setSort("date-desc");
+    setHiddenColumnKeys([]);
+    setView("table");
+  };
+
   const footer = (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <span className="text-sm text-muted-foreground">
@@ -400,57 +472,60 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
 
   return (
     <div className="space-y-4">
-      <CardDetailHeader
-        name={card.name}
-        color={card.color}
-        movementCount={ofCard.length}
-        month={selectedMonth}
-        year={selectedYear}
-        onNewExpense={() =>
-          openNewExpense({
-            destination: "credit_card",
-            paymentMethodId: card.id,
-          })
-        }
-        onRegisterPayment={() => setConfirmPayment(true)}
-        onEdit={() => setEditingCard(true)}
-        canRegisterPayment={selectedPending.length > 0}
-      />
-
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as typeof activeTab)}
         className="w-full"
       >
-        <TabsList
-          aria-label="Secciones del detalle de tarjeta"
-          className="grid h-auto w-full grid-cols-3 bg-transparent p-0 sm:flex sm:w-fit"
-        >
-          <TabsTrigger
-            value="expenses"
-            className="h-auto whitespace-normal py-2 text-xs sm:text-sm"
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <TabsList
+            aria-label="Secciones del detalle de tarjeta"
+            className="flex h-auto w-full min-w-0 items-center justify-start gap-1 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] sm:w-fit"
           >
-            <List aria-hidden="true" /> Movimientos
-          </TabsTrigger>
-          <TabsTrigger
-            value="card-detail"
-            className="h-auto whitespace-normal py-2 text-xs sm:text-sm"
-          >
-            <ChartPie aria-hidden="true" /> Categorías
-          </TabsTrigger>
-          <TabsTrigger
-            value="payment"
-            className="h-auto whitespace-normal py-2 text-xs sm:text-sm"
-          >
-            <Wallet aria-hidden="true" /> Pago de tarjeta
-          </TabsTrigger>
-        </TabsList>
+            <a
+              href="/tarjetas"
+              className="inline-flex h-auto items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:text-sm"
+            >
+              <LayoutGrid aria-hidden="true" className="size-4" /> Resumen
+            </a>
+            <TabsTrigger
+              value="expenses"
+              className="h-auto shrink-0 whitespace-nowrap py-2 text-xs sm:text-sm"
+            >
+              <List aria-hidden="true" /> Movimientos
+            </TabsTrigger>
+            <TabsTrigger
+              value="card-detail"
+              className="h-auto shrink-0 whitespace-nowrap py-2 text-xs sm:text-sm"
+            >
+              <ChartPie aria-hidden="true" /> Categorías
+            </TabsTrigger>
+            <TabsTrigger
+              value="payment"
+              className="h-auto shrink-0 whitespace-nowrap py-2 text-xs sm:text-sm"
+            >
+              <Wallet aria-hidden="true" /> Pago de tarjeta
+            </TabsTrigger>
+          </TabsList>
+          <CardDetailHeader
+            onNewExpense={() =>
+              openNewExpense({
+                destination: "credit_card",
+                paymentMethodId: card.id,
+              })
+            }
+            onRegisterPayment={() => setConfirmPayment(true)}
+            onEdit={() => setEditingCard(true)}
+            canRegisterPayment={selectedPending.length > 0}
+          />
+        </div>
 
         <div className="mt-4">
           <CardDetailMetrics
             view={activeTab}
             month={selectedMonth}
             year={selectedYear}
+            movementCount={ofCard.length}
             amount={ofCard.reduce(
               (sum, expense) => sum + (expense.amountInPen ?? expense.amount),
               0,
@@ -464,30 +539,25 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
                 : "—"
             }
             statement={statementDetail}
+            closeDay={card.billingCloseDay}
           />
         </div>
 
         <TabsContent value="expenses" className="mt-3 space-y-3">
-          <ExpenseFilters
-            fields={[...CARD_DETAIL_FILTER_KEYS]}
-            value={filters}
-            onChange={setFilters}
-            statuses={CREDIT_CARD_STATUSES}
+          <CardDetailToolbar
+            fields={CARD_DETAIL_FILTER_KEYS}
+            filters={filters}
+            onFiltersChange={setFilters}
             shown={cardExpenses.length}
             total={ofCard.length}
             groupBy={groupBy}
             onGroupByChange={setGroupBy}
-            groupByOptions={[...CARD_DETAIL_GROUP_OPTIONS]}
-            showActiveSummary={false}
-            appliedFilters={
-              <ActiveExpenseFilterChips
-                fields={[...CARD_DETAIL_FILTER_KEYS]}
-                value={filters}
-                onChange={setFilters}
-                me={me}
-              />
-            }
-            viewToggle={<ViewToggle value={view} onChange={setView} />}
+            sort={sort}
+            onSortChange={setSort}
+            view={view}
+            onViewChange={setView}
+            columns={columnVisibilityOptions}
+            onResetView={resetView}
           />
 
           {cardExpenses.length === 0 ? (
@@ -501,7 +571,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
           ) : (
             <GroupedDataView
               items={cardExpenses}
-              columns={columns}
+              columns={visibleColumns}
               rowKey={(exp) => exp.id}
               view={view}
               groupBy={groupBy}

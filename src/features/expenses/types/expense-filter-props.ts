@@ -17,6 +17,9 @@ export interface ExpenseFiltersProps {
   compactCountInTitle?: boolean;
   floatingFilterCount?: boolean;
   searchInPanel?: boolean;
+  installmentsInPanel?: boolean;
+  filterOpen?: boolean;
+  onFilterOpenChange?: (open: boolean) => void;
   primaryControls?: ReactNode;
   rightActions?: ReactNode;
   appliedFilters?: ReactNode;

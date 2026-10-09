@@ -1,7 +1,7 @@
 import {
   Activity,
   ChevronDown,
-  Columns3,
+  CreditCard,
   LayoutGrid,
   ListFilter,
   MoreHorizontal,
@@ -22,7 +22,6 @@ const VIEWS = [
   { value: "summary", label: "Resumen", Icon: LayoutGrid },
   { value: "movements", label: "Movimientos", Icon: ListFilter },
   { value: "installments", label: "Cuotas", Icon: Activity },
-  { value: "period", label: "Por período", Icon: Columns3 },
 ] as const;
 
 export function CardOverviewViewBar({
@@ -60,6 +59,16 @@ export function CardOverviewViewBar({
             {label}
           </button>
         ))}
+        {view === "period" && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-accent px-2.5 text-sm font-medium text-foreground ring-1 ring-border/70"
+          >
+            Por período
+          </button>
+        )}
         <Button
           type="button"
           variant="ghost"
@@ -84,6 +93,9 @@ export function CardOverviewViewBar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => onViewChange("period")}>
+              Vista por período
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={onNewCard}>
               Nueva tarjeta
             </DropdownMenuItem>
@@ -92,6 +104,16 @@ export function CardOverviewViewBar({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-9 gap-2"
+          onClick={onNewCard}
+        >
+          <CreditCard className="size-4" />
+          <span className="hidden sm:inline">Nueva tarjeta</span>
+        </Button>
         <div className="inline-flex items-center">
           <Button
             type="button"

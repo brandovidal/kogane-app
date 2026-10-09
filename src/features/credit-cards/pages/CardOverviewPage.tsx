@@ -18,6 +18,7 @@ function CardOverviewPageContent() {
   const data = useCardOverview();
   const [view, setView] = useState<CardOverviewView>("summary");
   const [layout, setLayout] = useState<"cards" | "table">("cards");
+  const [groupBy, setGroupBy] = useState<"none" | "bank">("none");
   const [creatingCard, setCreatingCard] = useState(false);
   const openNewExpense = useNewExpense((state) => state.openWith);
   return (
@@ -36,17 +37,21 @@ function CardOverviewPageContent() {
         movements={data.filtered.length}
         total={data.total}
         loading={data.loading}
+        month={data.month}
       />
       <CardOverviewToolbar
         filters={data.filters}
         onFiltersChange={data.setFilters}
         layout={layout}
         onLayoutChange={setLayout}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
       />
       {view === "summary" ? (
         <CardOverviewResults
           rows={data.rows}
           layout={layout}
+          groupBy={groupBy}
           loading={data.loading}
           error={data.error}
         />

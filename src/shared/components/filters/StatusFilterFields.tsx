@@ -66,6 +66,9 @@ export function StatusFilterFields({
       activeMarker={activeMarker}
       icon={icon}
       width={width}
+      hierarchicalGroups
+      circularSelectionMarks
+      listClassName="max-h-[min(70vh,38rem)]"
       searchable
       labelClassName={labelClassName}
     />

@@ -8,23 +8,14 @@
   background: color-mix(in srgb, var(--card) 90%, var(--brand) 10%);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent);
 }
-.card-payment-chip {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--card) 95%, var(--foreground) 5%);
-  padding: 0.35rem 0.7rem;
-  font-size: 0.8rem;
+.card-upcoming-payment {
+  display: block;
+  min-width: 0;
+  border-color: var(--border);
+  transition: border-color 150ms;
 }
-.card-payment-chip:hover {
-  border-color: var(--brand);
-}
-.card-payment-chip-first {
+.card-upcoming-payment:hover {
   border-color: color-mix(in srgb, var(--brand) 50%, var(--border));
-  background: color-mix(in srgb, var(--card) 90%, var(--brand) 10%);
 }
 .card-overview-tile {
   transition:

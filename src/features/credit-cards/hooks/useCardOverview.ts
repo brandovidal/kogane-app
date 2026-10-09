@@ -65,13 +65,11 @@ export function useCardOverview() {
       }),
     [cards, filtered],
   );
-  useEffect(
-    () =>
-      cardHeaderStore
-        .getState()
-        .setCount(cardsQuery.isLoading ? null : cards.length),
-    [cards.length, cardsQuery.isLoading],
-  );
+  useEffect(() => {
+    const header = cardHeaderStore.getState();
+    header.setTitle("Tarjetas de crédito");
+    header.setCount(cardsQuery.isLoading ? null : cards.length);
+  }, [cards.length, cardsQuery.isLoading]);
   return {
     month,
     year,

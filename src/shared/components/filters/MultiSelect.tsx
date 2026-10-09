@@ -51,9 +51,18 @@ export interface MultiSelectProps {
   presentation?: "popover" | "inline" | "responsive-sheet";
   emptyValueMeansAll?: boolean;
   highlightMatches?: boolean;
+  hierarchicalGroups?: boolean;
+  circularSelectionMarks?: boolean;
+  listClassName?: string;
 }
 
-function SelectionMark({ checked }: { checked: boolean | "indeterminate" }) {
+function SelectionMark({
+  checked,
+  circular = false,
+}: {
+  checked: boolean | "indeterminate";
+  circular?: boolean;
+}) {
   return (
     <span
       aria-hidden="true"
@@ -64,7 +73,10 @@ function SelectionMark({ checked }: { checked: boolean | "indeterminate" }) {
             ? "checked"
             : "unchecked"
       }
-      className="inline-flex size-4 shrink-0 items-center justify-center rounded-lg border border-input bg-background text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary"
+      className={cn(
+        "inline-flex size-[18px] shrink-0 items-center justify-center border border-input bg-background text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary",
+        circular ? "rounded-full" : "rounded-[5px]",
+      )}
     >
       {checked === "indeterminate" ? (
         <Minus className="size-3" />
@@ -94,6 +106,9 @@ export function MultiSelect({
   presentation = "popover",
   emptyValueMeansAll = false,
   highlightMatches = false,
+  hierarchicalGroups = false,
+  circularSelectionMarks = false,
+  listClassName,
 }: MultiSelectProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -260,7 +275,7 @@ export function MultiSelect({
           </div>
         </div>
       )}
-      <div className="max-h-60 overflow-y-auto p-1">
+      <div className={cn("max-h-60 overflow-y-auto p-1", listClassName)}>
         {(!normalizedQuery ||
           normalize(allLabel).includes(normalizedQuery)) && (
           <button
@@ -268,14 +283,20 @@ export function MultiSelect({
             role="checkbox"
             aria-checked={allChecked ? true : value?.length ? "mixed" : false}
             onClick={toggleAll}
-            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-accent"
+            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium hover:bg-accent"
           >
             <SelectionMark
               checked={
                 allChecked ? true : value?.length ? "indeterminate" : false
               }
+              circular={circularSelectionMarks}
             />
             <span className="flex-1">{allLabel}</span>
+            {hierarchicalGroups && (
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {options.length}
+              </span>
+            )}
           </button>
         )}
         {noResults ? (
@@ -296,7 +317,10 @@ export function MultiSelect({
                 ? "indeterminate"
                 : false;
             return (
-              <section key={group || "ungrouped"}>
+              <section
+                key={group || "ungrouped"}
+                className={cn(hierarchicalGroups && "mt-1 border-t pt-1")}
+              >
                 {group && (
                   <button
                     type="button"
@@ -305,45 +329,75 @@ export function MultiSelect({
                       groupState === "indeterminate" ? "mixed" : groupState
                     }
                     onClick={() => toggleGroup(items)}
-                    className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
-                  >
-                    <SelectionMark checked={groupState} />
-                    <span>{group}</span>
-                  </button>
-                )}
-                {items.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    role="checkbox"
-                    aria-checked={isSelected(option.value)}
-                    onClick={() => toggle(option.value)}
                     className={cn(
-                      "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-accent",
-                      option.separatorBefore && "mt-1 border-t pt-2",
+                      "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+                      hierarchicalGroups && "bg-muted/50",
                     )}
                   >
-                    <SelectionMark checked={isSelected(option.value)} />
-                    {option.color && (
+                    <SelectionMark
+                      checked={groupState}
+                      circular={circularSelectionMarks}
+                    />
+                    <span className="flex-1">{group}</span>
+                    {hierarchicalGroups && (
                       <span
-                        aria-hidden="true"
                         className={cn(
-                          "size-2 shrink-0 rounded-full",
-                          option.color,
+                          "text-xs tabular-nums",
+                          chosen > 0 && "text-brand",
                         )}
-                      />
-                    )}
-                    {option.decoration}
-                    <span className="min-w-0 flex-1 truncate">
-                      {renderLabel(option.label)}
-                    </span>
-                    {option.count != null && (
-                      <span className="text-xs tabular-nums text-muted-foreground">
-                        {option.count}
+                      >
+                        {chosen}/{items.length}
                       </span>
                     )}
                   </button>
-                ))}
+                )}
+                <div
+                  className={cn(
+                    hierarchicalGroups &&
+                      group &&
+                      "ml-[9px] border-l border-border/70 pl-2",
+                  )}
+                >
+                  {items.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="checkbox"
+                      aria-checked={isSelected(option.value)}
+                      onClick={() => toggle(option.value)}
+                      className={cn(
+                        "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-accent",
+                        hierarchicalGroups &&
+                          isSelected(option.value) &&
+                          "bg-accent/60",
+                        option.separatorBefore && "mt-1 border-t pt-2",
+                      )}
+                    >
+                      <SelectionMark
+                        checked={isSelected(option.value)}
+                        circular={circularSelectionMarks}
+                      />
+                      {option.color && (
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "size-2 shrink-0 rounded-full",
+                            option.color,
+                          )}
+                        />
+                      )}
+                      {option.decoration}
+                      <span className="min-w-0 flex-1 truncate">
+                        {renderLabel(option.label)}
+                      </span>
+                      {option.count != null && (
+                        <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
+                          {option.count}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </section>
             );
           })

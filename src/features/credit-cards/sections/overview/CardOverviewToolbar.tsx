@@ -1,10 +1,7 @@
 import { useState } from "react";
-import { Activity, ListFilter } from "lucide-react";
+import { Layers, ListFilter } from "lucide-react";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
-import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
-import { INSTALLMENT_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
-import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { useMe } from "@/shared/api/hooks/catalogs";
 import { CardOverviewFilterSheet } from "./CardOverviewFilterSheet";
@@ -12,22 +9,31 @@ import { CARD_OVERVIEW_FILTER_KEYS } from "../../constants/filters";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import {
   AppliedFilterSection,
+  AppliedGroupChips,
   AppliedViewSummary,
   AppliedViewToggle,
   CountedToolbarButton,
+  GroupingMenu,
   ViewModeToggle,
 } from "@/shared/components/toolbar";
+import { Button } from "@/ui/button";
+
+const GROUP_OPTIONS = [{ value: "bank", label: "Banco" }];
 
 export function CardOverviewToolbar({
   filters,
   onFiltersChange,
   layout,
   onLayoutChange,
+  groupBy,
+  onGroupByChange,
 }: {
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
   layout: "cards" | "table";
   onLayoutChange: (layout: "cards" | "table") => void;
+  groupBy: "none" | "bank";
+  onGroupByChange: (groupBy: "none" | "bank") => void;
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [showApplied, setShowApplied] = useState(false);
@@ -36,11 +42,13 @@ export function CardOverviewToolbar({
     filters,
     CARD_OVERVIEW_FILTER_KEYS,
   );
+  const appliedCount = filterCount + (groupBy === "bank" ? 1 : 0);
+
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div
-          className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
+          className="flex min-w-0 flex-1 flex-wrap items-center gap-1"
           role="toolbar"
           aria-label="Herramientas de tarjetas"
         >
@@ -49,36 +57,12 @@ export function CardOverviewToolbar({
             onChange={(q) => onFiltersChange({ ...filters, q: q || undefined })}
             placeholder="Buscar"
             shortcut="/"
-            className="w-full sm:w-44"
+            className="w-full sm:w-56"
           />
           <span
             aria-hidden="true"
             className="mx-1 hidden h-5 w-px bg-border sm:block"
           />
-          <PersonFilterFields
-            value={filters.person}
-            onChange={(person) => onFiltersChange({ ...filters, person })}
-            width="w-56"
-          />
-          <div className="flex items-center gap-1.5">
-            <Activity className="size-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Cuota</span>
-            <FilterSelect
-              label="Cuota"
-              value={filters.installments}
-              options={INSTALLMENT_FILTER_OPTIONS}
-              onChange={(installments) =>
-                onFiltersChange({
-                  ...filters,
-                  installments:
-                    installments as ExpenseFilterValues["installments"],
-                })
-              }
-              allLabel="Todos"
-              width="w-24"
-              labelClassName="sr-only"
-            />
-          </div>
           <CountedToolbarButton
             label="Filtros"
             icon={<ListFilter className="size-4" />}
@@ -87,8 +71,28 @@ export function CardOverviewToolbar({
             className="h-8 gap-1.5 text-muted-foreground"
             onClick={() => setFilterOpen(true)}
           />
+          <GroupingMenu
+            value={groupBy}
+            onChange={onGroupByChange}
+            options={GROUP_OPTIONS}
+            align="start"
+            trigger={
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-1.5 px-2 text-muted-foreground"
+              >
+                <Layers className="size-4" />
+                <span className="text-sm">Agrupar</span>
+                {groupBy === "bank" && (
+                  <span className="text-xs font-semibold text-brand">1</span>
+                )}
+              </Button>
+            }
+          />
           <AppliedViewToggle
-            count={filterCount}
+            count={appliedCount}
             open={showApplied}
             onOpenChange={setShowApplied}
           />
@@ -99,24 +103,38 @@ export function CardOverviewToolbar({
           label="Presentación de tarjetas"
         />
       </div>
-      {showApplied && filterCount > 0 && (
+      {showApplied && appliedCount > 0 && (
         <AppliedViewSummary
           onAddFilter={() => setFilterOpen(true)}
-          onReset={() => onFiltersChange({})}
-          resetDisabled={filterCount === 0}
+          onReset={() => {
+            onFiltersChange({});
+            onGroupByChange("none");
+          }}
+          resetDisabled={appliedCount === 0}
         >
-          <AppliedFilterSection label="Filtros">
-            <ActiveExpenseFilterChips
-              fields={[...CARD_OVERVIEW_FILTER_KEYS]}
-              value={filters}
-              onChange={onFiltersChange}
-              me={me}
-              tone="brand"
-              maxVisibleItems={3}
-              collapsible={false}
-              showClearAll={false}
+          {groupBy === "bank" && (
+            <AppliedGroupChips
+              value={[groupBy]}
+              options={GROUP_OPTIONS}
+              onChange={(next) =>
+                onGroupByChange(next.includes("bank") ? "bank" : "none")
+              }
             />
-          </AppliedFilterSection>
+          )}
+          {filterCount > 0 && (
+            <AppliedFilterSection label="Filtros">
+              <ActiveExpenseFilterChips
+                fields={[...CARD_OVERVIEW_FILTER_KEYS]}
+                value={filters}
+                onChange={onFiltersChange}
+                me={me}
+                tone="brand"
+                maxVisibleItems={3}
+                collapsible={false}
+                showClearAll={false}
+              />
+            </AppliedFilterSection>
+          )}
         </AppliedViewSummary>
       )}
       <CardOverviewFilterSheet

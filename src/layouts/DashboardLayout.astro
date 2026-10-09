@@ -40,10 +40,14 @@ const hasLocalPeriodControl = [
         <div class="flex min-w-0 flex-1 items-center gap-2">
           <MobileNav currentPath={currentPath} />
           <div class="flex min-w-0 flex-col">
-            {section && <span class="eyebrow hidden sm:block">{section}</span>}
+            {section && (
+              <span class="eyebrow hidden sm:block">
+                <slot name="page-section">{section}</slot>
+              </span>
+            )}
             <div class="flex min-w-0 items-baseline gap-2.5">
               <h1 class="truncate text-lg font-semibold tracking-tight">
-                {title}
+                <slot name="page-title">{title}</slot>
               </h1>
               <slot name="title-extra" />
             </div>

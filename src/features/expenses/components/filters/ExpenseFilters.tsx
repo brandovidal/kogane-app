@@ -29,6 +29,7 @@ export function ExpenseFilters({
   onGroupByChange,
   groupByOptions,
   personInPanel = false,
+  installmentsInPanel = false,
   description,
   countLabel,
   compactCountInTitle = false,
@@ -39,8 +40,15 @@ export function ExpenseFilters({
   appliedFilters,
   viewToggle,
   showActiveSummary = true,
+  filterOpen,
+  onFilterOpenChange,
 }: ExpenseFiltersProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = filterOpen ?? internalOpen;
+  const setOpen = (next: boolean) => {
+    setInternalOpen(next);
+    onFilterOpenChange?.(next);
+  };
   const set = (key: ExpenseFilterKey, next: string | undefined) =>
     onChange({ ...value, [key]: next || undefined });
   const has = (key: ExpenseFilterKey) => fields.includes(key);
@@ -78,7 +86,7 @@ export function ExpenseFilters({
   const actions = (
     <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:justify-end">
       {has("person") && !personInPanel && personControl}
-      {has("installments") && (
+      {has("installments") && !installmentsInPanel && (
         <FilterSelect
           label="Cuota"
           icon={ListOrdered}

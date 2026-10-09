@@ -2,18 +2,30 @@
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
 import {
   CardsPage,
+  CardPageSection,
+  CardPageTitle,
   CardPeriodSelector,
   CardRecordCount,
 } from "@/features/credit-cards";
 import "@/features/credit-cards/styles/cards.css";
+
+const cardCode = Astro.url.searchParams.get("tarjeta");
+const title = cardCode ? `Movimientos · ${cardCode}` : "Tarjetas de crédito";
 ---
 
 <DashboardLayout
-  title="Tarjetas de crédito"
-  section="Gastos"
+  title={title}
+  section={cardCode ? "Tarjetas" : "Gastos"}
   mainClass="app-gradient"
 >
-  <CardRecordCount slot="title-extra" client:load />
+  <CardRecordCount
+    slot="title-extra"
+    singular={cardCode ? "movimiento" : "tarjeta"}
+    plural={cardCode ? "movimientos" : "tarjetas"}
+    client:load
+  />
+  <CardPageTitle slot="page-title" fallback={title} client:load />
+  <CardPageSection slot="page-section" client:load />
   <div slot="header-actions" class="hidden sm:block">
     <CardPeriodSelector client:load />
   </div>
