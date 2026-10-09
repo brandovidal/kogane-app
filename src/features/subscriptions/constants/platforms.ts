@@ -9,6 +9,7 @@ export const PLATFORM_FILTER_KEYS: ExpenseFilterKey[] = [
   "type",
   "currency",
   "shared",
+  "period",
   "hasNote",
   "amountFrom",
   "amountTo",

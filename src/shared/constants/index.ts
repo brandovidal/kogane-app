@@ -14,6 +14,7 @@ export {
   PAYMENT_METHOD_TYPE_LABELS,
   PAYMENT_METHOD_TYPE_ORDER,
 } from "./payment-methods";
+export { SHARED_FILTER, SHARED_FILTER_OPTIONS } from "./expense-filters";
 export {
   PERSON_ALL,
   PERSON_ME,

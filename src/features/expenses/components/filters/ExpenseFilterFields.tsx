@@ -1,5 +1,4 @@
 import {
-  CalendarClock,
   CalendarRange,
   CircleCheck,
   Coins,
@@ -8,11 +7,13 @@ import {
   UsersRound,
   WalletCards,
 } from "lucide-react";
-import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/subscriptions";
+import { BillingPeriodFilterFields } from "@/features/subscriptions/components/BillingPeriodFilterFields";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { FilterSelect } from "@/shared/components/filters/FilterSelect";
+import { CurrencyFilterFields } from "@/shared/components/filters/CurrencyFilterFields";
+import { ExpenseTypeFilterFields } from "@/shared/components/filters/ExpenseTypeFilterFields";
+import { NoteFilterFields } from "@/shared/components/filters/NoteFilterFields";
+import { SharedFilterFields } from "@/shared/components/filters/SharedFilterFields";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { RecordSearchField } from "@/shared/components/filters/RecordSearchField";
@@ -21,13 +22,10 @@ import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFiel
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { cn } from "@/shared/utils/cn";
-import { entriesOf } from "@/shared/utils/entries";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
 import type { ExpenseFilterFieldsProps } from "../../types/expense-filter-props";
 import {
-  CURRENCY_FILTER_OPTIONS,
-  SHARED_FILTER_OPTIONS,
   PANEL_FILTER_KEYS,
   PRIMARY_PANEL_FILTER_KEYS,
 } from "../../constants/expense-filters";
@@ -103,14 +101,12 @@ export function ExpenseFilterFields({
           />
         )}
         {has("currency") && (
-          <FilterSelect
+          <CurrencyFilterFields
             label="Moneda"
             icon={showIcons ? Coins : undefined}
             value={value.currency}
-            options={CURRENCY_FILTER_OPTIONS}
             onChange={(next) => set("currency", next)}
             width={width}
-            searchable={panel}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />
@@ -130,44 +126,47 @@ export function ExpenseFilterFields({
           />
         )}
         {has("period") && (
-          <FilterSelect
+          <BillingPeriodFilterFields
             label="Periodo"
-            icon={showIcons ? CalendarClock : undefined}
             value={value.period}
-            options={entriesOf(SUBSCRIPTION_PERIOD_LABELS)}
             onChange={(next) => set("period", next)}
+            showIcon={showIcons}
             width={width}
-            searchable={panel}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />
         )}
         {has("type") && (
-          <FilterSelect
+          <ExpenseTypeFilterFields
             label="Tipo"
             icon={showIcons ? ListFilter : undefined}
             value={value.type}
-            options={entriesOf(EXPENSE_TYPE_LABELS)}
             onChange={(next) => set("type", next)}
             width={width ?? "w-[130px]"}
-            searchable={panel}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />
         )}
         {has("shared") && (
-          <FilterSelect
+          <SharedFilterFields
             label="Compartidos"
             icon={showIcons ? UsersRound : undefined}
             value={value.shared}
-            options={SHARED_FILTER_OPTIONS.map((option) =>
-              option.value === "no" && sharedOwnLabel
-                ? { ...option, label: sharedOwnLabel }
-                : option,
-            )}
+            ownLabel={sharedOwnLabel}
             onChange={(next) => set("shared", next)}
             width={width ?? "w-[180px]"}
-            searchable={panel}
+            labelClassName="text-sm font-medium"
+            activeMarker={activeMarkers}
+          />
+        )}
+        {has("hasNote") && (
+          <NoteFilterFields
+            label="Con nota"
+            value={value.hasNote}
+            onChange={(next) =>
+              set("hasNote", next as "yes" | "no" | undefined)
+            }
+            width={width}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />

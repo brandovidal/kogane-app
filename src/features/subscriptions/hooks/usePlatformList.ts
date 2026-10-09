@@ -124,10 +124,13 @@ export function usePlatformList() {
     const methodTypes = new Map(
       (paymentMethods ?? []).map((method) => [method.id, method.type]),
     );
+    const selectedMethodTypes = filters.methodType.split(",").filter(Boolean);
     return matches.filter(
       (item) =>
         item.paymentMethodId != null &&
-        methodTypes.get(item.paymentMethodId) === filters.methodType,
+        selectedMethodTypes.includes(
+          methodTypes.get(item.paymentMethodId) ?? "",
+        ),
     );
   }, [items, filters, me, paymentMethods]);
   const groupBy = (groupParams.group?.split(",") ?? []).filter(

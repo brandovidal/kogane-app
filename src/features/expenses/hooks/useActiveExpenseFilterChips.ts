@@ -8,6 +8,7 @@ import {
   NO_PAYMENT_STATUS_FILTER,
   PAYMENT_STATUS_LABELS,
 } from "@/shared/constants/finance";
+import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
 import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/subscriptions";
 import { PAYMENT_METHOD_TYPE_LABELS } from "@/features/settings/constants/payment-methods";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
@@ -45,6 +46,12 @@ export function useActiveExpenseFilterChips<
   const personName = (id: string) =>
     people.find((person) => person.id === id)?.name ?? id;
   const meName = me ? personName(me) : PERSON_FILTER_LABELS.ME;
+  const labelsFor = (raw: string | undefined, labels: Record<string, string>) =>
+    raw
+      ?.split(",")
+      .filter(Boolean)
+      .map((item) => labels[item] ?? item)
+      .join(", ");
   const selectedPersonIds = new Set(
     (value.person ?? "").split(",").filter((id) => id && id !== PERSON_ALL),
   );
@@ -102,7 +109,9 @@ export function useActiveExpenseFilterChips<
           .map((id) => methods.find((method) => method.id === id)?.name ?? id)
           .join(", ")}`
       : undefined,
-    currency: value.currency ? `Moneda: ${value.currency}` : undefined,
+    currency: value.currency
+      ? `Moneda: ${labelsFor(value.currency, Object.fromEntries(CURRENCY_OPTIONS.map((option) => [option.value, option.label])))}`
+      : undefined,
     status: value.status
       ? `Estado: ${
           value.status === NO_PAYMENT_STATUS_FILTER
@@ -114,13 +123,13 @@ export function useActiveExpenseFilterChips<
         }`
       : undefined,
     type: value.type
-      ? `Tipo: ${EXPENSE_TYPE_LABELS[value.type] ?? value.type}`
+      ? `Tipo: ${labelsFor(value.type, EXPENSE_TYPE_LABELS)}`
       : undefined,
     shared: value.shared
       ? `Compartidos: ${value.shared === SHARED_FILTER.SHARED ? "Sí" : "No"}`
       : undefined,
     period: value.period
-      ? `Período: ${SUBSCRIPTION_PERIOD_LABELS[value.period] ?? value.period}`
+      ? `Período: ${labelsFor(value.period, SUBSCRIPTION_PERIOD_LABELS)}`
       : undefined,
     installments: value.installments
       ? `Cuotas: ${value.installments === INSTALLMENT_FILTER.WITH ? "Con cuotas" : "Sin cuotas"}`
@@ -140,7 +149,7 @@ export function useActiveExpenseFilterChips<
         : undefined,
     amountTo: undefined,
     methodType: value.methodType
-      ? `Medio de pago: ${PAYMENT_METHOD_TYPE_LABELS[value.methodType as keyof typeof PAYMENT_METHOD_TYPE_LABELS] ?? value.methodType}`
+      ? `Medio de pago: ${labelsFor(value.methodType, PAYMENT_METHOD_TYPE_LABELS)}`
       : undefined,
   };
 

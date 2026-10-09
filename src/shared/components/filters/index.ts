@@ -3,6 +3,16 @@ export type { AppliedFilterChip } from "./AppliedFilterChips";
 export { AppliedFilterChips } from "./AppliedFilterChips";
 export type { FilterSelectOption, FilterSelectProps } from "./FilterSelect";
 export { FilterSelect } from "./FilterSelect";
+export type {
+  ShortFilterOption,
+  ShortFilterFieldsProps,
+} from "./ShortFilterFields";
+export { ShortFilterFields } from "./ShortFilterFields";
+export { CurrencyFilterFields } from "./CurrencyFilterFields";
+export { ExpenseTypeFilterFields } from "./ExpenseTypeFilterFields";
+export { NoteFilterFields } from "./NoteFilterFields";
+export { PaymentMethodTypeFilterFields } from "./PaymentMethodTypeFilterFields";
+export { SharedFilterFields } from "./SharedFilterFields";
 export type { MultiSelectOption, MultiSelectProps } from "./MultiSelect";
 export { MultiSelect } from "./MultiSelect";
 export type { PersonFilterOption, PersonFilterProps } from "./PersonFilter";

@@ -52,6 +52,9 @@ export function applyExpenseFilters<T extends FilterableExpense>(
   const amountTo = filters.amountTo ? Number(filters.amountTo) : null;
   const categories = filters.category?.split(",").filter(Boolean) ?? [];
   const methods = filters.method?.split(",").filter(Boolean) ?? [];
+  const currencies = filters.currency?.split(",").filter(Boolean) ?? [];
+  const expenseTypes = filters.type?.split(",").filter(Boolean) ?? [];
+  const periods = filters.period?.split(",").filter(Boolean) ?? [];
   return records.filter((record) => {
     const amount = filters.currency
       ? record.amount
@@ -69,11 +72,12 @@ export function applyExpenseFilters<T extends FilterableExpense>(
         )) &&
       (!categories.length || categories.includes(record.categoryId ?? "")) &&
       (!methods.length || methods.includes(record.paymentMethodId ?? "")) &&
-      (!filters.currency || record.currency === filters.currency) &&
-      (!filters.type || record.expenseType === filters.type) &&
+      (!currencies.length || currencies.includes(record.currency ?? "")) &&
+      (!expenseTypes.length ||
+        expenseTypes.includes(record.expenseType ?? "")) &&
       (!filters.status ||
         filters.status.split(",").includes(record.paymentStatus ?? "")) &&
-      (!filters.period || record.period === filters.period) &&
+      (!periods.length || periods.includes(record.period ?? "")) &&
       (!filters.hasNote ||
         Boolean(record.notes?.trim()) === (filters.hasNote === "yes")) &&
       (amountFrom == null ||

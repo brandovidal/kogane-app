@@ -1,16 +1,15 @@
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
-import { FilterSelect } from "@/shared/components/filters/FilterSelect";
+import { CurrencyFilterFields } from "@/shared/components/filters/CurrencyFilterFields";
+import { ExpenseTypeFilterFields } from "@/shared/components/filters/ExpenseTypeFilterFields";
+import { NoteFilterFields } from "@/shared/components/filters/NoteFilterFields";
+import { PaymentMethodTypeFilterFields } from "@/shared/components/filters/PaymentMethodTypeFilterFields";
+import { SharedFilterFields } from "@/shared/components/filters/SharedFilterFields";
+import { BillingPeriodFilterFields } from "../../components/BillingPeriodFilterFields";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
 import { Input } from "@/ui/input";
-import { PAYMENT_METHOD_TYPE_LABELS } from "@/shared/constants/payment-methods";
-import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import {
-  CURRENCY_FILTER_OPTIONS,
-  SHARED_FILTER_OPTIONS,
-} from "@/features/expenses/constants/expense-filters";
 import { countPlatformFilters } from "../../lib/platform-filters";
 import { PLATFORM_MORE_FILTER_KEYS } from "../../constants/platforms";
 import type {
@@ -33,9 +32,6 @@ export function PlatformFilterFields({
     onFiltersChange({ ...filters, [key]: value || undefined });
   const moreCount = countPlatformFilters(filters, PLATFORM_MORE_FILTER_KEYS);
   const amountPrefix = filters.currency === "USD" ? "$" : "S/";
-  const methodTypeOptions = Object.entries(PAYMENT_METHOD_TYPE_LABELS).map(
-    ([value, label]) => ({ value, label }),
-  );
 
   return (
     <div className="space-y-5">
@@ -75,51 +71,46 @@ export function PlatformFilterFields({
         defaultOpen
       >
         <div className="grid grid-cols-2 gap-3">
-          <FilterSelect
+          <CurrencyFilterFields
             label="Moneda"
             value={filters.currency}
-            options={CURRENCY_FILTER_OPTIONS}
             onChange={(value) => set("currency", value)}
             width="w-full"
-            searchable
             activeMarker
             labelClassName="text-sm font-medium"
           />
-          <FilterSelect
+          <ExpenseTypeFilterFields
             label="Tipo de gasto"
             value={filters.type}
-            options={Object.entries(EXPENSE_TYPE_LABELS).map(
-              ([value, label]) => ({ value, label }),
-            )}
             onChange={(value) => set("type", value)}
             width="w-full"
-            searchable
             activeMarker
             labelClassName="text-sm font-medium"
           />
-          <FilterSelect
+          <NoteFilterFields
             label="Con nota"
             value={filters.hasNote}
-            options={[
-              { value: "yes", label: "Con nota" },
-              { value: "no", label: "Sin nota" },
-            ]}
             onChange={(value) =>
               set("hasNote", value as "yes" | "no" | undefined)
             }
             width="w-full"
             allLabel="Todas"
-            allTriggerLabel="Todas"
             activeMarker
             labelClassName="text-sm font-medium"
           />
-          <FilterSelect
+          <PaymentMethodTypeFilterFields
             label="Medio de pago"
             value={filters.methodType}
-            options={methodTypeOptions}
             onChange={(value) => set("methodType", value)}
             width="w-full"
-            searchable
+            activeMarker
+            labelClassName="text-sm font-medium"
+          />
+          <BillingPeriodFilterFields
+            label="Período de cobro"
+            value={filters.period}
+            onChange={(value) => set("period", value)}
+            width="w-full"
             activeMarker
             labelClassName="text-sm font-medium"
           />
@@ -179,10 +170,9 @@ export function PlatformFilterFields({
             presentation="popover"
             labelClassName="text-sm font-medium"
           />
-          <FilterSelect
+          <SharedFilterFields
             label="Compartidos"
             value={filters.shared}
-            options={SHARED_FILTER_OPTIONS}
             onChange={(value) => set("shared", value)}
             width="w-full"
             activeMarker
