@@ -12,6 +12,7 @@ import {
   AppliedViewToggle,
   CountedToolbarButton,
   GroupingMenu,
+  ViewModeToggle,
 } from "@/shared/components/toolbar";
 import {
   PLATFORM_FILTER_KEYS,
@@ -122,18 +123,32 @@ export function PlatformToolbar({
             onOpenChange={setShowApplied}
           />
         </div>
-        <PlatformViewSettings
-          view={view}
-          onViewChange={onViewChange}
-          columns={columnVisibilityOptions}
-          visible={visible}
-          filterCount={sheetFilterCount}
-          onOpenFilters={onOpenFilters}
-          groupBy={groupBy}
-          onGroupByChange={onGroupByChange}
-          canReset={hasViewSettings}
-          onReset={resetView}
-        />
+        <div className="flex shrink-0 items-center gap-1">
+          <PlatformViewSettings
+            columns={columnVisibilityOptions}
+            visible={visible}
+            filterCount={sheetFilterCount}
+            onOpenFilters={onOpenFilters}
+            groupBy={groupBy}
+            onGroupByChange={onGroupByChange}
+            canReset={hasViewSettings}
+            onReset={resetView}
+          />
+          {(view === "list" || view === "cards") && (
+            <>
+              <span
+                aria-hidden="true"
+                className="mx-1 hidden h-5 w-px bg-border sm:block"
+              />
+              <ViewModeToggle
+                value={view === "cards" ? "cards" : "table"}
+                onChange={(mode) =>
+                  onViewChange(mode === "cards" ? "cards" : "list")
+                }
+              />
+            </>
+          )}
+        </div>
       </div>
       {showApplied && activeFilters + groupBy.length > 0 && (
         <AppliedViewSummary

@@ -3,7 +3,6 @@ import {
   CalendarDays,
   ChevronDown,
   Columns3,
-  LayoutGrid,
   Link2,
   MessageSquareText,
   MoreHorizontal,
@@ -29,7 +28,6 @@ import { cn } from "@/shared/utils/cn";
 type PlatformView = "list" | "cards" | "period" | "calendar";
 const views: { value: PlatformView; label: string; Icon: typeof Table2 }[] = [
   { value: "list", label: "Lista", Icon: Table2 },
-  { value: "cards", label: "Tarjetas", Icon: LayoutGrid },
   { value: "period", label: "Por período", Icon: Columns3 },
   { value: "calendar", label: "Calendario", Icon: CalendarDays },
 ];
@@ -70,23 +68,28 @@ export function PlatformViewBar({
         aria-label="Vistas de plataformas"
         className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {views.map(({ value, label, Icon }) => (
-          <button
-            key={value}
-            type="button"
-            role="tab"
-            aria-selected={view === value}
-            onClick={() => onViewChange(value)}
-            className={cn(
-              "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              view === value &&
-                "bg-accent text-foreground ring-1 ring-border/70",
-            )}
-          >
-            <Icon className="size-4" />
-            {label}
-          </button>
-        ))}
+        {views.map(({ value, label, Icon }) => {
+          const selected =
+            value === "list"
+              ? view === "list" || view === "cards"
+              : view === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => onViewChange(value)}
+              className={cn(
+                "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                selected && "bg-accent text-foreground ring-1 ring-border/70",
+              )}
+            >
+              <Icon className="size-4" />
+              {label}
+            </button>
+          );
+        })}
         <Button
           type="button"
           variant="ghost"

@@ -1,15 +1,12 @@
 import {
-  CalendarDays,
   CalendarRange,
   Columns3,
   Eye,
   Layers,
-  LayoutGrid,
   Link2,
   ListFilter,
   RotateCcw,
   SlidersHorizontal,
-  Table2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -22,14 +19,11 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/ui/dropdown-menu";
-import type { PlatformView } from "./PlatformViewBar";
 
 const GROUP_OPTIONS = [
   { value: "period", label: "Período" },
@@ -37,8 +31,6 @@ const GROUP_OPTIONS = [
 ] as const;
 
 export function PlatformViewSettings({
-  view,
-  onViewChange,
   columns,
   visible,
   filterCount,
@@ -48,8 +40,6 @@ export function PlatformViewSettings({
   canReset,
   onReset,
 }: {
-  view: PlatformView;
-  onViewChange: (view: PlatformView) => void;
   columns: readonly ColumnVisibilityOption[];
   visible: number;
   filterCount: number;
@@ -75,33 +65,6 @@ export function PlatformViewSettings({
       }
       className="w-72"
     >
-      <DropdownMenuSeparator />
-      <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
-        Diseño
-      </DropdownMenuLabel>
-      <DropdownMenuRadioGroup
-        value={view}
-        onValueChange={(next) => onViewChange(next as PlatformView)}
-      >
-        {(
-          [
-            ["list", "Lista", Table2],
-            ["cards", "Tarjetas", LayoutGrid],
-            ["period", "Por período", Columns3],
-            ["calendar", "Calendario", CalendarDays],
-          ] as const
-        ).map(([value, label, Icon]) => (
-          <DropdownMenuRadioItem
-            key={value}
-            value={value}
-            onSelect={(event) => event.preventDefault()}
-          >
-            <Icon className="size-4" />
-            {label}
-          </DropdownMenuRadioItem>
-        ))}
-      </DropdownMenuRadioGroup>
-      <DropdownMenuSeparator />
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <Eye className="size-4" />
