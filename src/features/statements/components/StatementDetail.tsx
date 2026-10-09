@@ -3,7 +3,13 @@ import { StatementPaymentSummary } from "./StatementPaymentSummary";
 import { StatementBalanceHistory } from "./StatementBalanceHistory";
 import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, CirclePlus, ListFilter, Wallet } from "lucide-react";
+import {
+  CheckCircle2,
+  CirclePlus,
+  ListFilter,
+  Replace,
+  Wallet,
+} from "lucide-react";
 
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import { useExpense } from "@/features/expenses/hooks/expenses";
@@ -370,7 +376,7 @@ function TabTotals({
   const totals = totalsOf(items);
   if (!totals.length) return null;
   return (
-    <p className="text-sm text-muted-foreground">
+    <span className="text-sm text-muted-foreground">
       Suma:{" "}
       {totals.map((total, index) => (
         <span key={total.currency}>
@@ -380,11 +386,17 @@ function TabTotals({
           </span>
         </span>
       ))}
-    </p>
+    </span>
   );
 }
 
-export function StatementDetail({ statement }: { statement: Statement }) {
+export function StatementDetail({
+  statement,
+  onChangeFile,
+}: {
+  statement: Statement;
+  onChangeFile?: () => void;
+}) {
   const createRows = useCreateStatementRows();
   const [pending, setPending] = useState<PendingCreate | null>(null);
   const assignPerson = useAssignStatementPerson();
@@ -396,6 +408,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
     EXPENSE_RESOURCES.creditCard,
     editingExpenseId,
   );
+  const [tab, setTab] = useState<string | null>(null);
   const [reviewingRowId, setReviewingRowId] = useState<string | null>(null);
   const reviewingRow = statement.rows.find((row) => row.id === reviewingRowId);
   const reviewRow = (row: StatementRow) => setReviewingRowId(row.id);
@@ -403,6 +416,11 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   const counts = countsOf(statement);
   const newRows = rowsOf(statement, "new");
   const matchedRows = rowsOf(statement, "matched");
+  const activeTab =
+    tab ??
+    (counts.new || statement.rows.some((row) => row.locked)
+      ? "new"
+      : "matched");
   const where = `${statement.cardName} · ${getMonthName(statement.paymentMonth)} ${statement.paymentYear}`;
   const history = statementHistory
     .filter(
@@ -434,12 +452,16 @@ export function StatementDetail({ statement }: { statement: Statement }) {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="flex min-w-0 flex-nowrap items-center gap-2 text-base">
+        <CardTitle className="flex min-w-0 flex-wrap items-center gap-2 text-base">
           <span className="min-w-0 truncate whitespace-nowrap" title={where}>
             {where}
           </span>
           <Badge variant="outline" className="shrink-0 whitespace-nowrap">
             {statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}
+          </Badge>
+          <Badge variant="secondary" className="shrink-0 whitespace-nowrap">
+            Pagar hasta{" "}
+            {statement.dueDate ? formatDate(statement.dueDate) : "sin fecha"}
           </Badge>
         </CardTitle>
         <div className="flex flex-wrap items-center gap-4">
@@ -453,7 +475,10 @@ export function StatementDetail({ statement }: { statement: Statement }) {
               placeholder="Sin asignar"
             />
           </div>
-          <div className="flex max-w-sm items-center gap-2 text-sm">
+          <div
+            className="flex max-w-sm items-center gap-2 text-sm"
+            title="¿La tarjeta no es la correcta? Cámbiala aquí: los movimientos que aún no creaste se comparan de nuevo con esa tarjeta."
+          >
             <span className="shrink-0 text-muted-foreground">Tarjeta</span>
             <PaymentMethodSelect
               type="credit_card"
@@ -465,57 +490,83 @@ export function StatementDetail({ statement }: { statement: Statement }) {
               placeholder="Elige la tarjeta"
             />
           </div>
+          {onChangeFile && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto"
+              onClick={onChangeFile}
+            >
+              <Replace className="size-4" /> Cambiar archivo
+            </Button>
+          )}
         </div>
-        <p className="text-xs text-muted-foreground">
-          ¿La tarjeta no es la correcta? Cámbiala aquí: los movimientos que aún
-          no creaste se comparan de nuevo con esa tarjeta.
-        </p>
         <StatementBalanceSummary statement={statement} />
       </CardHeader>
       <CardContent>
-        <Tabs
-          defaultValue={
-            counts.new || statement.rows.some((row) => row.locked)
-              ? "new"
-              : "matched"
-          }
-        >
-          <TabsList
-            aria-label="Revisión del estado de cuenta"
-            className="grid w-full grid-cols-2 group-data-[orientation=horizontal]/tabs:h-auto sm:flex sm:w-fit"
-          >
-            <TabsTrigger
-              value="new"
-              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
+        <Tabs value={activeTab} onValueChange={setTab}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <TabsList
+              aria-label="Revisión del estado de cuenta"
+              className="grid w-full grid-cols-2 group-data-[orientation=horizontal]/tabs:h-auto sm:flex sm:w-fit"
             >
-              <CirclePlus aria-hidden="true" /> Nuevos ({counts.new})
-            </TabsTrigger>
-            <TabsTrigger
-              value="matched"
-              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
-            >
-              <CheckCircle2 aria-hidden="true" /> Coinciden ({counts.matched})
-            </TabsTrigger>
-            <TabsTrigger
-              value="missing"
-              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
-            >
-              <ListFilter aria-hidden="true" /> Solo en Kogane ({counts.missing}
-              )
-            </TabsTrigger>
-            <TabsTrigger
-              value="total"
-              className="h-auto whitespace-normal py-2 sm:whitespace-nowrap"
-            >
-              <Wallet aria-hidden="true" /> Pago total
-            </TabsTrigger>
-          </TabsList>
+              {(
+                [
+                  ["new", CirclePlus, "Nuevos", counts.new],
+                  ["matched", CheckCircle2, "Coinciden", counts.matched],
+                  ["missing", ListFilter, "Solo en Kogane", counts.missing],
+                  ["total", Wallet, "Pago total", null],
+                ] as const
+              ).map(([value, Icon, label, count]) => (
+                <TabsTrigger
+                  key={value}
+                  value={value}
+                  className="h-auto gap-1.5 whitespace-normal py-2 sm:whitespace-nowrap"
+                >
+                  <Icon aria-hidden="true" /> {label}
+                  {count != null && (
+                    <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
+                      {count}
+                    </span>
+                  )}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <div className="flex flex-wrap items-center gap-3">
+              {activeTab === "new" && (
+                <TabTotals
+                  items={newRows.filter((row) => row.result === "new")}
+                />
+              )}
+              {activeTab === "matched" && <TabTotals items={matchedRows} />}
+              {activeTab === "missing" && (
+                <TabTotals items={statement.missing} />
+              )}
+              {activeTab === "new" && counts.new > 0 && (
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    setPending({
+                      title: `¿Guardar los ${counts.new} nuevos?`,
+                      description: `Se crean como gastos pendientes de ${where}, con el nombre que les diste (o el del banco) y a nombre de su persona.${newCollects ? ` ${newCollects} son de otras personas: también se crea su cobro.` : ""} Los ignorados no se guardan.`,
+                    })
+                  }
+                  disabled={createRows.isPending}
+                >
+                  Guardar todos ({counts.new})
+                </Button>
+              )}
+            </div>
+          </div>
 
           <TabsContent
             value="total"
             forceMount
             className="mt-3 data-[state=inactive]:hidden"
           >
+            <p className="mb-2 text-sm text-muted-foreground">
+              Pago total menos el pago actual = pago restante
+            </p>
             <StatementPaymentSummary statement={statement} />
             <div className="mb-4">
               <StatementTotalCard
@@ -532,21 +583,6 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           </TabsContent>
 
           <TabsContent value="new" className="mt-3 space-y-3">
-            {counts.new > 0 && (
-              <Button
-                size="sm"
-                onClick={() =>
-                  setPending({
-                    title: `¿Guardar los ${counts.new} nuevos?`,
-                    description: `Se crean como gastos pendientes de ${where}, con el nombre que les diste (o el del banco) y a nombre de su persona.${newCollects ? ` ${newCollects} son de otras personas: también se crea su cobro.` : ""} Los ignorados no se guardan.`,
-                  })
-                }
-                disabled={createRows.isPending}
-              >
-                Guardar todos ({counts.new})
-              </Button>
-            )}
-            <TabTotals items={newRows.filter((row) => row.result === "new")} />
             {newRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Todo lo del estado de cuenta ya está registrado.
@@ -563,7 +599,6 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           </TabsContent>
 
           <TabsContent value="matched" className="mt-3 space-y-2">
-            <TabTotals items={matchedRows} />
             {matchedRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Nada coincidió todavía.
@@ -571,11 +606,8 @@ export function StatementDetail({ statement }: { statement: Statement }) {
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Movimientos del PDF vinculados a un gasto existente o creado
-                  desde este estado. La comparación considera la misma tarjeta y
-                  moneda, en el mes del estado y el anterior. Pulsa la
-                  descripción o «Revisar coincidencia» para comparar el mes de
-                  pago, la fecha y la cuota antes de crear otro gasto.
+                  Misma tarjeta y moneda, mes del estado y anterior. Pulsa la
+                  descripción para revisar la coincidencia.
                 </p>
                 <RowsTable
                   statementId={statement.id}
@@ -589,7 +621,6 @@ export function StatementDetail({ statement }: { statement: Statement }) {
           </TabsContent>
 
           <TabsContent value="missing" className="mt-3 space-y-2">
-            <TabTotals items={statement.missing} />
             {statement.missing.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Todo lo registrado para esta tarjeta y mes está en el estado de
@@ -598,11 +629,9 @@ export function StatementDetail({ statement }: { statement: Statement }) {
             ) : (
               <>
                 <p className="mb-2 text-sm text-muted-foreground">
-                  Gastos de esta tarjeta y del mes de pago del estado que no
-                  están vinculados a ningún movimiento del PDF. Si reconoces uno
-                  entre los nuevos con otro nombre, revísalo antes de guardar
-                  para evitar duplicarlo. Desde sus acciones puedes editar el
-                  gasto existente.
+                  Registrados en Kogane pero ausentes del estado. Si reconoces
+                  uno entre los nuevos con otro nombre, revísalo antes de
+                  guardar.
                 </p>
                 <div className="overflow-x-auto">
                   <Table>
@@ -612,6 +641,7 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                         <TableHead>Descripción</TableHead>
                         <TableHead className="text-right">Monto</TableHead>
                         <TableHead>Persona</TableHead>
+                        <TableHead>Estado</TableHead>
                         <TableHead className="text-right">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -636,6 +666,14 @@ export function StatementDetail({ statement }: { statement: Statement }) {
                           </TableCell>
                           <TableCell className="text-sm">
                             {personName(expense.personId)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className="border-amber-500/40 text-amber-600"
+                            >
+                              No aparece en el PDF
+                            </Badge>
                           </TableCell>
                           <TableCell className="text-right">
                             <MissingExpenseActions
