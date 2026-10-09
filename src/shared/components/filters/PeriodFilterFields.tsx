@@ -3,6 +3,12 @@ import {
   PERIOD_MONTH_OPTIONS,
   PERIOD_YEAR_OPTIONS,
 } from "@/shared/constants/period";
+import {
+  PERIOD_PRESETS,
+  isPeriodPresetActive,
+  resolvePeriodPreset,
+} from "@/shared/lib/period-presets";
+import { cn } from "@/shared/utils/cn";
 import { FilterSelect } from "./FilterSelect";
 
 export interface PeriodFilterFieldsProps {
@@ -68,6 +74,37 @@ export function PeriodFilterFields({
           />
         )}
       </div>
+      {showMonth && showYear && (
+        <div
+          className="flex flex-wrap gap-1.5"
+          role="group"
+          aria-label="Atajos"
+        >
+          {PERIOD_PRESETS.map((preset) => {
+            const active = isPeriodPresetActive(preset.id, month, year);
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  const next = resolvePeriodPreset(preset.id);
+                  onMonthChange(next.month);
+                  onYearChange(next.year);
+                }}
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                  active
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted",
+                )}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
