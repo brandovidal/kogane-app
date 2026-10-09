@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
 import type { FixedCost } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { cn } from "@/shared/utils/cn";
@@ -12,55 +11,7 @@ import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { formatDayMonth } from "@/shared/lib/dates";
 import { localTodayKey, urgencyOf } from "../../lib/fixed-cost-views";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/ui/collapsible";
-
-function IndicatorsDisclosure({
-  open,
-  onOpenChange,
-  amount,
-  count,
-  children,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  amount: number;
-  count: number;
-  children: ReactNode;
-}) {
-  return (
-    <Collapsible open={open} onOpenChange={onOpenChange}>
-      <CollapsibleTrigger
-        type="button"
-        className="flex min-h-10 w-full items-center justify-between gap-3 rounded-lg border border-border/70 bg-card px-3 py-2 text-left transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label={`${open ? "Reducir" : "Mostrar"} indicadores de costos fijos`}
-      >
-        <span className="text-sm font-medium">Indicadores</span>
-        <span className="flex min-w-0 items-center gap-2">
-          {!open && (
-            <span className="truncate text-sm tabular-nums text-muted-foreground">
-              {formatCurrency(amount)} · {count} {count === 1 ? "costo" : "costos"}
-            </span>
-          )}
-          <span className="shrink-0 text-xs text-muted-foreground">
-            {open ? "Reducir" : "Ver"}
-          </span>
-          <ChevronDown
-            aria-hidden="true"
-            className={cn(
-              "size-4 shrink-0 text-muted-foreground transition-transform",
-              open && "rotate-180",
-            )}
-          />
-        </span>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="pt-2">{children}</CollapsibleContent>
-    </Collapsible>
-  );
-}
+import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 
 function dueLabel(days: number | null) {
   if (days == null) return "Fecha por confirmar";
@@ -85,7 +36,6 @@ export function FixedCostMonthOverview({
   loading?: boolean;
   variant?: "period" | "payable";
 }) {
-  const [overviewOpen, setOverviewOpen] = useState(true);
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
   if (loading) return <DataLoadingSkeleton variant="summary" />;
@@ -139,10 +89,8 @@ export function FixedCostMonthOverview({
 
     return (
       <IndicatorsDisclosure
-        open={overviewOpen}
-        onOpenChange={setOverviewOpen}
-        amount={totalAmount}
-        count={items.length}
+        ariaLabel="indicadores de costos fijos"
+        summary={`${formatCurrency(totalAmount)} · ${items.length} ${items.length === 1 ? "costo" : "costos"}`}
       >
         <section aria-label="Resumen de costos por pagar" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           {card("Total por pagar", totalAmount, `${items.length} ${items.length === 1 ? "costo" : "costos"} · ${periodLabel}`, { selected: true, amountClass: "text-amber-400" })}
@@ -186,10 +134,8 @@ export function FixedCostMonthOverview({
 
   return (
     <IndicatorsDisclosure
-      open={overviewOpen}
-      onOpenChange={setOverviewOpen}
-      amount={summary.total}
-      count={summary.totalCount}
+      ariaLabel="indicadores de costos fijos"
+      summary={`${formatCurrency(summary.total)} · ${summary.totalCount} ${summary.totalCount === 1 ? "costo" : "costos"}`}
     >
       <section aria-label="Resumen del período" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
       {metric(

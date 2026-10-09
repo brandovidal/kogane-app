@@ -109,7 +109,12 @@ export function countActiveExpenseFilters(
     const value = filters[key];
     if (value == null || value === "") return false;
     if (key === "q") return !!value.trim();
-    if (key === "person") return value !== PERSON_ALL;
+    // Person selections are serialized as comma-separated ids. Count the
+    // field once whenever at least one concrete person is selected.
+    if (key === "person")
+      return value
+        .split(",")
+        .some((person) => person !== "" && person !== PERSON_ALL);
     return true;
   }).length;
 }

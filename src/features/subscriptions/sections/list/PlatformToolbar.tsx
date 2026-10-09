@@ -16,11 +16,14 @@ import { toast } from "sonner";
 import type { Subscription } from "@/shared/api/types";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { SearchField } from "@/shared/components/filters/SearchField";
+import {
+  ColumnVisibilityOptions,
+  GroupingMenu,
+  ViewSettingsMenu,
+} from "@/shared/components/toolbar";
 import { Button } from "@/ui/button";
 import {
-  DropdownMenu,
   DropdownMenuCheckboxItem,
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -29,7 +32,6 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 import { PLATFORM_FILTER_KEYS } from "../../constants/platforms";
 import { countPlatformFilters } from "../../lib/platform-filters";
@@ -56,13 +58,19 @@ export function PlatformToolbar({
 }) {
   const activeFilters = countPlatformFilters(
     filters,
-    PLATFORM_FILTER_KEYS.filter((key) => key !== "q" && key !== "person"),
+    PLATFORM_FILTER_KEYS.filter((key) => key !== "q"),
   );
   const sheetFilterCount = countPlatformFilters(filters, PLATFORM_FILTER_KEYS);
   const columns = table
     .getAllLeafColumns()
     .filter((column) => column.getCanHide());
   const visible = columns.filter((column) => column.getIsVisible()).length;
+  const columnVisibilityOptions = columns.map((column) => ({
+    id: column.id,
+    label: String(column.columnDef.meta?.label ?? column.id),
+    visible: column.getIsVisible(),
+    onVisibleChange: (next: boolean) => column.toggleVisibility(next),
+  }));
   const resetView = () => {
     onFiltersChange({});
     onGroupByChange([]);
@@ -108,8 +116,18 @@ export function PlatformToolbar({
               </span>
             )}
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <GroupingMenu
+            value={groupBy}
+            onChange={onGroupByChange}
+            options={[
+              { value: "period", label: "Período" },
+              { value: "person", label: "Persona" },
+            ]}
+            multiple
+            ordered
+            align="start"
+            className="w-56"
+            trigger={
               <Button
                 type="button"
                 variant="ghost"
@@ -124,47 +142,8 @@ export function PlatformToolbar({
                   </span>
                 )}
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuLabel>Agrupar por (en orden)</DropdownMenuLabel>
-              <DropdownMenuCheckboxItem
-                checked={!groupBy.length}
-                onSelect={(event) => event.preventDefault()}
-                onCheckedChange={() => onGroupByChange([])}
-              >
-                Sin agrupar
-              </DropdownMenuCheckboxItem>
-              {(
-                [
-                  ["period", "Período"],
-                  ["person", "Persona"],
-                ] as const
-              ).map(([value, label]) => {
-                const position = groupBy.indexOf(value);
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={value}
-                    checked={position >= 0}
-                    onSelect={(event) => event.preventDefault()}
-                    onCheckedChange={(checked) =>
-                      onGroupByChange(
-                        checked
-                          ? [...groupBy, value]
-                          : groupBy.filter((field) => field !== value),
-                      )
-                    }
-                  >
-                    {label}
-                    {position >= 0 && groupBy.length > 1 && (
-                      <span className="ml-auto text-xs text-muted-foreground">
-                        {position + 1}°
-                      </span>
-                    )}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+          />
           {(filters.q ||
             filters.person ||
             activeFilters > 0 ||
@@ -184,8 +163,8 @@ export function PlatformToolbar({
             </Button>
           )}
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <ViewSettingsMenu
+          trigger={
             <Button
               type="button"
               variant="ghost"
@@ -195,9 +174,9 @@ export function PlatformToolbar({
               <SlidersHorizontal className="size-4" />
               <span className="hidden sm:inline">Ajustes</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-72">
-            <DropdownMenuLabel>Ajustes de vista</DropdownMenuLabel>
+          }
+          className="w-72"
+        >
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
               Diseño
@@ -235,28 +214,7 @@ export function PlatformToolbar({
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="max-h-[min(70vh,32rem)] w-60 overflow-y-auto">
                 <DropdownMenuLabel>Columnas visibles</DropdownMenuLabel>
-                {columns.map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onSelect={(event) => event.preventDefault()}
-                    onCheckedChange={(checked) =>
-                      column.toggleVisibility(checked)
-                    }
-                  >
-                    {column.columnDef.meta?.label ?? column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={visible === columns.length}
-                  onSelect={(event) => event.preventDefault()}
-                  onCheckedChange={() =>
-                    columns.forEach((column) => column.toggleVisibility(true))
-                  }
-                >
-                  Mostrar todas
-                </DropdownMenuCheckboxItem>
+                <ColumnVisibilityOptions columns={columnVisibilityOptions} />
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuItem onSelect={onOpenFilters}>
@@ -343,8 +301,7 @@ export function PlatformToolbar({
               <RotateCcw className="size-4" />
               Restablecer vista
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        </ViewSettingsMenu>
       </div>
     </>
   );

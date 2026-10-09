@@ -47,6 +47,24 @@ export function useActiveExpenseFilterChips<
   const personName = (id: string) =>
     people.find((person) => person.id === id)?.name ?? id;
   const meName = me ? personName(me) : PERSON_FILTER_LABELS.ME;
+  const selectedPersonIds = new Set(
+    (value.person ?? "")
+      .split(",")
+      .filter((id) => id && id !== PERSON_ALL),
+  );
+  const knownPersonIds = new Set(
+    people.flatMap((person) =>
+      person.isDefault ? [person.id, PERSON_ME] : [person.id],
+    ),
+  );
+  knownPersonIds.add(PERSON_UNASSIGNED);
+  const allPeopleSelected =
+    people.length > 0 &&
+    people.every(
+      (person) =>
+        selectedPersonIds.has(person.id) ||
+        (person.isDefault && selectedPersonIds.has(PERSON_ME)),
+    ) && [...selectedPersonIds].every((id) => knownPersonIds.has(id));
 
   const labels: Partial<Record<ExpenseFilterKey, string>> = {
     q: value.q?.trim() ? `Buscar: ${value.q.trim()}` : undefined,
@@ -54,15 +72,22 @@ export function useActiveExpenseFilterChips<
       ? `Mes: ${getMonthName(Number(value.month))}`
       : undefined,
     year: value.year ? `Año: ${value.year}` : undefined,
-    person: value.person && value.person !== PERSON_ALL
-      ? `Persona: ${value.person.split(",").filter(Boolean).map((id) =>
-          id === PERSON_UNASSIGNED
-            ? "Sin asignar"
-            : id === PERSON_ME || id === me
-              ? meName
-              : personName(id),
-        ).join(", ")}`
-      : undefined,
+    person:
+      value.person && value.person !== PERSON_ALL
+        ? allPeopleSelected
+          ? "Persona: Todos"
+          : `Persona: ${value.person
+              .split(",")
+              .filter(Boolean)
+              .map((id) =>
+                id === PERSON_UNASSIGNED
+                  ? "Sin asignar"
+                  : id === PERSON_ME || id === me
+                    ? meName
+                    : personName(id),
+              )
+              .join(", ")}`
+        : undefined,
     category: value.category
       ? `Categoría: ${value.category
           .split(",")

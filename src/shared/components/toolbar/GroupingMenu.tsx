@@ -1,13 +1,24 @@
+import type { ReactElement } from "react";
 import { ChevronDown, Layers } from "lucide-react";
 import { CountedToolbarButton } from "./CountedToolbarButton";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/ui/dropdown-menu";
 
 export interface GroupingMenuProps<T extends string | readonly string[] = string> {
   value: T;
   onChange: (value: T) => void;
   options: { value: string; label: string }[];
   multiple?: boolean;
+  ordered?: boolean;
   floatingCount?: boolean;
+  trigger?: ReactElement;
+  align?: "start" | "center" | "end";
+  className?: string;
 }
 
 export function GroupingMenu<T extends string | readonly string[]>({
@@ -15,7 +26,11 @@ export function GroupingMenu<T extends string | readonly string[]>({
   onChange,
   options,
   multiple = false,
+  ordered = false,
   floatingCount = false,
+  trigger,
+  align = "end",
+  className = "w-48",
 }: GroupingMenuProps<T>) {
   const selected: string[] = Array.isArray(value)
     ? value.map(String)
@@ -27,18 +42,24 @@ export function GroupingMenu<T extends string | readonly string[]>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <CountedToolbarButton
-          label="Agrupar"
-          icon={<Layers className="h-4 w-4" />}
-          count={count}
-          trailingIcon={<ChevronDown className="h-3.5 w-3.5" />}
-          variant={count > 0 ? "secondary" : "outline"}
-          floatingCount={floatingCount}
-        />
+        {trigger ?? (
+          <CountedToolbarButton
+            label="Agrupar"
+            icon={<Layers className="h-4 w-4" />}
+            count={count}
+            trailingIcon={<ChevronDown className="h-3.5 w-3.5" />}
+            variant={count > 0 ? "secondary" : "outline"}
+            floatingCount={floatingCount}
+          />
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align={align} className={className}>
+        {ordered && (
+          <DropdownMenuLabel>Agrupar por (en orden)</DropdownMenuLabel>
+        )}
         <DropdownMenuCheckboxItem
           checked={count === 0}
+          onSelect={multiple || ordered ? (event) => event.preventDefault() : undefined}
           onCheckedChange={() => change([])}
         >
           Sin agrupar
@@ -47,6 +68,7 @@ export function GroupingMenu<T extends string | readonly string[]>({
           <DropdownMenuCheckboxItem
             key={option.value}
             checked={selected.includes(option.value)}
+            onSelect={multiple || ordered ? (event) => event.preventDefault() : undefined}
             onCheckedChange={(checked) =>
               change(checked
                 ? multiple ? [...selected, option.value] : [option.value]
@@ -54,6 +76,11 @@ export function GroupingMenu<T extends string | readonly string[]>({
             }
           >
             {option.label}
+            {ordered && selected.includes(option.value) && count > 1 && (
+              <span className="ml-auto text-xs text-muted-foreground">
+                {selected.indexOf(option.value) + 1}°
+              </span>
+            )}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

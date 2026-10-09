@@ -1,5 +1,7 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { DataView } from "./DataView";
+export type { IndicatorsDisclosureProps } from "./IndicatorsDisclosure";
+export { IndicatorsDisclosure } from "./IndicatorsDisclosure";
 export type { NameAvatarProps } from "./NameAvatar";
 export { NameAvatar } from "./NameAvatar";
 export { LinkifiedText, type LinkifiedTextProps } from "./LinkifiedText";
