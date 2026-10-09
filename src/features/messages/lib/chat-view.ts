@@ -43,3 +43,19 @@ export function startsNewDay(previousIso: string | undefined, iso: string) {
     !previousIso || dayKey(new Date(previousIso)) !== dayKey(new Date(iso))
   );
 }
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// Alturas (px) de la onda decorativa de una nota de voz: estable por mensaje, sin audio real
+export function waveformBars(seed: string, count = 14): number[] {
+  let state = 0;
+  for (const char of seed) state = (state * 31 + char.charCodeAt(0)) >>> 0;
+  return Array.from({ length: count }, () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return 6 + (state % 14);
+  });
+}

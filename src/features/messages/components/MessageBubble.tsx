@@ -5,7 +5,11 @@ import {
   sanitizeBotHtml,
   type ChatMessage,
 } from "@/features/messages/lib/chat";
-import { chatTime } from "@/features/messages/lib/chat-view";
+import {
+  chatTime,
+  formatRecordingTime,
+  waveformBars,
+} from "@/features/messages/lib/chat-view";
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -47,18 +51,47 @@ export function MessageBubble({ message, onPress, busy }: MessageBubbleProps) {
             message.failed && "border-destructive",
           )}
         >
-          {message.attachment && (
-            <div className="mb-1 flex items-center gap-1 text-xs opacity-80">
-              {message.attachment === "image" ? (
+          {message.attachment === "image" && (
+            <div className="mb-1 space-y-1.5">
+              {message.previewUrl ? (
+                <img
+                  src={message.previewUrl}
+                  alt={message.fileName ?? "Imagen enviada"}
+                  className="max-h-48 w-full rounded-lg object-cover"
+                />
+              ) : null}
+              <div className="flex items-center gap-1 text-xs opacity-80">
                 <ImageIcon className="h-3.5 w-3.5" />
-              ) : (
-                <Mic className="h-3.5 w-3.5" />
-              )}
-              {message.attachment === "image" ? "Imagen" : "Nota de voz"}
+                <span className="truncate">{message.fileName ?? "Imagen"}</span>
+              </div>
             </div>
           )}
-          {isUser ? (
-            <p className="whitespace-pre-wrap break-words">{message.text}</p>
+          {message.attachment === "audio" && (
+            <div className="flex items-center gap-2.5" aria-label="Nota de voz">
+              <Mic className="h-4 w-4 shrink-0" />
+              <span
+                className="flex h-6 items-center gap-0.5"
+                aria-hidden="true"
+              >
+                {waveformBars(message.id).map((height, index) => (
+                  <i
+                    key={index}
+                    className="w-0.5 rounded-full bg-current opacity-70"
+                    style={{ height }}
+                  />
+                ))}
+              </span>
+              {message.durationSeconds != null && (
+                <span className="ml-auto text-xs tabular-nums">
+                  {formatRecordingTime(message.durationSeconds)}
+                </span>
+              )}
+            </div>
+          )}
+          {message.attachment === "audio" ? null : isUser ? (
+            message.text && (
+              <p className="whitespace-pre-wrap break-words">{message.text}</p>
+            )
           ) : (
             <p
               className="break-words"

@@ -13,12 +13,40 @@ import { Button } from "@/ui/button";
 import { cn } from "@/shared/utils/cn";
 import { CHAT_SUGGESTIONS } from "@/features/messages/constants/chat";
 import {
+  formatFileSize,
   formatRecordingTime,
   matchCommands,
 } from "@/features/messages/lib/chat-view";
 
 // Voice notes longer than this are rejected by the bot (MAX_AUDIO_SECONDS in kogane-api)
 const MAX_AUDIO_SECONDS = 60;
+
+const WAVE_BARS = 26;
+
+// Nivel del micrófono (0–1) cada 100 ms para dibujar la onda mientras se graba
+function startMeter(stream: MediaStream, onLevel: (level: number) => void) {
+  try {
+    const context = new AudioContext();
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 256;
+    context.createMediaStreamSource(stream).connect(analyser);
+    const data = new Uint8Array(analyser.fftSize);
+    const timer = setInterval(() => {
+      analyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for (const value of data) sum += ((value - 128) / 128) ** 2;
+      onLevel(Math.min(1, Math.sqrt(sum / data.length) * 4));
+    }, 100);
+    return {
+      stop: () => {
+        clearInterval(timer);
+        void context.close();
+      },
+    };
+  } catch {
+    return { stop: () => {} };
+  }
+}
 
 export interface ChatInputValue {
   text: string;
@@ -44,9 +72,19 @@ export function ChatInput({
   const [image, setImage] = useState<File | null>(null);
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [levels, setLevels] = useState<number[]>([]);
+  const meterRef = useRef<{ stop: () => void } | null>(null);
   const [activeCommand, setActiveCommand] = useState(0);
   const cancelledRef = useRef(false);
   const commands = matchCommands(text);
+  const [imageUrl, setImageUrl] = useState<string>();
+
+  useEffect(() => {
+    if (!image) return setImageUrl(undefined);
+    const url = URL.createObjectURL(image);
+    setImageUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const startedAtRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -121,6 +159,7 @@ export function ChatInput({
       recorder.ondataavailable = (event) => chunks.push(event.data);
       cancelledRef.current = false;
       recorder.onstop = () => {
+        meterRef.current?.stop();
         stream.getTracks().forEach((track) => track.stop());
         if (cancelledRef.current) return;
         const durationSeconds = (Date.now() - startedAtRef.current) / 1000;
@@ -131,6 +170,10 @@ export function ChatInput({
       recorderRef.current = recorder;
       startedAtRef.current = Date.now();
       recorder.start();
+      meterRef.current = startMeter(stream, (level) =>
+        setLevels((current) => [...current, level].slice(-WAVE_BARS)),
+      );
+      setLevels([]);
       setRecording(true);
       // the bot does not read longer notes: stop at the limit
       setTimeout(
@@ -186,16 +229,30 @@ export function ChatInput({
           </div>
         )}
         {image && (
-          <div className="mb-2 flex items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-xs">
-            <ImagePlus className="h-3.5 w-3.5" />
-            <span className="flex-1 truncate">{image.name}</span>
-            <button
+          <div className="mb-2 flex items-center gap-3 rounded-xl border bg-muted/40 p-2">
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt=""
+                className="size-16 shrink-0 rounded-lg object-cover"
+              />
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">{image.name}</p>
+              <p className="text-xs text-muted-foreground">
+                Imagen · {formatFileSize(image.size)} · lista para enviar
+              </p>
+            </div>
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
+              className="size-9 shrink-0"
               onClick={() => setImage(null)}
               aria-label="Quitar imagen"
             >
-              <X className="h-3.5 w-3.5" />
-            </button>
+              <X className="size-4" />
+            </Button>
           </div>
         )}
         <div className="relative">
@@ -259,7 +316,21 @@ export function ChatInput({
                 {formatRecordingTime(elapsed)}
               </span>
               <span className="flex-1 truncate text-xs text-muted-foreground">
-                Máx. {MAX_AUDIO_SECONDS} s
+                <span
+                  className="flex h-8 items-center gap-0.5"
+                  aria-hidden="true"
+                >
+                  {Array.from({ length: WAVE_BARS }, (_, index) => {
+                    const level = levels[index - (WAVE_BARS - levels.length)];
+                    return (
+                      <i
+                        key={index}
+                        className="w-0.5 rounded-full bg-primary/70"
+                        style={{ height: 4 + (level ?? 0) * 26 }}
+                      />
+                    );
+                  })}
+                </span>
               </span>
               <Button
                 size="icon"
@@ -326,6 +397,12 @@ export function ChatInput({
         <p className="mt-1.5 text-center text-xs text-muted-foreground">
           {recording ? (
             "Toca enviar para mandar · la papelera cancela"
+          ) : image ? (
+            <>
+              Añade un texto opcional (ej:{" "}
+              <kbd className="rounded border px-1">persona dany</kbd>) ·{" "}
+              <kbd className="rounded border px-1">Enter</kbd> para enviar
+            </>
           ) : (
             <>
               <kbd className="rounded border px-1">Enter</kbd> para enviar ·{" "}

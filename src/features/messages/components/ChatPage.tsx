@@ -15,6 +15,7 @@ import {
   type ChatMessage,
 } from "@/features/messages/lib/chat";
 import { chatDayLabel, startsNewDay } from "@/features/messages/lib/chat-view";
+import { makeImagePreview } from "@/features/messages/lib/image-preview";
 import { ChatInput, type ChatInputValue } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 
@@ -51,11 +52,16 @@ function ChatPageView() {
     durationSeconds,
   }: ChatInputValue) => {
     const id = newMessageId();
+    const previewUrl =
+      attachment === "image" && file ? await makeImagePreview(file) : undefined;
     const own: ChatMessage = {
       id,
       author: "user",
       text: text || (attachment === "audio" ? "🎙️" : ""),
       attachment,
+      fileName: attachment === "image" ? file?.name : undefined,
+      previewUrl,
+      durationSeconds,
       createdAt: new Date().toISOString(),
     };
     setMessages((current) => [...current, own]);

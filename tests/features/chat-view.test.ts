@@ -38,3 +38,23 @@ describe("chat-view", () => {
     );
   });
 });
+
+import {
+  formatFileSize,
+  waveformBars,
+} from "@/features/messages/lib/chat-view";
+
+describe("adjuntos", () => {
+  it("formatea el tamaño del archivo", () => {
+    expect(formatFileSize(900)).toBe("900 B");
+    expect(formatFileSize(188_416)).toBe("184 KB");
+    expect(formatFileSize(2_621_440)).toBe("2.5 MB");
+  });
+
+  it("genera una onda estable por mensaje", () => {
+    expect(waveformBars("a")).toEqual(waveformBars("a"));
+    expect(waveformBars("a")).not.toEqual(waveformBars("b"));
+    expect(waveformBars("a", 10)).toHaveLength(10);
+    expect(Math.min(...waveformBars("x"))).toBeGreaterThanOrEqual(6);
+  });
+});

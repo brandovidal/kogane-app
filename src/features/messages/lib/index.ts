@@ -15,3 +15,4 @@ export {
   chatTime,
   startsNewDay,
 } from "./chat-view";
+export { formatFileSize, waveformBars } from "./chat-view";
