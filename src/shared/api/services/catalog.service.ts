@@ -40,6 +40,10 @@ export const savePaymentMethod = ({
       )
     : unwrap(api.POST("/v1/payment-methods", { body }));
 
+// DELETE only deactivates: the expenses keep pointing to the method
+export const deactivatePaymentMethod = (id: string) =>
+  unwrap(api.DELETE("/v1/payment-methods/{id}", { params: { path: { id } } }));
+
 export const saveCategory = ({
   id,
   ...body
