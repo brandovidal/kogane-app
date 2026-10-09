@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { useEffect, useState } from "react";
+import { CardSummaryPanel } from "../components/CardSummaryPanel";
 import { tabFromSearch } from "../lib/card-links";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -136,8 +137,8 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const [paymentProofKind, setPaymentProofKind] =
     useState<Attachment["kind"]>("boleta");
   const [activeTab, setActiveTab] = useState<
-    "expenses" | "card-detail" | "payment"
-  >("expenses");
+    "summary" | "expenses" | "card-detail" | "payment"
+  >("summary");
   const [editingCard, setEditingCard] = useState(false);
   useEffect(() => {
     const tab = tabFromSearch(window.location.search);
@@ -469,12 +470,12 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
             aria-label="Secciones del detalle de tarjeta"
             className="flex h-auto w-full min-w-0 items-center justify-start gap-1 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] sm:w-fit"
           >
-            <a
-              href="/tarjetas"
-              className="inline-flex h-auto items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:text-sm"
+            <TabsTrigger
+              value="summary"
+              className="h-auto shrink-0 whitespace-nowrap py-2 text-xs sm:text-sm"
             >
-              <LayoutGrid aria-hidden="true" className="size-4" /> Resumen
-            </a>
+              <LayoutGrid aria-hidden="true" /> Resumen
+            </TabsTrigger>
             <TabsTrigger
               value="expenses"
               className="h-auto shrink-0 whitespace-nowrap py-2 text-xs sm:text-sm"
@@ -527,8 +528,25 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
             }
             statement={statementDetail}
             closeDay={card.billingCloseDay}
+            creditLimit={card.creditLimit}
           />
         </div>
+
+        <TabsContent value="summary" className="mt-3">
+          <CardSummaryPanel
+            expenses={ofCard}
+            statement={statementDetail}
+            month={selectedMonth}
+            year={selectedYear}
+            payDay={card.paymentDueDay}
+            closeDay={card.billingCloseDay}
+            categoryName={categoryName}
+            personName={personName}
+            onSeeAll={() => setActiveTab("expenses")}
+            onSeeCategories={() => setActiveTab("card-detail")}
+            onRegisterPayment={() => setActiveTab("payment")}
+          />
+        </TabsContent>
 
         <TabsContent value="expenses" className="mt-3 space-y-3">
           <CardDetailToolbar

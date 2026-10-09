@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Statement } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName, localTodayKey } from "@/shared/lib/dates";
+import { lineUsage } from "../../lib/card-summary";
 import { SummaryCard } from "@/shared/components/data-display/SummaryCard";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 
@@ -46,8 +47,9 @@ export function CardDetailMetrics({
   largestCategory,
   statement,
   closeDay,
+  creditLimit,
 }: {
-  view: "expenses" | "card-detail" | "payment";
+  view: "summary" | "expenses" | "card-detail" | "payment";
   month: number;
   year: number;
   amount: number;
@@ -56,6 +58,7 @@ export function CardDetailMetrics({
   largestCategory: string;
   statement?: Statement;
   closeDay?: number | null;
+  creditLimit?: number | null;
 }) {
   const balance =
     statement?.balances.find((item) => item.currency === "PEN") ??
@@ -156,16 +159,33 @@ export function CardDetailMetrics({
               }
               valueClassName="text-emerald-400"
             />
-            <Metric
-              label="Diferencia con el banco"
-              value={money(balance?.difference)}
-              note={
-                balance
-                  ? `Banco ${money(balance.totalDue)} · registrado ${formatCurrency(amount)}`
-                  : undefined
-              }
-              valueClassName="text-amber-400"
-            />
+            {view === "summary" ? (
+              <Metric
+                label="Línea usada"
+                value={
+                  lineUsage(amount, creditLimit) == null
+                    ? "—"
+                    : `${lineUsage(amount, creditLimit)}%`
+                }
+                note={
+                  creditLimit
+                    ? `${formatCurrency(amount)} de ${formatCurrency(creditLimit)}`
+                    : "Sin línea de crédito"
+                }
+                valueClassName="text-amber-400"
+              />
+            ) : (
+              <Metric
+                label="Diferencia con el banco"
+                value={money(balance?.difference)}
+                note={
+                  balance
+                    ? `Banco ${money(balance.totalDue)} · registrado ${formatCurrency(amount)}`
+                    : undefined
+                }
+                valueClassName="text-amber-400"
+              />
+            )}
             <Metric
               label="Vence"
               value={statement?.dueDate ? formatDate(statement.dueDate) : "—"}
