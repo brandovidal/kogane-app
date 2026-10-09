@@ -26,7 +26,7 @@
 		"dev": {
 			"name": "kogane-app-dev",
 			"vars": {
-				"API_URL": "https://kogane-api.up.railway.app"
+				"API_URL": "https://kogane-api-dev.up.railway.app"
 			}
 		}
 	}
