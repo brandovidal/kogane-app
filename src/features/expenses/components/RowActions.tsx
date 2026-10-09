@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import {
   ArrowRightLeft,
   CalendarArrowDown,
@@ -51,6 +51,8 @@ export interface RowActionsProps {
   /** Open files / history somewhere else (e.g. a tab of the detail sheet) instead of the dialogs. */
   onOpenFiles?: () => void;
   onOpenHistory?: () => void;
+  /** Row-specific shortcuts shown after Duplicar (e.g. Cambiar categoría) */
+  extraItems?: { label: string; icon: ComponentType; onSelect: () => void }[];
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
@@ -68,6 +70,7 @@ export function RowActions({
   status,
   onOpenFiles,
   onOpenHistory,
+  extraItems,
 }: RowActionsProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -110,6 +113,11 @@ export function RowActions({
               <Copy /> Duplicar
             </DropdownMenuItem>
           )}
+          {extraItems?.map(({ label: text, icon: Icon, onSelect }) => (
+            <DropdownMenuItem key={text} onSelect={onSelect}>
+              <Icon /> {text}
+            </DropdownMenuItem>
+          ))}
           {status &&
             !isPaidStatus(status.value) &&
             status.options.includes("paid") && (
