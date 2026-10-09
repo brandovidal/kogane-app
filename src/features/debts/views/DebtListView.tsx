@@ -227,7 +227,11 @@ export function DebtListView({
       {!debts.length ? (
         <EmptyState description={texts.empty} />
       ) : !shown.length ? (
-        <EmptyState description="No hay cuotas con estos filtros" />
+        <EmptyState
+          variant="filters"
+          title="Ninguna cuota coincide"
+          description="No hay cuotas con estos filtros"
+        />
       ) : personTypeGroups ? (
         <div className="space-y-2">
           {personGroups?.map((group) => (

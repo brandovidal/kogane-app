@@ -502,6 +502,7 @@ function SubscriptionListView({
 
       {current.length === 0 ? (
         <EmptyState
+          variant={all.length ? "filters" : "period"}
           title={all.length ? "Sin resultados" : "Sin recurrentes este mes"}
           description={
             all.length

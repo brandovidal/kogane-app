@@ -717,6 +717,7 @@ function RecurringListView() {
 
       {!filtered.length ? (
         <EmptyState
+          variant={recurring.length ? "filters" : "empty"}
           title={recurring.length ? "Sin resultados" : "Aún no hay plantillas"}
           description={
             recurring.length
