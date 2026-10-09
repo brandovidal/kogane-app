@@ -8,6 +8,7 @@ import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
+import { PaymentBalancePreview } from "./PaymentBalancePreview";
 import { Checkbox } from "@/ui/checkbox";
 import { Input } from "@/ui/input";
 import {
@@ -350,6 +351,9 @@ export function RegisterPaymentDialog({
             )}
           </div>
         </div>
+        {kind === "payment" && (
+          <PaymentBalancePreview balance={balance} amount={value} />
+        )}
       </div>
     </ResponsiveDialog>
   );

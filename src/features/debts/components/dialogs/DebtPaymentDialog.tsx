@@ -8,6 +8,7 @@ import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
+import { PaymentBalancePreview } from "./PaymentBalancePreview";
 import { Input } from "@/ui/input";
 import {
   Select,
@@ -250,6 +251,13 @@ export function DebtPaymentDialog({
             )}
           </div>
         </div>
+        {debt && (
+          <PaymentBalancePreview
+            balance={debt.balance}
+            amount={value}
+            currency={debt.currency}
+          />
+        )}
       </div>
     </ResponsiveDialog>
   );
