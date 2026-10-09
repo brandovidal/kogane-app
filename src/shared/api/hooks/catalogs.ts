@@ -13,6 +13,7 @@ import {
   saveCardHolders,
   saveCategory,
   savePaymentMethod,
+  deactivatePaymentMethod,
   savePerson,
   type CardHoldersDto,
   type CreateBudgetGroupDto,
@@ -84,6 +85,12 @@ export const useSavePaymentMethod = () =>
       success: "Medio de pago guardado",
     },
   );
+
+export const useDeactivatePaymentMethod = () =>
+  useApiMutation((id: string) => deactivatePaymentMethod(id), {
+    invalidate: [catalogKeys.paymentMethods],
+    success: "Tarjeta archivada",
+  });
 
 export const useSaveCategory = () =>
   useApiMutation(

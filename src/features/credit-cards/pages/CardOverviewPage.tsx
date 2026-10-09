@@ -3,6 +3,8 @@ import { withQuery } from "@/shared/api/query";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { CardPeriodSelector } from "../components/header/CardPeriodSelector";
 import { CardEditorDialog } from "../components/CardEditorDialog";
+import { CardArchiveDialog } from "../components/CardArchiveDialog";
+import type { CardOverviewRow } from "../types/card-overview";
 import { useCardOverview } from "../hooks/useCardOverview";
 import {
   CardOverviewViewBar,
@@ -21,6 +23,8 @@ function CardOverviewPageContent() {
   const [layout, setLayout] = useState<"cards" | "table">("cards");
   const [groupBy, setGroupBy] = useState<CardOverviewGroupBy[]>([]);
   const [creatingCard, setCreatingCard] = useState(false);
+  const [editing, setEditing] = useState<CardOverviewRow | null>(null);
+  const [archiving, setArchiving] = useState<CardOverviewRow | null>(null);
   const openNewExpense = useNewExpense((state) => state.openWith);
   return (
     <div className="space-y-4">
@@ -59,6 +63,15 @@ function CardOverviewPageContent() {
           personName={data.personName}
           loading={data.loading}
           error={data.error}
+          actions={{
+            onNewExpense: (row) =>
+              openNewExpense({
+                destination: "credit_card",
+                paymentMethodId: row.card.id,
+              }),
+            onEdit: setEditing,
+            onArchive: setArchiving,
+          }}
         />
       ) : view === "currency" ? (
         <CardOverviewMovements
@@ -88,6 +101,25 @@ function CardOverviewPageContent() {
       )}
       {creatingCard && (
         <CardEditorDialog onClose={() => setCreatingCard(false)} />
+      )}
+      {editing && (
+        <CardEditorDialog
+          card={editing.card}
+          onClose={() => setEditing(null)}
+        />
+      )}
+      {archiving && (
+        <CardArchiveDialog
+          card={archiving.card}
+          movements={archiving.count}
+          pending={
+            archiving.pending > 0
+              ? archiving.expenses.filter((e) => e.paymentStatus !== "paid")
+                  .length
+              : 0
+          }
+          onClose={() => setArchiving(null)}
+        />
       )}
     </div>
   );

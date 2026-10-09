@@ -1,4 +1,8 @@
 import { ArrowRight } from "lucide-react";
+import {
+  CardActionsMenu,
+  type CardActions,
+} from "../../components/CardActionsMenu";
 import type { CardOverviewRow } from "../../types/card-overview";
 import { formatCurrency } from "@/shared/lib/currency";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
@@ -17,43 +21,54 @@ function CardSwatch({ color }: { color: string | null }) {
   );
 }
 
-function CardOverviewTile({ row }: { row: CardOverviewRow }) {
+function CardOverviewTile({
+  row,
+  actions,
+}: {
+  row: CardOverviewRow;
+  actions: CardActions;
+}) {
   return (
-    <a
-      href={row.href}
-      className="credit-card-surface card-overview-tile block p-4"
-    >
-      <div className="flex items-center gap-3">
-        <CardSwatch color={row.card.color} />
-        <span className="min-w-0 flex-1 truncate font-semibold">
-          {row.card.name}
-        </span>
-        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-          Ver detalle <ArrowRight className="size-3.5" />
-        </span>
+    <div className="relative">
+      <a
+        href={row.href}
+        className="credit-card-surface card-overview-tile block p-4"
+      >
+        <div className="flex items-center gap-3 pr-10">
+          <CardSwatch color={row.card.color} />
+          <span className="min-w-0 flex-1 truncate font-semibold">
+            {row.card.name}
+          </span>
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            Ver detalle <ArrowRight className="size-3.5" />
+          </span>
+        </div>
+        <div className="mt-4 text-3xl font-semibold tabular-nums">
+          {formatCurrency(row.total)}
+        </div>
+        <dl className="mt-3 space-y-1.5 text-sm">
+          <div className="flex justify-between">
+            <dt className="text-muted-foreground">Movimientos</dt>
+            <dd className="tabular-nums">{row.count}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted-foreground">Pendientes</dt>
+            <dd className="tabular-nums">
+              {row.pending ? formatCurrency(row.pending) : "—"}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted-foreground">Cierre · pago</dt>
+            <dd>
+              día {row.closeDay ?? "—"} · día {row.payDay ?? "—"}
+            </dd>
+          </div>
+        </dl>
+      </a>
+      <div className="absolute right-2 top-3">
+        <CardActionsMenu row={row} actions={actions} />
       </div>
-      <div className="mt-4 text-3xl font-semibold tabular-nums">
-        {formatCurrency(row.total)}
-      </div>
-      <dl className="mt-3 space-y-1.5 text-sm">
-        <div className="flex justify-between">
-          <dt className="text-muted-foreground">Movimientos</dt>
-          <dd className="tabular-nums">{row.count}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-muted-foreground">Pendientes</dt>
-          <dd className="tabular-nums">
-            {row.pending ? formatCurrency(row.pending) : "—"}
-          </dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-muted-foreground">Cierre · pago</dt>
-          <dd>
-            día {row.closeDay ?? "—"} · día {row.payDay ?? "—"}
-          </dd>
-        </div>
-      </dl>
-    </a>
+    </div>
   );
 }
 
@@ -64,7 +79,9 @@ export function CardOverviewResults({
   personName,
   loading,
   error,
+  actions,
 }: {
+  actions: CardActions;
   rows: CardOverviewRow[];
   layout: "cards" | "table";
   groupBy?: CardOverviewGroupBy[];
@@ -133,14 +150,17 @@ export function CardOverviewResults({
       key: "actions",
       header: "",
       role: "actions",
-      className: "w-32",
+      className: "w-40",
       cell: (row) => (
-        <a
-          href={row.href}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          Ver detalle <ArrowRight className="size-4" />
-        </a>
+        <div className="flex items-center justify-end gap-1">
+          <a
+            href={row.href}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            Ver detalle <ArrowRight className="size-4" />
+          </a>
+          <CardActionsMenu row={row} actions={actions} />
+        </div>
       ),
     },
   ];
@@ -200,7 +220,7 @@ export function CardOverviewResults({
       rowKey={(row) => row.card.id}
       view={layout}
       tableClassName="credit-card-surface"
-      cardRenderer={(row) => <CardOverviewTile row={row} />}
+      cardRenderer={(row) => <CardOverviewTile row={row} actions={actions} />}
     />
   );
 
