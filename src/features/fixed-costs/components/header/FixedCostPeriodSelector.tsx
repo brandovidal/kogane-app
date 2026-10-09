@@ -88,8 +88,6 @@ export function FixedCostPeriodSelector({
   const year = Number(values.year) || currentYear;
   const [gridYear, setGridYear] = useState(year);
   const [rangeStart, setRangeStart] = useState<number | null>(null);
-  const isCurrent =
-    mode === "month" && month === currentMonth && year === currentYear;
   const nowIndex = currentYear * 12 + currentMonth - 1;
 
   const write = (next: PeriodValues) => {
@@ -181,16 +179,10 @@ export function FixedCostPeriodSelector({
       >
         <PopoverTrigger
           type="button"
-          aria-label={`Período: ${label}. Cambiar mes, año o rango`}
+          aria-label={`Período: ${label}. Cambiar período`}
           className="inline-flex h-9 items-center gap-2 rounded-lg border border-border/70 bg-muted/40 px-3.5 text-sm font-semibold outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
         >
           <CalendarDays className="size-4 text-muted-foreground" />
-          {isCurrent && (
-            <span
-              aria-label="Mes actual"
-              className="size-1.5 rounded-full bg-brand"
-            />
-          )}
           <span className="tabular-nums">{label}</span>
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </PopoverTrigger>

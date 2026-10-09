@@ -10,6 +10,7 @@ export interface PeriodFilterFieldsProps {
   year?: string;
   showMonth?: boolean;
   showYear?: boolean;
+  activeMarker?: boolean;
   onMonthChange: (month: string | undefined) => void;
   onYearChange: (year: string | undefined) => void;
 }
@@ -19,6 +20,7 @@ export function PeriodFilterFields({
   year,
   showMonth = true,
   showYear = true,
+  activeMarker = true,
   onMonthChange,
   onYearChange,
 }: PeriodFilterFieldsProps) {
@@ -46,6 +48,7 @@ export function PeriodFilterFields({
             value={month}
             options={PERIOD_MONTH_OPTIONS}
             onChange={onMonthChange}
+            activeMarker={activeMarker}
             width="w-full"
             searchable
             labelClassName="text-sm font-medium"
@@ -58,6 +61,7 @@ export function PeriodFilterFields({
             value={year}
             options={years}
             onChange={onYearChange}
+            activeMarker={activeMarker}
             width="w-full"
             searchable
             labelClassName="text-sm font-medium"
