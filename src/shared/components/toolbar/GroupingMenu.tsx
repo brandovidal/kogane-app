@@ -100,6 +100,16 @@ export function GroupingMenu<T extends string | readonly string[]>({
             )}
           </DropdownMenuCheckboxItem>
         ))}
+        {multiple && maxSelected && maxSelected > 1 && options.length > 1 && (
+          <p className="px-2 pt-1.5 pb-1 text-xs text-muted-foreground">
+            Puedes combinar hasta {maxSelected} niveles, por ejemplo{" "}
+            {options
+              .slice(0, 2)
+              .map((option) => option.label.replace(/^Por /, ""))
+              .join(" › ")}
+            .
+          </p>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
