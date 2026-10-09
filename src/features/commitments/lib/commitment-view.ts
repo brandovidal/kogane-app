@@ -10,10 +10,15 @@ export interface CommitmentTotals {
 
 // Sums of the loans and investments that are still active, in the amounts each one is in
 export function totalsOf(commitments: Commitment[]): CommitmentTotals {
-  const active = commitments.filter((commitment) => commitment.status === "active");
+  const active = commitments.filter(
+    (commitment) => commitment.status === "active",
+  );
   return {
     paid: active.reduce((sum, row) => sum + (row.progress?.paidAmount ?? 0), 0),
-    pending: active.reduce((sum, row) => sum + (row.progress?.pendingAmount ?? 0), 0),
+    pending: active.reduce(
+      (sum, row) => sum + (row.progress?.pendingAmount ?? 0),
+      0,
+    ),
     contributed: active.reduce((sum, row) => sum + row.contributedAmount, 0),
     late: active.reduce((sum, row) => sum + (row.progress?.lateCount ?? 0), 0),
   };
@@ -30,5 +35,8 @@ export function currentLabel(commitment: Commitment): string | null {
 export const percentPaid = (commitment: Commitment): number => {
   const progress = commitment.progress;
   if (!progress?.installmentCount) return 0;
-  return Math.min(100, Math.round((progress.paidCount / progress.installmentCount) * 100));
+  return Math.min(
+    100,
+    Math.round((progress.paidCount / progress.installmentCount) * 100),
+  );
 };

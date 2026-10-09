@@ -5,7 +5,10 @@ import { Button, type buttonVariants } from "@/ui/button";
 import type { VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/cn";
 
-export type CountedToolbarButtonProps = Omit<ComponentProps<typeof Button>, "children"> & {
+export type CountedToolbarButtonProps = Omit<
+  ComponentProps<typeof Button>,
+  "children"
+> & {
   label: string;
   count?: number;
   icon?: ReactNode;

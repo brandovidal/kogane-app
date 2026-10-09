@@ -10,18 +10,24 @@ export function useDataTableCalculations(
   tableKey?: string,
   defaults: DataTableCalculationSelection = {},
 ) {
-  const selection = useStore(
-    dataTableCalculationsStore,
-    (state) => tableKey ? state.selections[tableKey] ?? defaults : defaults,
+  const selection = useStore(dataTableCalculationsStore, (state) =>
+    tableKey ? (state.selections[tableKey] ?? defaults) : defaults,
   );
 
   useEffect(() => {
-    if (tableKey) dataTableCalculationsStore.getState().initializeTable(tableKey, defaults);
+    if (tableKey)
+      dataTableCalculationsStore.getState().initializeTable(tableKey, defaults);
   }, [tableKey, defaults]);
 
-  const setCalculation = useCallback((columnId: string, calculation: DataTableCalculation) => {
-    if (tableKey) dataTableCalculationsStore.getState().setCalculation(tableKey, columnId, calculation);
-  }, [tableKey]);
+  const setCalculation = useCallback(
+    (columnId: string, calculation: DataTableCalculation) => {
+      if (tableKey)
+        dataTableCalculationsStore
+          .getState()
+          .setCalculation(tableKey, columnId, calculation);
+    },
+    [tableKey],
+  );
 
   return { selection, setCalculation };
 }

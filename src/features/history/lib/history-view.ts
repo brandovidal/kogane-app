@@ -110,25 +110,59 @@ export const FIELD_LABELS: Record<string, string> = {
 };
 
 // Never worth showing next to the ones that changed
-const HIDDEN_FIELDS = new Set(["id", "createdAt", "updatedAt", "draftId", "importKey", "originDraftId", "batchId"]);
+const HIDDEN_FIELDS = new Set([
+  "id",
+  "createdAt",
+  "updatedAt",
+  "draftId",
+  "importKey",
+  "originDraftId",
+  "batchId",
+]);
 
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 
 const DATE_FIELDS = /(Date|At)$/;
-const MONEY_FIELDS = new Set(["amount", "amountInPen", "othersShare", "paidAmount", "salary", "monthlyLimit", "totalAmount", "installmentAmount", "cancellationAmount"]);
-const BOOLEAN_FIELDS = new Set(["isActive", "isDefault", "telegram", "web", "recurringCount", "platformsCount"]);
+const MONEY_FIELDS = new Set([
+  "amount",
+  "amountInPen",
+  "othersShare",
+  "paidAmount",
+  "salary",
+  "monthlyLimit",
+  "totalAmount",
+  "installmentAmount",
+  "cancellationAmount",
+]);
+const BOOLEAN_FIELDS = new Set([
+  "isActive",
+  "isDefault",
+  "telegram",
+  "web",
+  "recurringCount",
+  "platformsCount",
+]);
 
 // A value as the person reads it: names for ids, dates, money and statuses
-export function formatValue(field: string, value: unknown, labels: Record<string, string> = {}, currency = "PEN"): string {
+export function formatValue(
+  field: string,
+  value: unknown,
+  labels: Record<string, string> = {},
+  currency = "PEN",
+): string {
   if (value === null || value === undefined || value === "") return "—";
-  if (BOOLEAN_FIELDS.has(field)) return value === 1 || value === true ? "Sí" : "No";
+  if (BOOLEAN_FIELDS.has(field))
+    return value === 1 || value === true ? "Sí" : "No";
   if (typeof value === "string") {
     if (labels[value]) return labels[value];
-    if (field === "paymentStatus" || field === "status") return PAYMENT_STATUS_LABELS[value] ?? value;
-    if (DATE_FIELDS.test(field) && /^\d{4}-\d{2}-\d{2}/.test(value)) return formatDate(value);
+    if (field === "paymentStatus" || field === "status")
+      return PAYMENT_STATUS_LABELS[value] ?? value;
+    if (DATE_FIELDS.test(field) && /^\d{4}-\d{2}-\d{2}/.test(value))
+      return formatDate(value);
     return value;
   }
-  if (typeof value === "number" && MONEY_FIELDS.has(field)) return formatCurrency(value, currency);
+  if (typeof value === "number" && MONEY_FIELDS.has(field))
+    return formatCurrency(value, currency);
   return String(value);
 }
 
@@ -146,11 +180,23 @@ interface Change {
 }
 
 // An edit says "Monto: 1,000.00 → 1,042.00"; a create or a delete lists the fields it had (without the noise)
-export function describeChanges(action: string, changes: Change[], labels: Record<string, string> = {}): HistoryLine[] {
-  const currency = String(changes.find((change) => change.field === "currency")?.[action === "update" ? "after" : action === "delete" ? "before" : "after"] ?? "PEN");
+export function describeChanges(
+  action: string,
+  changes: Change[],
+  labels: Record<string, string> = {},
+): HistoryLine[] {
+  const currency = String(
+    changes.find((change) => change.field === "currency")?.[
+      action === "update" ? "after" : action === "delete" ? "before" : "after"
+    ] ?? "PEN",
+  );
   return changes
     .filter((change) => !HIDDEN_FIELDS.has(change.field))
-    .filter((change) => action === "update" || (action === "delete" ? change.before : change.after) != null)
+    .filter(
+      (change) =>
+        action === "update" ||
+        (action === "delete" ? change.before : change.after) != null,
+    )
     .map((change) => ({
       field: change.field,
       label: fieldLabel(change.field),
@@ -160,4 +206,11 @@ export function describeChanges(action: string, changes: Change[], labels: Recor
 }
 
 // The fields worth showing in the short line of a create or a delete
-export const SUMMARY_FIELDS = ["description", "name", "amount", "paymentStatus", "personId", "installment"];
+export const SUMMARY_FIELDS = [
+  "description",
+  "name",
+  "amount",
+  "paymentStatus",
+  "personId",
+  "installment",
+];

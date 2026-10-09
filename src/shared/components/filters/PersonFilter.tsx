@@ -65,7 +65,8 @@ export function PersonFilter({
         emptySelectionLabel={PERSON_FILTER_LABELS.ALL}
         emptyDescription={(query) => (
           <>
-            Nadie coincide con «{query}».<br />
+            Nadie coincide con «{query}».
+            <br />
             Las personas salen de los registros de esta vista.
           </>
         )}

@@ -42,7 +42,11 @@ export function getFixedCostColumns({
         <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} />
       ),
       cardCell: (cost) => (
-        <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} showThumbnail={false} />
+        <FixedCostName
+          cost={cost}
+          onOpen={() => actions.onOpen(cost)}
+          showThumbnail={false}
+        />
       ),
     },
     {
@@ -53,7 +57,11 @@ export function getFixedCostColumns({
         categories.find((item) => item.id === cost.categoryId)?.name,
       cell: (cost) => {
         const category = categories.find((item) => item.id === cost.categoryId);
-        const isLoanCategory = category?.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("prestam");
+        const isLoanCategory = category?.name
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .includes("prestam");
         return category ? (
           <CategoryLabel
             name={category.name}

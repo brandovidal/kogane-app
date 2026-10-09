@@ -15,7 +15,9 @@ import { DashboardPaymentDialog } from "./DashboardPaymentDialog";
 
 function DashboardPageView() {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
-  const [paymentTab, setPaymentTab] = useState<"card" | "fixed" | "collect" | "debt">("card");
+  const [paymentTab, setPaymentTab] = useState<
+    "card" | "fixed" | "collect" | "debt"
+  >("card");
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const summary = useSummary(month, year).data;
@@ -25,7 +27,15 @@ function DashboardPageView() {
     <div className="space-y-4">
       <DashboardPeriodNotice />
       <BudgetKpis summary={summary} month={month} year={year} />
-      <DashboardOverview summary={summary} month={month} year={year} onRegisterPayment={(tab) => { setPaymentTab(tab); setPaymentDialogOpen(true); }} />
+      <DashboardOverview
+        summary={summary}
+        month={month}
+        year={year}
+        onRegisterPayment={(tab) => {
+          setPaymentTab(tab);
+          setPaymentDialogOpen(true);
+        }}
+      />
       <div className="grid gap-4 lg:grid-cols-2">
         <BudgetDonut summary={summary} month={month} year={year} />
         <SurplusTrend month={month} year={year} />
@@ -34,7 +44,11 @@ function DashboardPageView() {
         <BudgetVsActual summary={summary} compact />
         <BillingCycleCard cards={creditCards} />
       </div>
-      <DashboardPaymentDialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen} initialTab={paymentTab} />
+      <DashboardPaymentDialog
+        open={paymentDialogOpen}
+        onOpenChange={setPaymentDialogOpen}
+        initialTab={paymentTab}
+      />
     </div>
   );
 }

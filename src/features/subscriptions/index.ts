@@ -2,4 +2,9 @@
 export { SubscriptionDialog } from "./components/SubscriptionDialog";
 export { SubscriptionList } from "./components/SubscriptionList";
 export { PlatformListPage } from "./pages/PlatformListPage";
-export { SUBSCRIPTION_STATUSES, SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS, SUBSCRIPTION_KIND_LABELS } from "./constants/subscriptions";
+export {
+  SUBSCRIPTION_STATUSES,
+  SUBSCRIPTION_PERIOD_LABELS,
+  SUBSCRIPTION_PERIODS,
+  SUBSCRIPTION_KIND_LABELS,
+} from "./constants/subscriptions";

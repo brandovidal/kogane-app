@@ -8,8 +8,10 @@ export function countPlatformFilters(
   filters: ExpenseFilterValues,
   fields: readonly ExpenseFilterKey[],
 ) {
-  const hasDueDateField = fields.includes("dueFrom") || fields.includes("dueTo");
-  const hasAmountField = fields.includes("amountFrom") || fields.includes("amountTo");
+  const hasDueDateField =
+    fields.includes("dueFrom") || fields.includes("dueTo");
+  const hasAmountField =
+    fields.includes("amountFrom") || fields.includes("amountTo");
   const fieldsWithoutRanges = fields.filter(
     (field) =>
       field !== "dueFrom" &&

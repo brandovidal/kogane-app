@@ -10,8 +10,13 @@ const USD_FORMATTER = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
 });
 
-export function formatCurrency(amount: number, currency: string = "PEN"): string {
-  return currency === "USD" ? USD_FORMATTER.format(amount) : PEN_FORMATTER.format(amount);
+export function formatCurrency(
+  amount: number,
+  currency: string = "PEN",
+): string {
+  return currency === "USD"
+    ? USD_FORMATTER.format(amount)
+    : PEN_FORMATTER.format(amount);
 }
 
 export function convertToPEN(amount: number, exchangeRate: number): number {
@@ -24,6 +29,7 @@ export function calculateAmountInPEN(
   exchangeRate?: number | null,
 ): number {
   if (currency === "PEN") return amount;
-  if (!exchangeRate) throw new Error("Exchange rate required for non-PEN currency");
+  if (!exchangeRate)
+    throw new Error("Exchange rate required for non-PEN currency");
   return convertToPEN(amount, exchangeRate);
 }

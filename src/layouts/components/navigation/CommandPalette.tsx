@@ -12,7 +12,10 @@ import { normalize } from "@/shared/lib/text";
 
 // Ctrl+K (or ⌘K): jump to any screen or card by typing part of its name (D41)
 function CommandPaletteView() {
-  const cards = (useCreditCards().data ?? []).map((card) => ({ href: cardHref(card.code ?? card.id), label: card.name }));
+  const cards = (useCreditCards().data ?? []).map((card) => ({
+    href: cardHref(card.code ?? card.id),
+    label: card.name,
+  }));
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
@@ -31,7 +34,11 @@ function CommandPaletteView() {
   const results = useMemo(() => {
     const links = flattenNav(NAV, cards);
     const term = normalize(query);
-    return term ? links.filter((link) => normalize(`${link.group ?? ""} ${link.label}`).includes(term)) : links;
+    return term
+      ? links.filter((link) =>
+          normalize(`${link.group ?? ""} ${link.label}`).includes(term),
+        )
+      : links;
   }, [cards, query]);
 
   useEffect(() => setSelected(0), [query, open]);
@@ -43,7 +50,13 @@ function CommandPaletteView() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(value) => { setOpen(value); setQuery(""); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        setQuery("");
+      }}
+    >
       <DialogContent className="gap-0 p-0 sm:max-w-md">
         <DialogTitle className="sr-only">Ir a</DialogTitle>
         <div className="flex items-center gap-2 border-b px-3">
@@ -53,9 +66,14 @@ function CommandPaletteView() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === "ArrowDown") setSelected((current) => Math.min(current + 1, results.length - 1));
-              if (event.key === "ArrowUp") setSelected((current) => Math.max(current - 1, 0));
-              if (event.key === "Enter" && results[selected]) go(results[selected]);
+              if (event.key === "ArrowDown")
+                setSelected((current) =>
+                  Math.min(current + 1, results.length - 1),
+                );
+              if (event.key === "ArrowUp")
+                setSelected((current) => Math.max(current - 1, 0));
+              if (event.key === "Enter" && results[selected])
+                go(results[selected]);
             }}
             placeholder="Ir a… (ej: borrador, io, deudas)"
             className="h-11 flex-1 bg-transparent text-sm outline-none"
@@ -71,11 +89,19 @@ function CommandPaletteView() {
                 className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${index === selected ? "bg-muted" : ""}`}
               >
                 <span>{link.label}</span>
-                {link.group && <span className="text-xs text-muted-foreground">{link.group}</span>}
+                {link.group && (
+                  <span className="text-xs text-muted-foreground">
+                    {link.group}
+                  </span>
+                )}
               </button>
             </li>
           ))}
-          {!results.length && <li className="px-3 py-6 text-center text-sm text-muted-foreground">Sin resultados</li>}
+          {!results.length && (
+            <li className="px-3 py-6 text-center text-sm text-muted-foreground">
+              Sin resultados
+            </li>
+          )}
         </ul>
       </DialogContent>
     </Dialog>

@@ -34,7 +34,9 @@ export function SummaryCard({
       >
         {value}
       </div>
-      <div className={cn("mt-1.5 text-xs text-muted-foreground", detailClassName)}>
+      <div
+        className={cn("mt-1.5 text-xs text-muted-foreground", detailClassName)}
+      >
         {detail}
       </div>
     </div>

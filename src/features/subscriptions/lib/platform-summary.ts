@@ -17,7 +17,10 @@ export const monthlyEquivalent = (platform: Subscription) =>
   platformAmount(platform) / monthsByPeriod[platform.period];
 
 /** Keep the original billing day when projecting a recurring charge through short months. */
-export function nextPlatformChargeDate(platform: Subscription, todayKey: string): string | null {
+export function nextPlatformChargeDate(
+  platform: Subscription,
+  todayKey: string,
+): string | null {
   if (!platform.dueDate) return null;
   const base = platform.dueDate.slice(0, 10);
   if (!todayKey || base >= todayKey) return base;
@@ -27,7 +30,11 @@ export function nextPlatformChargeDate(platform: Subscription, todayKey: string)
     const start = Date.UTC(year, month - 1, day);
     const [todayYear, todayMonth, todayDay] = todayKey.split("-").map(Number);
     const today = Date.UTC(todayYear, todayMonth - 1, todayDay);
-    return new Date(start + Math.ceil((today - start) / (14 * 86_400_000)) * 14 * 86_400_000).toISOString().slice(0, 10);
+    return new Date(
+      start + Math.ceil((today - start) / (14 * 86_400_000)) * 14 * 86_400_000,
+    )
+      .toISOString()
+      .slice(0, 10);
   }
   const stride = monthsByPeriod[platform.period];
   const [todayYear, todayMonth] = todayKey.split("-").map(Number);
@@ -37,7 +44,7 @@ export function nextPlatformChargeDate(platform: Subscription, todayKey: string)
   for (;;) {
     const index = baseIndex + cycles * stride;
     const nextYear = Math.floor(index / 12);
-    const nextMonth = index % 12 + 1;
+    const nextMonth = (index % 12) + 1;
     const lastDay = new Date(Date.UTC(nextYear, nextMonth, 0)).getUTCDate();
     const candidate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-${String(Math.min(day, lastDay)).padStart(2, "0")}`;
     if (candidate >= todayKey) return candidate;
@@ -45,7 +52,11 @@ export function nextPlatformChargeDate(platform: Subscription, todayKey: string)
   }
 }
 
-export function platformChargesInMonth(platform: Subscription, month: number, year: number): string[] {
+export function platformChargesInMonth(
+  platform: Subscription,
+  month: number,
+  year: number,
+): string[] {
   if (!platform.dueDate) return [];
   const base = platform.dueDate.slice(0, 10);
   const [baseYear, baseMonth, baseDay] = base.split("-").map(Number);
@@ -59,26 +70,39 @@ export function platformChargesInMonth(platform: Subscription, month: number, ye
     const first = Math.max(0, Math.ceil((monthStart - baseTime) / stride));
     const dates: string[] = [];
     for (let cycle = first; baseTime + cycle * stride < monthEnd; cycle += 1) {
-      dates.push(new Date(baseTime + cycle * stride).toISOString().slice(0, 10));
+      dates.push(
+        new Date(baseTime + cycle * stride).toISOString().slice(0, 10),
+      );
     }
     return dates;
   }
   const baseIndex = baseYear * 12 + baseMonth - 1;
   const selectedIndex = year * 12 + month - 1;
   const stride = monthsByPeriod[platform.period];
-  if (selectedIndex < baseIndex || (selectedIndex - baseIndex) % stride !== 0) return [];
+  if (selectedIndex < baseIndex || (selectedIndex - baseIndex) % stride !== 0)
+    return [];
   const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  return [`${year}-${String(month).padStart(2, "0")}-${String(Math.min(baseDay, lastDay)).padStart(2, "0")}`];
+  return [
+    `${year}-${String(month).padStart(2, "0")}-${String(Math.min(baseDay, lastDay)).padStart(2, "0")}`,
+  ];
 }
 
-export function summarizePlatforms(platforms: Subscription[], todayKey: string) {
-  const monthly = platforms.reduce((sum, item) => sum + monthlyEquivalent(item), 0);
+export function summarizePlatforms(
+  platforms: Subscription[],
+  todayKey: string,
+) {
+  const monthly = platforms.reduce(
+    (sum, item) => sum + monthlyEquivalent(item),
+    0,
+  );
   const mostExpensive = [...platforms].sort(
     (left, right) => platformAmount(right) - platformAmount(left),
   )[0];
   const upcoming = platforms
     .map((item) => ({ item, date: nextPlatformChargeDate(item, todayKey) }))
-    .filter((entry): entry is { item: Subscription; date: string } => !!entry.date)
+    .filter(
+      (entry): entry is { item: Subscription; date: string } => !!entry.date,
+    )
     .sort((left, right) => left.date.localeCompare(right.date));
   const nextDue = upcoming[0]?.item;
   const nextDueDate = upcoming[0]?.date ?? null;
@@ -90,6 +114,7 @@ export function summarizePlatforms(platforms: Subscription[], todayKey: string) 
     mostExpensive,
     nextDue,
     nextDueDate,
-    nextDueDays: nextDueDate && todayKey ? daysUntilDue(nextDueDate, todayKey) : null,
+    nextDueDays:
+      nextDueDate && todayKey ? daysUntilDue(nextDueDate, todayKey) : null,
   };
 }

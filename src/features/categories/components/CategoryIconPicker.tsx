@@ -2,7 +2,11 @@ import { useMemo } from "react";
 import { Check, ChevronDown, CircleOff, Search } from "lucide-react";
 
 import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
-import { CATEGORY_ICON_OPTIONS, matchesCategoryIcon, normalizeCategoryIconName } from "@/features/categories/lib/category-icons";
+import {
+  CATEGORY_ICON_OPTIONS,
+  matchesCategoryIcon,
+  normalizeCategoryIconName,
+} from "@/features/categories/lib/category-icons";
 import {
   Combobox,
   ComboboxContent,
@@ -32,10 +36,11 @@ export function CategoryIconPicker({
   onChange: (value: string | null) => void;
 }) {
   const items = useMemo(
-    () => createComboboxItems(pickerOptions, {
-      getValue: (option) => option.value,
-      getLabel: (option) => option.label,
-    }),
+    () =>
+      createComboboxItems(pickerOptions, {
+        getValue: (option) => option.value,
+        getLabel: (option) => option.label,
+      }),
     [],
   );
   const selectedValue = normalizeCategoryIconName(value) ?? NO_ICON;
@@ -45,12 +50,18 @@ export function CategoryIconPicker({
       items={items}
       value={selectedValue}
       filter={matchesCategoryIcon}
-      onValueChange={(next) => onChange(next == null || next === NO_ICON ? null : String(next))}
+      onValueChange={(next) =>
+        onChange(next == null || next === NO_ICON ? null : String(next))
+      }
       autoHighlight
     >
       <ComboboxTrigger aria-label="Icono de categoría" className="w-full">
         <span className="inline-flex min-w-0 items-center gap-2">
-          {value ? <CategoryIcon icon={value} color={color} size="xs" /> : <CircleOff className="size-4 text-muted-foreground" />}
+          {value ? (
+            <CategoryIcon icon={value} color={color} size="xs" />
+          ) : (
+            <CircleOff className="size-4 text-muted-foreground" />
+          )}
           <ComboboxValue placeholder="Sin icono" />
         </span>
         <ChevronDown className="size-4 shrink-0 opacity-50" />
@@ -76,7 +87,9 @@ export function CategoryIconPicker({
                 <CategoryIcon icon={option.value} color={color} size="xs" />
               )}
               <span className="flex-1">{option.label}</span>
-              <ComboboxItemIndicator><Check className="size-4" /></ComboboxItemIndicator>
+              <ComboboxItemIndicator>
+                <Check className="size-4" />
+              </ComboboxItemIndicator>
             </ComboboxItem>
           )}
         </ComboboxList>

@@ -44,7 +44,7 @@ export function StatusFilterFields({
       value={
         value === NO_PAYMENT_STATUS_FILTER
           ? []
-          : value?.split(",").filter(Boolean) ?? null
+          : (value?.split(",").filter(Boolean) ?? null)
       }
       options={statuses.map((status) => ({
         value: status,

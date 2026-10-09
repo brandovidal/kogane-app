@@ -4,10 +4,8 @@ import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
 import { Button } from "@/ui/button";
 import { SheetDescription, SheetTitle } from "@/ui/sheet";
 import { FixedCostPeriodSelector } from "@/features/fixed-costs/components/header/FixedCostPeriodSelector";
-import { getMonthName } from "@/shared/lib/dates";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { usePeriod } from "@/shared/stores/period.store";
-import { monthRangeLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
 import {
   PLATFORM_SHEET_FILTER_KEYS,
   VIEW_PERIOD_KEYS,
@@ -22,7 +20,6 @@ export function PlatformFilterSheet({
   onOpenChange,
   filters,
   onFiltersChange,
-  me,
   resultCount,
   totalCount,
   personCounts,
@@ -31,7 +28,6 @@ export function PlatformFilterSheet({
   onOpenChange: (open: boolean) => void;
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
-  me?: string;
   resultCount: number;
   totalCount: number;
   personCounts: Record<string, number>;
@@ -51,16 +47,6 @@ export function PlatformFilterSheet({
   const count =
     countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS) +
     Number(hasPeriod);
-  const monthName = viewPeriod.month
-    ? getMonthName(Number(viewPeriod.month))
-    : undefined;
-  const periodLabel =
-    viewPeriod.desde || viewPeriod.hasta
-      ? monthRangeLabel(viewPeriod.desde, viewPeriod.hasta)
-      : viewPeriod.month && viewPeriod.year
-        ? `${monthName?.charAt(0).toLocaleUpperCase()}${monthName?.slice(1)} ${viewPeriod.year}`
-        : (viewPeriod.year ?? "");
-
   return (
     <FilterSheetShell
       open={open}

@@ -1,1 +1,4 @@
-export type { AttachmentPreview, AttachmentPreviewDialogProps } from "./attachment-preview";
+export type {
+  AttachmentPreview,
+  AttachmentPreviewDialogProps,
+} from "./attachment-preview";

@@ -1,25 +1,41 @@
 import { useState } from "react";
 
 import { useCategories } from "@/shared/api/hooks/catalogs";
-import { useCreateCommitment, useUpdateCommitment, type CommitmentBody, type CommitmentPatch } from "@/features/commitments/hooks/commitments";
+import {
+  useCreateCommitment,
+  useUpdateCommitment,
+  type CommitmentBody,
+  type CommitmentPatch,
+} from "@/features/commitments/hooks/commitments";
 import type { Commitment } from "@/shared/api/types";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { COMMITMENT_KIND_LABELS, COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from "@/features/commitments/constants/commitments";
+import {
+  COMMITMENT_KIND_LABELS,
+  COMMITMENT_STATUS_LABELS,
+  COMMITMENT_SUBTYPE_LABELS,
+} from "@/features/commitments/constants/commitments";
 import { CURRENCIES } from "@/shared/constants/finance";
 import { getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
 import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 
 const SUBTYPES_BY_KIND: Record<string, string[]> = {
   loan: ["loan"],
   investment: ["land", "property", "vehicle", "stocks", "crypto", "other"],
 };
 
-const num = (value: string): number | null => (value.trim() === "" ? null : Number(value));
+const num = (value: string): number | null =>
+  value.trim() === "" ? null : Number(value);
 const text = (value: string): string | null => value.trim() || null;
 
 interface FormState {
@@ -52,7 +68,8 @@ const stateOf = (commitment?: Commitment): FormState => ({
   installmentAmount: commitment?.installmentAmount?.toString() ?? "",
   dueDay: commitment?.dueDay?.toString() ?? "",
   startMonth: commitment?.startMonth?.toString() ?? "",
-  startYear: commitment?.startYear?.toString() ?? String(new Date().getFullYear()),
+  startYear:
+    commitment?.startYear?.toString() ?? String(new Date().getFullYear()),
   categoryId: commitment?.categoryId ?? null,
   personId: commitment?.personId ?? null,
   cancellationAmount: commitment?.cancellationAmount?.toString() ?? "",
@@ -62,7 +79,15 @@ const stateOf = (commitment?: Commitment): FormState => ({
   createInstallments: true,
 });
 
-const Field = ({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) => (
+const Field = ({
+  label,
+  children,
+  hint,
+}: {
+  label: string;
+  children: React.ReactNode;
+  hint?: string;
+}) => (
   <div className="space-y-1.5">
     <label className="text-sm font-medium">{label}</label>
     {children}
@@ -72,19 +97,37 @@ const Field = ({ label, children, hint }: { label: string; children: React.React
 
 // Create or edit a loan or investment (P27). With a full plan and a category the installments are created as fixed
 // costs; editing the plan later does not rewrite the ones that exist
-export function CommitmentForm({ commitment, onClose }: { commitment?: Commitment; onClose: () => void }) {
+export function CommitmentForm({
+  commitment,
+  onClose,
+}: {
+  commitment?: Commitment;
+  onClose: () => void;
+}) {
   const create = useCreateCommitment();
   const update = useUpdateCommitment();
   const categories = useCategories().data ?? [];
   const [form, setForm] = useState<FormState>(() => stateOf(commitment));
-  const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((current) => ({ ...current, [key]: value }));
+  const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
   // Loans go to "Prestamo" unless another one is chosen
-  const suggested = categories.find((category) => /pr[eé]stamo/i.test(category.name))?.id ?? null;
-  const categoryId = form.categoryId ?? (!commitment && form.kind === "loan" ? suggested : null);
+  const suggested =
+    categories.find((category) => /pr[eé]stamo/i.test(category.name))?.id ??
+    null;
+  const categoryId =
+    form.categoryId ?? (!commitment && form.kind === "loan" ? suggested : null);
 
-  const hasPlan = [form.installmentCount, form.installmentAmount, form.dueDay, form.startMonth, form.startYear].every((v) => v.trim() !== "");
-  const valid = form.name.trim() && (!commitment && form.createInstallments && hasPlan ? !!categoryId : true);
+  const hasPlan = [
+    form.installmentCount,
+    form.installmentAmount,
+    form.dueDay,
+    form.startMonth,
+    form.startYear,
+  ].every((v) => v.trim() !== "");
+  const valid =
+    form.name.trim() &&
+    (!commitment && form.createInstallments && hasPlan ? !!categoryId : true);
   const pending = create.isPending || update.isPending;
 
   const fields = () => ({
@@ -105,7 +148,10 @@ export function CommitmentForm({ commitment, onClose }: { commitment?: Commitmen
 
   const save = () => {
     if (commitment) {
-      const body: CommitmentPatch = { ...fields(), status: form.status as CommitmentPatch["status"] };
+      const body: CommitmentPatch = {
+        ...fields(),
+        status: form.status as CommitmentPatch["status"],
+      };
       update.mutate({ id: commitment.id, body }, { onSuccess: onClose });
       return;
     }
@@ -137,29 +183,52 @@ export function CommitmentForm({ commitment, onClose }: { commitment?: Commitmen
     >
       <div className="space-y-3">
         <Field label="Nombre">
-          <Input placeholder="BCP, Terreno San Bartolo, Bitcoin…" value={form.name} onChange={(e) => set("name", e.target.value)} />
+          <Input
+            placeholder="BCP, Terreno San Bartolo, Bitcoin…"
+            value={form.name}
+            onChange={(e) => set("name", e.target.value)}
+          />
         </Field>
         <div className="grid grid-cols-2 gap-2">
           <Field label="Tipo">
             <Select
               value={form.kind}
               disabled={!!commitment}
-              onValueChange={(kind) => setForm((current) => ({ ...current, kind, subtype: SUBTYPES_BY_KIND[kind][0] }))}
+              onValueChange={(kind) =>
+                setForm((current) => ({
+                  ...current,
+                  kind,
+                  subtype: SUBTYPES_BY_KIND[kind][0],
+                }))
+              }
             >
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {Object.entries(COMMITMENT_KIND_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>{label}</SelectItem>
-                ))}
+                {Object.entries(COMMITMENT_KIND_LABELS).map(
+                  ([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ),
+                )}
               </SelectContent>
             </Select>
           </Field>
           <Field label="Clase">
-            <Select value={form.subtype} onValueChange={(value) => set("subtype", value)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.subtype}
+              onValueChange={(value) => set("subtype", value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {(SUBTYPES_BY_KIND[form.kind] ?? []).map((value) => (
-                  <SelectItem key={value} value={value}>{COMMITMENT_SUBTYPE_LABELS[value]}</SelectItem>
+                  <SelectItem key={value} value={value}>
+                    {COMMITMENT_SUBTYPE_LABELS[value]}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -167,72 +236,162 @@ export function CommitmentForm({ commitment, onClose }: { commitment?: Commitmen
         </div>
         <div className="grid grid-cols-[1fr_100px] gap-2">
           <Field label="Entidad" hint="Banco o vendedor">
-            <Input value={form.entity} onChange={(e) => set("entity", e.target.value)} />
+            <Input
+              value={form.entity}
+              onChange={(e) => set("entity", e.target.value)}
+            />
           </Field>
           <Field label="Moneda">
-            <Select value={form.currency} onValueChange={(value) => set("currency", value)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.currency}
+              onValueChange={(value) => set("currency", value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {CURRENCIES.map((currency) => <SelectItem key={currency} value={currency}>{currency}</SelectItem>)}
+                {CURRENCIES.map((currency) => (
+                  <SelectItem key={currency} value={currency}>
+                    {currency}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
         </div>
 
-        <p className="pt-1 text-sm font-medium">Plan de cuotas <span className="font-normal text-muted-foreground">(vacío si no tiene cuotas)</span></p>
+        <p className="pt-1 text-sm font-medium">
+          Plan de cuotas{" "}
+          <span className="font-normal text-muted-foreground">
+            (vacío si no tiene cuotas)
+          </span>
+        </p>
         <div className="grid grid-cols-2 gap-2">
-          <Input type="number" min="1" placeholder="N.º de cuotas" value={form.installmentCount} onChange={(e) => set("installmentCount", e.target.value)} />
-          <Input type="number" min="0" step="0.01" placeholder="Monto de cada cuota" value={form.installmentAmount} onChange={(e) => set("installmentAmount", e.target.value)} />
-          <Input type="number" min="1" max="31" placeholder="Día de vencimiento" value={form.dueDay} onChange={(e) => set("dueDay", e.target.value)} />
+          <Input
+            type="number"
+            min="1"
+            placeholder="N.º de cuotas"
+            value={form.installmentCount}
+            onChange={(e) => set("installmentCount", e.target.value)}
+          />
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Monto de cada cuota"
+            value={form.installmentAmount}
+            onChange={(e) => set("installmentAmount", e.target.value)}
+          />
+          <Input
+            type="number"
+            min="1"
+            max="31"
+            placeholder="Día de vencimiento"
+            value={form.dueDay}
+            onChange={(e) => set("dueDay", e.target.value)}
+          />
           <div className="grid grid-cols-[1fr_80px] gap-2">
-            <Select value={form.startMonth || undefined} onValueChange={(value) => set("startMonth", value)}>
-              <SelectTrigger aria-label="Mes de la cuota 1"><SelectValue placeholder="Mes cuota 1" /></SelectTrigger>
+            <Select
+              value={form.startMonth || undefined}
+              onValueChange={(value) => set("startMonth", value)}
+            >
+              <SelectTrigger aria-label="Mes de la cuota 1">
+                <SelectValue placeholder="Mes cuota 1" />
+              </SelectTrigger>
               <SelectContent>
                 {Array.from({ length: 12 }, (_, index) => (
-                  <SelectItem key={index + 1} value={String(index + 1)}>{getMonthName(index + 1)}</SelectItem>
+                  <SelectItem key={index + 1} value={String(index + 1)}>
+                    {getMonthName(index + 1)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <Input type="number" min="2000" max="2100" aria-label="Año de la cuota 1" value={form.startYear} onChange={(e) => set("startYear", e.target.value)} />
+            <Input
+              type="number"
+              min="2000"
+              max="2100"
+              aria-label="Año de la cuota 1"
+              value={form.startYear}
+              onChange={(e) => set("startYear", e.target.value)}
+            />
           </div>
         </div>
         <Field label="Categoría de las cuotas">
-          <CategorySelect value={categoryId} onChange={(id) => set("categoryId", id)} placeholder="Selecciona (Prestamo, Casa…)" />
+          <CategorySelect
+            value={categoryId}
+            onChange={(id) => set("categoryId", id)}
+            placeholder="Selecciona (Prestamo, Casa…)"
+          />
         </Field>
         {!commitment && (
           <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked={hasPlan && form.createInstallments} disabled={!hasPlan} onCheckedChange={(checked) => set("createInstallments", checked === true)} />
+            <Checkbox
+              checked={hasPlan && form.createInstallments}
+              disabled={!hasPlan}
+              onCheckedChange={(checked) =>
+                set("createInstallments", checked === true)
+              }
+            />
             Crear las cuotas en Costos fijos
           </label>
         )}
         {!commitment && (
           <Field label="Persona" hint="Yo por defecto">
-            <PersonSelect value={form.personId} onChange={(id) => set("personId", id)} allowEmpty />
+            <PersonSelect
+              value={form.personId}
+              onChange={(id) => set("personId", id)}
+              allowEmpty
+            />
           </Field>
         )}
 
         <div className="grid grid-cols-2 gap-2">
-          <Field label="Monto de cancelación" hint="Lo que costaría cancelarlo hoy">
-            <Input type="number" min="0" step="0.01" value={form.cancellationAmount} onChange={(e) => set("cancellationAmount", e.target.value)} />
+          <Field
+            label="Monto de cancelación"
+            hint="Lo que costaría cancelarlo hoy"
+          >
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.cancellationAmount}
+              onChange={(e) => set("cancellationAmount", e.target.value)}
+            />
           </Field>
           <Field label="Cotizado el">
-            <Input type="date" value={form.cancellationDate} onChange={(e) => set("cancellationDate", e.target.value)} />
+            <Input
+              type="date"
+              value={form.cancellationDate}
+              onChange={(e) => set("cancellationDate", e.target.value)}
+            />
           </Field>
         </div>
         {commitment && (
           <Field label="Estado">
-            <Select value={form.status} onValueChange={(value) => set("status", value)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.status}
+              onValueChange={(value) => set("status", value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {Object.entries(COMMITMENT_STATUS_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>{label}</SelectItem>
-                ))}
+                {Object.entries(COMMITMENT_STATUS_LABELS).map(
+                  ([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ),
+                )}
               </SelectContent>
             </Select>
           </Field>
         )}
         <Field label="Notas">
-          <Input value={form.notes} onChange={(e) => set("notes", e.target.value)} />
+          <Input
+            value={form.notes}
+            onChange={(e) => set("notes", e.target.value)}
+          />
         </Field>
       </div>
     </ResponsiveDialog>

@@ -6,7 +6,14 @@ import type { Subscription } from "@/shared/api/types";
 import { getPlatformColumns } from "../lib/platform-columns";
 
 export function usePlatformTable({
-  items, personName, todayKey, actions, resetKey, selection, onSelectionChange, pending,
+  items,
+  personName,
+  todayKey,
+  actions,
+  resetKey,
+  selection,
+  onSelectionChange,
+  pending,
 }: {
   items: Subscription[];
   personName: (id: string | null | undefined) => string;
@@ -23,12 +30,22 @@ export function usePlatformTable({
   );
   const definitions = useMemo(() => toDataTableColumns(columns), [columns]);
   const table = useDataTable({
-    items, columns: definitions, rowKey: (item) => item.id,
-    selectable: true, resetKey, selectionDisabled: pending,
+    items,
+    columns: definitions,
+    rowKey: (item) => item.id,
+    selectable: true,
+    resetKey,
+    selectionDisabled: pending,
     state: { rowSelection: selection },
-    onRowSelectionChange: (updater) => onSelectionChange(
-      typeof updater === "function" ? updater(selection) : updater,
-    ),
+    onRowSelectionChange: (updater) =>
+      onSelectionChange(
+        typeof updater === "function" ? updater(selection) : updater,
+      ),
   });
-  return { table, columns: columns.filter((column) => table.getColumn(column.key)?.getIsVisible()) };
+  return {
+    table,
+    columns: columns.filter((column) =>
+      table.getColumn(column.key)?.getIsVisible(),
+    ),
+  };
 }

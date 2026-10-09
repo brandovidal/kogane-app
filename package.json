@@ -11,6 +11,9 @@
     "build": "astro build",
     "preview": "node --env-file=.env ./node_modules/astro/bin/astro.mjs preview --port 3000",
     "astro": "astro",
+    "format": "prettier --write \"src/**/*.{astro,css,js,jsx,json,md,ts,tsx}\" package.json eslint.config.js",
+    "format:check": "prettier --check \"src/**/*.{astro,css,js,jsx,json,md,ts,tsx}\" package.json eslint.config.js",
+    "lint": "eslint src",
     "generate-types": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -46,12 +49,21 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.7",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.4",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^3.2.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
     "knip": "6.35.1",
     "openapi-typescript": "^7.13.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
     "typescript": "5.9.3",
+    "typescript-eslint": "^8.71.1",
     "vitest": "4.0.18"
   }
 }

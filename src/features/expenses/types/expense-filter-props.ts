@@ -55,10 +55,7 @@ export interface ActiveExpenseFilterChipsOptions<
   groupByLabel?: string;
   groupByLabels?: Record<string, string>;
   periodChip?: { key?: string; label: string; onRemove: () => void };
-  formatFilterLabel?: (
-    key: ExpenseFilterKey,
-    defaultLabel: string,
-  ) => string;
+  formatFilterLabel?: (key: ExpenseFilterKey, defaultLabel: string) => string;
   showClearAll?: boolean;
   onClearAll?: () => void;
 }

@@ -23,7 +23,10 @@ import {
 import { type NavIcon } from "@/shared/types/navigation";
 
 // The icons of the menu (D41). The menu is drawn by Astro at build time: these render to plain SVG, nothing hydrates
-export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
+export const NAV_ICONS: Record<
+  NavIcon,
+  React.ComponentType<{ className?: string }>
+> = {
   "message-circle": MessageCircle,
   "scan-text": ScanText,
   inbox: Inbox,

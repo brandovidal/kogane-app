@@ -13,7 +13,10 @@ export const DATA_TABLE_CALCULATIONS = [
 ] as const;
 
 export type DataTableCalculation = (typeof DATA_TABLE_CALCULATIONS)[number];
-export type DataTableCalculationSelection = Record<string, DataTableCalculation>;
+export type DataTableCalculationSelection = Record<
+  string,
+  DataTableCalculation
+>;
 
 export interface DataTableCalculationState {
   selection: DataTableCalculationSelection;

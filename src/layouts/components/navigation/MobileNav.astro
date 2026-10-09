@@ -11,7 +11,12 @@ interface Props {
 const { currentPath } = Astro.props;
 ---
 
-<button type="button" data-nav-open class="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent md:hidden" aria-label="Abrir el menú">
+<button
+  type="button"
+  data-nav-open
+  class="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent md:hidden"
+  aria-label="Abrir el menú"
+>
   <Menu className="h-5 w-5" />
 </button>
 
@@ -29,7 +34,9 @@ const { currentPath } = Astro.props;
 
 <script>
   const dialog = document.querySelector<HTMLDialogElement>("[data-nav-drawer]");
-  document.querySelector("[data-nav-open]")?.addEventListener("click", () => dialog?.showModal());
+  document
+    .querySelector("[data-nav-open]")
+    ?.addEventListener("click", () => dialog?.showModal());
   // a tap on the dark side or on a link closes it
   dialog?.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;

@@ -41,7 +41,10 @@ import {
   SheetTrigger,
 } from "@/ui/sheet";
 import { Switch } from "@/ui/switch";
-import { DEBT_STATE_LABELS, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
+import {
+  DEBT_STATE_LABELS,
+  type DebtFilterValues,
+} from "@/features/debts/lib/debt-filters";
 
 const FILTER_ICONS: Partial<Record<keyof DebtFilterValues, LucideIcon>> = {
   person: UserRound,
@@ -77,7 +80,9 @@ function DebtFilters({
   onResetExtra?: () => void;
 }) {
   const people = [
-    ...new Map(debts.map((debt) => [debt.personId, debt.person.name])).entries(),
+    ...new Map(
+      debts.map((debt) => [debt.personId, debt.person.name]),
+    ).entries(),
   ];
   const set = (key: keyof DebtFilterValues, next: string | undefined) =>
     onChange({ ...value, [key]: next || undefined });
@@ -91,7 +96,10 @@ function DebtFilters({
       label={label}
       icon={FILTER_ICONS[key]}
       value={value[key]}
-      options={options.map(([option, text]) => ({ value: option, label: text }))}
+      options={options.map(([option, text]) => ({
+        value: option,
+        label: text,
+      }))}
       onChange={(next) => set(key, next)}
       width="w-full"
       searchable
@@ -100,11 +108,13 @@ function DebtFilters({
   const active =
     extraActive ||
     Object.entries(value).some(
-      ([key, current]) => current && current !== defaults[key as keyof DebtFilterValues],
+      ([key, current]) =>
+        current && current !== defaults[key as keyof DebtFilterValues],
     );
   const months = Array.from(
     { length: 12 },
-    (_, index) => [String(index + 1), getMonthName(index + 1)] as [string, string],
+    (_, index) =>
+      [String(index + 1), getMonthName(index + 1)] as [string, string],
   );
   const years = [
     ...new Set([year, ...debts.map((debt) => debt.paymentYear)]),
@@ -133,11 +143,16 @@ function DebtFilters({
               ["i_owe", "Deudas (−)"],
             ])}
           {select("state", "Estado", Object.entries(DEBT_STATE_LABELS))}
-          {select("month", "Mes", [["until", `Hasta ${monthLabel}`], ...months])}
+          {select("month", "Mes", [
+            ["until", `Hasta ${monthLabel}`],
+            ...months,
+          ])}
           {select(
             "year",
             "Año",
-            years.map((item) => [String(item), String(item)] as [string, string]),
+            years.map(
+              (item) => [String(item), String(item)] as [string, string],
+            ),
           )}
           {select(
             "card",
@@ -175,21 +190,43 @@ function getActiveDebtFilterChips(
   monthLabel: string,
   includeDirection = true,
 ) {
-  const people = new Map(debts.map((debt) => [debt.personId, debt.person.name]));
+  const people = new Map(
+    debts.map((debt) => [debt.personId, debt.person.name]),
+  );
   const cardNames = new Map(cards.map((card) => [card.id, card.name]));
-  const monthName = value.month === "until" ? `Hasta ${monthLabel}` : value.month ? getMonthName(Number(value.month)) : "";
+  const monthName =
+    value.month === "until"
+      ? `Hasta ${monthLabel}`
+      : value.month
+        ? getMonthName(Number(value.month))
+        : "";
   const labels: Partial<Record<keyof DebtFilterValues, string>> = {
     q: value.q ? `Buscar: ${value.q}` : undefined,
-    person: value.person ? `Persona: ${people.get(value.person) ?? value.person}` : undefined,
-    direction: includeDirection && value.direction ? `Mostrar: ${value.direction === "owed_to_me" ? "Cobros (+)" : "Deudas (−)"}` : undefined,
-    state: value.state ? `Estado: ${DEBT_STATE_LABELS[value.state]}` : undefined,
+    person: value.person
+      ? `Persona: ${people.get(value.person) ?? value.person}`
+      : undefined,
+    direction:
+      includeDirection && value.direction
+        ? `Mostrar: ${value.direction === "owed_to_me" ? "Cobros (+)" : "Deudas (−)"}`
+        : undefined,
+    state: value.state
+      ? `Estado: ${DEBT_STATE_LABELS[value.state]}`
+      : undefined,
     month: value.month ? `Mes: ${monthName}` : undefined,
     year: value.year ? `Año: ${value.year}` : undefined,
-    card: value.card ? `Tarjeta: ${cardNames.get(value.card) ?? value.card}` : undefined,
-    origin: value.origin ? `Origen: ${value.origin === "shared" ? "Compartido" : "Préstamo"}` : undefined,
+    card: value.card
+      ? `Tarjeta: ${cardNames.get(value.card) ?? value.card}`
+      : undefined,
+    origin: value.origin
+      ? `Origen: ${value.origin === "shared" ? "Compartido" : "Préstamo"}`
+      : undefined,
   };
   return (Object.keys(labels) as (keyof DebtFilterValues)[])
-    .filter((key) => value[key] && (key === "month" || key === "year" || value[key] !== defaults[key]))
+    .filter(
+      (key) =>
+        value[key] &&
+        (key === "month" || key === "year" || value[key] !== defaults[key]),
+    )
     .map((key) => ({ key, label: labels[key]! }));
 }
 
@@ -244,7 +281,10 @@ export function DebtFilterSheet({
           count={activeCount}
         />
       </SheetTrigger>
-      <SheetContent side="right" className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto"
+      >
         <SheetHeader className="px-5 pt-6">
           <SheetTitle>Filtros</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
@@ -287,9 +327,16 @@ export function DebtGroupingSheet({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <CountedToolbarButton label="Agrupar" icon={<Layers aria-hidden="true" />} count={activeCount} />
+        <CountedToolbarButton
+          label="Agrupar"
+          icon={<Layers aria-hidden="true" />}
+          count={activeCount}
+        />
       </SheetTrigger>
-      <SheetContent side="right" className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-[min(24rem,calc(100vw-1rem))] overflow-y-auto"
+      >
         <SheetHeader className="px-5 pt-6">
           <SheetTitle>Agrupar cobros</SheetTitle>
           <SheetDescription>
@@ -299,7 +346,10 @@ export function DebtGroupingSheet({
         <div className="space-y-4 px-5 pb-6">
           <label className="flex items-center justify-between gap-3 text-sm">
             <FieldLabel icon={UsersRound}>Por persona</FieldLabel>
-            <Switch checked={groupedByPerson} onCheckedChange={onPersonChange} />
+            <Switch
+              checked={groupedByPerson}
+              onCheckedChange={onPersonChange}
+            />
           </label>
           <label className="flex items-center justify-between gap-3 text-sm">
             <FieldLabel icon={CreditCard}>Por tarjeta</FieldLabel>
@@ -343,7 +393,11 @@ export function ActiveDebtFilterChips({
     byPerson: boolean;
     byCard: boolean;
     onToggle: (key: "person" | "card") => void;
-    movement?: { showCollections: boolean; showDebts: boolean; onReset: () => void };
+    movement?: {
+      showCollections: boolean;
+      showDebts: boolean;
+      onReset: () => void;
+    };
   };
 }) {
   const chips = getActiveDebtFilterChips(
@@ -355,8 +409,12 @@ export function ActiveDebtFilterChips({
     directionFilterEnabled,
   );
   const groupingChips = [
-    ...(grouping?.byPerson ? [{ key: "person" as const, label: "Agrupar: Persona" }] : []),
-    ...(grouping?.byCard ? [{ key: "card" as const, label: "Agrupar: Tarjeta" }] : []),
+    ...(grouping?.byPerson
+      ? [{ key: "person" as const, label: "Agrupar: Persona" }]
+      : []),
+    ...(grouping?.byCard
+      ? [{ key: "card" as const, label: "Agrupar: Tarjeta" }]
+      : []),
   ];
   const movementChip =
     grouping?.movement &&
@@ -377,7 +435,10 @@ export function ActiveDebtFilterChips({
       label,
       kind: "filter" as const,
       onRemove: () => {
-        onChange({ ...value, [key]: key === "month" || key === "year" ? undefined : defaults[key] });
+        onChange({
+          ...value,
+          [key]: key === "month" || key === "year" ? undefined : defaults[key],
+        });
         if (key === "direction") onDirectionFilterClear?.();
       },
     })),
@@ -394,7 +455,12 @@ export function ActiveDebtFilterChips({
       onRemove: () => grouping?.movement?.onReset(),
     })),
   ];
-  return <AppliedFilterChips items={items} ariaLabel="Filtros y agrupación activos" />;
+  return (
+    <AppliedFilterChips
+      items={items}
+      ariaLabel="Filtros y agrupación activos"
+    />
+  );
 }
 
 export function DebtReportLinks({

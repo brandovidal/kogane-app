@@ -42,7 +42,9 @@ const hasLocalPeriodControl = [
           <div class="flex min-w-0 flex-col">
             {section && <span class="eyebrow hidden sm:block">{section}</span>}
             <div class="flex min-w-0 items-baseline gap-2.5">
-              <h1 class="truncate text-lg font-semibold tracking-tight">{title}</h1>
+              <h1 class="truncate text-lg font-semibold tracking-tight">
+                {title}
+              </h1>
               <slot name="title-extra" />
             </div>
           </div>

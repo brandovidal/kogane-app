@@ -1,9 +1,18 @@
 import type { ExpenseFilterKey } from "@/features/expenses/types/expense-filters";
 
 export const PLATFORM_FILTER_KEYS: ExpenseFilterKey[] = [
-  "person", "q", "category", "method", "status", "type",
-  "currency", "shared", "hasNote", "amountFrom",
-  "amountTo", "methodType",
+  "person",
+  "q",
+  "category",
+  "method",
+  "status",
+  "type",
+  "currency",
+  "shared",
+  "hasNote",
+  "amountFrom",
+  "amountTo",
+  "methodType",
 ];
 
 export const PLATFORM_SHEET_FILTER_KEYS = PLATFORM_FILTER_KEYS.filter(

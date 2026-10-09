@@ -13,8 +13,15 @@ type TableSelections = Record<string, DataTableCalculationSelection>;
 interface DataTableCalculationsState {
   selections: TableSelections;
   hydrated: Record<string, true>;
-  initializeTable: (tableKey: string, defaults: DataTableCalculationSelection) => void;
-  setCalculation: (tableKey: string, columnId: string, calculation: DataTableCalculation) => void;
+  initializeTable: (
+    tableKey: string,
+    defaults: DataTableCalculationSelection,
+  ) => void;
+  setCalculation: (
+    tableKey: string,
+    columnId: string,
+    calculation: DataTableCalculation,
+  ) => void;
 }
 
 function isCalculation(value: unknown): value is DataTableCalculation {
@@ -24,7 +31,10 @@ function isCalculation(value: unknown): value is DataTableCalculation {
 function parseSelection(value: unknown): DataTableCalculationSelection {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   return Object.fromEntries(
-    Object.entries(value).filter((entry): entry is [string, DataTableCalculation] => isCalculation(entry[1])),
+    Object.entries(value).filter(
+      (entry): entry is [string, DataTableCalculation] =>
+        isCalculation(entry[1]),
+    ),
   );
 }
 
@@ -34,9 +44,13 @@ function readStoredSelections(): TableSelections {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+      return {};
     return Object.fromEntries(
-      Object.entries(parsed).map(([tableKey, selection]) => [tableKey, parseSelection(selection)]),
+      Object.entries(parsed).map(([tableKey, selection]) => [
+        tableKey,
+        parseSelection(selection),
+      ]),
     );
   } catch {
     return {};
@@ -54,56 +68,62 @@ function persistSelections(selections: TableSelections): boolean {
   }
 }
 
-export const dataTableCalculationsStore = createStore<DataTableCalculationsState>()((set, get) => ({
-  selections: {},
-  hydrated: {},
-  initializeTable: (tableKey, defaults) => {
-    if (get().hydrated[tableKey]) return;
+export const dataTableCalculationsStore =
+  createStore<DataTableCalculationsState>()((set, get) => ({
+    selections: {},
+    hydrated: {},
+    initializeTable: (tableKey, defaults) => {
+      if (get().hydrated[tableKey]) return;
 
-    const selections = readStoredSelections();
-    let savedSelection: DataTableCalculationSelection | undefined = selections[tableKey];
-    let migratedLegacyKey: string | undefined;
-    if (!savedSelection && typeof window !== "undefined") {
-      try {
-        migratedLegacyKey = `${LEGACY_STORAGE_PREFIX}${tableKey}`;
-        const legacyRaw = window.localStorage.getItem(migratedLegacyKey);
-        if (legacyRaw) {
-          savedSelection = parseSelection(JSON.parse(legacyRaw));
-        } else {
+      const selections = readStoredSelections();
+      let savedSelection: DataTableCalculationSelection | undefined =
+        selections[tableKey];
+      let migratedLegacyKey: string | undefined;
+      if (!savedSelection && typeof window !== "undefined") {
+        try {
+          migratedLegacyKey = `${LEGACY_STORAGE_PREFIX}${tableKey}`;
+          const legacyRaw = window.localStorage.getItem(migratedLegacyKey);
+          if (legacyRaw) {
+            savedSelection = parseSelection(JSON.parse(legacyRaw));
+          } else {
+            migratedLegacyKey = undefined;
+          }
+        } catch {
+          savedSelection = undefined;
           migratedLegacyKey = undefined;
         }
-      } catch {
-        savedSelection = undefined;
-        migratedLegacyKey = undefined;
       }
-    }
 
-    const nextSelections = {
-      ...get().selections,
-      ...selections,
-      [tableKey]: { ...defaults, ...get().selections[tableKey], ...savedSelection },
-    };
-    set((state) => ({
-      selections: nextSelections,
-      hydrated: { ...state.hydrated, [tableKey]: true },
-    }));
-    if (persistSelections(nextSelections) && migratedLegacyKey) {
-      try {
-        window.localStorage.removeItem(migratedLegacyKey);
-      } catch {
-        // Keeping the legacy key is safe; it will be replaced after a future successful migration.
+      const nextSelections = {
+        ...get().selections,
+        ...selections,
+        [tableKey]: {
+          ...defaults,
+          ...get().selections[tableKey],
+          ...savedSelection,
+        },
+      };
+      set((state) => ({
+        selections: nextSelections,
+        hydrated: { ...state.hydrated, [tableKey]: true },
+      }));
+      if (persistSelections(nextSelections) && migratedLegacyKey) {
+        try {
+          window.localStorage.removeItem(migratedLegacyKey);
+        } catch {
+          // Keeping the legacy key is safe; it will be replaced after a future successful migration.
+        }
       }
-    }
-  },
-  setCalculation: (tableKey, columnId, calculation) => {
-    const nextSelections = {
-      ...get().selections,
-      [tableKey]: {
-        ...(get().selections[tableKey] ?? {}),
-        [columnId]: calculation,
-      },
-    };
-    set({ selections: nextSelections });
-    persistSelections(nextSelections);
-  },
-}));
+    },
+    setCalculation: (tableKey, columnId, calculation) => {
+      const nextSelections = {
+        ...get().selections,
+        [tableKey]: {
+          ...(get().selections[tableKey] ?? {}),
+          [columnId]: calculation,
+        },
+      };
+      set({ selections: nextSelections });
+      persistSelections(nextSelections);
+    },
+  }));

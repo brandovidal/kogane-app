@@ -5,8 +5,12 @@ export function HistoryTimelineLoading() {
   return (
     <div className="space-y-4 py-2">
       <Marker role="status" aria-live="polite">
-        <MarkerIcon><LoaderCircle className="motion-safe:animate-spin" /></MarkerIcon>
-        <MarkerContent className="shimmer">Cargando el historial…</MarkerContent>
+        <MarkerIcon>
+          <LoaderCircle className="motion-safe:animate-spin" />
+        </MarkerIcon>
+        <MarkerContent className="shimmer">
+          Cargando el historial…
+        </MarkerContent>
       </Marker>
       <div aria-hidden="true" className="space-y-3 motion-safe:animate-pulse">
         {[0, 1].map((index) => (

@@ -1,7 +1,10 @@
 import type { CSSProperties } from "react";
 
 import { cn } from "@/shared/utils/cn";
-import { getCategoryIcon, normalizeCategoryIconName } from "@/features/categories/lib/category-icons";
+import {
+  getCategoryIcon,
+  normalizeCategoryIconName,
+} from "@/features/categories/lib/category-icons";
 
 export { CATEGORY_ICON_OPTIONS } from "@/features/categories/lib/category-icons";
 
@@ -26,13 +29,20 @@ export function CategoryIcon({
   const isHouse = normalizeCategoryIconName(icon) === "house";
   const iconColor = isHouse ? "#34d399" : color;
   const style: CSSProperties | undefined = iconColor
-    ? { color: iconColor, backgroundColor: `color-mix(in srgb, ${iconColor} 14%, transparent)` }
+    ? {
+        color: iconColor,
+        backgroundColor: `color-mix(in srgb, ${iconColor} 14%, transparent)`,
+      }
     : undefined;
 
   return (
     <span
       aria-hidden="true"
-      className={cn("inline-flex shrink-0 items-center justify-center", sizeClasses[size], className)}
+      className={cn(
+        "inline-flex shrink-0 items-center justify-center",
+        sizeClasses[size],
+        className,
+      )}
       style={style}
     >
       <Icon />

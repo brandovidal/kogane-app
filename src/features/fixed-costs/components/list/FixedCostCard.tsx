@@ -23,7 +23,9 @@ export function FixedCostCard({
   const plan = parseInstallment(cost.installment);
 
   return (
-    <article className={`group overflow-hidden rounded-xl border bg-card transition-colors hover:border-brand/35 ${selected ? "border-brand/70 ring-2 ring-brand/15" : "border-border/80"}`}>
+    <article
+      className={`group overflow-hidden rounded-xl border bg-card transition-colors hover:border-brand/35 ${selected ? "border-brand/70 ring-2 ring-brand/15" : "border-border/80"}`}
+    >
       <div className="relative">
         <AttachmentRecordThumbnail
           refType="fixed_cost"
@@ -45,7 +47,9 @@ export function FixedCostCard({
       </div>
       <div className="space-y-2.5 p-3.5">
         <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0 truncate font-semibold">{title?.cardCell?.(cost) ?? title?.cell(cost)}</div>
+          <div className="min-w-0 truncate font-semibold">
+            {title?.cardCell?.(cost) ?? title?.cell(cost)}
+          </div>
           <div className="shrink-0">{column("status")?.cell(cost)}</div>
         </div>
         <div className="rounded-md bg-muted/45 px-2.5 py-1 text-xl font-semibold tracking-tight tabular-nums">
@@ -53,7 +57,10 @@ export function FixedCostCard({
         </div>
         {plan && (
           <div className="h-1 overflow-hidden rounded-full bg-muted">
-            <span className="block h-full rounded-full bg-brand" style={{ width: `${plan.percent}%` }} />
+            <span
+              className="block h-full rounded-full bg-brand"
+              style={{ width: `${plan.percent}%` }}
+            />
           </div>
         )}
         <div className="flex min-w-0 items-center gap-1.5 truncate text-xs text-muted-foreground">
@@ -65,7 +72,9 @@ export function FixedCostCard({
         </div>
         <div className="flex items-center justify-between gap-2 border-t pt-2 text-xs text-muted-foreground">
           <span className="truncate">Vence {column("due")?.cell(cost)}</span>
-          {plan && <span className="shrink-0 tabular-nums">{plan.percent}%</span>}
+          {plan && (
+            <span className="shrink-0 tabular-nums">{plan.percent}%</span>
+          )}
         </div>
       </div>
     </article>

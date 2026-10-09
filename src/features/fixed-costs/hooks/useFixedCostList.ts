@@ -47,11 +47,14 @@ export function useFixedCostList() {
     desde?: string;
     hasta?: string;
   }>(["vista", "orden", "desde", "hasta"]);
-  const page: FixedCostView = isFixedCostView(viewParams.vista) ? viewParams.vista : "mes";
+  const page: FixedCostView = isFixedCostView(viewParams.vista)
+    ? viewParams.vista
+    : "mes";
   const setPage = (next: FixedCostView) =>
     setViewParams({ ...viewParams, vista: next === "mes" ? undefined : next });
   const sort = findFixedCostSort(viewParams.orden);
-  const setSort = (next: string | undefined) => setViewParams({ ...viewParams, orden: next });
+  const setSort = (next: string | undefined) =>
+    setViewParams({ ...viewParams, orden: next });
   const periodScope = FIXED_COST_VIEW_PERIOD[page];
   const hasRange = !!(viewParams.desde || viewParams.hasta);
   const month = Number(filters.month);
@@ -73,10 +76,7 @@ export function useFixedCostList() {
   const fixedCosts = query.data ?? EMPTY_COSTS;
   const previousMonthIndex = year * 12 + month - 2;
   const shouldLoadPreviousMonth =
-    page === "mes" &&
-    hasPeriod &&
-    query.isSuccess &&
-    fixedCosts.length === 0;
+    page === "mes" && hasPeriod && query.isSuccess && fixedCosts.length === 0;
   const previousMonthQuery = useExpenses(
     EXPENSE_RESOURCES.fixedCost,
     shouldLoadPreviousMonth
@@ -96,11 +96,22 @@ export function useFixedCostList() {
       return fixedCosts.filter((cost) => cost.paymentYear === selectedYear);
     }
     return fixedCosts;
-  }, [fixedCosts, hasRange, periodScope, filters.year, viewParams.desde, viewParams.hasta]);
+  }, [
+    fixedCosts,
+    hasRange,
+    periodScope,
+    filters.year,
+    viewParams.desde,
+    viewParams.hasta,
+  ]);
   const periodFilters = useMemo<ExpenseFilterValues>(() => {
     if (hasRange) return { ...filters, month: undefined, year: undefined };
     if (periodScope === "year")
-      return { ...filters, month: undefined, year: filters.year || String(getCurrentYear()) };
+      return {
+        ...filters,
+        month: undefined,
+        year: filters.year || String(getCurrentYear()),
+      };
     return filters;
   }, [filters, periodScope, hasRange]);
   const categories = useCategories().data ?? [];
@@ -114,9 +125,18 @@ export function useFixedCostList() {
         hasRange ? viewParams.desde : undefined,
         hasRange ? viewParams.hasta : undefined,
       ),
-    [fixedCosts, periodFilters, me, hasRange, viewParams.desde, viewParams.hasta],
+    [
+      fixedCosts,
+      periodFilters,
+      me,
+      hasRange,
+      viewParams.desde,
+      viewParams.hasta,
+    ],
   );
-  const [scopeParams, setScopeParams] = useUrlFilters<{ scope?: FixedCostStatusScope }>(["scope"]);
+  const [scopeParams, setScopeParams] = useUrlFilters<{
+    scope?: FixedCostStatusScope;
+  }>(["scope"]);
   const scope: FixedCostStatusScope =
     scopeParams.scope === "payable" || scopeParams.scope === "completed"
       ? scopeParams.scope
@@ -134,24 +154,41 @@ export function useFixedCostList() {
           : filterFixedCostsByScope(baseFiltered, scope),
     [baseFiltered, scope, page],
   );
-  const installments = useMemo(() => installmentSeries(baseFiltered), [baseFiltered]);
+  const installments = useMemo(
+    () => installmentSeries(baseFiltered),
+    [baseFiltered],
+  );
   useEffect(() => {
-    fixedCostHeaderStore.getState().setShown(
-      query.isLoading ? null : page === "cuotas" ? installments.length : filtered.length,
-      page === "cuotas" ? "deuda" : page === "por-pagar" ? "pendiente" : "registro",
-    );
+    fixedCostHeaderStore
+      .getState()
+      .setShown(
+        query.isLoading
+          ? null
+          : page === "cuotas"
+            ? installments.length
+            : filtered.length,
+        page === "cuotas"
+          ? "deuda"
+          : page === "por-pagar"
+            ? "pendiente"
+            : "registro",
+      );
   }, [filtered.length, installments.length, query.isLoading, page]);
   const [view, setView] = useViewMode("fixed-costs", "table");
-  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
+  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>([
+    "group",
+  ]);
   const groupBy = (groupParams.group?.split(",") ?? []).filter(
     (field, index, fields): field is (typeof FIXED_COST_GROUP_VALUES)[number] =>
-      FIXED_COST_GROUP_VALUES.includes(field as (typeof FIXED_COST_GROUP_VALUES)[number]) &&
-      fields.indexOf(field) === index,
+      FIXED_COST_GROUP_VALUES.includes(
+        field as (typeof FIXED_COST_GROUP_VALUES)[number],
+      ) && fields.indexOf(field) === index,
   );
   const setGroupBy = (fields: typeof groupBy) => {
     const next = fields.filter(
       (field, index) =>
-        FIXED_COST_GROUP_VALUES.includes(field) && fields.indexOf(field) === index,
+        FIXED_COST_GROUP_VALUES.includes(field) &&
+        fields.indexOf(field) === index,
     );
     setGroupParams(next.length ? { group: next.join(",") } : {});
   };
@@ -193,6 +230,12 @@ export function useFixedCostList() {
     exportItems: csvExport.items,
     loading: query.isLoading,
     error: query.isError,
-    scopeKey: JSON.stringify([filters, scope, page, viewParams.desde, viewParams.hasta]),
+    scopeKey: JSON.stringify([
+      filters,
+      scope,
+      page,
+      viewParams.desde,
+      viewParams.hasta,
+    ]),
   };
 }

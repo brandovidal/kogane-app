@@ -228,8 +228,10 @@ export function compareFixedCostMonthGroups(
     if (monthIndex < currentIndex) return 0;
     return 2;
   };
-  return priority(left) - priority(right) ||
-    costMonthIndex(left[0]) - costMonthIndex(right[0]);
+  return (
+    priority(left) - priority(right) ||
+    costMonthIndex(left[0]) - costMonthIndex(right[0])
+  );
 }
 
 export function monthGroupLabel(key: string) {

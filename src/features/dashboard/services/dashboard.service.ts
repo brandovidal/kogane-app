@@ -12,15 +12,21 @@ export interface CreditCardSummary {
   paymentDueDay: number;
 }
 
-const penOf = (item: { amount: number; amountInPen: number | null }) => item.amountInPen ?? item.amount;
+const penOf = (item: { amount: number; amountInPen: number | null }) =>
+  item.amountInPen ?? item.amount;
 
-export function buildCreditCardSummaries(cards: PaymentMethod[], expenses: CreditCardExpense[]): CreditCardSummary[] {
+export function buildCreditCardSummaries(
+  cards: PaymentMethod[],
+  expenses: CreditCardExpense[],
+): CreditCardSummary[] {
   return cards.map((card) => ({
     code: card.code ?? card.name,
     name: card.name,
     color: card.color,
     billingCloseDay: card.billingCloseDay ?? 0,
     paymentDueDay: card.paymentDueDay ?? 0,
-    total: expenses.filter((expense) => expense.paymentMethodId === card.id).reduce((sum, expense) => sum + penOf(expense), 0),
+    total: expenses
+      .filter((expense) => expense.paymentMethodId === card.id)
+      .reduce((sum, expense) => sum + penOf(expense), 0),
   }));
 }

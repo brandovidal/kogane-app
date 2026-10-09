@@ -6,10 +6,23 @@ import { usePeople, useSavePerson } from "@/shared/api/hooks/catalogs";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 type Person = Schemas["PersonResponseDto"]["data"];
 
@@ -27,7 +40,10 @@ export function PeopleTable() {
           <CardTitle className="flex items-center gap-2 text-base">
             <Users className="h-4 w-4" /> Personas
           </CardTitle>
-          <CardDescription>Esta lista pertenece a tu cuenta; cada usuario administra sus propias personas y alias.</CardDescription>
+          <CardDescription>
+            Esta lista pertenece a tu cuenta; cada usuario administra sus
+            propias personas y alias.
+          </CardDescription>
         </div>
         <Button size="sm" onClick={() => setEditing(null)}>
           <Plus className="mr-1 h-4 w-4" /> Nueva persona
@@ -49,20 +65,41 @@ export function PeopleTable() {
               {people.map((person) => (
                 <TableRow key={person.id}>
                   <TableCell className="font-medium">
-                    {person.name} {person.isDefault && <Badge variant="secondary" className="ml-1">Yo</Badge>}
+                    {person.name}{" "}
+                    {person.isDefault && (
+                      <Badge variant="secondary" className="ml-1">
+                        Yo
+                      </Badge>
+                    )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{person.aliases.join(", ") || "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground tabular-nums">{person.documentNumber ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {person.aliases.join(", ") || "—"}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground tabular-nums">
+                    {person.documentNumber ?? "—"}
+                  </TableCell>
                   <TableCell>
                     <Switch
                       checked={person.isActive}
                       disabled={person.isDefault}
                       aria-label={`${person.name} activa`}
-                      onCheckedChange={(isActive) => savePerson.mutate({ id: person.id, name: person.name, isActive })}
+                      onCheckedChange={(isActive) =>
+                        savePerson.mutate({
+                          id: person.id,
+                          name: person.name,
+                          isActive,
+                        })
+                      }
                     />
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Editar" onClick={() => setEditing(person)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      aria-label="Editar"
+                      onClick={() => setEditing(person)}
+                    >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                   </TableCell>
@@ -72,12 +109,20 @@ export function PeopleTable() {
           </Table>
         </div>
       </CardContent>
-      {editing !== undefined && <PersonDialog person={editing} onClose={() => setEditing(undefined)} />}
+      {editing !== undefined && (
+        <PersonDialog person={editing} onClose={() => setEditing(undefined)} />
+      )}
     </Card>
   );
 }
 
-function PersonDialog({ person, onClose }: { person: Person | null; onClose: () => void }) {
+function PersonDialog({
+  person,
+  onClose,
+}: {
+  person: Person | null;
+  onClose: () => void;
+}) {
   const savePerson = useSavePerson();
   const [name, setName] = useState(person?.name ?? "");
   const [aliases, setAliases] = useState(person?.aliases.join(", ") ?? "");
@@ -91,9 +136,16 @@ function PersonDialog({ person, onClose }: { person: Person | null; onClose: () 
       {
         id: person?.id,
         name: name.trim(),
-        aliases: aliases.split(",").map((alias) => alias.trim()).filter(Boolean),
+        aliases: aliases
+          .split(",")
+          .map((alias) => alias.trim())
+          .filter(Boolean),
         isDefault,
-        ...(documentNumber.trim() ? { documentNumber: documentNumber.trim() } : clearDocument ? { documentNumber: null } : {}),
+        ...(documentNumber.trim()
+          ? { documentNumber: documentNumber.trim() }
+          : clearDocument
+            ? { documentNumber: null }
+            : {}),
       },
       { onSuccess: onClose },
     );
@@ -106,29 +158,54 @@ function PersonDialog({ person, onClose }: { person: Person | null; onClose: () 
       description="Los alias son cómo la nombras en el chat (ej: dany, mi hermana)."
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={save} disabled={!name.trim() || savePerson.isPending}>Guardar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={save}
+            disabled={!name.trim() || savePerson.isPending}
+          >
+            Guardar
+          </Button>
         </>
       }
     >
       <div className="space-y-3">
-        <Input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
-        <Input placeholder="Alias separados por coma" value={aliases} onChange={(e) => setAliases(e.target.value)} />
+        <Input
+          placeholder="Nombre"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input
+          placeholder="Alias separados por coma"
+          value={aliases}
+          onChange={(e) => setAliases(e.target.value)}
+        />
         <label className="flex items-center gap-2 text-sm">
-          <Switch checked={isDefault} onCheckedChange={setIsDefault} /> Soy yo (persona por defecto)
+          <Switch checked={isDefault} onCheckedChange={setIsDefault} /> Soy yo
+          (persona por defecto)
         </label>
         <div className="space-y-1">
           <Input
-            placeholder={person?.documentNumber ? `N.º de documento (guardado ${person.documentNumber})` : "N.º de documento (DNI)"}
+            placeholder={
+              person?.documentNumber
+                ? `N.º de documento (guardado ${person.documentNumber})`
+                : "N.º de documento (DNI)"
+            }
             value={documentNumber}
             inputMode="numeric"
             autoComplete="off"
             onChange={(e) => setDocumentNumber(e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
-            Abre los PDF de tus estados de cuenta. Se guarda en el servidor y nunca se muestra completo.
+            Abre los PDF de tus estados de cuenta. Se guarda en el servidor y
+            nunca se muestra completo.
             {person?.documentNumber && !documentNumber && (
-              <button type="button" className="ml-1 underline" onClick={() => setClearDocument(!clearDocument)}>
+              <button
+                type="button"
+                className="ml-1 underline"
+                onClick={() => setClearDocument(!clearDocument)}
+              >
                 {clearDocument ? "No quitar" : "Quitar"}
               </button>
             )}

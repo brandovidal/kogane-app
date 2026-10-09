@@ -25,11 +25,22 @@ interface CategoryDialogProps {
   category?: Category;
 }
 
-export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogProps) {
+export function CategoryDialog({
+  open,
+  onOpenChange,
+  category,
+}: CategoryDialogProps) {
   const saveCategory = useSaveCategory();
   const isEdit = !!category;
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<CreateCategory>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CreateCategory>({
     resolver: zodResolver(categoryFormSchema),
     defaultValues: {
       name: "",
@@ -68,28 +79,59 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={category?.isDefault ? "Personalizar categoría" : isEdit ? "Editar categoría" : "Nueva categoría"}
+      title={
+        category?.isDefault
+          ? "Personalizar categoría"
+          : isEdit
+            ? "Editar categoría"
+            : "Nueva categoría"
+      }
       icon={<Tags className="size-4 text-primary" />}
-      description={category?.isDefault ? "Las categorías predeterminadas conservan su nombre y color; puedes elegirles un icono." : isEdit ? "Modifica los datos de la categoría" : "Crea una nueva categoría para clasificar gastos"}
+      description={
+        category?.isDefault
+          ? "Las categorías predeterminadas conservan su nombre y color; puedes elegirles un icono."
+          : isEdit
+            ? "Modifica los datos de la categoría"
+            : "Crea una nueva categoría para clasificar gastos"
+      }
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSubmit(onSubmit)} disabled={saveCategory.isPending}>
-            {isEdit ? category?.isDefault ? "Guardar icono" : "Guardar" : "Crear"}
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            disabled={saveCategory.isPending}
+          >
+            {isEdit
+              ? category?.isDefault
+                ? "Guardar icono"
+                : "Guardar"
+              : "Crear"}
           </Button>
         </>
       }
     >
       <form className="space-y-4 py-2" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium"><FieldLabel icon={Tags}>Nombre *</FieldLabel></label>
-          <Input {...register("name")} placeholder="Ej: Transporte, Comida..." readOnly={category?.isDefault} />
-          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+          <label className="text-sm font-medium">
+            <FieldLabel icon={Tags}>Nombre *</FieldLabel>
+          </label>
+          <Input
+            {...register("name")}
+            placeholder="Ej: Transporte, Comida..."
+            readOnly={category?.isDefault}
+          />
+          {errors.name && (
+            <p className="text-xs text-destructive">{errors.name.message}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium"><FieldLabel icon={Palette}>Color</FieldLabel></label>
+            <label className="text-sm font-medium">
+              <FieldLabel icon={Palette}>Color</FieldLabel>
+            </label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -98,11 +140,17 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
                 disabled={category?.isDefault}
                 className="h-9 w-12 cursor-pointer rounded border"
               />
-              <Input {...register("color")} className="flex-1" readOnly={category?.isDefault} />
+              <Input
+                {...register("color")}
+                className="flex-1"
+                readOnly={category?.isDefault}
+              />
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium"><FieldLabel icon={Shapes}>Icono (opcional)</FieldLabel></label>
+            <label className="text-sm font-medium">
+              <FieldLabel icon={Shapes}>Icono (opcional)</FieldLabel>
+            </label>
             <CategoryIconPicker
               value={watch("icon")}
               color={watch("color")}

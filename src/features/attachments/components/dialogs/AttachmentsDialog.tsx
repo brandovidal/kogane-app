@@ -16,7 +16,13 @@ export function AttachmentsDialog({
   onClose: () => void;
 }) {
   return (
-    <ResponsiveDialog open onOpenChange={(open) => !open && onClose()} title={`Archivos de ${title}`} icon={<Paperclip aria-hidden="true" className="size-4 text-primary" />} description="Boleta, recibo o contrato de este registro.">
+    <ResponsiveDialog
+      open
+      onOpenChange={(open) => !open && onClose()}
+      title={`Archivos de ${title}`}
+      icon={<Paperclip aria-hidden="true" className="size-4 text-primary" />}
+      description="Boleta, recibo o contrato de este registro."
+    >
       <AttachmentsPanel refType={refType} refId={refId} />
     </ResponsiveDialog>
   );

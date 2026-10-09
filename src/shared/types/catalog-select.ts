@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 
-export interface CatalogSelectProps extends Pick<ComponentProps<"button">,
+export interface CatalogSelectProps extends Pick<
+  ComponentProps<"button">,
   "id" | "aria-label" | "aria-required" | "aria-invalid" | "aria-describedby"
 > {
   value: string | null | undefined;
@@ -11,4 +12,9 @@ export interface CatalogSelectProps extends Pick<ComponentProps<"button">,
   disabled?: boolean;
 }
 
-export interface CatalogOption { id: string; name: string; content?: ReactNode; group?: string; }
+export interface CatalogOption {
+  id: string;
+  name: string;
+  content?: ReactNode;
+  group?: string;
+}

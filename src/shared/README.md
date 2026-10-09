@@ -6,47 +6,47 @@ a `expenses` aunque lo utilicen costos fijos, tarjetas y plataformas.
 
 ## Organización
 
-| Carpeta | Responsabilidad |
-| --- | --- |
-| `components/data-display` | Tabla, tarjetas, agrupación, modo de vista y estados vacíos. |
-| `components/forms` | Campos, etiquetas, fechas y selector de opciones recibido por props. |
-| `components/filters` | Select con búsqueda, búsqueda de texto y filtros aplicados. |
-| `components/toolbar` | Barra de acciones, contadores, exportación y agrupación. |
-| `components/dialogs` | Diálogo adaptable a escritorio y móvil. |
-| `components/navigation` | Navegación del periodo compartido. |
-| `components/theme` | Cambio de tema. |
-| `api` | Cliente HTTP, errores, proveedor de consultas y contratos generados de la API. |
-| `api/hooks` | Consultas de catálogos comunes y mecanismo de mutaciones e invalidación. |
-| `api/server` | Proxy de Astro; entrada exclusiva del servidor. |
-| `constants` | Navegación, monedas, etiquetas financieras comunes y claves globales de almacenamiento. |
-| `types` | Contratos de tablas, navegación y selectores genéricos. |
-| `hooks` | Tema, media queries, filtros en URL y persistencia del modo de vista. |
-| `lib` | Fechas, monedas, CSV, iconos de archivos, texto y redirecciones de acceso. |
-| `utils` | Combinación de clases y funciones de navegación. |
-| `stores` | Periodo activo que comparten las pantallas. |
+| Carpeta                   | Responsabilidad                                                                         |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| `components/data-display` | Tabla, tarjetas, agrupación, modo de vista y estados vacíos.                            |
+| `components/forms`        | Campos, etiquetas, fechas y selector de opciones recibido por props.                    |
+| `components/filters`      | Select con búsqueda, búsqueda de texto y filtros aplicados.                             |
+| `components/toolbar`      | Barra de acciones, contadores, exportación y agrupación.                                |
+| `components/dialogs`      | Diálogo adaptable a escritorio y móvil.                                                 |
+| `components/navigation`   | Navegación del periodo compartido.                                                      |
+| `components/theme`        | Cambio de tema.                                                                         |
+| `api`                     | Cliente HTTP, errores, proveedor de consultas y contratos generados de la API.          |
+| `api/hooks`               | Consultas de catálogos comunes y mecanismo de mutaciones e invalidación.                |
+| `api/server`              | Proxy de Astro; entrada exclusiva del servidor.                                         |
+| `constants`               | Navegación, monedas, etiquetas financieras comunes y claves globales de almacenamiento. |
+| `types`                   | Contratos de tablas, navegación y selectores genéricos.                                 |
+| `hooks`                   | Tema, media queries, filtros en URL y persistencia del modo de vista.                   |
+| `lib`                     | Fechas, monedas, CSV, iconos de archivos, texto y redirecciones de acceso.              |
+| `utils`                   | Combinación de clases y funciones de navegación.                                        |
+| `stores`                  | Periodo activo que comparten las pantallas.                                             |
 
 Los primitives de shadcn permanecen en `src/ui`. Su alias de utilidades en
 `components.json` apunta a `shared/utils/cn`.
 
 ## Propiedad de los componentes y hooks de negocio
 
-| Feature | Código que antes estaba en shared |
-| --- | --- |
-| `expenses` | Filtros de gastos, chips, acciones de filas, transferencia de series, estados, importes y reparto; hooks y helpers de gastos. |
-| `categories` | Icono, etiqueta, selector y selector de iconos; catálogo de iconos y límites por categoría. |
-| `settings` | Selectores de personas y medios de pago. |
-| `drafts` | Contador, hooks y destinos de borradores. |
-| `budget` | Editor y diálogo de sueldo; consultas de resumen y presupuesto. |
-| `attachments` | Panel, diálogos de archivos y vista previa; consultas, subida y eliminación de adjuntos. |
-| `auth` | Hooks de sesión, usuarios e invitaciones; servicios para URLs de Google. |
-| `debts` | Consultas, mutaciones, constantes de deudas y generación de enlaces de reportes. |
-| `calendar` | Consultas y acciones del calendario. |
-| `recurring` | Generación de gastos recurrentes y constantes de destinos. |
-| `incomes` | Consultas y mutaciones de ingresos. |
-| `commitments` | Consultas, mutaciones y constantes de compromisos. |
-| `history`, `imports`, `messages`, `notifications`, `statements` | Hooks propios de cada módulo. |
-| `credit-cards` | Enlaces de tarjetas y estados permitidos. |
-| `subscriptions`, `fixed-costs` | Estados y constantes propios de cada recurso. |
+| Feature                                                         | Código que antes estaba en shared                                                                                             |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `expenses`                                                      | Filtros de gastos, chips, acciones de filas, transferencia de series, estados, importes y reparto; hooks y helpers de gastos. |
+| `categories`                                                    | Icono, etiqueta, selector y selector de iconos; catálogo de iconos y límites por categoría.                                   |
+| `settings`                                                      | Selectores de personas y medios de pago.                                                                                      |
+| `drafts`                                                        | Contador, hooks y destinos de borradores.                                                                                     |
+| `budget`                                                        | Editor y diálogo de sueldo; consultas de resumen y presupuesto.                                                               |
+| `attachments`                                                   | Panel, diálogos de archivos y vista previa; consultas, subida y eliminación de adjuntos.                                      |
+| `auth`                                                          | Hooks de sesión, usuarios e invitaciones; servicios para URLs de Google.                                                      |
+| `debts`                                                         | Consultas, mutaciones, constantes de deudas y generación de enlaces de reportes.                                              |
+| `calendar`                                                      | Consultas y acciones del calendario.                                                                                          |
+| `recurring`                                                     | Generación de gastos recurrentes y constantes de destinos.                                                                    |
+| `incomes`                                                       | Consultas y mutaciones de ingresos.                                                                                           |
+| `commitments`                                                   | Consultas, mutaciones y constantes de compromisos.                                                                            |
+| `history`, `imports`, `messages`, `notifications`, `statements` | Hooks propios de cada módulo.                                                                                                 |
+| `credit-cards`                                                  | Enlaces de tarjetas y estados permitidos.                                                                                     |
+| `subscriptions`, `fixed-costs`                                  | Estados y constantes propios de cada recurso.                                                                                 |
 
 La composición global de la aplicación (sidebar, menú móvil y buscador de pantallas)
 vive en `src/layouts/components/navigation`, donde puede combinar features.

@@ -4,7 +4,10 @@ import { useAttachments } from "./attachments";
 
 // Load attachment metadata only for rows approaching the viewport; share the
 // panel's query cache and refresh signed URLs when stale or invalidated.
-export function useAttachmentThumbnail(refType: AttachmentRefType, refId: string) {
+export function useAttachmentThumbnail(
+  refType: AttachmentRefType,
+  refId: string,
+) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -15,16 +18,22 @@ export function useAttachmentThumbnail(refType: AttachmentRefType, refId: string
       setVisible(true);
       return;
     }
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        setVisible(true);
-        observer.disconnect();
-      }
-    }, { rootMargin: "160px" });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "160px" },
+    );
     observer.observe(element);
     return () => observer.disconnect();
   }, [visible]);
 
-  const query = useAttachments(refType, refId, { enabled: visible, staleTime: 60_000 });
+  const query = useAttachments(refType, refId, {
+    enabled: visible,
+    staleTime: 60_000,
+  });
   return { ref, visible, ...query };
 }

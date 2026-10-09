@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { CalendarClock, CalendarDays, ChartNoAxesColumnIncreasing } from "lucide-react";
+import {
+  CalendarClock,
+  CalendarDays,
+  ChartNoAxesColumnIncreasing,
+} from "lucide-react";
 import { InstallmentFields } from "@/features/expenses/components/forms/InstallmentFields";
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
@@ -9,7 +13,10 @@ import { MonthYearPicker } from "@/shared/components/navigation/MonthYearPicker"
 import { Switch } from "@/ui/switch";
 import { parseInstallment } from "@/features/expenses/lib/installments";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
-import { localTodayKey, relativeDueLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
+import {
+  localTodayKey,
+  relativeDueLabel,
+} from "@/features/fixed-costs/lib/fixed-cost-views";
 import { cn } from "@/shared/utils/cn";
 import type {
   FixedCostForm,
@@ -42,16 +49,22 @@ export function FixedCostScheduleSection() {
   const periodMonth = watch("paymentMonth");
   const periodYear = watch("paymentYear");
   const dueDate = watch("dueDate");
-  const daysToDue = dueDate && todayKey ? daysUntilDue(dueDate, todayKey) : null;
+  const daysToDue =
+    dueDate && todayKey ? daysUntilDue(dueDate, todayKey) : null;
   const dueRelativeLabel = relativeDueLabel(daysToDue);
-  const dueMessage = daysToDue == null || !dueRelativeLabel
-    ? null
-    : daysToDue < 0
-      ? dueRelativeLabel.replace(/^v/, "V")
-      : daysToDue === 0
-        ? "Vence hoy"
-        : `Vence ${dueRelativeLabel}`;
-  const finishDate = new Date(periodYear, periodMonth - 1 + remainingInstallments - 1, 1);
+  const dueMessage =
+    daysToDue == null || !dueRelativeLabel
+      ? null
+      : daysToDue < 0
+        ? dueRelativeLabel.replace(/^v/, "V")
+        : daysToDue === 0
+          ? "Vence hoy"
+          : `Vence ${dueRelativeLabel}`;
+  const finishDate = new Date(
+    periodYear,
+    periodMonth - 1 + remainingInstallments - 1,
+    1,
+  );
   const finishLabel = finishDate.toLocaleDateString("es-PE", {
     month: "short",
     year: "numeric",
@@ -147,7 +160,10 @@ export function FixedCostScheduleSection() {
               <div className="space-y-2 pb-1">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
-                    <ChartNoAxesColumnIncreasing aria-hidden="true" className="size-3.5" />
+                    <ChartNoAxesColumnIncreasing
+                      aria-hidden="true"
+                      className="size-3.5"
+                    />
                     Avance
                   </span>
                   <span>{hasValidInstallment ? `${progress}%` : "—"}</span>
@@ -160,14 +176,23 @@ export function FixedCostScheduleSection() {
                   aria-valuenow={progress}
                   className="h-2 overflow-hidden rounded-full bg-muted"
                 >
-                  <div className="h-full rounded-full bg-brand transition-[width]" style={{ width: `${progress}%` }} />
+                  <div
+                    className="h-full rounded-full bg-brand transition-[width]"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
               </div>
             </div>
             {hasValidInstallment && (
               <div className="grid grid-cols-3 gap-2">
-                <InstallmentSummary label="Pagadas" value={String(paidInstallments)} />
-                <InstallmentSummary label="Restantes" value={String(remainingInstallments)} />
+                <InstallmentSummary
+                  label="Pagadas"
+                  value={String(paidInstallments)}
+                />
+                <InstallmentSummary
+                  label="Restantes"
+                  value={String(remainingInstallments)}
+                />
                 <InstallmentSummary label="Termina" value={finishLabel} />
               </div>
             )}
@@ -178,7 +203,13 @@ export function FixedCostScheduleSection() {
   );
 }
 
-function InstallmentSummary({ label, value }: { label: string; value: string }) {
+function InstallmentSummary({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
   return (
     <div className="min-w-0 rounded-lg bg-muted/50 px-3 py-2">
       <div className="text-[11px] text-muted-foreground">{label}</div>

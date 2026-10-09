@@ -53,7 +53,9 @@ export function CollapsibleDebtGroup({
       <span className="shrink-0 text-xs text-muted-foreground">
         {debts.length} {debts.length === 1 ? "cobro" : "cobros"}
       </span>
-      <span className="shrink-0 font-semibold tabular-nums">{formatCurrency(total)}</span>
+      <span className="shrink-0 font-semibold tabular-nums">
+        {formatCurrency(total)}
+      </span>
       {direction === "owed_to_me" && (
         <CollectButton
           name={title}

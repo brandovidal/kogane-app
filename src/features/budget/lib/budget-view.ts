@@ -12,9 +12,18 @@ export interface DonutSlice {
 }
 
 // Group colors come from the theme, so they read in light and dark mode
-const GROUP_FILLS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+const GROUP_FILLS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
 
-export function donutSlices(summary: Summary | undefined, mode: DonutMode): DonutSlice[] {
+export function donutSlices(
+  summary: Summary | undefined,
+  mode: DonutMode,
+): DonutSlice[] {
   if (!summary) return [];
   if (mode === "groups") {
     return summary.budgetGroups
@@ -28,7 +37,12 @@ export function donutSlices(summary: Summary | undefined, mode: DonutMode): Donu
   }
   return summary.byCategory
     .filter((line) => line.spent > 0)
-    .map((line) => ({ key: line.categoryId ?? "none", name: line.name, value: line.spent, fill: line.color }));
+    .map((line) => ({
+      key: line.categoryId ?? "none",
+      name: line.name,
+      value: line.spent,
+      fill: line.color,
+    }));
 }
 
 export type LimitStatus = "ok" | "warning" | "over";

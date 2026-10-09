@@ -46,13 +46,21 @@ export function ResponsiveDialog({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className={cn("sm:max-w-lg max-h-[90vh] overflow-y-auto", contentClassName)} overlayClassName={overlayClassName}>
+        <DialogContent
+          className={cn(
+            "sm:max-w-lg max-h-[90vh] overflow-y-auto",
+            contentClassName,
+          )}
+          overlayClassName={overlayClassName}
+        >
           <DialogHeader>
             <DialogTitle className={cn(icon && "flex items-center gap-2")}>
               {icon}
               {title}
             </DialogTitle>
-            {description && <DialogDescription>{description}</DialogDescription>}
+            {description && (
+              <DialogDescription>{description}</DialogDescription>
+            )}
           </DialogHeader>
           {children}
           {footer && <DialogFooter>{footer}</DialogFooter>}
@@ -63,7 +71,13 @@ export function ResponsiveDialog({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className={cn("max-h-[85vh] overflow-y-auto rounded-t-lg", contentClassName)}>
+      <SheetContent
+        side="bottom"
+        className={cn(
+          "max-h-[85vh] overflow-y-auto rounded-t-lg",
+          contentClassName,
+        )}
+      >
         <SheetHeader>
           <SheetTitle className={cn(icon && "flex items-center gap-2")}>
             {icon}

@@ -30,7 +30,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSeparator,
 } from "@/ui/dropdown-menu";
-import { FIXED_COST_GROUP_LABELS, FIXED_COST_GROUP_OPTIONS } from "../../lib/fixed-cost-filters";
+import {
+  FIXED_COST_GROUP_LABELS,
+  FIXED_COST_GROUP_OPTIONS,
+} from "../../lib/fixed-cost-filters";
 import { FIXED_COST_SORTS } from "../../lib/fixed-cost-views";
 import type { FixedCostGroupBy } from "../../types/fixed-cost-types";
 
@@ -179,7 +182,9 @@ export function FixedCostViewSettings({
             <Layers className="size-4" /> Agrupar
             <span className="ml-auto max-w-32 truncate text-xs text-muted-foreground">
               {groupBy.length
-                ? groupBy.map((field) => FIXED_COST_GROUP_LABELS[field]).join(" › ")
+                ? groupBy
+                    .map((field) => FIXED_COST_GROUP_LABELS[field])
+                    .join(" › ")
                 : "Sin agrupar"}
             </span>
           </DropdownMenuSubTrigger>
@@ -245,7 +250,9 @@ export function FixedCostViewSettings({
       </DropdownMenuItem>
       <DropdownMenuItem
         onSelect={() =>
-          toast.info("Guardar vistas personalizadas estará disponible próximamente.")
+          toast.info(
+            "Guardar vistas personalizadas estará disponible próximamente.",
+          )
         }
         className="rounded-md py-2"
       >

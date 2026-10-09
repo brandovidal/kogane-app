@@ -135,7 +135,6 @@ export function FixedCostToolbar({
   const clearFilters = () =>
     onFiltersChange({ month: filters.month, year: filters.year, q: filters.q });
 
-
   if (loading) return <DataLoadingSkeleton variant="toolbar" />;
 
   return (

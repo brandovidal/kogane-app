@@ -7,10 +7,16 @@ import { Input } from "@/ui/input";
 import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
 import { PAYMENT_METHOD_TYPE_LABELS } from "@/features/settings/constants/payment-methods";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import { CURRENCY_FILTER_OPTIONS, SHARED_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
+import {
+  CURRENCY_FILTER_OPTIONS,
+  SHARED_FILTER_OPTIONS,
+} from "@/features/expenses/constants/expense-filters";
 import { countPlatformFilters } from "../../lib/platform-filters";
 import { PLATFORM_MORE_FILTER_KEYS } from "../../constants/platforms";
-import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import type {
+  ExpenseFilterKey,
+  ExpenseFilterValues,
+} from "@/features/expenses/types/expense-filters";
 import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 
 export function PlatformFilterFields({
@@ -24,7 +30,8 @@ export function PlatformFilterFields({
   personCounts: Record<string, number>;
   statuses: string[];
 }) {
-  const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
+  const methods =
+    usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
   const categories = useCategories().data ?? [];
   const set = (key: ExpenseFilterKey, value: string | undefined) =>
     onFiltersChange({ ...filters, [key]: value || undefined });
@@ -108,7 +115,9 @@ export function PlatformFilterFields({
               { value: "yes", label: "Con nota" },
               { value: "no", label: "Sin nota" },
             ]}
-            onChange={(value) => set("hasNote", value as "yes" | "no" | undefined)}
+            onChange={(value) =>
+              set("hasNote", value as "yes" | "no" | undefined)
+            }
             width="w-full"
             allLabel="Todas"
             allTriggerLabel="Todas"

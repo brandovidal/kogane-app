@@ -9,7 +9,12 @@ export interface CurrencyDisplayProps {
   className?: string;
 }
 
-function Amount({ amount, currency = "PEN", amountInPEN, className }: CurrencyDisplayProps) {
+function Amount({
+  amount,
+  currency = "PEN",
+  amountInPEN,
+  className,
+}: CurrencyDisplayProps) {
   if (currency !== "PEN" && amountInPEN) {
     return (
       <div className={className}>
@@ -20,13 +25,21 @@ function Amount({ amount, currency = "PEN", amountInPEN, className }: CurrencyDi
       </div>
     );
   }
-  return <span className={`font-semibold ${className ?? ""}`}>{formatCurrency(amount, currency)}</span>;
+  return (
+    <span className={`font-semibold ${className ?? ""}`}>
+      {formatCurrency(amount, currency)}
+    </span>
+  );
 }
 
 // The amount paid; for a shared expense also "👥 otros S/ 32.00 · tu parte S/ 32.00"
 export function CurrencyDisplay(props: CurrencyDisplayProps) {
   if (!props.othersShare) return <Amount {...props} />;
-  const { paid, own } = paidAndOwn({ amount: props.amount, amountInPen: props.amountInPEN, othersShare: props.othersShare });
+  const { paid, own } = paidAndOwn({
+    amount: props.amount,
+    amountInPen: props.amountInPEN,
+    othersShare: props.othersShare,
+  });
   return (
     <div>
       <Amount {...props} />

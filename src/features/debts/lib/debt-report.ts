@@ -4,7 +4,16 @@ export interface DebtReportFilter {
   year?: number;
   until?: boolean;
   person?: string;
-  state?: "pending" | "partial" | "paid" | "prepaid" | "cashback" | "open" | "late" | "due" | "upcoming";
+  state?:
+    | "pending"
+    | "partial"
+    | "paid"
+    | "prepaid"
+    | "cashback"
+    | "open"
+    | "late"
+    | "due"
+    | "upcoming";
   card?: string;
   origin?: "shared" | "loan";
   q?: string;
@@ -16,7 +25,10 @@ export function debtReportUrl(
   personId?: string,
   filter: DebtReportFilter = {},
 ): string {
-  const query = new URLSearchParams({ format, ...(personId ? { personId } : {}) });
+  const query = new URLSearchParams({
+    format,
+    ...(personId ? { personId } : {}),
+  });
   if (filter.direction) query.set("direction", filter.direction);
   if (filter.month) query.set("month", String(filter.month));
   if (filter.year) query.set("year", String(filter.year));

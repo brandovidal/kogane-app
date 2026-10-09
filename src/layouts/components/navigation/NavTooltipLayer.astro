@@ -1,16 +1,30 @@
-<div id="navigation-tooltip" data-nav-tooltip popover="manual" role="tooltip" class="fixed inset-auto m-0 max-w-64 rounded-lg border bg-popover px-3 py-2 text-popover-foreground shadow-md">
+<div
+  id="navigation-tooltip"
+  data-nav-tooltip
+  popover="manual"
+  role="tooltip"
+  class="fixed inset-auto m-0 max-w-64 rounded-lg border bg-popover px-3 py-2 text-popover-foreground shadow-md"
+>
   <p data-tooltip-name class="text-sm font-medium"></p>
-  <p data-tooltip-description class="mt-1 text-xs leading-relaxed text-muted-foreground" hidden></p>
+  <p
+    data-tooltip-description
+    class="mt-1 text-xs leading-relaxed text-muted-foreground"
+    hidden
+  ></p>
 </div>
 
 <style>
-  [data-nav-tooltip] { pointer-events: none; }
+  [data-nav-tooltip] {
+    pointer-events: none;
+  }
 </style>
 
 <script>
   const layer = document.querySelector<HTMLElement>("[data-nav-tooltip]");
   const name = layer?.querySelector<HTMLElement>("[data-tooltip-name]");
-  const description = layer?.querySelector<HTMLElement>("[data-tooltip-description]");
+  const description = layer?.querySelector<HTMLElement>(
+    "[data-tooltip-description]",
+  );
   if (layer && name && description) {
     let trigger: HTMLElement | null = null;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -18,7 +32,8 @@
     const hide = () => {
       clearTimeout(timer);
       if (trigger) {
-        if (previousDescription === null) trigger.removeAttribute("aria-describedby");
+        if (previousDescription === null)
+          trigger.removeAttribute("aria-describedby");
         else trigger.setAttribute("aria-describedby", previousDescription);
       }
       if (layer.matches(":popover-open")) layer.hidePopover();
@@ -30,10 +45,15 @@
       trigger = target;
       previousDescription = target.getAttribute("aria-describedby");
       timer = setTimeout(() => {
-        if (!target.isConnected || !target.getClientRects().length) return hide();
+        if (!target.isConnected || !target.getClientRects().length)
+          return hide();
         name.textContent = target.dataset.navTooltipLabel ?? "";
-        const compact = target.closest<HTMLElement>("[data-sidebar]")?.dataset.compact === "true";
-        description.textContent = compact ? "" : target.dataset.navTooltipDescription ?? "";
+        const compact =
+          target.closest<HTMLElement>("[data-sidebar]")?.dataset.compact ===
+          "true";
+        description.textContent = compact
+          ? ""
+          : (target.dataset.navTooltipDescription ?? "");
         description.hidden = !description.textContent;
         layer.style.left = "0px";
         layer.style.top = "0px";
@@ -41,27 +61,48 @@
         const anchor = target.getBoundingClientRect();
         const box = layer.getBoundingClientRect();
         const preferred = anchor.right + 10;
-        const left = preferred + box.width <= window.innerWidth - 8 ? preferred : anchor.left - box.width - 10;
+        const left =
+          preferred + box.width <= window.innerWidth - 8
+            ? preferred
+            : anchor.left - box.width - 10;
         layer.style.left = `${Math.max(8, Math.min(left, window.innerWidth - box.width - 8))}px`;
         layer.style.top = `${Math.max(8, Math.min(anchor.top + (anchor.height - box.height) / 2, window.innerHeight - box.height - 8))}px`;
-        target.setAttribute("aria-describedby", [previousDescription, layer.id].filter(Boolean).join(" "));
+        target.setAttribute(
+          "aria-describedby",
+          [previousDescription, layer.id].filter(Boolean).join(" "),
+        );
       }, delay);
     };
-    const findTrigger = (target: EventTarget | null) => target instanceof Element ? target.closest<HTMLElement>("[data-nav-tooltip-label]") : null;
+    const findTrigger = (target: EventTarget | null) =>
+      target instanceof Element
+        ? target.closest<HTMLElement>("[data-nav-tooltip-label]")
+        : null;
     document.addEventListener("pointerover", (event) => {
       if (event.pointerType === "touch") return;
       const target = findTrigger(event.target);
       if (target) show(target, 300);
     });
     document.addEventListener("pointerout", (event) => {
-      if (trigger && findTrigger(event.target) === trigger && !(event.relatedTarget instanceof Node && trigger.contains(event.relatedTarget))) hide();
+      if (
+        trigger &&
+        findTrigger(event.target) === trigger &&
+        !(
+          event.relatedTarget instanceof Node &&
+          trigger.contains(event.relatedTarget)
+        )
+      )
+        hide();
     });
     document.addEventListener("focusin", (event) => {
       const target = findTrigger(event.target);
       if (target?.matches(":focus-visible")) show(target, 0);
     });
-    document.addEventListener("focusout", (event) => { if (findTrigger(event.target) === trigger) hide(); });
-    document.addEventListener("keydown", (event) => { if (event.key === "Escape") hide(); });
+    document.addEventListener("focusout", (event) => {
+      if (findTrigger(event.target) === trigger) hide();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") hide();
+    });
     document.addEventListener("click", hide);
     document.addEventListener("scroll", hide, true);
     window.addEventListener("resize", hide);

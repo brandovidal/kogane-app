@@ -50,7 +50,10 @@ export { FIXED_COST_GROUP_VALUES } from "./constants/grouping";
 export { FixedCostToolbar } from "./sections/list/FixedCostToolbar";
 export { FixedCostViewBar } from "./sections/list/FixedCostViewBar";
 export type { FixedCostToolbarProps } from "./sections/list/FixedCostToolbar";
-export { FixedCostPeriodSelector, FixedCostRecordCount } from "./components/header";
+export {
+  FixedCostPeriodSelector,
+  FixedCostRecordCount,
+} from "./components/header";
 export { FixedCostInstallmentsView } from "./views/FixedCostInstallmentsView";
 export { FixedCostStatusBoard } from "./views/FixedCostStatusBoard";
 export { FixedCostEmptyMonthView } from "./views/FixedCostEmptyMonthView";

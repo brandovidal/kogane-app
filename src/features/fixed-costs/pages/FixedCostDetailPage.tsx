@@ -71,12 +71,21 @@ export function FixedCostDetailPage({
   const [deleting, setDeleting] = useState(false);
   const [filterKind, setFilterKind] = useState<string>("all");
   const [uploadKind, setUploadKind] = useState<string>("boleta");
-  const attachments = useAttachments("fixed_cost", fixedCost?.id ?? "", { enabled: !!fixedCost });
-  const history = useRecordHistory("exp_fixed_costs", fixedCost?.id ?? "", { enabled: !!fixedCost });
+  const attachments = useAttachments("fixed_cost", fixedCost?.id ?? "", {
+    enabled: !!fixedCost,
+  });
+  const history = useRecordHistory("exp_fixed_costs", fixedCost?.id ?? "", {
+    enabled: !!fixedCost,
+  });
   const files = attachments.data ?? [];
-  const currentIndex = fixedCost ? items.findIndex((item) => item.id === fixedCost.id) : -1;
+  const currentIndex = fixedCost
+    ? items.findIndex((item) => item.id === fixedCost.id)
+    : -1;
   const previous = currentIndex > 0 ? items[currentIndex - 1] : undefined;
-  const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : undefined;
+  const next =
+    currentIndex >= 0 && currentIndex < items.length - 1
+      ? items[currentIndex + 1]
+      : undefined;
   const latestChange = history.data?.items?.[0];
   const attachmentKinds = Object.keys(ATTACHMENT_KIND_LABELS);
   const fileFilters = ["all", ...attachmentKinds];
@@ -144,12 +153,22 @@ export function FixedCostDetailPage({
               <TabsTrigger value="files" className="flex-none px-0">
                 <Paperclip aria-hidden="true" />
                 Archivos
-                <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">{files.length}</Badge>
+                <Badge
+                  variant="secondary"
+                  className="ml-1 h-5 min-w-5 px-1 text-[10px]"
+                >
+                  {files.length}
+                </Badge>
               </TabsTrigger>
               <TabsTrigger value="history" className="flex-none px-0">
                 <History aria-hidden="true" />
                 Historial
-                <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">{history.data?.total ?? 0}</Badge>
+                <Badge
+                  variant="secondary"
+                  className="ml-1 h-5 min-w-5 px-1 text-[10px]"
+                >
+                  {history.data?.total ?? 0}
+                </Badge>
               </TabsTrigger>
             </TabsList>
             <TabsContent
@@ -164,24 +183,152 @@ export function FixedCostDetailPage({
                 personName={personName}
                 accountName={accountName}
                 showFiles={false}
-                actions={<Button size="sm" onClick={onEdit}><Pencil aria-hidden="true" className="size-4" />Editar</Button>}
+                actions={
+                  <Button size="sm" onClick={onEdit}>
+                    <Pencil aria-hidden="true" className="size-4" />
+                    Editar
+                  </Button>
+                }
               />
-              {(files.length > 0 || latestChange) && <div className="space-y-3 px-4 pb-4">
-                {files.length > 0 && <button type="button" onClick={() => setTab("files")} className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30">
-                  <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">{files[0].contentType.startsWith("image/") && files[0].url ? <img src={files[0].url} alt="" className="size-full object-cover" /> : <Paperclip className="size-4" />}</span>
-                  <span className="min-w-0 flex-1"><span className="block font-medium">{files.length} {files.length === 1 ? "archivo adjunto" : "archivos adjuntos"}</span><span className="block truncate text-sm text-muted-foreground">{ATTACHMENT_KIND_LABELS[files[0].kind] ?? files[0].kind} · {files[0].name}</span></span><Eye className="size-4 text-muted-foreground" /></button>}
-                {latestChange && <button type="button" onClick={() => setTab("history")} className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"><History className="size-5 shrink-0 text-muted-foreground" /><span className="min-w-0 flex-1"><span className="block font-medium">Último cambio · {new Intl.DateTimeFormat("es-PE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(latestChange.createdAt))}</span><span className="block truncate text-sm text-muted-foreground">{latestChange.changes[0]?.field ?? latestChange.action}</span></span><Eye className="size-4 text-muted-foreground" /></button>}
-              </div>}
+              {(files.length > 0 || latestChange) && (
+                <div className="space-y-3 px-4 pb-4">
+                  {files.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setTab("files")}
+                      className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
+                    >
+                      <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
+                        {files[0].contentType.startsWith("image/") &&
+                        files[0].url ? (
+                          <img
+                            src={files[0].url}
+                            alt=""
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <Paperclip className="size-4" />
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-medium">
+                          {files.length}{" "}
+                          {files.length === 1
+                            ? "archivo adjunto"
+                            : "archivos adjuntos"}
+                        </span>
+                        <span className="block truncate text-sm text-muted-foreground">
+                          {ATTACHMENT_KIND_LABELS[files[0].kind] ??
+                            files[0].kind}{" "}
+                          · {files[0].name}
+                        </span>
+                      </span>
+                      <Eye className="size-4 text-muted-foreground" />
+                    </button>
+                  )}
+                  {latestChange && (
+                    <button
+                      type="button"
+                      onClick={() => setTab("history")}
+                      className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
+                    >
+                      <History className="size-5 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-medium">
+                          Último cambio ·{" "}
+                          {new Intl.DateTimeFormat("es-PE", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }).format(new Date(latestChange.createdAt))}
+                        </span>
+                        <span className="block truncate text-sm text-muted-foreground">
+                          {latestChange.changes[0]?.field ??
+                            latestChange.action}
+                        </span>
+                      </span>
+                      <Eye className="size-4 text-muted-foreground" />
+                    </button>
+                  )}
+                </div>
+              )}
             </TabsContent>
             <TabsContent
               value="files"
               className="min-h-0 overflow-y-auto overscroll-contain p-4"
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between gap-3"><h2 className="font-semibold">Adjuntos</h2><span className="text-sm text-muted-foreground">{files.length} archivos</span></div>
-                <div className="space-y-2"><p className="text-xs font-medium">Tipo para los archivos nuevos</p><div className="flex flex-wrap gap-2">{attachmentKinds.map((kind) => <Button key={kind} type="button" size="sm" variant={uploadKind === kind ? "secondary" : "outline"} className="h-8 rounded-full" aria-pressed={uploadKind === kind} onClick={() => setUploadKind(kind)}>{uploadKind === kind && <span aria-hidden="true">✓</span>}{ATTACHMENT_KIND_LABELS[kind]}</Button>)}</div><p className="text-xs text-muted-foreground">Se aplica a los archivos que subas ahora.</p></div>
-                <div className="flex flex-wrap gap-2 border-t pt-3" aria-label="Filtrar archivos por tipo">{fileFilters.map((kind) => { const count = kind === "all" ? files.length : files.filter((file) => file.kind === kind).length; if (kind !== "all" && !count) return null; return <Button key={kind} type="button" size="sm" variant={filterKind === kind ? "secondary" : "ghost"} className="h-8" onClick={() => setFilterKind(kind)} aria-pressed={filterKind === kind}>{kind === "all" ? "Todos" : ATTACHMENT_KIND_LABELS[kind]} <span className="ml-1 text-muted-foreground">{count}</span></Button>; })}</div>
-                <AttachmentsPanel key={fixedCost.id} refType="fixed_cost" refId={fixedCost.id} kind={uploadKind as never} showKindSelect={false} filterKind={filterKind as never} dropzone emptyMessage="Aún no hay archivos adjuntos. Sube una boleta, recibo o contrato para tener el respaldo de este gasto." />
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="font-semibold">Adjuntos</h2>
+                  <span className="text-sm text-muted-foreground">
+                    {files.length} archivos
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium">
+                    Tipo para los archivos nuevos
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {attachmentKinds.map((kind) => (
+                      <Button
+                        key={kind}
+                        type="button"
+                        size="sm"
+                        variant={uploadKind === kind ? "secondary" : "outline"}
+                        className="h-8 rounded-full"
+                        aria-pressed={uploadKind === kind}
+                        onClick={() => setUploadKind(kind)}
+                      >
+                        {uploadKind === kind && (
+                          <span aria-hidden="true">✓</span>
+                        )}
+                        {ATTACHMENT_KIND_LABELS[kind]}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Se aplica a los archivos que subas ahora.
+                  </p>
+                </div>
+                <div
+                  className="flex flex-wrap gap-2 border-t pt-3"
+                  aria-label="Filtrar archivos por tipo"
+                >
+                  {fileFilters.map((kind) => {
+                    const count =
+                      kind === "all"
+                        ? files.length
+                        : files.filter((file) => file.kind === kind).length;
+                    if (kind !== "all" && !count) return null;
+                    return (
+                      <Button
+                        key={kind}
+                        type="button"
+                        size="sm"
+                        variant={filterKind === kind ? "secondary" : "ghost"}
+                        className="h-8"
+                        onClick={() => setFilterKind(kind)}
+                        aria-pressed={filterKind === kind}
+                      >
+                        {kind === "all"
+                          ? "Todos"
+                          : ATTACHMENT_KIND_LABELS[kind]}{" "}
+                        <span className="ml-1 text-muted-foreground">
+                          {count}
+                        </span>
+                      </Button>
+                    );
+                  })}
+                </div>
+                <AttachmentsPanel
+                  key={fixedCost.id}
+                  refType="fixed_cost"
+                  refId={fixedCost.id}
+                  kind={uploadKind as never}
+                  showKindSelect={false}
+                  filterKind={filterKind as never}
+                  dropzone
+                  emptyMessage="Aún no hay archivos adjuntos. Sube una boleta, recibo o contrato para tener el respaldo de este gasto."
+                />
               </div>
             </TabsContent>
             <TabsContent
@@ -197,10 +344,60 @@ export function FixedCostDetailPage({
             </TabsContent>
           </Tabs>
           <footer className="flex shrink-0 items-center justify-between border-t px-4 py-3">
-            <Button type="button" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}><Trash2 className="size-4" />Eliminar</Button>
-            <div className="flex items-center gap-2"><Button type="button" variant="outline" size="icon" aria-label="Costo anterior" disabled={!previous} onClick={() => previous && onNavigate(previous)}><ChevronLeft className="size-4" /></Button><Button type="button" variant="outline" size="icon" aria-label="Costo siguiente" disabled={!next} onClick={() => next && onNavigate(next)}><ChevronRight className="size-4" /></Button></div>
+            <Button
+              type="button"
+              variant="ghost"
+              className="text-destructive hover:text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              <Trash2 className="size-4" />
+              Eliminar
+            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="Costo anterior"
+                disabled={!previous}
+                onClick={() => previous && onNavigate(previous)}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="Costo siguiente"
+                disabled={!next}
+                onClick={() => next && onNavigate(next)}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
           </footer>
-          <DeleteConfirmationDialog open={confirmDelete} onOpenChange={setConfirmDelete} title="¿Eliminar costo fijo?" description={<>Se eliminará «{fixedCost.description}». Esta acción no se puede deshacer.</>} pending={deleting} onConfirm={() => { setDeleting(true); Promise.resolve(onDelete(fixedCost)).then(() => { setConfirmDelete(false); onClose(); }).catch(() => undefined).finally(() => setDeleting(false)); }} />
+          <DeleteConfirmationDialog
+            open={confirmDelete}
+            onOpenChange={setConfirmDelete}
+            title="¿Eliminar costo fijo?"
+            description={
+              <>
+                Se eliminará «{fixedCost.description}». Esta acción no se puede
+                deshacer.
+              </>
+            }
+            pending={deleting}
+            onConfirm={() => {
+              setDeleting(true);
+              Promise.resolve(onDelete(fixedCost))
+                .then(() => {
+                  setConfirmDelete(false);
+                  onClose();
+                })
+                .catch(() => undefined)
+                .finally(() => setDeleting(false));
+            }}
+          />
         </SheetContent>
       )}
     </Sheet>

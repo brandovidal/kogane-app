@@ -10,7 +10,8 @@ export const debtKeys = {
   cardCheck: (query: CardCheckQuery) => ["debts", "card-check", query] as const,
 };
 
-type CardCheckQuery = paths["/v1/debts/card-check"]["get"]["parameters"]["query"];
+type CardCheckQuery =
+  paths["/v1/debts/card-check"]["get"]["parameters"]["query"];
 export type DebtBulk = Schemas["DebtBulkDto"];
 
 type DebtFilter = NonNullable<paths["/v1/debts"]["get"]["parameters"]["query"]>;
@@ -25,25 +26,34 @@ export const useDebts = (filter: DebtFilter = {}) =>
 export const useDebt = (id: string | null) =>
   useQuery({
     queryKey: ["debts", "detail", id ?? ""],
-    queryFn: () => unwrap(api.GET("/v1/debts/{id}", { params: { path: { id: id! } } })),
+    queryFn: () =>
+      unwrap(api.GET("/v1/debts/{id}", { params: { path: { id: id! } } })),
     enabled: !!id,
   });
 
 // Contraste con la tarjeta (D114): only when a card and a month are chosen
 export const useCardCheck = (query: CardCheckQuery | null) =>
   useQuery({
-    queryKey: debtKeys.cardCheck(query ?? { paymentMethodId: "", month: 0, year: 0 }),
-    queryFn: () => unwrap(api.GET("/v1/debts/card-check", { params: { query: query! } })),
+    queryKey: debtKeys.cardCheck(
+      query ?? { paymentMethodId: "", month: 0, year: 0 },
+    ),
+    queryFn: () =>
+      unwrap(api.GET("/v1/debts/card-check", { params: { query: query! } })),
     enabled: !!query,
   });
 
-export const useCardChecks = (paymentMethodIds: string[], month: number, year: number) =>
+export const useCardChecks = (
+  paymentMethodIds: string[],
+  month: number,
+  year: number,
+) =>
   useQueries({
     queries: paymentMethodIds.map((paymentMethodId) => {
       const query = { paymentMethodId, month, year };
       return {
         queryKey: debtKeys.cardCheck(query),
-        queryFn: () => unwrap(api.GET("/v1/debts/card-check", { params: { query } })),
+        queryFn: () =>
+          unwrap(api.GET("/v1/debts/card-check", { params: { query } })),
       };
     }),
   });
@@ -51,10 +61,13 @@ export const useCardChecks = (paymentMethodIds: string[], month: number, year: n
 const invalidate = [debtKeys.all, ["summary"]];
 
 export const useCreateDebt = () =>
-  useApiMutation((body: Schemas["CreateDebtDto"]) => unwrap(api.POST("/v1/debts", { body })), {
-    invalidate,
-    success: "Deuda guardada",
-  });
+  useApiMutation(
+    (body: Schemas["CreateDebtDto"]) => unwrap(api.POST("/v1/debts", { body })),
+    {
+      invalidate,
+      success: "Deuda guardada",
+    },
+  );
 
 export const useUpdateDebt = () =>
   useApiMutation(
@@ -64,15 +77,21 @@ export const useUpdateDebt = () =>
   );
 
 export const useDeleteDebt = () =>
-  useApiMutation((id: string) => unwrap(api.DELETE("/v1/debts/{id}", { params: { path: { id } } })), {
-    invalidate,
-    success: "Cuota eliminada",
-  });
+  useApiMutation(
+    (id: string) =>
+      unwrap(api.DELETE("/v1/debts/{id}", { params: { path: { id } } })),
+    {
+      invalidate,
+      success: "Cuota eliminada",
+    },
+  );
 
 export const useAddDebtPayment = () =>
   useApiMutation(
     ({ id, body }: { id: string; body: Schemas["DebtPaymentDto"] }) =>
-      unwrap(api.POST("/v1/debts/{id}/payments", { params: { path: { id } }, body })),
+      unwrap(
+        api.POST("/v1/debts/{id}/payments", { params: { path: { id } }, body }),
+      ),
     { invalidate, success: "Abono guardado" },
   );
 
@@ -89,10 +108,15 @@ const BULK_MESSAGES: Record<DebtBulk["action"], string> = {
 
 // Selección múltiple (D115): the toast says how many and what was left out
 export const useBulkDebts = () =>
-  useApiMutation((body: DebtBulk) => unwrap(api.POST("/v1/debts/bulk", { body })), {
-    invalidate,
-    success: (result) => {
-      const skipped = result.skipped.length ? ` · ${result.skipped.length} sin cambios` : "";
-      return `${BULK_MESSAGES[result.action]}: ${result.affected}${skipped}`;
+  useApiMutation(
+    (body: DebtBulk) => unwrap(api.POST("/v1/debts/bulk", { body })),
+    {
+      invalidate,
+      success: (result) => {
+        const skipped = result.skipped.length
+          ? ` · ${result.skipped.length} sin cambios`
+          : "";
+        return `${BULK_MESSAGES[result.action]}: ${result.affected}${skipped}`;
+      },
     },
-  });
+  );

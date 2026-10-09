@@ -19,16 +19,42 @@ function DebtDetailView() {
   }, []);
   const { data: debt, isLoading } = useDebt(id);
   const methods = usePaymentMethods().data ?? [];
-  const methodName = (methodId: string | null) => methods.find((method) => method.id === methodId)?.name ?? "Sin medio registrado";
+  const methodName = (methodId: string | null) =>
+    methods.find((method) => method.id === methodId)?.name ??
+    "Sin medio registrado";
 
-  if (!id) return <EmptyState title="Falta el registro" description="Vuelve a la lista y abre el detalle de una cuota." />;
-  if (isLoading) return <p className="text-sm text-muted-foreground">Cargando detalle…</p>;
-  if (!debt) return <EmptyState title="No se encontró la cuota" description="Puede que haya sido eliminada o ya no tengas acceso." />;
+  if (!id)
+    return (
+      <EmptyState
+        title="Falta el registro"
+        description="Vuelve a la lista y abre el detalle de una cuota."
+      />
+    );
+  if (isLoading)
+    return <p className="text-sm text-muted-foreground">Cargando detalle…</p>;
+  if (!debt)
+    return (
+      <EmptyState
+        title="No se encontró la cuota"
+        description="Puede que haya sido eliminada o ya no tengas acceso."
+      />
+    );
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
-      <a href={back}><Button variant="ghost" size="sm"><ArrowLeft className="mr-2 h-4 w-4" /> Volver</Button></a>
-      <header className="space-y-1"><p className="text-sm text-muted-foreground">{debt.person.name} · {getMonthName(debt.paymentMonth)} {debt.paymentYear}{debt.installment ? ` · Cuota ${debt.installment}` : ""}</p><h1 className="text-2xl font-semibold">{debt.description}</h1></header>
+      <a href={back}>
+        <Button variant="ghost" size="sm">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Volver
+        </Button>
+      </a>
+      <header className="space-y-1">
+        <p className="text-sm text-muted-foreground">
+          {debt.person.name} · {getMonthName(debt.paymentMonth)}{" "}
+          {debt.paymentYear}
+          {debt.installment ? ` · Cuota ${debt.installment}` : ""}
+        </p>
+        <h1 className="text-2xl font-semibold">{debt.description}</h1>
+      </header>
       <DebtDetailOverviewSection debt={debt} methodName={methodName} />
     </div>
   );

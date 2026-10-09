@@ -24,7 +24,9 @@ export function useFixedCostActions() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FixedCost>();
   const [openedItem, setOpenedItem] = useState<FixedCost>();
-  const [openedTab, setOpenedTab] = useState<"detail" | "files" | "history">("detail");
+  const [openedTab, setOpenedTab] = useState<"detail" | "files" | "history">(
+    "detail",
+  );
   const [moving, setMoving] = useState<MoveSource | null>(null);
   const [copying, setCopying] = useState(false);
 
@@ -43,7 +45,9 @@ export function useFixedCostActions() {
         body.paymentYear = paymentYear;
         if (typeof body.dueDate === "string") {
           const day = Number(body.dueDate.slice(8, 10));
-          const lastDay = new Date(Date.UTC(paymentYear, paymentMonth, 0)).getUTCDate();
+          const lastDay = new Date(
+            Date.UTC(paymentYear, paymentMonth, 0),
+          ).getUTCDate();
           body.dueDate = `${paymentYear}-${String(paymentMonth).padStart(2, "0")}-${String(Math.min(day, lastDay)).padStart(2, "0")}`;
         }
         return unwrap(
@@ -54,7 +58,9 @@ export function useFixedCostActions() {
         );
       }),
     );
-    const copied = results.filter((result) => result.status === "fulfilled").length;
+    const copied = results.filter(
+      (result) => result.status === "fulfilled",
+    ).length;
     const failed = results.filter((result) => result.status === "rejected");
     if (copied) {
       await Promise.all(
@@ -64,11 +70,15 @@ export function useFixedCostActions() {
           ["commitments"],
         ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
       );
-      toast.success(`${copied} ${copied === 1 ? "costo copiado" : "costos copiados"}`);
+      toast.success(
+        `${copied} ${copied === 1 ? "costo copiado" : "costos copiados"}`,
+      );
     }
     if (failed.length) {
       const reason = failed[0]?.reason;
-      toast.error(`${failed.length} ${failed.length === 1 ? "costo no se pudo copiar" : "costos no se pudieron copiar"}${reason ? `: ${errorMessage(reason)}` : "."}`);
+      toast.error(
+        `${failed.length} ${failed.length === 1 ? "costo no se pudo copiar" : "costos no se pudieron copiar"}${reason ? `: ${errorMessage(reason)}` : "."}`,
+      );
     }
     setCopying(false);
   };

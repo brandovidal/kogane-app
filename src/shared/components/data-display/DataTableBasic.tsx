@@ -36,7 +36,8 @@ export function DataTableBasic<T>({
     calculationState ? undefined : calculationStorageKey,
     calculationDefaults,
   );
-  const { selection: calculations, setCalculation } = calculationState ?? localCalculationState;
+  const { selection: calculations, setCalculation } =
+    calculationState ?? localCalculationState;
   return (
     <div
       className={cn("overflow-hidden rounded-md border", className)}
@@ -142,24 +143,57 @@ export function DataTableBasic<T>({
               {table.getVisibleLeafColumns().map((column) => {
                 const meta = column.columnDef.meta;
                 const calculation = calculations[column.id] ?? "none";
-                if (!meta?.label || column.id === DATA_TABLE_SELECTION_COLUMN || meta.calculationType === false) {
-                  return <TableCell key={column.id} className={meta?.className} />;
+                if (
+                  !meta?.label ||
+                  column.id === DATA_TABLE_SELECTION_COLUMN ||
+                  meta.calculationType === false
+                ) {
+                  return (
+                    <TableCell key={column.id} className={meta?.className} />
+                  );
                 }
-                const values = calculationRows.map((row) => row.getValue(column.id));
-                const present = values.filter((value) => value != null && value !== "");
-                const numeric = meta.calculationType === "number" || (
-                  meta.calculationType !== "text" && present.length > 0 && present.every((value) => typeof value === "number" && Number.isFinite(value))
+                const values = calculationRows.map((row) =>
+                  row.getValue(column.id),
                 );
+                const present = values.filter(
+                  (value) => value != null && value !== "",
+                );
+                const numeric =
+                  meta.calculationType === "number" ||
+                  (meta.calculationType !== "text" &&
+                    present.length > 0 &&
+                    present.every(
+                      (value) =>
+                        typeof value === "number" && Number.isFinite(value),
+                    ));
                 const result = calculateTableColumn(values, calculation);
-                const formatted = result == null || !["sum", "average", "median", "min", "max", "range"].includes(calculation)
-                  ? null
-                  : meta.formatCalculation?.(result);
-                const copyValue = result == null
-                  ? ""
-                  : formatted ?? new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 }).format(result);
+                const formatted =
+                  result == null ||
+                  !["sum", "average", "median", "min", "max", "range"].includes(
+                    calculation,
+                  )
+                    ? null
+                    : meta.formatCalculation?.(result);
+                const copyValue =
+                  result == null
+                    ? ""
+                    : (formatted ??
+                      new Intl.NumberFormat("es-PE", {
+                        maximumFractionDigits: 2,
+                      }).format(result));
                 return (
-                  <TableCell key={column.id} className={`${meta.className ?? ""} group/calculation-cell`}>
-                    <div className={cn("flex", meta.className?.includes("text-right") ? "justify-end" : "justify-start")}>
+                  <TableCell
+                    key={column.id}
+                    className={`${meta.className ?? ""} group/calculation-cell`}
+                  >
+                    <div
+                      className={cn(
+                        "flex",
+                        meta.className?.includes("text-right")
+                          ? "justify-end"
+                          : "justify-start",
+                      )}
+                    >
                       <DataTableColumnCalculation
                         value={result}
                         calculation={calculation}

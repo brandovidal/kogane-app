@@ -10,9 +10,11 @@ const ComboboxPortalContext = React.createContext<{
   triggerRef: React.RefObject<HTMLButtonElement | null>;
 } | null>(null);
 
-function Combobox<Value, Multiple extends boolean | undefined = false, Item = Value>(
-  props: ComboboxPrimitive.Root.Props<Value, Multiple, Item>,
-) {
+function Combobox<
+  Value,
+  Multiple extends boolean | undefined = false,
+  Item = Value,
+>(props: ComboboxPrimitive.Root.Props<Value, Multiple, Item>) {
   const [container, setContainer] = React.useState<HTMLElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
   const portal = React.useMemo(() => ({ container, triggerRef }), [container]);
@@ -25,7 +27,11 @@ function Combobox<Value, Multiple extends boolean | undefined = false, Item = Va
           // Resolve when opening: a trigger's mount ref can run before its portal
           // has been inserted into the sheet/dialog's DOM tree.
           if (open) {
-            setContainer(triggerRef.current?.closest<HTMLElement>('[role="dialog"], [role="alertdialog"]') ?? null);
+            setContainer(
+              triggerRef.current?.closest<HTMLElement>(
+                '[role="dialog"], [role="alertdialog"]',
+              ) ?? null,
+            );
           }
           props.onOpenChange?.(open, details);
         }}
@@ -71,11 +77,14 @@ const ComboboxTrigger = React.forwardRef<
   React.ComponentProps<typeof ComboboxPrimitive.Trigger>
 >(({ className, type = "button", ...props }, ref) => {
   const triggerRef = React.useContext(ComboboxPortalContext)?.triggerRef;
-  const registerTrigger = React.useCallback((element: HTMLButtonElement | null) => {
-    if (triggerRef) triggerRef.current = element;
-    if (typeof ref === "function") ref(element);
-    else if (ref) ref.current = element;
-  }, [ref, triggerRef]);
+  const registerTrigger = React.useCallback(
+    (element: HTMLButtonElement | null) => {
+      if (triggerRef) triggerRef.current = element;
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
+    },
+    [ref, triggerRef],
+  );
 
   return (
     <ComboboxPrimitive.Trigger
@@ -96,14 +105,24 @@ const ComboboxContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof ComboboxPrimitive.Popup> & {
     sideOffset?: number;
-    container?: React.ComponentProps<typeof ComboboxPrimitive.Portal>["container"];
+    container?: React.ComponentProps<
+      typeof ComboboxPrimitive.Portal
+    >["container"];
   }
 >(({ className, sideOffset = 4, container, ...props }, ref) => {
   const portal = React.useContext(ComboboxPortalContext);
 
   return (
-    <ComboboxPrimitive.Portal container={container === undefined ? portal?.container ?? undefined : container}>
-      <ComboboxPrimitive.Positioner positionMethod="fixed" sideOffset={sideOffset} className="pointer-events-auto z-50">
+    <ComboboxPrimitive.Portal
+      container={
+        container === undefined ? (portal?.container ?? undefined) : container
+      }
+    >
+      <ComboboxPrimitive.Positioner
+        positionMethod="fixed"
+        sideOffset={sideOffset}
+        className="pointer-events-auto z-50"
+      >
         <ComboboxPrimitive.Popup
           ref={ref}
           data-slot="combobox-content"

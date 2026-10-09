@@ -54,7 +54,9 @@ export function BillingCycleCard({ cards }: BillingCycleCardProps) {
                 <span className="text-sm">{card.name}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold">{formatCurrency(card.total)}</span>
+                <span className="text-sm font-semibold">
+                  {formatCurrency(card.total)}
+                </span>
                 {isUrgent && card.total > 0 && daysUntilDue != null && (
                   <Badge variant="destructive" className="text-xs px-1.5 py-0">
                     {daysUntilDue}d
@@ -65,7 +67,9 @@ export function BillingCycleCard({ cards }: BillingCycleCardProps) {
           );
         })}
         <div className="flex justify-between border-t pt-2">
-          <span className="text-xs font-medium text-muted-foreground">Total</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            Total
+          </span>
           <span className="text-sm font-bold">
             {formatCurrency(visibleCards.reduce((sum, c) => sum + c.total, 0))}
           </span>

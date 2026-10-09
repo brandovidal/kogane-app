@@ -68,12 +68,7 @@ export function PlatformViewSettings({
   return (
     <ViewSettingsMenu
       trigger={
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 gap-1.5"
-        >
+        <Button type="button" variant="ghost" size="sm" className="h-8 gap-1.5">
           <SlidersHorizontal className="size-4" />
           <span className="hidden sm:inline">Ajustes</span>
         </Button>
@@ -133,8 +128,9 @@ export function PlatformViewSettings({
           Agrupar
           <span className="ml-auto max-w-32 truncate text-xs text-muted-foreground">
             {groupBy
-              .map((field) =>
-                GROUP_OPTIONS.find((option) => option.value === field)?.label,
+              .map(
+                (field) =>
+                  GROUP_OPTIONS.find((option) => option.value === field)?.label,
               )
               .join(" › ") || "Sin agrupar"}
           </span>

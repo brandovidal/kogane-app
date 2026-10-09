@@ -4,10 +4,17 @@ import { toast } from "sonner";
 import { LoaderCircle, ReceiptText, Save } from "lucide-react";
 
 import { DraftForm } from "@/features/drafts/components/DraftForm";
-import { emptyDraftFields, toDraftBody } from "@/features/drafts/lib/draft-form";
+import {
+  emptyDraftFields,
+  toDraftBody,
+} from "@/features/drafts/lib/draft-form";
 import { ApiError } from "@/shared/api/client";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
-import { useCreateDraft, useSaveDraft, type DraftFields } from "@/features/drafts/hooks/drafts";
+import {
+  useCreateDraft,
+  useSaveDraft,
+  type DraftFields,
+} from "@/features/drafts/hooks/drafts";
 import { withQuery } from "@/shared/api/query";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
@@ -17,7 +24,10 @@ import { installmentError } from "@/features/expenses/lib/installments";
 import { FIELDS_BY_DESTINATION } from "@/features/drafts/lib/draft-form";
 
 // Where each destination is listed, for "Ver" after saving
-function pageOf(fields: DraftFields, cardCode: (id: string | null | undefined) => string | undefined): string {
+function pageOf(
+  fields: DraftFields,
+  cardCode: (id: string | null | undefined) => string | undefined,
+): string {
   switch (fields.destination) {
     case "fixed_cost":
       return "/costos-fijos";
@@ -55,7 +65,9 @@ function NewExpenseDialogView() {
 
   const save = async () => {
     const rules = FIELDS_BY_DESTINATION[fields.destination ?? "daily"];
-    const quotaError = rules?.installment ? installmentError(fields.installment) : undefined;
+    const quotaError = rules?.installment
+      ? installmentError(fields.installment)
+      : undefined;
     if (quotaError) {
       setMissing(["installment"]);
       toast.error(quotaError);
@@ -67,15 +79,23 @@ function NewExpenseDialogView() {
       if (draft && draft.missingFields.length) {
         setMissing(draft.missingFields);
         toast.info("Faltan datos: quedó en Borrador para completarlo.", {
-          action: { label: "Borrador", onClick: () => window.location.assign("/borrador") },
+          action: {
+            label: "Borrador",
+            onClick: () => window.location.assign("/borrador"),
+          },
         });
         return;
       }
       if (draft) await saveDraft.mutateAsync(draft.id);
-      const cardCode = (id: string | null | undefined) => cards.find((card) => card.id === id)?.code ?? undefined;
-      const label = DESTINATION_LABELS[fields.destination ?? "daily"] ?? "Gastos";
+      const cardCode = (id: string | null | undefined) =>
+        cards.find((card) => card.id === id)?.code ?? undefined;
+      const label =
+        DESTINATION_LABELS[fields.destination ?? "daily"] ?? "Gastos";
       toast.success(`Guardado en ${label}`, {
-        action: { label: "Ver", onClick: () => window.location.assign(pageOf(fields, cardCode)) },
+        action: {
+          label: "Ver",
+          onClick: () => window.location.assign(pageOf(fields, cardCode)),
+        },
       });
       close();
     } catch (error) {
@@ -98,9 +118,15 @@ function NewExpenseDialogView() {
       contentClassName="sm:max-w-2xl max-h-[92vh]"
       footer={
         <>
-          <Button variant="outline" onClick={close}>Cancelar</Button>
+          <Button variant="outline" onClick={close}>
+            Cancelar
+          </Button>
           <Button onClick={save} disabled={busy}>
-            {busy ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
+            {busy ? (
+              <LoaderCircle aria-hidden="true" className="animate-spin" />
+            ) : (
+              <Save aria-hidden="true" />
+            )}
             {busy ? "Guardando..." : "Guardar"}
           </Button>
         </>
@@ -108,7 +134,11 @@ function NewExpenseDialogView() {
     >
       <DraftForm value={fields} onChange={setFields} missingFields={missing} />
       <p className="pt-2 text-xs text-muted-foreground">
-        ¿Tienes una captura, un audio o un texto? Usa <a href="/mensajes" className="text-primary underline">Mensajes</a>.
+        ¿Tienes una captura, un audio o un texto? Usa{" "}
+        <a href="/mensajes" className="text-primary underline">
+          Mensajes
+        </a>
+        .
       </p>
     </ResponsiveDialog>
   );

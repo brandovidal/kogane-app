@@ -18,17 +18,34 @@ export const newMessageId = () => crypto.randomUUID();
 
 // Bot replies after a message or a pressed button. "edit" replaces the message whose button was pressed (as Telegram
 // does); the rest are new messages.
-export function applyReplies(messages: ChatMessage[], replies: BotReply[], pressedId?: string): ChatMessage[] {
+export function applyReplies(
+  messages: ChatMessage[],
+  replies: BotReply[],
+  pressedId?: string,
+): ChatMessage[] {
   let next = [...messages];
   for (const reply of replies) {
-    const index = reply.edit && pressedId ? next.findIndex((message) => message.id === pressedId) : -1;
+    const index =
+      reply.edit && pressedId
+        ? next.findIndex((message) => message.id === pressedId)
+        : -1;
     if (index >= 0) {
-      next[index] = { ...next[index], text: reply.text, buttons: reply.buttons };
+      next[index] = {
+        ...next[index],
+        text: reply.text,
+        buttons: reply.buttons,
+      };
       continue;
     }
     next = [
       ...next,
-      { id: newMessageId(), author: "bot", text: reply.text, buttons: reply.buttons, createdAt: new Date().toISOString() },
+      {
+        id: newMessageId(),
+        author: "bot",
+        text: reply.text,
+        buttons: reply.buttons,
+        createdAt: new Date().toISOString(),
+      },
     ];
   }
   return next;
@@ -36,9 +53,7 @@ export function applyReplies(messages: ChatMessage[], replies: BotReply[], press
 
 // The bot only sends <b> and <i> (user text comes escaped): anything else is shown as text, never as HTML
 export function sanitizeBotHtml(html: string): string {
-  return html
-    .replace(/<(?!\/?(b|i)>)/g, "&lt;")
-    .replace(/\n/g, "<br>");
+  return html.replace(/<(?!\/?(b|i)>)/g, "&lt;").replace(/\n/g, "<br>");
 }
 
 export function loadHistory(): ChatMessage[] {
@@ -52,7 +67,10 @@ export function loadHistory(): ChatMessage[] {
 
 export function saveHistory(messages: ChatMessage[]) {
   try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(messages.slice(-HISTORY_LIMIT)));
+    localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify(messages.slice(-HISTORY_LIMIT)),
+    );
   } catch {
     // private window or full storage: the chat works, it just does not remember
   }

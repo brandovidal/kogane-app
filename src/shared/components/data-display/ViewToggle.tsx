@@ -7,9 +7,17 @@ export interface ViewToggleProps {
   onChange: (view: "table" | "cards") => void;
 }
 
-export function ViewToggle({ view: viewProp, value, onChange }: ViewToggleProps) {
+export function ViewToggle({
+  view: viewProp,
+  value,
+  onChange,
+}: ViewToggleProps) {
   const view = value ?? viewProp ?? "table";
-  const option = (mode: "table" | "cards", label: string, Icon: typeof Table2) => (
+  const option = (
+    mode: "table" | "cards",
+    label: string,
+    Icon: typeof Table2,
+  ) => (
     <Button
       type="button"
       variant={view === mode ? "secondary" : "ghost"}

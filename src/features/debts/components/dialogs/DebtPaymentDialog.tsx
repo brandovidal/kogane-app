@@ -9,7 +9,16 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 
 type PaymentKind = "payment" | "prepaid" | "cashback";
 type PaymentScope = "total" | "partial";
@@ -20,16 +29,21 @@ interface DebtPaymentDialogProps {
 }
 
 // A payment towards one installment, with its kind (D114): kogane-api recomputes the balance and the status (D60)
-export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps) {
+export function DebtPaymentDialog({
+  debt,
+  onOpenChange,
+}: DebtPaymentDialogProps) {
   const addPayment = useAddDebtPayment();
   const [amount, setAmount] = useState("");
   const [paidAt, setPaidAt] = useState(toIsoDate(new Date()));
   const [kind, setKind] = useState<PaymentKind>("payment");
   const [scope, setScope] = useState<PaymentScope>("total");
   const [methodId, setMethodId] = useState<string | null>(null);
-  const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
+  const methods =
+    usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
   const method = methods.find((item) => item.id === methodId);
-  const canAmortize = method?.type === "credit_card" && method.supportsAmortization;
+  const canAmortize =
+    method?.type === "credit_card" && method.supportsAmortization;
   const canCashback = method?.type === "credit_card" && method.supportsCashback;
 
   useEffect(() => {
@@ -43,11 +57,19 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
   }, [debt]);
 
   const value = Number(amount);
-  const valid = debt && value > 0 && value <= debt.balance && !!methodId &&
-    (kind !== "payment" || (scope === "total" ? value >= debt.balance - 0.005 : value < debt.balance - 0.005));
+  const valid =
+    debt &&
+    value > 0 &&
+    value <= debt.balance &&
+    !!methodId &&
+    (kind !== "payment" ||
+      (scope === "total"
+        ? value >= debt.balance - 0.005
+        : value < debt.balance - 0.005));
   const changeAmount = (next: string) => {
     setAmount(next);
-    if (debt && kind === "payment") setScope(Number(next) < debt.balance ? "partial" : "total");
+    if (debt && kind === "payment")
+      setScope(Number(next) < debt.balance ? "partial" : "total");
   };
 
   const changeMethod = (next: string) => {
@@ -58,7 +80,20 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
   const handleSave = () => {
     if (!debt || !valid) return;
     addPayment.mutate(
-      { id: debt.id, body: { amount: value, paidAt, kind: kind === "payment" ? scope === "partial" ? "partial" : "payment" : kind, paymentMethodId: methodId } },
+      {
+        id: debt.id,
+        body: {
+          amount: value,
+          paidAt,
+          kind:
+            kind === "payment"
+              ? scope === "partial"
+                ? "partial"
+                : "payment"
+              : kind,
+          paymentMethodId: methodId,
+        },
+      },
       { onSuccess: () => onOpenChange(false) },
     );
   };
@@ -68,13 +103,20 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
       open={!!debt}
       onOpenChange={onOpenChange}
       title="Registrar pago"
-      description={debt ? `${debt.description}${debt.installment ? ` ${debt.installment}` : ""} · ${debt.person.name}` : ""}
+      description={
+        debt
+          ? `${debt.description}${debt.installment ? ` ${debt.installment}` : ""} · ${debt.person.name}`
+          : ""
+      }
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={handleSave} disabled={!valid || addPayment.isPending}>
+          <Button
+            onClick={handleSave}
+            disabled={!valid || addPayment.isPending}
+          >
             Guardar
           </Button>
         </>
@@ -84,7 +126,11 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Aplicación del pago</label>
-            <Select value={scope} disabled={kind !== "payment"} onValueChange={(next) => setScope(next as PaymentScope)}>
+            <Select
+              value={scope}
+              disabled={kind !== "payment"}
+              onValueChange={(next) => setScope(next as PaymentScope)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -99,14 +145,23 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de movimiento</label>
-            <Select value={kind} onValueChange={(next) => setKind(next as PaymentKind)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={kind}
+              onValueChange={(next) => setKind(next as PaymentKind)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Movimiento</SelectLabel>
                   <SelectItem value="payment">Pago habitual</SelectItem>
-                  {canAmortize && <SelectItem value="prepaid">Amortización</SelectItem>}
-                  {canCashback && <SelectItem value="cashback">Cashback</SelectItem>}
+                  {canAmortize && (
+                    <SelectItem value="prepaid">Amortización</SelectItem>
+                  )}
+                  {canCashback && (
+                    <SelectItem value="cashback">Cashback</SelectItem>
+                  )}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -124,32 +179,75 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Monto</label>
-            <Input type="number" step="0.01" value={amount} onChange={(e) => changeAmount(e.target.value)} autoFocus />
-            {debt && <p className="text-xs text-muted-foreground">Saldo: {formatCurrency(debt.balance)}</p>}
+            <Input
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(e) => changeAmount(e.target.value)}
+              autoFocus
+            />
+            {debt && (
+              <p className="text-xs text-muted-foreground">
+                Saldo: {formatCurrency(debt.balance)}
+              </p>
+            )}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Fecha</label>
-            <Input type="date" value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
+            <Input
+              type="date"
+              value={paidAt}
+              onChange={(e) => setPaidAt(e.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Medio de pago <span className="text-destructive">*</span></label>
+            <label className="text-sm font-medium">
+              Medio de pago <span className="text-destructive">*</span>
+            </label>
             <Select value={methodId ?? ""} onValueChange={changeMethod}>
-              <SelectTrigger aria-label="Medio de pago obligatorio"><SelectValue placeholder="Selecciona un medio" /></SelectTrigger>
+              <SelectTrigger aria-label="Medio de pago obligatorio">
+                <SelectValue placeholder="Selecciona un medio" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Tarjetas</SelectLabel>
-                  {methods.filter((method) => method.type === "credit_card").map((method) => <SelectItem key={method.id} value={method.id}><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></SelectItem>)}
+                  {methods
+                    .filter((method) => method.type === "credit_card")
+                    .map((method) => (
+                      <SelectItem key={method.id} value={method.id}>
+                        <PaymentMethodLabel
+                          name={method.name}
+                          type={method.type}
+                          color={method.color}
+                        />
+                      </SelectItem>
+                    ))}
                 </SelectGroup>
                 <SelectSeparator />
                 <SelectGroup>
                   <SelectLabel>Cuentas y otros medios</SelectLabel>
-                  {methods.filter((method) => method.type !== "credit_card").map((method) => <SelectItem key={method.id} value={method.id}><PaymentMethodLabel name={method.name} type={method.type} color={method.color} /></SelectItem>)}
+                  {methods
+                    .filter((method) => method.type !== "credit_card")
+                    .map((method) => (
+                      <SelectItem key={method.id} value={method.id}>
+                        <PaymentMethodLabel
+                          name={method.name}
+                          type={method.type}
+                          color={method.color}
+                        />
+                      </SelectItem>
+                    ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {!methodId && <p className="text-xs text-muted-foreground">Selecciona cómo se realizó el pago. Las opciones especiales se configuran por tarjeta en Cuentas y tarjetas.</p>}
+            {!methodId && (
+              <p className="text-xs text-muted-foreground">
+                Selecciona cómo se realizó el pago. Las opciones especiales se
+                configuran por tarjeta en Cuentas y tarjetas.
+              </p>
+            )}
           </div>
         </div>
       </div>

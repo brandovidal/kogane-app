@@ -10,17 +10,36 @@ import { PaymentMethodSelect } from "@/features/settings/components/PaymentMetho
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 import { useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
-import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
-import { RECURRING_TARGET_LABELS, RECURRING_TARGETS } from "@/features/recurring/constants/recurring";
-import { SUBSCRIPTION_KIND_LABELS, SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS } from "@/features/subscriptions/constants/subscriptions";
+import {
+  CURRENCIES,
+  EXPENSE_TYPE_LABELS,
+  EXPENSE_TYPES,
+} from "@/shared/constants/finance";
+import {
+  RECURRING_TARGET_LABELS,
+  RECURRING_TARGETS,
+} from "@/features/recurring/constants/recurring";
+import {
+  SUBSCRIPTION_KIND_LABELS,
+  SUBSCRIPTION_PERIOD_LABELS,
+  SUBSCRIPTION_PERIODS,
+} from "@/features/subscriptions/constants/subscriptions";
 
 const recurringFormSchema = z
   .object({
     description: z.string().trim().min(1, "Descripción requerida"),
-    amount: z.number({ error: "Monto requerido" }).positive("Monto debe ser positivo"),
+    amount: z
+      .number({ error: "Monto requerido" })
+      .positive("Monto debe ser positivo"),
     currency: z.enum(CURRENCIES),
     targetType: z.string(),
     dayOfMonth: z.number({ error: "Día requerido" }).int().min(1).max(31),
@@ -34,10 +53,13 @@ const recurringFormSchema = z
     supplyNumber: z.string().trim().max(40),
   })
   // A card expense needs its card, like in kogane-api
-  .refine((data) => data.targetType !== "credit_card" || !!data.paymentMethodId, {
-    message: "Elige la tarjeta",
-    path: ["paymentMethodId"],
-  });
+  .refine(
+    (data) => data.targetType !== "credit_card" || !!data.paymentMethodId,
+    {
+      message: "Elige la tarjeta",
+      path: ["paymentMethodId"],
+    },
+  );
 type RecurringForm = z.input<typeof recurringFormSchema>;
 type RecurringValues = z.output<typeof recurringFormSchema>;
 
@@ -64,11 +86,17 @@ interface RecurringDialogProps {
 export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
   const saveRecurring = useSaveExpense(EXPENSE_RESOURCES.recurring);
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<
-    RecurringForm,
-    unknown,
-    RecurringValues
-  >({ resolver: zodResolver(recurringFormSchema), defaultValues: emptyForm });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<RecurringForm, unknown, RecurringValues>({
+    resolver: zodResolver(recurringFormSchema),
+    defaultValues: emptyForm,
+  });
   const targetType = watch("targetType");
   // Shared with people (Netflix a medias): each month the row keeps their part and they get their cobro (P30)
   const [sharedWith, setSharedWith] = useState<DraftFields["sharedWith"]>(null);
@@ -84,7 +112,9 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
     const subscription = rest.targetType === "subscription";
     const shares = sharedWith?.shares.filter((share) => share.personId) ?? [];
     const body = {
-      ...(subscription ? { ...rest, kind, period, supplyNumber: supplyNumber || null } : rest),
+      ...(subscription
+        ? { ...rest, kind, period, supplyNumber: supplyNumber || null }
+        : rest),
       sharedWith: shares.length ? { shares } : null,
     };
     saveRecurring.mutate({ body }, { onSuccess: () => onOpenChange(false) });
@@ -98,30 +128,60 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
       description="Se repite en el día indicado: cada mes, o según su período si es un recurrente"
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={onSubmit} disabled={saveRecurring.isPending}>Crear</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button onClick={onSubmit} disabled={saveRecurring.isPending}>
+            Crear
+          </Button>
         </>
       }
     >
       <form className="space-y-4 py-2" onSubmit={onSubmit}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Descripción *</label>
-          <Input {...register("description")} placeholder="Ej: Alquiler, Gimnasio..." />
-          {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
+          <Input
+            {...register("description")}
+            placeholder="Ej: Alquiler, Gimnasio..."
+          />
+          {errors.description && (
+            <p className="text-xs text-destructive">
+              {errors.description.message}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Monto *</label>
-            <Input type="number" step="0.01" {...register("amount", { valueAsNumber: true })} />
-            {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
+            <Input
+              type="number"
+              step="0.01"
+              {...register("amount", { valueAsNumber: true })}
+            />
+            {errors.amount && (
+              <p className="text-xs text-destructive">
+                {errors.amount.message}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Moneda</label>
-            <Select value={watch("currency")} onValueChange={(v) => setValue("currency", v as RecurringForm["currency"])}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={watch("currency")}
+              onValueChange={(v) =>
+                setValue("currency", v as RecurringForm["currency"])
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                {CURRENCIES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -130,17 +190,35 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo destino *</label>
-            <Select value={targetType} onValueChange={(v) => setValue("targetType", v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={targetType}
+              onValueChange={(v) => setValue("targetType", v)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {RECURRING_TARGETS.map((t) => <SelectItem key={t} value={t}>{RECURRING_TARGET_LABELS[t]}</SelectItem>)}
+                {RECURRING_TARGETS.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {RECURRING_TARGET_LABELS[t]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Día del mes *</label>
-            <Input type="number" min={1} max={31} {...register("dayOfMonth", { valueAsNumber: true })} />
-            {errors.dayOfMonth && <p className="text-xs text-destructive">{errors.dayOfMonth.message}</p>}
+            <Input
+              type="number"
+              min={1}
+              max={31}
+              {...register("dayOfMonth", { valueAsNumber: true })}
+            />
+            {errors.dayOfMonth && (
+              <p className="text-xs text-destructive">
+                {errors.dayOfMonth.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -148,21 +226,39 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Tipo</label>
-              <Select value={watch("kind")} onValueChange={(v) => setValue("kind", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={watch("kind")}
+                onValueChange={(v) => setValue("kind", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(SUBSCRIPTION_KIND_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>{label}</SelectItem>
-                  ))}
+                  {Object.entries(SUBSCRIPTION_KIND_LABELS).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Período</label>
-              <Select value={watch("period")} onValueChange={(v) => setValue("period", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={watch("period")}
+                onValueChange={(v) => setValue("period", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {SUBSCRIPTION_PERIODS.map((p) => <SelectItem key={p} value={p}>{SUBSCRIPTION_PERIOD_LABELS[p]}</SelectItem>)}
+                  {SUBSCRIPTION_PERIODS.map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {SUBSCRIPTION_PERIOD_LABELS[p]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -176,34 +272,69 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Persona *</label>
-            <PersonSelect value={watch("personId")} onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })} />
-            {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
+            <PersonSelect
+              value={watch("personId")}
+              onChange={(id) =>
+                setValue("personId", id ?? "", { shouldValidate: true })
+              }
+            />
+            {errors.personId && (
+              <p className="text-xs text-destructive">
+                {errors.personId.message}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">{targetType === "credit_card" ? "Tarjeta de crédito *" : "Cuenta"}</label>
+            <label className="text-sm font-medium">
+              {targetType === "credit_card" ? "Tarjeta de crédito *" : "Cuenta"}
+            </label>
             <PaymentMethodSelect
               allowEmpty={targetType !== "credit_card"}
               type={targetType === "credit_card" ? "credit_card" : undefined}
               value={watch("paymentMethodId")}
-              onChange={(id) => setValue("paymentMethodId", id, { shouldValidate: true })}
+              onChange={(id) =>
+                setValue("paymentMethodId", id, { shouldValidate: true })
+              }
             />
-            {errors.paymentMethodId && <p className="text-xs text-destructive">{errors.paymentMethodId.message}</p>}
+            {errors.paymentMethodId && (
+              <p className="text-xs text-destructive">
+                {errors.paymentMethodId.message}
+              </p>
+            )}
           </div>
         </div>
 
-        <ShareEditor value={sharedWith} total={watch("amount")} currency={watch("currency")} onChange={setSharedWith} />
+        <ShareEditor
+          value={sharedWith}
+          total={watch("amount")}
+          currency={watch("currency")}
+          onChange={setSharedWith}
+        />
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Categoría</label>
-            <CategorySelect allowEmpty value={watch("categoryId")} onChange={(id) => setValue("categoryId", id)} />
+            <CategorySelect
+              allowEmpty
+              value={watch("categoryId")}
+              onChange={(id) => setValue("categoryId", id)}
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de gasto</label>
-            <Select value={watch("expenseType")} onValueChange={(v) => setValue("expenseType", v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={watch("expenseType")}
+              onValueChange={(v) => setValue("expenseType", v)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {EXPENSE_TYPES.map((t) => <SelectItem key={t} value={t}>{EXPENSE_TYPE_LABELS[t]}</SelectItem>)}
+                {EXPENSE_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {EXPENSE_TYPE_LABELS[t]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

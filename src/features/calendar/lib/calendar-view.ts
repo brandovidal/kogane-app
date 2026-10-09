@@ -26,7 +26,9 @@ export const EVENT_KIND_DOTS: Record<Kind, string> = {
 // What can be marked paid from the web (the same refs as ✅ Pagado of the bot)
 const PAYABLE = ["card_statement", "fixed_cost", "subscription", "debt"];
 export const isPayable = (event: CalendarEvent) =>
-  event.status !== "paid" && event.kind !== "card_close" && PAYABLE.includes(event.refType ?? "");
+  event.status !== "paid" &&
+  event.kind !== "card_close" &&
+  PAYABLE.includes(event.refType ?? "");
 
 // "Pago IO", "Cierre IO", "Préstamo 2/5 · Danery"
 export function eventLabel(event: CalendarEvent): string {
@@ -53,7 +55,9 @@ export function monthGrid(month: number, year: number): GridDay[][] {
 
   return Array.from({ length: weeks }, (_, week) =>
     Array.from({ length: 7 }, (_, weekday) => {
-      const date = new Date(start.getTime() + (week * 7 + weekday) * 86_400_000);
+      const date = new Date(
+        start.getTime() + (week * 7 + weekday) * 86_400_000,
+      );
       return {
         date: date.toISOString().slice(0, 10),
         day: date.getUTCDate(),
@@ -63,14 +67,20 @@ export function monthGrid(month: number, year: number): GridDay[][] {
   );
 }
 
-export function eventsByDay(events: CalendarEvent[]): Map<string, CalendarEvent[]> {
+export function eventsByDay(
+  events: CalendarEvent[],
+): Map<string, CalendarEvent[]> {
   const byDay = new Map<string, CalendarEvent[]>();
-  for (const event of events) byDay.set(event.date, [...(byDay.get(event.date) ?? []), event]);
+  for (const event of events)
+    byDay.set(event.date, [...(byDay.get(event.date) ?? []), event]);
   return byDay;
 }
 
 // First and last day of the grid of that month (what the calendar asks the API)
-export function gridRange(month: number, year: number): { from: string; to: string } {
+export function gridRange(
+  month: number,
+  year: number,
+): { from: string; to: string } {
   const weeks = monthGrid(month, year);
   return { from: weeks[0][0].date, to: weeks[weeks.length - 1][6].date };
 }

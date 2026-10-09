@@ -3,7 +3,11 @@
 // only live piece is the counter of Borrador. Compact mode and remembered groups are CSS and a tiny script (Sidebar)
 import { ChevronDown } from "lucide-react";
 
-import { DEFAULT_OPEN_GROUPS, NAV, SETTINGS_NAV } from "@/shared/constants/navigation";
+import {
+  DEFAULT_OPEN_GROUPS,
+  NAV,
+  SETTINGS_NAV,
+} from "@/shared/constants/navigation";
 import { isActivePath, isGroup } from "@/shared/utils/navigation";
 import { type NavLink } from "@/shared/types/navigation";
 import { NAV_ICONS } from "@/shared/constants/nav-icons";
@@ -28,67 +32,116 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
 ---
 
 <nav class="nav-menu flex-1 space-y-1 overflow-y-auto p-3">
-  {
-    NAV.map((entry) => {
-      if (!isGroup(entry)) {
-        const Icon = NAV_ICONS[entry.icon];
-        return (
-          <a href={entry.href} aria-label={entry.label} data-nav-tooltip-label={entry.label} data-nav-tooltip-description={entry.description} class={linkClass(isCurrent(entry))} aria-current={isCurrent(entry) ? "page" : undefined}>
-            <span class="relative"><Icon className="h-4 w-4" /></span>
-            <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{entry.label}</span>
-          </a>
-        );
-      }
-
-      const GroupIcon = NAV_ICONS[entry.icon];
-      const holdsCurrent = entry.children.some(isCurrent);
-      const open = DEFAULT_OPEN_GROUPS.includes(entry.label) || holdsCurrent;
-      const hasDrafts = entry.children.some((child) => child.badge === "drafts");
+  {NAV.map((entry) => {
+    if (!isGroup(entry)) {
+      const Icon = NAV_ICONS[entry.icon];
       return (
-        <details class="nav-group" data-group={entry.label} data-current={holdsCurrent ? "true" : undefined} open={open}>
-          <summary aria-label={entry.label} data-nav-tooltip-label={entry.label} data-nav-tooltip-description={entry.description} class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}>
-            <GroupIcon className="h-4 w-4" />
-            <span class="nav-label flex-1 text-left">{entry.label}</span>
-            {/* a closed group keeps the counter of Borrador in sight */}
-            {hasDrafts && <span class="nav-summary-badge"><DraftCount client:idle /></span>}
-            <ChevronDown className="nav-chevron h-4 w-4 transition-transform" />
-          </summary>
-          <div class="space-y-1 ml-4 border-l border-sidebar-border pl-2 group-data-[compact=true]/sb:ml-0 group-data-[compact=true]/sb:border-0 group-data-[compact=true]/sb:pl-0">
-            {entry.children.map((child) => {
-              const Icon = NAV_ICONS[child.icon];
-              return (
-                <a href={child.href} aria-label={child.label} data-nav-tooltip-label={child.label} data-nav-tooltip-description={child.description} class={linkClass(isCurrent(child))} aria-current={isCurrent(child) ? "page" : undefined}>
-                  <span class="relative">
-                    <Icon className="h-4 w-4" />
-                    {child.badge === "drafts" && <DraftCount dot client:idle />}
-                  </span>
-                  <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{child.label}</span>
-                  {child.badge === "drafts" && <span class="nav-pill-slot group-data-[compact=true]/sb:hidden"><DraftCount client:idle /></span>}
-                </a>
-              );
-            })}
-          </div>
-        </details>
+        <a
+          href={entry.href}
+          aria-label={entry.label}
+          data-nav-tooltip-label={entry.label}
+          data-nav-tooltip-description={entry.description}
+          class={linkClass(isCurrent(entry))}
+          aria-current={isCurrent(entry) ? "page" : undefined}
+        >
+          <span class="relative">
+            <Icon className="h-4 w-4" />
+          </span>
+          <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">
+            {entry.label}
+          </span>
+        </a>
       );
-    })
-  }
-  <div class="mt-2 border-t border-sidebar-border pt-2">
-    {
-      (() => {
-        const Icon = NAV_ICONS[SETTINGS_NAV.icon];
-        return (
-          <a href={SETTINGS_NAV.href} aria-label={SETTINGS_NAV.label} data-nav-tooltip-label={SETTINGS_NAV.label} data-nav-tooltip-description={SETTINGS_NAV.description} class={linkClass(isCurrent(SETTINGS_NAV))} aria-current={isCurrent(SETTINGS_NAV) ? "page" : undefined}>
-            <span class="relative"><Icon className="h-4 w-4" /></span>
-            <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{SETTINGS_NAV.label}</span>
-          </a>
-        );
-      })()
     }
+
+    const GroupIcon = NAV_ICONS[entry.icon];
+    const holdsCurrent = entry.children.some(isCurrent);
+    const open = DEFAULT_OPEN_GROUPS.includes(entry.label) || holdsCurrent;
+    const hasDrafts = entry.children.some((child) => child.badge === "drafts");
+    return (
+      <details
+        class="nav-group"
+        data-group={entry.label}
+        data-current={holdsCurrent ? "true" : undefined}
+        open={open}
+      >
+        <summary
+          aria-label={entry.label}
+          data-nav-tooltip-label={entry.label}
+          data-nav-tooltip-description={entry.description}
+          class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}
+        >
+          <GroupIcon className="h-4 w-4" />
+          <span class="nav-label flex-1 text-left">{entry.label}</span>
+          {/* a closed group keeps the counter of Borrador in sight */}
+          {hasDrafts && (
+            <span class="nav-summary-badge">
+              <DraftCount client:idle />
+            </span>
+          )}
+          <ChevronDown className="nav-chevron h-4 w-4 transition-transform" />
+        </summary>
+        <div class="space-y-1 ml-4 border-l border-sidebar-border pl-2 group-data-[compact=true]/sb:ml-0 group-data-[compact=true]/sb:border-0 group-data-[compact=true]/sb:pl-0">
+          {entry.children.map((child) => {
+            const Icon = NAV_ICONS[child.icon];
+            return (
+              <a
+                href={child.href}
+                aria-label={child.label}
+                data-nav-tooltip-label={child.label}
+                data-nav-tooltip-description={child.description}
+                class={linkClass(isCurrent(child))}
+                aria-current={isCurrent(child) ? "page" : undefined}
+              >
+                <span class="relative">
+                  <Icon className="h-4 w-4" />
+                  {child.badge === "drafts" && <DraftCount dot client:idle />}
+                </span>
+                <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">
+                  {child.label}
+                </span>
+                {child.badge === "drafts" && (
+                  <span class="nav-pill-slot group-data-[compact=true]/sb:hidden">
+                    <DraftCount client:idle />
+                  </span>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      </details>
+    );
+  })}
+  <div class="mt-2 border-t border-sidebar-border pt-2">
+    {(() => {
+      const Icon = NAV_ICONS[SETTINGS_NAV.icon];
+      return (
+        <a
+          href={SETTINGS_NAV.href}
+          aria-label={SETTINGS_NAV.label}
+          data-nav-tooltip-label={SETTINGS_NAV.label}
+          data-nav-tooltip-description={SETTINGS_NAV.description}
+          class={linkClass(isCurrent(SETTINGS_NAV))}
+          aria-current={isCurrent(SETTINGS_NAV) ? "page" : undefined}
+        >
+          <span class="relative">
+            <Icon className="h-4 w-4" />
+          </span>
+          <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">
+            {SETTINGS_NAV.label}
+          </span>
+        </a>
+      );
+    })()}
   </div>
 </nav>
 
 <style is:global>
   /* the chevron of an open group turns; a closed group shows the counter, an open one shows it on the link */
-  .nav-group[open] > summary .nav-chevron { transform: rotate(180deg); }
-  .nav-group[open] > summary .nav-summary-badge { display: none; }
+  .nav-group[open] > summary .nav-chevron {
+    transform: rotate(180deg);
+  }
+  .nav-group[open] > summary .nav-summary-badge {
+    display: none;
+  }
 </style>

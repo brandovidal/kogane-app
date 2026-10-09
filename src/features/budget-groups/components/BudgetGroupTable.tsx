@@ -19,10 +19,17 @@ interface BudgetGroupTableProps {
   onDelete: (groupId: string) => void;
 }
 
-export function BudgetGroupTable({ groups, onEdit, onDelete }: BudgetGroupTableProps) {
+export function BudgetGroupTable({
+  groups,
+  onEdit,
+  onDelete,
+}: BudgetGroupTableProps) {
   const totalAssigned = groups.reduce((sum, g) => sum + g.assignedAmount, 0);
   const totalSpent = groups.reduce((sum, g) => sum + g.spentAmount, 0);
-  const totalPercentage = groups.reduce((sum, g) => sum + g.group.percentage, 0);
+  const totalPercentage = groups.reduce(
+    (sum, g) => sum + g.group.percentage,
+    0,
+  );
 
   return (
     <Table>
@@ -47,9 +54,15 @@ export function BudgetGroupTable({ groups, onEdit, onDelete }: BudgetGroupTableP
                 {group.name}
               </TableCell>
               <TableCell className="text-center">{group.percentage}%</TableCell>
-              <TableCell className="text-right">{formatCurrency(assignedAmount)}</TableCell>
-              <TableCell className="text-right">{formatCurrency(spentAmount)}</TableCell>
-              <TableCell className={`text-right font-medium ${available < 0 ? "text-red-500" : "text-green-600"}`}>
+              <TableCell className="text-right">
+                {formatCurrency(assignedAmount)}
+              </TableCell>
+              <TableCell className="text-right">
+                {formatCurrency(spentAmount)}
+              </TableCell>
+              <TableCell
+                className={`text-right font-medium ${available < 0 ? "text-red-500" : "text-green-600"}`}
+              >
                 {formatCurrency(available)}
               </TableCell>
               <TableCell className="text-center">
@@ -60,17 +73,32 @@ export function BudgetGroupTable({ groups, onEdit, onDelete }: BudgetGroupTableP
                       className="inline-flex items-center rounded-full px-2 py-0.5 text-xs text-white"
                       style={{ backgroundColor: cat.color }}
                     >
-                      <CategoryLabel name={cat.name} icon={cat.icon} color="white" className="gap-1.5" />
+                      <CategoryLabel
+                        name={cat.name}
+                        icon={cat.icon}
+                        color="white"
+                        className="gap-1.5"
+                      />
                     </span>
                   ))}
                 </div>
               </TableCell>
               <TableCell>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(group.id)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => onEdit(group.id)}
+                  >
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(group.id)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive"
+                    onClick={() => onDelete(group.id)}
+                  >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -82,10 +110,18 @@ export function BudgetGroupTable({ groups, onEdit, onDelete }: BudgetGroupTableP
       <TableFooter>
         <TableRow>
           <TableCell className="font-bold">Total</TableCell>
-          <TableCell className="text-center font-bold">{totalPercentage}%</TableCell>
-          <TableCell className="text-right font-bold">{formatCurrency(totalAssigned)}</TableCell>
-          <TableCell className="text-right font-bold">{formatCurrency(totalSpent)}</TableCell>
-          <TableCell className={`text-right font-bold ${totalAssigned - totalSpent < 0 ? "text-red-500" : "text-green-600"}`}>
+          <TableCell className="text-center font-bold">
+            {totalPercentage}%
+          </TableCell>
+          <TableCell className="text-right font-bold">
+            {formatCurrency(totalAssigned)}
+          </TableCell>
+          <TableCell className="text-right font-bold">
+            {formatCurrency(totalSpent)}
+          </TableCell>
+          <TableCell
+            className={`text-right font-bold ${totalAssigned - totalSpent < 0 ? "text-red-500" : "text-green-600"}`}
+          >
             {formatCurrency(totalAssigned - totalSpent)}
           </TableCell>
           <TableCell />

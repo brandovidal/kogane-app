@@ -13,7 +13,9 @@ export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   collect: "Cobros del mes y atrasados",
 };
 
-export const NOTIFICATION_KINDS = Object.keys(NOTIFICATION_KIND_LABELS) as NotificationKind[];
+export const NOTIFICATION_KINDS = Object.keys(
+  NOTIFICATION_KIND_LABELS,
+) as NotificationKind[];
 
 const LINK_BY_REF: Record<string, string> = {
   fixed_cost: "/costos-fijos",
@@ -34,13 +36,22 @@ const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {
   collect: "/cobros",
 };
 
-export function notificationLink(notification: Pick<AppNotification, "kind" | "refType">): string {
-  return (notification.refType && LINK_BY_REF[notification.refType]) ?? LINK_BY_KIND[notification.kind] ?? "/";
+export function notificationLink(
+  notification: Pick<AppNotification, "kind" | "refType">,
+): string {
+  return (
+    (notification.refType && LINK_BY_REF[notification.refType]) ??
+    LINK_BY_KIND[notification.kind] ??
+    "/"
+  );
 }
 
 // "hace 5 min", "hace 3 h", "ayer", "hace 4 días", then the date
 export function timeAgo(iso: string, now: Date = new Date()): string {
-  const minutes = Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60_000));
+  const minutes = Math.max(
+    0,
+    Math.round((now.getTime() - new Date(iso).getTime()) / 60_000),
+  );
   if (minutes < 1) return "ahora";
   if (minutes < 60) return `hace ${minutes} min`;
   const hours = Math.round(minutes / 60);
@@ -49,6 +60,8 @@ export function timeAgo(iso: string, now: Date = new Date()): string {
   if (days === 1) return "ayer";
   if (days < 7) return `hace ${days} días`;
   // dd/mm of the day in Lima (the ICU of Node and of each browser writes es-PE dates differently)
-  const [, month, day] = new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Lima" }).split("-");
+  const [, month, day] = new Date(iso)
+    .toLocaleDateString("en-CA", { timeZone: "America/Lima" })
+    .split("-");
   return `${day}/${month}`;
 }

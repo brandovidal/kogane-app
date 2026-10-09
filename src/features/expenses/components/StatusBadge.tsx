@@ -1,5 +1,9 @@
 import { Badge } from "@/ui/badge";
-import { PAYMENT_STATUS_DOT_COLORS, PAYMENT_STATUS_LABELS, PAYMENT_STATUS_COLORS } from "@/shared/constants/finance";
+import {
+  PAYMENT_STATUS_DOT_COLORS,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_COLORS,
+} from "@/shared/constants/finance";
 import { cn } from "@/shared/utils/cn";
 
 export interface StatusBadgeProps {
@@ -17,7 +21,10 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps) {
       {PAYMENT_STATUS_DOT_COLORS[status] && (
         <span
           aria-hidden="true"
-          className={cn("size-1.5 rounded-full", PAYMENT_STATUS_DOT_COLORS[status])}
+          className={cn(
+            "size-1.5 rounded-full",
+            PAYMENT_STATUS_DOT_COLORS[status],
+          )}
         />
       )}
       {label ?? PAYMENT_STATUS_LABELS[status] ?? status}

@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { nameById, useCategories, useMe, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
-import { useDeleteExpense, useExpenses, useSaveExpense } from "@/features/expenses/hooks/expenses";
+import {
+  nameById,
+  useCategories,
+  useMe,
+  usePaymentMethods,
+  usePeople,
+} from "@/shared/api/hooks/catalogs";
+import {
+  useDeleteExpense,
+  useExpenses,
+  useSaveExpense,
+} from "@/features/expenses/hooks/expenses";
 import { withQuery } from "@/shared/api/query";
 import { EXPENSE_RESOURCES, type DailyExpense } from "@/shared/api/types";
 import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
@@ -21,7 +31,10 @@ import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
-import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import type {
+  ExpenseFilterKey,
+  ExpenseFilterValues,
+} from "@/features/expenses/types/expense-filters";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { usePeriod } from "@/shared/stores/period.store";
@@ -29,13 +42,24 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "method", "currency", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = [
+  "person",
+  "q",
+  "category",
+  "method",
+  "currency",
+  "type",
+  "shared",
+];
 
 // Día a día ("gastos sin culpa", exp_daily_expenses): what the bot saves most. New ones come from Nuevo gasto or the chat
 function DailyExpenseTableView() {
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
-  const { data: expenses = [], isLoading } = useExpenses(EXPENSE_RESOURCES.daily, { month, year });
+  const { data: expenses = [], isLoading } = useExpenses(
+    EXPENSE_RESOURCES.daily,
+    { month, year },
+  );
   const personName = nameById(usePeople().data);
   const methodName = nameById(usePaymentMethods().data);
   const categories = useCategories().data ?? [];
@@ -49,11 +73,21 @@ function DailyExpenseTableView() {
   const [groupBy, setGroupBy] = useState("none");
   const me = useMe();
 
-  const sorted = applyExpenseFilters(expenses, filters, me).sort((a, b) => b.spentAt.localeCompare(a.spentAt));
+  const sorted = applyExpenseFilters(expenses, filters, me).sort((a, b) =>
+    b.spentAt.localeCompare(a.spentAt),
+  );
   const totals = totalsOf(sorted);
 
   const columns: Column<DailyExpense>[] = [
-    { key: "date", header: "Fecha", cell: (e) => <span className="text-sm text-muted-foreground">{formatDate(e.spentAt)}</span> },
+    {
+      key: "date",
+      header: "Fecha",
+      cell: (e) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(e.spentAt)}
+        </span>
+      ),
+    },
     {
       key: "description",
       header: "Descripción",
@@ -62,9 +96,13 @@ function DailyExpenseTableView() {
         <div>
           <span className="font-medium">{e.description}</span>
           {e.expenseType === "guilty_pleasure" && (
-            <Badge variant="secondary" className="ml-2 text-xs">{EXPENSE_TYPE_LABELS.guilty_pleasure}</Badge>
+            <Badge variant="secondary" className="ml-2 text-xs">
+              {EXPENSE_TYPE_LABELS.guilty_pleasure}
+            </Badge>
           )}
-          {e.merchant && <p className="text-xs text-muted-foreground">{e.merchant}</p>}
+          {e.merchant && (
+            <p className="text-xs text-muted-foreground">{e.merchant}</p>
+          )}
         </div>
       ),
     },
@@ -72,20 +110,44 @@ function DailyExpenseTableView() {
       key: "amount",
       header: "Monto",
       role: "amount",
-      cell: (e) => <CurrencyDisplay amount={e.amount} currency={e.currency} amountInPEN={e.amountInPen} othersShare={e.othersShare} />,
+      cell: (e) => (
+        <CurrencyDisplay
+          amount={e.amount}
+          currency={e.currency}
+          amountInPEN={e.amountInPen}
+          othersShare={e.othersShare}
+        />
+      ),
     },
-    { key: "method", header: "Medio de pago", cell: (e) => <span className="text-sm">{methodName(e.paymentMethodId)}</span> },
+    {
+      key: "method",
+      header: "Medio de pago",
+      cell: (e) => (
+        <span className="text-sm">{methodName(e.paymentMethodId)}</span>
+      ),
+    },
     {
       key: "category",
       header: "Categoría",
       cell: (e) => {
         const category = categories.find((item) => item.id === e.categoryId);
         return category ? (
-          <CategoryLabel name={category.name} icon={category.icon} color={category.color} className="text-sm" />
-        ) : "—";
+          <CategoryLabel
+            name={category.name}
+            icon={category.icon}
+            color={category.color}
+            className="text-sm"
+          />
+        ) : (
+          "—"
+        );
       },
     },
-    { key: "person", header: "Persona", cell: (e) => <span className="text-sm">{personName(e.personId)}</span> },
+    {
+      key: "person",
+      header: "Persona",
+      cell: (e) => <span className="text-sm">{personName(e.personId)}</span>,
+    },
     {
       key: "actions",
       header: "",
@@ -97,7 +159,11 @@ function DailyExpenseTableView() {
           files={{ refType: "expense", refId: e.id }}
           history={{ entity: "exp_daily_expenses", id: e.id }}
           onEdit={() => setEditing(e)}
-          onDuplicate={() => saveExpense.mutate({ body: duplicateBody(EXPENSE_RESOURCES.daily, e) })}
+          onDuplicate={() =>
+            saveExpense.mutate({
+              body: duplicateBody(EXPENSE_RESOURCES.daily, e),
+            })
+          }
           onDelete={() => deleteExpense.mutate(e.id)}
         />
       ),
@@ -110,26 +176,65 @@ function DailyExpenseTableView() {
     <div className="space-y-4">
       <div>
         <div>
-          <p className="text-sm text-muted-foreground">{sorted.length} gastos</p>
+          <p className="text-sm text-muted-foreground">
+            {sorted.length} gastos
+          </p>
           <p className="text-2xl font-bold">{formatCurrency(totals.paid)}</p>
           <OwnPart {...totals} />
         </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <ExpenseFilters fields={FILTERS} value={filters} onChange={setFilters} shown={sorted.length} total={expenses.length} groupBy={groupBy} onGroupByChange={setGroupBy} groupByOptions={[{ value: "person", label: "Por persona" }, { value: "category", label: "Por categoría" }]} />
+        <ExpenseFilters
+          fields={FILTERS}
+          value={filters}
+          onChange={setFilters}
+          shown={sorted.length}
+          total={expenses.length}
+          groupBy={groupBy}
+          onGroupByChange={setGroupBy}
+          groupByOptions={[
+            { value: "person", label: "Por persona" },
+            { value: "category", label: "Por categoría" },
+          ]}
+        />
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <ViewToggle value={view} onChange={setView} />
-          <Button size="sm" onClick={() => openNewExpense({ destination: "daily" })}>
+          <Button
+            size="sm"
+            onClick={() => openNewExpense({ destination: "daily" })}
+          >
             <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
           </Button>
         </div>
       </div>
 
       {sorted.length === 0 ? (
-        <EmptyState description={expenses.length ? "No hay gastos con estos filtros" : "No hay gastos del día a día en este mes"} />
+        <EmptyState
+          description={
+            expenses.length
+              ? "No hay gastos con estos filtros"
+              : "No hay gastos del día a día en este mes"
+          }
+        />
       ) : (
-        <GroupedDataView items={sorted} columns={columns} rowKey={(e) => e.id} view={view} groupBy={groupBy} groupKey={(e, key) => key === "person" ? e.personId ?? "none" : e.categoryId ?? "none"} groupLabel={(key, field) => key === "none" ? "Sin asignar" : field === "person" ? personName(key) : categoryName(key)} />
+        <GroupedDataView
+          items={sorted}
+          columns={columns}
+          rowKey={(e) => e.id}
+          view={view}
+          groupBy={groupBy}
+          groupKey={(e, key) =>
+            key === "person" ? (e.personId ?? "none") : (e.categoryId ?? "none")
+          }
+          groupLabel={(key, field) =>
+            key === "none"
+              ? "Sin asignar"
+              : field === "person"
+                ? personName(key)
+                : categoryName(key)
+          }
+        />
       )}
 
       <ExpenseEditDialog

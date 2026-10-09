@@ -13,7 +13,7 @@ import type {
 import type { DataTableCalculationState } from "./data-table-calculation";
 
 declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<_TData extends RowData, _TValue> {
     label?: string;
     className?: string;
     calculationType?: "number" | "text" | false;
@@ -37,7 +37,10 @@ export interface DataTableBasicProps<T> {
   emptyMessage?: ReactNode;
   footer?: ReactNode;
   calculationStorageKey?: string;
-  calculationDefaults?: Record<string, import("./data-table-calculation").DataTableCalculation>;
+  calculationDefaults?: Record<
+    string,
+    import("./data-table-calculation").DataTableCalculation
+  >;
   calculationState?: DataTableCalculationState;
   rowClassName?: (row: T) => string | undefined;
   rowIsSelected?: (row: T) => boolean;

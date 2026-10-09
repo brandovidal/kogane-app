@@ -23,7 +23,10 @@ function DebtsPageView({ mode }: { mode: DebtsMode }) {
     return (
       <div className="space-y-4">
         <DebtSummaryView month={month} year={year} />
-        <DebtPaymentDialog debt={paying} onOpenChange={(open) => !open && setPaying(undefined)} />
+        <DebtPaymentDialog
+          debt={paying}
+          onOpenChange={(open) => !open && setPaying(undefined)}
+        />
       </div>
     );
   }
@@ -40,8 +43,15 @@ function DebtsPageView({ mode }: { mode: DebtsMode }) {
           </Button>
         }
       />
-      <DebtDialog open={dialogOpen} onOpenChange={setDialogOpen} direction={direction} />
-      <DebtPaymentDialog debt={paying} onOpenChange={(open) => !open && setPaying(undefined)} />
+      <DebtDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        direction={direction}
+      />
+      <DebtPaymentDialog
+        debt={paying}
+        onOpenChange={(open) => !open && setPaying(undefined)}
+      />
     </div>
   );
 }

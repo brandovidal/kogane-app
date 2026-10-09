@@ -1,12 +1,59 @@
 import {
-  AirVent, Baby, Banknote, BanknoteArrowDown, BanknoteArrowUp, Bike,
-  BookOpen, BriefcaseBusiness, Building2, Bus, Car, Cloud, Coffee, Coins,
-  CookingPot, Droplets, Dumbbell, Film, Flame, Fuel, Gamepad2, Gift,
-  GraduationCap, HandCoins, Headphones, HeartPulse, House, Landmark,
-  LandPlot, Laptop, Lightbulb, MonitorPlay, Music, Package, PawPrint,
-  Percent, PiggyBank, Pill, Plane, ReceiptText, ShieldCheck, Shirt,
-  ShoppingBag, ShoppingBasket, Smartphone, SquareParking, Stethoscope,
-  Tags, Ticket, TrainFront, Utensils, WalletCards, Wifi, Wrench, Zap,
+  AirVent,
+  Baby,
+  Banknote,
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  Bike,
+  BookOpen,
+  BriefcaseBusiness,
+  Building2,
+  Bus,
+  Car,
+  Cloud,
+  Coffee,
+  Coins,
+  CookingPot,
+  Droplets,
+  Dumbbell,
+  Film,
+  Flame,
+  Fuel,
+  Gamepad2,
+  Gift,
+  GraduationCap,
+  HandCoins,
+  Headphones,
+  HeartPulse,
+  House,
+  Landmark,
+  LandPlot,
+  Laptop,
+  Lightbulb,
+  MonitorPlay,
+  Music,
+  Package,
+  PawPrint,
+  Percent,
+  PiggyBank,
+  Pill,
+  Plane,
+  ReceiptText,
+  ShieldCheck,
+  Shirt,
+  ShoppingBag,
+  ShoppingBasket,
+  Smartphone,
+  SquareParking,
+  Stethoscope,
+  Tags,
+  Ticket,
+  TrainFront,
+  Utensils,
+  WalletCards,
+  Wifi,
+  Wrench,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -76,7 +123,9 @@ export const CATEGORY_ICON_OPTIONS: CategoryIconOption[] = [
 ];
 
 const aliases: Record<string, string> = { home: "house", tag: "tags" };
-const categoryIcons = new Map(CATEGORY_ICON_OPTIONS.map(({ value, Icon }) => [value, Icon]));
+const categoryIcons = new Map(
+  CATEGORY_ICON_OPTIONS.map(({ value, Icon }) => [value, Icon]),
+);
 
 export const normalizeCategoryIconName = (value?: string | null) =>
   value ? (aliases[value] ?? value) : null;
@@ -86,7 +135,14 @@ export function getCategoryIcon(value?: string | null): LucideIcon {
   return (name && categoryIcons.get(name)) || Tags;
 }
 
-export function matchesCategoryIcon(option: { value: string; label: string }, query: string) {
-  const fold = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase();
+export function matchesCategoryIcon(
+  option: { value: string; label: string },
+  query: string,
+) {
+  const fold = (text: string) =>
+    text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLocaleLowerCase();
   return fold(`${option.label} ${option.value}`).includes(fold(query.trim()));
 }

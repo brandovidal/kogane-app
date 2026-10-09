@@ -4,9 +4,20 @@ import { useSavePaymentMethod } from "@/shared/api/hooks/catalogs";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 
-import { cardBody, cardErrors, emptyCardForm, type CardForm } from "@/features/settings/lib/card-form";
+import {
+  cardBody,
+  cardErrors,
+  emptyCardForm,
+  type CardForm,
+} from "@/features/settings/lib/card-form";
 
 // Nueva tarjeta (D97): credit needs its code and both days, debit its bank; nothing is sent until it is complete
 export function NewCardDialog({ onClose }: { onClose: () => void }) {
@@ -21,11 +32,17 @@ export function NewCardDialog({ onClose }: { onClose: () => void }) {
     if (Object.keys(errors).length) return;
     save.mutate(cardBody(form) as never, { onSuccess: onClose });
   };
-  const field = (key: keyof CardForm, label: string, input: React.ReactNode) => (
+  const field = (
+    key: keyof CardForm,
+    label: string,
+    input: React.ReactNode,
+  ) => (
     <div className="space-y-1.5">
       <label className="text-sm font-medium">{label}</label>
       {input}
-      {tried && errors[key] && <p className="text-xs text-destructive">{errors[key]}</p>}
+      {tried && errors[key] && (
+        <p className="text-xs text-destructive">{errors[key]}</p>
+      )}
     </div>
   );
 
@@ -48,11 +65,23 @@ export function NewCardDialog({ onClose }: { onClose: () => void }) {
     >
       <div className="space-y-4 py-2">
         <div className="grid grid-cols-2 gap-3">
-          {field("name", "Nombre *", <Input value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Ripley, Scotia…" autoFocus />)}
+          {field(
+            "name",
+            "Nombre *",
+            <Input
+              value={form.name}
+              onChange={(e) => set({ name: e.target.value })}
+              placeholder="Ripley, Scotia…"
+              autoFocus
+            />,
+          )}
           {field(
             "type",
             "Tipo",
-            <Select value={form.type} onValueChange={(type) => set({ type: type as CardForm["type"] })}>
+            <Select
+              value={form.type}
+              onValueChange={(type) => set({ type: type as CardForm["type"] })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -65,12 +94,51 @@ export function NewCardDialog({ onClose }: { onClose: () => void }) {
         </div>
         {form.type === "credit_card" ? (
           <div className="grid grid-cols-3 gap-3">
-            {field("code", "Código *", <Input value={form.code} maxLength={10} onChange={(e) => set({ code: e.target.value })} placeholder="RIP" />)}
-            {field("billingCloseDay", "Día de cierre *", <Input inputMode="numeric" value={form.billingCloseDay} onChange={(e) => set({ billingCloseDay: e.target.value.replace(/\D/g, "") })} placeholder="25" />)}
-            {field("paymentDueDay", "Día de pago *", <Input inputMode="numeric" value={form.paymentDueDay} onChange={(e) => set({ paymentDueDay: e.target.value.replace(/\D/g, "") })} placeholder="12" />)}
+            {field(
+              "code",
+              "Código *",
+              <Input
+                value={form.code}
+                maxLength={10}
+                onChange={(e) => set({ code: e.target.value })}
+                placeholder="RIP"
+              />,
+            )}
+            {field(
+              "billingCloseDay",
+              "Día de cierre *",
+              <Input
+                inputMode="numeric"
+                value={form.billingCloseDay}
+                onChange={(e) =>
+                  set({ billingCloseDay: e.target.value.replace(/\D/g, "") })
+                }
+                placeholder="25"
+              />,
+            )}
+            {field(
+              "paymentDueDay",
+              "Día de pago *",
+              <Input
+                inputMode="numeric"
+                value={form.paymentDueDay}
+                onChange={(e) =>
+                  set({ paymentDueDay: e.target.value.replace(/\D/g, "") })
+                }
+                placeholder="12"
+              />,
+            )}
           </div>
         ) : (
-          field("bank", "Banco *", <Input value={form.bank} onChange={(e) => set({ bank: e.target.value })} placeholder="Scotiabank" />)
+          field(
+            "bank",
+            "Banco *",
+            <Input
+              value={form.bank}
+              onChange={(e) => set({ bank: e.target.value })}
+              placeholder="Scotiabank"
+            />,
+          )
         )}
       </div>
     </ResponsiveDialog>

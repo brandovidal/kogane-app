@@ -151,9 +151,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
         )}
         {source === "statement" && (
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              Contraseña del PDF *
-            </label>
+            <label className="text-sm font-medium">Contraseña del PDF *</label>
             <Input
               type="password"
               placeholder="Escribe la contraseña del PDF"
@@ -166,7 +164,8 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
             />
             {passwordMissing && (
               <p className="text-xs text-muted-foreground">
-                La contraseña es necesaria para previsualizar el estado de cuenta.
+                La contraseña es necesaria para previsualizar el estado de
+                cuenta.
               </p>
             )}
             {password && (
@@ -194,7 +193,9 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
         )}
         <Button
           onClick={send}
-          disabled={!files.length || upload.isPending || cardMissing || passwordMissing}
+          disabled={
+            !files.length || upload.isPending || cardMissing || passwordMissing
+          }
         >
           <FileUp className="mr-1 h-4 w-4" />{" "}
           {upload.isPending ? "Leyendo…" : "Previsualizar"}

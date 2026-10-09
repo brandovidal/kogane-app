@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import { shareParts } from "@/features/expenses/lib/shared-expense";
 import { toast } from "sonner";
-import { Check, ImageIcon, Mic, MessageSquare, Pencil, RotateCw, Send, X } from "lucide-react";
+import {
+  Check,
+  ImageIcon,
+  Mic,
+  MessageSquare,
+  Pencil,
+  RotateCw,
+  Send,
+  X,
+} from "lucide-react";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -31,7 +40,9 @@ import { formatDate } from "@/shared/lib/dates";
 import { toDraftBody } from "@/features/drafts/lib/draft-form";
 import { DraftForm } from "./DraftForm";
 
-type Draft = NonNullable<Schemas["DraftListResponseDto"]["data"]>["items"][number];
+type Draft = NonNullable<
+  Schemas["DraftListResponseDto"]["data"]
+>["items"][number];
 
 const FIELD_LABELS: Record<string, string> = {
   destination: "destino",
@@ -73,7 +84,15 @@ function DraftsPageView() {
   );
 }
 
-function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdit: (draft: Draft) => void }) {
+function DraftList({
+  tab,
+  view,
+  onEdit,
+}: {
+  tab: DraftTab;
+  view: ViewMode;
+  onEdit: (draft: Draft) => void;
+}) {
   const { data, isLoading } = useDrafts(tab);
   const personName = nameById(usePeople().data);
   const saveDraft = useSaveDraft();
@@ -83,7 +102,11 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
   if (isLoading) return null;
   const items = data?.items ?? [];
   if (!items.length) {
-    const empty = { review: "Nada pendiente de revisar 🎉", failed: "Nada falló", discarded: "No hay descartados" };
+    const empty = {
+      review: "Nada pendiente de revisar 🎉",
+      failed: "Nada falló",
+      discarded: "No hay descartados",
+    };
     return <EmptyState description={empty[tab]} />;
   }
 
@@ -94,13 +117,20 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
       role: "title",
       cell: (draft) => (
         <div className="min-w-0 space-y-1">
-          <p className="truncate font-medium">{draft.description ?? draft.rawText ?? "Sin descripción"}</p>
+          <p className="truncate font-medium">
+            {draft.description ?? draft.rawText ?? "Sin descripción"}
+          </p>
           {draft.rawText && draft.description && (
-            <p className="line-clamp-2 text-xs italic text-muted-foreground">«{draft.rawText}»</p>
+            <p className="line-clamp-2 text-xs italic text-muted-foreground">
+              «{draft.rawText}»
+            </p>
           )}
           {draft.missingFields.length > 0 && (
             <p className="text-xs text-amber-600 dark:text-amber-400">
-              Falta: {draft.missingFields.map((field) => FIELD_LABELS[field] ?? field).join(", ")}
+              Falta:{" "}
+              {draft.missingFields
+                .map((field) => FIELD_LABELS[field] ?? field)
+                .join(", ")}
             </p>
           )}
         </div>
@@ -112,16 +142,32 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
       role: "amount",
       cell: (draft) => (
         <span className="font-semibold tabular-nums">
-          {draft.amount != null ? formatCurrency(draft.amount, draft.currency ?? "PEN") : "Sin monto"}
+          {draft.amount != null
+            ? formatCurrency(draft.amount, draft.currency ?? "PEN")
+            : "Sin monto"}
         </span>
       ),
     },
     {
       key: "destination",
       header: "Destino",
-      cell: (draft) => <span className="text-sm">{draft.destination ? (DESTINATION_LABELS[draft.destination] ?? draft.destination) : "—"}</span>,
+      cell: (draft) => (
+        <span className="text-sm">
+          {draft.destination
+            ? (DESTINATION_LABELS[draft.destination] ?? draft.destination)
+            : "—"}
+        </span>
+      ),
     },
-    { key: "person", header: "Persona", cell: (draft) => <span className="text-sm">{draft.personId ? personName(draft.personId) : "—"}</span> },
+    {
+      key: "person",
+      header: "Persona",
+      cell: (draft) => (
+        <span className="text-sm">
+          {draft.personId ? personName(draft.personId) : "—"}
+        </span>
+      ),
+    },
     {
       key: "shared",
       header: "Reparto",
@@ -130,7 +176,10 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
           <span className="text-xs text-muted-foreground">
             👥{" "}
             {shareParts(draft.amount, draft.sharedWith.shares)
-              .parts.map((part) => `${personName(part.personId)} ${formatCurrency(part.amount, draft.currency ?? "PEN")} (${part.percent} %)`)
+              .parts.map(
+                (part) =>
+                  `${personName(part.personId)} ${formatCurrency(part.amount, draft.currency ?? "PEN")} (${part.percent} %)`,
+              )
               .join(" · ")}
           </span>
         ) : (
@@ -141,7 +190,9 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
       key: "origin",
       header: "Origen",
       cell: (draft) => {
-        const ChannelIcon = CHANNEL_ICONS[draft.channel as keyof typeof CHANNEL_ICONS] ?? MessageSquare;
+        const ChannelIcon =
+          CHANNEL_ICONS[draft.channel as keyof typeof CHANNEL_ICONS] ??
+          MessageSquare;
         return (
           <span className="inline-flex flex-wrap items-center justify-end gap-2">
             <Badge variant="outline" className="gap-1">
@@ -149,7 +200,10 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
               {formatDate(draft.createdAt)}
             </Badge>
             {draft.inputType !== "text" && draft.inputType !== "manual" && (
-              <MediaLink draftId={draft.id} kind={draft.inputType === "audio" ? "audio" : "image"} />
+              <MediaLink
+                draftId={draft.id}
+                kind={draft.inputType === "audio" ? "audio" : "image"}
+              />
             )}
           </span>
         );
@@ -162,19 +216,39 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
       cell: (draft) => (
         <div className="flex flex-wrap justify-end gap-1">
           {tab === "failed" ? (
-            <Button size="sm" variant="outline" onClick={() => retryDraft.mutate(draft.id)} disabled={retryDraft.isPending}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => retryDraft.mutate(draft.id)}
+              disabled={retryDraft.isPending}
+            >
               <RotateCw className="mr-1 h-3.5 w-3.5" /> Reintentar
             </Button>
           ) : (
-            <Button size="sm" onClick={() => saveDraft.mutate(draft.id)} disabled={draft.missingFields.length > 0 || saveDraft.isPending}>
+            <Button
+              size="sm"
+              onClick={() => saveDraft.mutate(draft.id)}
+              disabled={draft.missingFields.length > 0 || saveDraft.isPending}
+            >
               <Check className="mr-1 h-3.5 w-3.5" /> Guardar
             </Button>
           )}
-          <Button size="sm" variant="outline" aria-label="Editar" onClick={() => onEdit(draft)}>
+          <Button
+            size="sm"
+            variant="outline"
+            aria-label="Editar"
+            onClick={() => onEdit(draft)}
+          >
             <Pencil className="h-3.5 w-3.5" />
           </Button>
           {tab !== "discarded" && (
-            <Button size="sm" variant="ghost" className="text-destructive" aria-label="Descartar" onClick={() => discardDraft.mutate(draft.id)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-destructive"
+              aria-label="Descartar"
+              onClick={() => discardDraft.mutate(draft.id)}
+            >
               <X className="h-3.5 w-3.5" />
             </Button>
           )}
@@ -183,14 +257,29 @@ function DraftList({ tab, view, onEdit }: { tab: DraftTab; view: ViewMode; onEdi
     },
   ];
 
-  return <DataView items={items} columns={columns} rowKey={(draft) => draft.id} view={view} />;
+  return (
+    <DataView
+      items={items}
+      columns={columns}
+      rowKey={(draft) => draft.id}
+      view={view}
+    />
+  );
 }
 
 // The screenshot or voice note lives in R2 (D58): a 10 minute link is asked for only when opened
-function MediaLink({ draftId, kind }: { draftId: string; kind: "image" | "audio" }) {
+function MediaLink({
+  draftId,
+  kind,
+}: {
+  draftId: string;
+  kind: "image" | "audio";
+}) {
   const open = async () => {
     try {
-      const draft = await unwrap(api.GET("/v1/drafts/{id}", { params: { path: { id: draftId } } }));
+      const draft = await unwrap(
+        api.GET("/v1/drafts/{id}", { params: { path: { id: draftId } } }),
+      );
       if (draft.mediaUrl) window.open(draft.mediaUrl, "_blank", "noopener");
       else toast.info("El archivo ya expiró (7 días) o no se guardó.");
     } catch (error) {
@@ -199,13 +288,24 @@ function MediaLink({ draftId, kind }: { draftId: string; kind: "image" | "audio"
   };
   const Icon = kind === "audio" ? Mic : ImageIcon;
   return (
-    <button type="button" onClick={open} className="flex items-center gap-1 text-xs text-primary hover:underline">
-      <Icon className="h-3.5 w-3.5" /> {kind === "audio" ? "Escuchar nota de voz" : "Ver captura"}
+    <button
+      type="button"
+      onClick={open}
+      className="flex items-center gap-1 text-xs text-primary hover:underline"
+    >
+      <Icon className="h-3.5 w-3.5" />{" "}
+      {kind === "audio" ? "Escuchar nota de voz" : "Ver captura"}
     </button>
   );
 }
 
-function DraftEditDialog({ draft, onClose }: { draft?: Draft; onClose: () => void }) {
+function DraftEditDialog({
+  draft,
+  onClose,
+}: {
+  draft?: Draft;
+  onClose: () => void;
+}) {
   const updateDraft = useUpdateDraft();
   const [fields, setFields] = useState<DraftFields>({});
 
@@ -233,7 +333,10 @@ function DraftEditDialog({ draft, onClose }: { draft?: Draft; onClose: () => voi
 
   const save = () => {
     if (!draft) return;
-    updateDraft.mutate({ id: draft.id, body: toDraftBody(fields) }, { onSuccess: onClose });
+    updateDraft.mutate(
+      { id: draft.id, body: toDraftBody(fields) },
+      { onSuccess: onClose },
+    );
   };
 
   return (
@@ -244,12 +347,20 @@ function DraftEditDialog({ draft, onClose }: { draft?: Draft; onClose: () => voi
       description="Queda en Por revisar hasta que lo guardes"
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={save} disabled={updateDraft.isPending}>Guardar cambios</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={save} disabled={updateDraft.isPending}>
+            Guardar cambios
+          </Button>
         </>
       }
     >
-      <DraftForm value={fields} onChange={setFields} missingFields={draft?.missingFields} />
+      <DraftForm
+        value={fields}
+        onChange={setFields}
+        missingFields={draft?.missingFields}
+      />
     </ResponsiveDialog>
   );
 }

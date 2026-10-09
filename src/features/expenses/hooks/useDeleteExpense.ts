@@ -12,10 +12,7 @@ export const useDeleteExpense = (resource: ExpenseResource) =>
         }),
       ),
     {
-      invalidate: [
-        expenseKeys.resource(resource),
-        ["summary"],
-      ],
+      invalidate: [expenseKeys.resource(resource), ["summary"]],
       success: "Eliminado",
     },
   );

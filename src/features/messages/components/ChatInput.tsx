@@ -28,7 +28,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => () => recorderRef.current?.stream.getTracks().forEach((track) => track.stop()), []);
+  useEffect(
+    () => () =>
+      recorderRef.current?.stream.getTracks().forEach((track) => track.stop()),
+    [],
+  );
 
   const send = () => {
     if (disabled) return;
@@ -69,7 +73,10 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       recorder.start();
       setRecording(true);
       // the bot does not read longer notes: stop at the limit
-      setTimeout(() => recorder.state === "recording" && stopRecording(), MAX_AUDIO_SECONDS * 1000);
+      setTimeout(
+        () => recorder.state === "recording" && stopRecording(),
+        MAX_AUDIO_SECONDS * 1000,
+      );
     } catch {
       toast.error("No pude usar el micrófono.");
     }
@@ -87,7 +94,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         <div className="mx-auto mb-2 flex max-w-3xl items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-xs">
           <ImagePlus className="h-3.5 w-3.5" />
           <span className="flex-1 truncate">{image.name}</span>
-          <button type="button" onClick={() => setImage(null)} aria-label="Quitar imagen">
+          <button
+            type="button"
+            onClick={() => setImage(null)}
+            aria-label="Quitar imagen"
+          >
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -119,12 +130,22 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           value={text}
           onChange={(event) => setText(event.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={image ? "Añade un texto opcional (ej: persona dany)..." : "Ej: almuerzo 25 soles con yape"}
+          placeholder={
+            image
+              ? "Añade un texto opcional (ej: persona dany)..."
+              : "Ej: almuerzo 25 soles con yape"
+          }
           disabled={disabled || recording}
           className="max-h-32 min-h-9 flex-1 resize-none rounded-2xl border bg-muted/30 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
         {text.trim() || image ? (
-          <Button size="icon" className="h-9 w-9 shrink-0 rounded-full" onClick={send} disabled={disabled} aria-label="Enviar">
+          <Button
+            size="icon"
+            className="h-9 w-9 shrink-0 rounded-full"
+            onClick={send}
+            disabled={disabled}
+            aria-label="Enviar"
+          >
             <ArrowUp className="h-5 w-5" />
           </Button>
         ) : (
@@ -136,7 +157,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             disabled={disabled}
             aria-label={recording ? "Detener y enviar" : "Grabar nota de voz"}
           >
-            {recording ? <Square className="h-4 w-4" /> : <Mic className="h-5 w-5" />}
+            {recording ? (
+              <Square className="h-4 w-4" />
+            ) : (
+              <Mic className="h-5 w-5" />
+            )}
           </Button>
         )}
       </div>

@@ -18,10 +18,27 @@ const { currentPath } = Astro.props;
   class="group/sb hidden border-r border-sidebar-border bg-sidebar transition-[width] md:flex md:w-64 md:flex-col data-[compact=true]:md:w-16"
 >
   <div class="flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4 group-data-[compact=true]/sb:justify-center group-data-[compact=true]/sb:gap-1 group-data-[compact=true]/sb:px-0">
-    <a href="/" aria-label="Kogane · Inicio" data-nav-tooltip-label="Kogane" data-nav-tooltip-description="Volver a Inicio." class="flex items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring">
-      <img src="/kogane.webp" alt="" class="h-10 w-10 shrink-0 rounded-xl bg-white object-contain p-1 group-data-[compact=true]/sb:hidden" />
-      <span aria-hidden="true" class="hidden size-9 items-center justify-center rounded-xl bg-white text-xl font-bold tracking-tight text-[#101114] group-data-[compact=true]/sb:flex">K</span>
-      <span class="text-lg font-bold text-sidebar-foreground group-data-[compact=true]/sb:hidden">Kogane</span>
+    <a
+      href="/"
+      aria-label="Kogane · Inicio"
+      data-nav-tooltip-label="Kogane"
+      data-nav-tooltip-description="Volver a Inicio."
+      class="flex items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <img
+        src="/kogane.webp"
+        alt=""
+        class="h-10 w-10 shrink-0 rounded-xl bg-white object-contain p-1 group-data-[compact=true]/sb:hidden"
+      />
+      <span
+        aria-hidden="true"
+        class="hidden size-9 items-center justify-center rounded-xl bg-white text-xl font-bold tracking-tight text-[#101114] group-data-[compact=true]/sb:flex"
+      >
+        K
+      </span>
+      <span class="text-lg font-bold text-sidebar-foreground group-data-[compact=true]/sb:hidden">
+        Kogane
+      </span>
     </a>
     <button
       type="button"
@@ -38,58 +55,94 @@ const { currentPath } = Astro.props;
   </div>
   <NavMenu currentPath={currentPath} />
   <div class="hidden shrink-0 border-t border-sidebar-border p-2 group-data-[compact=true]/sb:flex group-data-[compact=true]/sb:justify-center">
-    <button type="button" data-sidebar-toggle data-sidebar-expand aria-label="Expandir menú" data-nav-tooltip-label="Expandir menú" class="inline-flex size-9 items-center justify-center rounded-lg text-sidebar-foreground/70 outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"><PanelLeftOpen className="size-4" /></button>
+    <button
+      type="button"
+      data-sidebar-toggle
+      data-sidebar-expand
+      aria-label="Expandir menú"
+      data-nav-tooltip-label="Expandir menú"
+      class="inline-flex size-9 items-center justify-center rounded-lg text-sidebar-foreground/70 outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <PanelLeftOpen className="size-4" />
+    </button>
   </div>
   <p class="border-t border-sidebar-border px-4 py-2 text-xs text-sidebar-foreground/60 group-data-[compact=true]/sb:hidden">
-    <kbd class="rounded border px-1">Ctrl</kbd> + <kbd class="rounded border px-1">K</kbd> para buscar
+    <kbd class="rounded border px-1">Ctrl</kbd> +{" "}
+    <kbd class="rounded border px-1">K</kbd> para buscar
   </p>
 </aside>
 
 <script is:inline>
   (function () {
-    var COMPACT_KEY = "kogane:sidebar-compact";
+    const COMPACT_KEY = "kogane:sidebar-compact";
     // v2: the menu of D80 (Registrar); an older saved state would leave it closed
-    var GROUPS_KEY = "kogane:nav-open:v2";
-    var aside = document.querySelector("[data-sidebar]");
+    const GROUPS_KEY = "kogane:nav-open:v2";
+    const aside = document.querySelector("[data-sidebar]");
     if (!aside) return;
-    var groups = aside.querySelectorAll("details[data-group]");
-    var read = function (key) {
-      try { return localStorage.getItem(key); } catch (e) { return null; }
+    const groups = aside.querySelectorAll("details[data-group]");
+    const read = function (key) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
     };
-    var write = function (key, value) {
-      try { localStorage.setItem(key, value); } catch (e) { /* not remembered */ }
+    const write = function (key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch {
+        /* not remembered */
+      }
     };
     // Nothing remembered yet: the groups the page opened (Registrar and the one of the page). Otherwise the remembered
     // ones, plus the group of the current page, which always opens
-    var stored = read(GROUPS_KEY);
-    var saved = [];
-    try { saved = JSON.parse(stored || "[]") || []; } catch (e) { saved = []; }
-    var opened = [];
-    var current = [];
+    const stored = read(GROUPS_KEY);
+    let saved = [];
+    try {
+      saved = JSON.parse(stored || "[]") || [];
+    } catch {
+      saved = [];
+    }
+    const opened = [];
+    const current = [];
     groups.forEach(function (group) {
       if (group.open) opened.push(group.dataset.group);
       if (group.dataset.current === "true") current.push(group.dataset.group);
     });
-    var openGroups = stored === null
-      ? opened
-      : saved.concat(current.filter(function (label) { return saved.indexOf(label) < 0; }));
+    let openGroups =
+      stored === null
+        ? opened
+        : saved.concat(
+            current.filter(function (label) {
+              return saved.indexOf(label) < 0;
+            }),
+          );
 
     // A compact menu shows every link (icons only); leaving it brings the remembered groups back
-    var apply = function (compact) {
+    const apply = function (compact) {
       aside.dataset.compact = compact ? "true" : "false";
-      aside.querySelectorAll("[data-sidebar-toggle]").forEach(function (button) {
-        button.setAttribute("aria-label", compact ? "Expandir menú" : "Compactar menú");
-        button.setAttribute("aria-expanded", compact ? "false" : "true");
+      aside
+        .querySelectorAll("[data-sidebar-toggle]")
+        .forEach(function (button) {
+          button.setAttribute(
+            "aria-label",
+            compact ? "Expandir menú" : "Compactar menú",
+          );
+          button.setAttribute("aria-expanded", compact ? "false" : "true");
+        });
+      groups.forEach(function (group) {
+        group.open = compact || openGroups.indexOf(group.dataset.group) >= 0;
       });
-      groups.forEach(function (group) { group.open = compact || openGroups.indexOf(group.dataset.group) >= 0; });
     };
     apply(read(COMPACT_KEY) === "1");
 
     groups.forEach(function (group) {
       group.addEventListener("toggle", function () {
         if (aside.dataset.compact === "true") return;
-        var label = group.dataset.group;
-        openGroups = openGroups.filter(function (item) { return item !== label; });
+        const label = group.dataset.group;
+        openGroups = openGroups.filter(function (item) {
+          return item !== label;
+        });
         if (group.open) openGroups.push(label);
         write(GROUPS_KEY, JSON.stringify(openGroups));
       });
@@ -97,10 +150,12 @@ const { currentPath } = Astro.props;
 
     aside.querySelectorAll("[data-sidebar-toggle]").forEach(function (toggle) {
       toggle.addEventListener("click", function () {
-        var compact = aside.dataset.compact !== "true";
+        const compact = aside.dataset.compact !== "true";
         write(COMPACT_KEY, compact ? "1" : "0");
         apply(compact);
-        var visibleToggle = aside.querySelector(compact ? "[data-sidebar-expand]" : "[data-sidebar-collapse]");
+        const visibleToggle = aside.querySelector(
+          compact ? "[data-sidebar-expand]" : "[data-sidebar-collapse]",
+        );
         if (visibleToggle) visibleToggle.focus();
       });
     });

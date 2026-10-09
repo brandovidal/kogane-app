@@ -5,7 +5,10 @@ export type { CatalogSelectProps, CatalogOption } from "./catalog-select";
 export type { CsvExportData } from "./csv-export";
 export type { ViewMode, Column, DataViewProps } from "./data-view";
 export type { DataViewSummary } from "./data-view";
-export type { DataTableCalculation, DataTableCalculationSelection } from "./data-table-calculation";
+export type {
+  DataTableCalculation,
+  DataTableCalculationSelection,
+} from "./data-table-calculation";
 export type {
   NavIcon,
   NavLink,

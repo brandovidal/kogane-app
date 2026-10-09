@@ -5,6 +5,7 @@ import { buildCreditCardSummaries } from "../services/dashboard.service";
 
 export function useCreditCardSummaries(month: number, year: number) {
   const cards = useCreditCards().data ?? [];
-  const cardExpenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
+  const cardExpenses =
+    useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
   return buildCreditCardSummaries(cards, cardExpenses);
 }

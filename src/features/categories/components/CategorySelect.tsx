@@ -4,6 +4,21 @@ import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
 import { CategoryLabel } from "./CategoryLabel";
 
 export function CategorySelect(props: CatalogSelectProps) {
-  const options = (useCategories().data ?? []).map((category) => ({ ...category, content: <CategoryLabel name={category.name} icon={category.icon} color={category.color} /> }));
-  return <CatalogSelectOptions placeholder="Selecciona categoría" {...props} options={options} />;
+  const options = (useCategories().data ?? []).map((category) => ({
+    ...category,
+    content: (
+      <CategoryLabel
+        name={category.name}
+        icon={category.icon}
+        color={category.color}
+      />
+    ),
+  }));
+  return (
+    <CatalogSelectOptions
+      placeholder="Selecciona categoría"
+      {...props}
+      options={options}
+    />
+  );
 }

@@ -1,7 +1,10 @@
 import { ImageIcon, Mic } from "lucide-react";
 import { Button } from "@/ui/button";
 import { cn } from "@/shared/utils/cn";
-import { sanitizeBotHtml, type ChatMessage } from "@/features/messages/lib/chat";
+import {
+  sanitizeBotHtml,
+  type ChatMessage,
+} from "@/features/messages/lib/chat";
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -18,22 +21,33 @@ export function MessageBubble({ message, onPress, busy }: MessageBubbleProps) {
       <div
         className={cn(
           "max-w-[85%] rounded-2xl px-4 py-2 text-sm shadow-sm sm:max-w-[70%]",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
+          isUser
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-foreground",
           message.failed && "border border-destructive",
         )}
       >
         {message.attachment && (
           <div className="mb-1 flex items-center gap-1 text-xs opacity-80">
-            {message.attachment === "image" ? <ImageIcon className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+            {message.attachment === "image" ? (
+              <ImageIcon className="h-3.5 w-3.5" />
+            ) : (
+              <Mic className="h-3.5 w-3.5" />
+            )}
             {message.attachment === "image" ? "Imagen" : "Nota de voz"}
           </div>
         )}
         {isUser ? (
           <p className="whitespace-pre-wrap break-words">{message.text}</p>
         ) : (
-          <p className="break-words" dangerouslySetInnerHTML={{ __html: sanitizeBotHtml(message.text) }} />
+          <p
+            className="break-words"
+            dangerouslySetInnerHTML={{ __html: sanitizeBotHtml(message.text) }}
+          />
         )}
-        {message.failed && <p className="mt-1 text-xs text-destructive">No se pudo enviar</p>}
+        {message.failed && (
+          <p className="mt-1 text-xs text-destructive">No se pudo enviar</p>
+        )}
 
         {message.buttons?.length ? (
           <div className="mt-2 space-y-1">

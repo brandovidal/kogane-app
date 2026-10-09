@@ -6,7 +6,6 @@ import {
   CircleCheck,
   FileText,
   ListFilter,
-  ReceiptText,
   Tags,
   UserRound,
   WalletCards,
@@ -14,7 +13,6 @@ import {
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
-import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { FormField } from "@/shared/components/forms/FormField";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
@@ -223,13 +221,14 @@ export function FixedCostGeneralSection() {
                 onChange={(status) => {
                   if (status) setValue("paymentStatus", status);
                 }}
-                options={groupPaymentStatuses(FIXED_COST_STATUSES).flatMap((group) =>
-                  group.options.map((status) => ({
-                    id: status,
-                    name: PAYMENT_STATUS_LABELS[status] ?? status,
-                    group: group.label,
-                    content: <StatusBadge status={status} />,
-                  })),
+                options={groupPaymentStatuses(FIXED_COST_STATUSES).flatMap(
+                  (group) =>
+                    group.options.map((status) => ({
+                      id: status,
+                      name: PAYMENT_STATUS_LABELS[status] ?? status,
+                      group: group.label,
+                      content: <StatusBadge status={status} />,
+                    })),
                 )}
               />
             </FormField>

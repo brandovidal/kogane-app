@@ -12,7 +12,13 @@ import { getFileIcon } from "@/shared/lib/file-icons";
 import { Button } from "@/ui/button";
 import type { AttachmentPreview } from "../types/attachment-preview";
 
-export function AttachmentPreviewMedia({ file, active = true }: { file: AttachmentPreview; active?: boolean }) {
+export function AttachmentPreviewMedia({
+  file,
+  active = true,
+}: {
+  file: AttachmentPreview;
+  active?: boolean;
+}) {
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
@@ -31,12 +37,26 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
   if (!file.url || (!isImage && !isPdf)) {
     return (
       <div className="flex h-full min-h-64 flex-col items-center justify-center gap-4 px-6 text-center">
-        <span className="flex size-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><Icon className="size-8" aria-hidden="true" /></span>
+        <span className="flex size-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+          <Icon className="size-8" aria-hidden="true" />
+        </span>
         <div className="space-y-1.5">
-          <h3 className="font-semibold">No hay vista previa para este tipo de archivo</h3>
-          <p className="max-w-md text-sm text-muted-foreground">Los archivos {file.name.split(".").pop()?.toLowerCase()} no se pueden mostrar aquí. Descárgalo para abrirlo en tu equipo.</p>
+          <h3 className="font-semibold">
+            No hay vista previa para este tipo de archivo
+          </h3>
+          <p className="max-w-md text-sm text-muted-foreground">
+            Los archivos {file.name.split(".").pop()?.toLowerCase()} no se
+            pueden mostrar aquí. Descárgalo para abrirlo en tu equipo.
+          </p>
         </div>
-        {file.url && <Button asChild><a href={file.url} download={file.name}><FileDown aria-hidden="true" />Descargar ({formatBytes(file.sizeBytes)})</a></Button>}
+        {file.url && (
+          <Button asChild>
+            <a href={file.url} download={file.name}>
+              <FileDown aria-hidden="true" />
+              Descargar ({formatBytes(file.sizeBytes)})
+            </a>
+          </Button>
+        )}
       </div>
     );
   }
@@ -44,14 +64,27 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
   if (failed) {
     return (
       <div className="flex h-full min-h-64 flex-col items-center justify-center gap-4 px-6 text-center">
-        <span className="flex size-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive"><AlertCircle className="size-8" aria-hidden="true" /></span>
+        <span className="flex size-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+          <AlertCircle className="size-8" aria-hidden="true" />
+        </span>
         <div className="space-y-1.5">
           <h3 className="font-semibold">No pudimos cargar el archivo</h3>
-          <p className="max-w-md text-sm text-muted-foreground">Revisa tu conexión e inténtalo de nuevo. Si el problema sigue, descárgalo directamente.</p>
+          <p className="max-w-md text-sm text-muted-foreground">
+            Revisa tu conexión e inténtalo de nuevo. Si el problema sigue,
+            descárgalo directamente.
+          </p>
         </div>
         <div className="flex flex-wrap justify-center gap-2">
-          <Button onClick={retry}><RotateCw aria-hidden="true" />Reintentar</Button>
-          <Button asChild variant="outline"><a href={file.url} download={file.name}><FileDown aria-hidden="true" />Descargar</a></Button>
+          <Button onClick={retry}>
+            <RotateCw aria-hidden="true" />
+            Reintentar
+          </Button>
+          <Button asChild variant="outline">
+            <a href={file.url} download={file.name}>
+              <FileDown aria-hidden="true" />
+              Descargar
+            </a>
+          </Button>
         </div>
       </div>
     );
@@ -59,7 +92,18 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
 
   return (
     <div className="relative flex h-full min-h-64 items-center justify-center overflow-hidden">
-      {loading && <div role="status" className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 text-muted-foreground"><LoaderCircle className="size-8 animate-spin text-brand" aria-hidden="true" /><span className="text-sm">Cargando vista previa…</span></div>}
+      {loading && (
+        <div
+          role="status"
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 text-muted-foreground"
+        >
+          <LoaderCircle
+            className="size-8 animate-spin text-brand"
+            aria-hidden="true"
+          />
+          <span className="text-sm">Cargando vista previa…</span>
+        </div>
+      )}
       {isImage ? (
         <img
           key={attempt}
@@ -68,7 +112,10 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
           className="max-h-full max-w-full select-none object-contain transition-transform duration-150"
           style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
           onLoad={() => setLoading(false)}
-          onError={() => { setLoading(false); setFailed(true); }}
+          onError={() => {
+            setLoading(false);
+            setFailed(true);
+          }}
         />
       ) : active ? (
         <iframe
@@ -77,16 +124,62 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
           title={`Vista previa de ${file.name}`}
           className="h-full w-full bg-white"
           onLoad={() => setLoading(false)}
-          onError={() => { setLoading(false); setFailed(true); }}
+          onError={() => {
+            setLoading(false);
+            setFailed(true);
+          }}
         />
       ) : null}
       {isImage && !loading && (
         <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-white/10 bg-neutral-900/90 p-1.5 shadow-lg backdrop-blur">
-          <Button type="button" size="icon-sm" variant="ghost" aria-label="Alejar imagen" title="Alejar" disabled={scale <= 0.5} onClick={() => setScale((value) => Math.max(0.5, value - 0.25))}><ZoomOut aria-hidden="true" /></Button>
-          <span className="min-w-12 text-center text-xs tabular-nums text-white/70">{Math.round(scale * 100)}%</span>
-          <Button type="button" size="icon-sm" variant="ghost" aria-label="Acercar imagen" title="Acercar" disabled={scale >= 3} onClick={() => setScale((value) => Math.min(3, value + 0.25))}><ZoomIn aria-hidden="true" /></Button>
-          <Button type="button" size="icon-sm" variant="ghost" aria-label="Rotar imagen" title="Rotar" onClick={() => setRotation((value) => (value + 90) % 360)}><RotateCw aria-hidden="true" /></Button>
-          <Button type="button" size="icon-sm" variant="ghost" aria-label="Ajustar imagen" title="Ajustar" onClick={() => { setScale(1); setRotation(0); }}><RotateCcw aria-hidden="true" /></Button>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            aria-label="Alejar imagen"
+            title="Alejar"
+            disabled={scale <= 0.5}
+            onClick={() => setScale((value) => Math.max(0.5, value - 0.25))}
+          >
+            <ZoomOut aria-hidden="true" />
+          </Button>
+          <span className="min-w-12 text-center text-xs tabular-nums text-white/70">
+            {Math.round(scale * 100)}%
+          </span>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            aria-label="Acercar imagen"
+            title="Acercar"
+            disabled={scale >= 3}
+            onClick={() => setScale((value) => Math.min(3, value + 0.25))}
+          >
+            <ZoomIn aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            aria-label="Rotar imagen"
+            title="Rotar"
+            onClick={() => setRotation((value) => (value + 90) % 360)}
+          >
+            <RotateCw aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            aria-label="Ajustar imagen"
+            title="Ajustar"
+            onClick={() => {
+              setScale(1);
+              setRotation(0);
+            }}
+          >
+            <RotateCcw aria-hidden="true" />
+          </Button>
         </div>
       )}
     </div>

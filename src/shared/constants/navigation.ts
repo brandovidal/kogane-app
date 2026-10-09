@@ -21,7 +21,8 @@ export const NAV: NavEntry[] = [
       {
         href: "/importacion",
         label: "Importación",
-        description: "Importa archivos de Notion y reconoce estados de cuenta en PDF.",
+        description:
+          "Importa archivos de Notion y reconoce estados de cuenta en PDF.",
         icon: "scan-text",
       },
       {

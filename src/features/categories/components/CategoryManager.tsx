@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useCategories, useDeleteCategory } from "@/shared/api/hooks/catalogs";
 import type { Category } from "@/shared/api/types";
-import { useCategoryBudgets, useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/features/categories/hooks/category-budgets";
+import {
+  useCategoryBudgets,
+  useDeleteCategoryBudget,
+  useSaveCategoryBudget,
+  type CategoryBudgetLine,
+} from "@/features/categories/hooks/category-budgets";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
@@ -24,10 +29,14 @@ function CategoryManagerView() {
   const selectedYear = usePeriod((s) => s.year);
   const categories = useCategories().data ?? [];
   const lines = useCategoryBudgets(selectedMonth, selectedYear).data ?? [];
-  const [limitOf, setLimitOf] = useState<{ category: Category; line?: CategoryBudgetLine } | undefined>();
+  const [limitOf, setLimitOf] = useState<
+    { category: Category; line?: CategoryBudgetLine } | undefined
+  >();
   const deleteCategory = useDeleteCategory();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | undefined>();
+  const [editingCategory, setEditingCategory] = useState<
+    Category | undefined
+  >();
 
   return (
     <div className="space-y-6">
@@ -35,7 +44,15 @@ function CategoryManagerView() {
         <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
           <Tags className="size-4" /> {categories.length} categorías
         </p>
-        <Button size="sm" onClick={() => { setEditingCategory(undefined); setDialogOpen(true); }}><Plus className="mr-1 h-4 w-4" /> Nueva categoría</Button>
+        <Button
+          size="sm"
+          onClick={() => {
+            setEditingCategory(undefined);
+            setDialogOpen(true);
+          }}
+        >
+          <Plus className="mr-1 h-4 w-4" /> Nueva categoría
+        </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -60,20 +77,38 @@ function CategoryManagerView() {
                       variant="ghost"
                       size="icon"
                       className="h-7 w-7"
-                      aria-label={cat.isDefault ? `Cambiar icono de ${cat.name}` : `Editar ${cat.name}`}
-                      title={cat.isDefault ? "Cambiar icono" : "Editar categoría"}
-                      onClick={() => { setEditingCategory(cat); setDialogOpen(true); }}
+                      aria-label={
+                        cat.isDefault
+                          ? `Cambiar icono de ${cat.name}`
+                          : `Editar ${cat.name}`
+                      }
+                      title={
+                        cat.isDefault ? "Cambiar icono" : "Editar categoría"
+                      }
+                      onClick={() => {
+                        setEditingCategory(cat);
+                        setDialogOpen(true);
+                      }}
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     {!cat.isDefault && (
                       <>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteCategory.mutate(cat.id)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-destructive"
+                          onClick={() => deleteCategory.mutate(cat.id)}
+                        >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </>
                     )}
-                    {cat.isDefault && <Badge variant="outline" className="text-xs">Default</Badge>}
+                    {cat.isDefault && (
+                      <Badge variant="outline" className="text-xs">
+                        Default
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -83,7 +118,8 @@ function CategoryManagerView() {
                     <div className="flex justify-between text-sm">
                       <span>Gastado: {formatCurrency(spent)}</span>
                       <span className="text-muted-foreground">
-                        de {formatCurrency(limit)} {line?.limitMonthOnly ? "(solo este mes)" : "/ mes"}
+                        de {formatCurrency(limit)}{" "}
+                        {line?.limitMonthOnly ? "(solo este mes)" : "/ mes"}
                       </span>
                     </div>
                     <Progress
@@ -98,14 +134,22 @@ function CategoryManagerView() {
                     )}
                     {isNearLimit && (
                       <p className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-                        <AlertTriangle className="h-3 w-3" /> {Math.round(percent)} % del límite
+                        <AlertTriangle className="h-3 w-3" />{" "}
+                        {Math.round(percent)} % del límite
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="text-xs text-muted-foreground">Gastado: {formatCurrency(spent)} · sin límite</p>
+                  <p className="text-xs text-muted-foreground">
+                    Gastado: {formatCurrency(spent)} · sin límite
+                  </p>
                 )}
-                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setLimitOf({ category: cat, line })}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setLimitOf({ category: cat, line })}
+                >
                   {limit != null ? "Editar límite" : "Poner límite"}
                 </Button>
               </CardContent>
@@ -150,10 +194,15 @@ function LimitDialog({
 }) {
   const save = useSaveCategoryBudget();
   const remove = useDeleteCategoryBudget();
-  const [limit, setLimit] = useState(line?.limit != null ? String(line.limit) : "");
-  const [threshold, setThreshold] = useState(String(line?.alertThreshold ?? 80));
+  const [limit, setLimit] = useState(
+    line?.limit != null ? String(line.limit) : "",
+  );
+  const [threshold, setThreshold] = useState(
+    String(line?.alertThreshold ?? 80),
+  );
   const [monthOnly, setMonthOnly] = useState(line?.limitMonthOnly ?? false);
-  const valid = Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100;
+  const valid =
+    Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100;
 
   const submit = () =>
     save.mutate(
@@ -175,26 +224,49 @@ function LimitDialog({
       footer={
         <>
           {line?.budgetId && (
-            <Button variant="ghost" className="mr-auto text-destructive" onClick={() => remove.mutate(line.budgetId as string, { onSuccess: onClose })}>
+            <Button
+              variant="ghost"
+              className="mr-auto text-destructive"
+              onClick={() =>
+                remove.mutate(line.budgetId as string, { onSuccess: onClose })
+              }
+            >
               Quitar límite
             </Button>
           )}
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={submit} disabled={!valid || save.isPending}>Guardar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={submit} disabled={!valid || save.isPending}>
+            Guardar
+          </Button>
         </>
       }
     >
       <div className="space-y-3">
         <label className="block space-y-1 text-sm">
           <span className="font-medium">Límite mensual (S/)</span>
-          <Input type="number" min="0" step="0.01" value={limit} onChange={(e) => setLimit(e.target.value)} />
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            value={limit}
+            onChange={(e) => setLimit(e.target.value)}
+          />
         </label>
         <label className="block space-y-1 text-sm">
           <span className="font-medium">Alerta al (%)</span>
-          <Input type="number" min="1" max="100" value={threshold} onChange={(e) => setThreshold(e.target.value)} />
+          <Input
+            type="number"
+            min="1"
+            max="100"
+            value={threshold}
+            onChange={(e) => setThreshold(e.target.value)}
+          />
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <Switch checked={monthOnly} onCheckedChange={setMonthOnly} /> Solo este mes (si no, para todos los meses)
+          <Switch checked={monthOnly} onCheckedChange={setMonthOnly} /> Solo
+          este mes (si no, para todos los meses)
         </label>
       </div>
     </ResponsiveDialog>

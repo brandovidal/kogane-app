@@ -33,39 +33,51 @@ export function FixedCostNotesSection({
   uploadingAttachmentIds: ReadonlySet<string>;
   onInvalidSavedUploadsChange: (count: number) => void;
 }) {
-  const [attachmentKind, setAttachmentKind] = useState<Attachment["kind"]>("boleta");
-  const [filterKind, setFilterKind] = useState<Attachment["kind"] | "all">("all");
-  const savedAttachments = useAttachments("fixed_cost", fixedCostId ?? "", { enabled: !!fixedCostId });
+  const [attachmentKind, setAttachmentKind] =
+    useState<Attachment["kind"]>("boleta");
+  const [filterKind, setFilterKind] = useState<Attachment["kind"] | "all">(
+    "all",
+  );
+  const savedAttachments = useAttachments("fixed_cost", fixedCostId ?? "", {
+    enabled: !!fixedCostId,
+  });
   const savedFiles = savedAttachments.data ?? [];
-  const attachmentKinds = Object.keys(ATTACHMENT_KIND_LABELS) as Attachment["kind"][];
+  const attachmentKinds = Object.keys(
+    ATTACHMENT_KIND_LABELS,
+  ) as Attachment["kind"][];
   const totalFiles = savedFiles.length + pendingAttachments.length;
   const countForKind = (kind: Attachment["kind"] | "all") =>
     kind === "all"
       ? totalFiles
-      : savedFiles.filter((file) => file.kind === kind).length + pendingAttachments.filter((file) => file.kind === kind).length;
-  const filterToolbar = totalFiles > 0 ? (
-    <div className="flex flex-wrap items-center gap-1 border-t border-border/70 pt-3" aria-label="Filtrar archivos por tipo">
-      {(["all", ...attachmentKinds] as const).map((kind) => {
-        const count = countForKind(kind);
-        if (kind !== "all" && count === 0) return null;
-        const selected = filterKind === kind;
-        return (
-          <Button
-            key={kind}
-            type="button"
-            size="sm"
-            variant={selected ? "secondary" : "ghost"}
-            className="h-7 gap-1.5 px-2 text-xs"
-            onClick={() => setFilterKind(kind)}
-            aria-pressed={selected}
-          >
-            {kind === "all" ? "Todos" : ATTACHMENT_KIND_LABELS[kind]}
-            <span className="text-muted-foreground">{count}</span>
-          </Button>
-        );
-      })}
-    </div>
-  ) : null;
+      : savedFiles.filter((file) => file.kind === kind).length +
+        pendingAttachments.filter((file) => file.kind === kind).length;
+  const filterToolbar =
+    totalFiles > 0 ? (
+      <div
+        className="flex flex-wrap items-center gap-1 border-t border-border/70 pt-3"
+        aria-label="Filtrar archivos por tipo"
+      >
+        {(["all", ...attachmentKinds] as const).map((kind) => {
+          const count = countForKind(kind);
+          if (kind !== "all" && count === 0) return null;
+          const selected = filterKind === kind;
+          return (
+            <Button
+              key={kind}
+              type="button"
+              size="sm"
+              variant={selected ? "secondary" : "ghost"}
+              className="h-7 gap-1.5 px-2 text-xs"
+              onClick={() => setFilterKind(kind)}
+              aria-pressed={selected}
+            >
+              {kind === "all" ? "Todos" : ATTACHMENT_KIND_LABELS[kind]}
+              <span className="text-muted-foreground">{count}</span>
+            </Button>
+          );
+        })}
+      </div>
+    ) : null;
   const { register, getValues, setValue } = useFormContext<
     FixedCostForm,
     unknown,
@@ -93,10 +105,18 @@ export function FixedCostNotesSection({
       <section className="space-y-3 rounded-xl border border-border/80 bg-card/40 p-3 sm:p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold"><FieldLabel icon={Paperclip}>Archivos</FieldLabel></h3>
-            <p className="mt-1 text-xs text-muted-foreground">Respaldo del gasto: boletas, recibos y contratos.</p>
+            <h3 className="text-sm font-semibold">
+              <FieldLabel icon={Paperclip}>Archivos</FieldLabel>
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Respaldo del gasto: boletas, recibos y contratos.
+            </p>
           </div>
-          {totalFiles > 0 && <Badge variant="secondary" className="shrink-0">{totalFiles} {totalFiles === 1 ? "archivo" : "archivos"}</Badge>}
+          {totalFiles > 0 && (
+            <Badge variant="secondary" className="shrink-0">
+              {totalFiles} {totalFiles === 1 ? "archivo" : "archivos"}
+            </Badge>
+          )}
         </div>
         <div className="space-y-1.5">
           <p className="text-xs font-medium">Tipo de archivo</p>
@@ -111,7 +131,9 @@ export function FixedCostNotesSection({
                 onClick={() => setAttachmentKind(kind)}
                 aria-pressed={attachmentKind === kind}
               >
-                {attachmentKind === kind && <Check aria-hidden="true" className="size-3.5" />}
+                {attachmentKind === kind && (
+                  <Check aria-hidden="true" className="size-3.5" />
+                )}
                 {ATTACHMENT_KIND_LABELS[kind]}
               </Button>
             ))}
@@ -131,7 +153,9 @@ export function FixedCostNotesSection({
             showKindSelect={false}
             filterKind={filterKind}
             listToolbar={filterToolbar}
-            emptyMessage={savedFiles.length > 0 ? "Sin archivos todavía." : null}
+            emptyMessage={
+              savedFiles.length > 0 ? "Sin archivos todavía." : null
+            }
             onUploaded={(attachment) => {
               // Keep the open editor in sync with the automatic server transition after a boleta.
               if (

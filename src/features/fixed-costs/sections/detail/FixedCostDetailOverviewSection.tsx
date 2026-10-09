@@ -108,10 +108,14 @@ export function FixedCostDetailOverviewSection({
           icon={FileText}
           label="Observación"
           value={
-            <LinkifiedText text={fixedCost.notes?.trim() || "Sin observación"} />
+            <LinkifiedText
+              text={fixedCost.notes?.trim() || "Sin observación"}
+            />
           }
         />
-        {!plan && <FixedCostDetailRow icon={Repeat2} label="Cuotas" value="No aplica" />}
+        {!plan && (
+          <FixedCostDetailRow icon={Repeat2} label="Cuotas" value="No aplica" />
+        )}
         {fixedCost.exchangeRate != null && (
           <FixedCostDetailRow
             icon={Wallet}
@@ -122,36 +126,48 @@ export function FixedCostDetailOverviewSection({
       </dl>
 
       {plan && (
-        <section className="space-y-2 rounded-2xl border p-4" aria-label="Avance de cuotas">
+        <section
+          className="space-y-2 rounded-2xl border p-4"
+          aria-label="Avance de cuotas"
+        >
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">
               Cuota {plan.current} de {plan.total}
             </span>
-            <span className="tabular-nums text-muted-foreground">{plan.percent}%</span>
+            <span className="tabular-nums text-muted-foreground">
+              {plan.percent}%
+            </span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-muted">
-            <span className="block h-full rounded-full bg-brand" style={{ width: `${plan.percent}%` }} />
+            <span
+              className="block h-full rounded-full bg-brand"
+              style={{ width: `${plan.percent}%` }}
+            />
           </div>
           <p className="text-xs text-muted-foreground">
-            {plan.total - plan.current} {plan.total - plan.current === 1 ? "cuota" : "cuotas"} después de esta
+            {plan.total - plan.current}{" "}
+            {plan.total - plan.current === 1 ? "cuota" : "cuotas"} después de
+            esta
           </p>
         </section>
       )}
 
-      {showFiles && <section
-        className="min-w-0 space-y-3 rounded-2xl border p-4"
-        aria-label="Archivos del registro"
-      >
-        <h3 className="flex items-center gap-2 text-sm font-medium">
-          <Paperclip aria-hidden="true" className="size-4" />
-          Archivos
-        </h3>
-        <AttachmentGallery
-          key={fixedCost.id}
-          refType="fixed_cost"
-          refId={fixedCost.id}
-        />
-      </section>}
+      {showFiles && (
+        <section
+          className="min-w-0 space-y-3 rounded-2xl border p-4"
+          aria-label="Archivos del registro"
+        >
+          <h3 className="flex items-center gap-2 text-sm font-medium">
+            <Paperclip aria-hidden="true" className="size-4" />
+            Archivos
+          </h3>
+          <AttachmentGallery
+            key={fixedCost.id}
+            refType="fixed_cost"
+            refId={fixedCost.id}
+          />
+        </section>
+      )}
     </div>
   );
 }

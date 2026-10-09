@@ -5,8 +5,10 @@ import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
 
 export const calendarKeys = {
   all: ["calendar"] as const,
-  events: (from: string, to: string) => ["calendar", "events", from, to] as const,
-  installments: (months: number) => ["calendar", "installments", months] as const,
+  events: (from: string, to: string) =>
+    ["calendar", "events", from, to] as const,
+  installments: (months: number) =>
+    ["calendar", "installments", months] as const,
   reminders: (days: number) => ["calendar", "reminders", days] as const,
 };
 
@@ -14,20 +16,25 @@ export const calendarKeys = {
 export const useCalendar = (from: string, to: string) =>
   useQuery({
     queryKey: calendarKeys.events(from, to),
-    queryFn: () => unwrap(api.GET("/v1/calendar", { params: { query: { from, to } } })),
+    queryFn: () =>
+      unwrap(api.GET("/v1/calendar", { params: { query: { from, to } } })),
   });
 
 // What is due in the next days (the Redis list of kogane-api)
 export const useReminders = (days = 14) =>
   useQuery({
     queryKey: calendarKeys.reminders(days),
-    queryFn: () => unwrap(api.GET("/v1/reminders", { params: { query: { days } } })),
+    queryFn: () =>
+      unwrap(api.GET("/v1/reminders", { params: { query: { days } } })),
   });
 
 export const useCommittedInstallments = (months = 3) =>
   useQuery({
     queryKey: calendarKeys.installments(months),
-    queryFn: () => unwrap(api.GET("/v1/calendar/installments", { params: { query: { months } } })),
+    queryFn: () =>
+      unwrap(
+        api.GET("/v1/calendar/installments", { params: { query: { months } } }),
+      ),
   });
 
 const PAY_OUTCOME_TEXTS: Record<string, string> = {
@@ -46,4 +53,3 @@ export const usePayCalendarEvent = () =>
     },
     { invalidate: [calendarKeys.all, ["expenses"], ["debts"], ["summary"]] },
   );
-

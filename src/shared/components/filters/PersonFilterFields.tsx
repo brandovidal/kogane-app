@@ -94,7 +94,8 @@ export function PersonFilterFields({
     return visiblePeople;
   }, [counts, includeUnassigned, people, selectedKey]);
 
-  const selectedValues = value && value !== PERSON_ALL ? selectedValue ?? [] : [];
+  const selectedValues =
+    value && value !== PERSON_ALL ? (selectedValue ?? []) : [];
 
   return (
     <PersonFilter

@@ -45,16 +45,20 @@ export function FixedCostEmptyState({
   const isSearch = kind === "search";
   const isFilters = kind === "filters";
   const Icon = isSearch ? SearchX : isFilters ? ListFilter : CalendarPlus;
-  const title = titleOverride ?? (isSearch
-    ? `Sin resultados para “${search}”`
-    : isFilters
-      ? "Ningún costo coincide"
-      : `Sin costos fijos en ${periodLabel}`);
-  const description = descriptionOverride ?? (isSearch
-    ? "Revisa la búsqueda o amplía el período para encontrar este costo."
-    : isFilters
-      ? `Hay ${periodCount} ${periodCount === 1 ? "costo en este período" : "costos en este período"}, pero ninguno coincide con los filtros aplicados.`
-      : "Todavía no hay costos registrados en este período. Puedes crear uno para empezar.");
+  const title =
+    titleOverride ??
+    (isSearch
+      ? `Sin resultados para “${search}”`
+      : isFilters
+        ? "Ningún costo coincide"
+        : `Sin costos fijos en ${periodLabel}`);
+  const description =
+    descriptionOverride ??
+    (isSearch
+      ? "Revisa la búsqueda o amplía el período para encontrar este costo."
+      : isFilters
+        ? `Hay ${periodCount} ${periodCount === 1 ? "costo en este período" : "costos en este período"}, pero ninguno coincide con los filtros aplicados.`
+        : "Todavía no hay costos registrados en este período. Puedes crear uno para empezar.");
 
   return (
     <section

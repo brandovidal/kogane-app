@@ -20,9 +20,7 @@ import {
   PERSON_UNASSIGNED,
   SHARED_FILTER,
 } from "../constants/expense-filters";
-import type {
-  ActiveExpenseFilterChipsOptions,
-} from "../types/expense-filter-props";
+import type { ActiveExpenseFilterChipsOptions } from "../types/expense-filter-props";
 import type { ExpenseFilterKey } from "../types/expense-filters";
 
 export function useActiveExpenseFilterChips<
@@ -48,9 +46,7 @@ export function useActiveExpenseFilterChips<
     people.find((person) => person.id === id)?.name ?? id;
   const meName = me ? personName(me) : PERSON_FILTER_LABELS.ME;
   const selectedPersonIds = new Set(
-    (value.person ?? "")
-      .split(",")
-      .filter((id) => id && id !== PERSON_ALL),
+    (value.person ?? "").split(",").filter((id) => id && id !== PERSON_ALL),
   );
   const knownPersonIds = new Set(
     people.flatMap((person) =>
@@ -64,7 +60,8 @@ export function useActiveExpenseFilterChips<
       (person) =>
         selectedPersonIds.has(person.id) ||
         (person.isDefault && selectedPersonIds.has(PERSON_ME)),
-    ) && [...selectedPersonIds].every((id) => knownPersonIds.has(id));
+    ) &&
+    [...selectedPersonIds].every((id) => knownPersonIds.has(id));
 
   const labels: Partial<Record<ExpenseFilterKey, string>> = {
     q: value.q?.trim() ? `Buscar: ${value.q.trim()}` : undefined,
@@ -103,7 +100,14 @@ export function useActiveExpenseFilterChips<
       : undefined,
     currency: value.currency ? `Moneda: ${value.currency}` : undefined,
     status: value.status
-      ? `Estado: ${value.status === NO_PAYMENT_STATUS_FILTER ? "Ninguno" : value.status.split(",").map((status) => PAYMENT_STATUS_LABELS[status] ?? status).join(", ")}`
+      ? `Estado: ${
+          value.status === NO_PAYMENT_STATUS_FILTER
+            ? "Ninguno"
+            : value.status
+                .split(",")
+                .map((status) => PAYMENT_STATUS_LABELS[status] ?? status)
+                .join(", ")
+        }`
       : undefined,
     type: value.type
       ? `Tipo: ${EXPENSE_TYPE_LABELS[value.type] ?? value.type}`
@@ -149,8 +153,7 @@ export function useActiveExpenseFilterChips<
     ...fields
       .filter(
         (key) =>
-          labels[key] &&
-          !(periodChip && (key === "month" || key === "year")),
+          labels[key] && !(periodChip && (key === "month" || key === "year")),
       )
       .map((key) => ({
         key,

@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient, type QueryKey } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  type QueryKey,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { ApiError } from "../client";
@@ -6,14 +10,27 @@ import { ApiError } from "../client";
 // A write to kogane-api: refreshes the lists it touches and shows the error of the API (in Spanish when possible)
 export function useApiMutation<TInput, TOutput>(
   mutationFn: (input: TInput) => Promise<TOutput>,
-  { invalidate, success }: { invalidate: QueryKey[]; success?: string | ((output: TOutput) => string) },
+  {
+    invalidate,
+    success,
+  }: {
+    invalidate: QueryKey[];
+    success?: string | ((output: TOutput) => string);
+  },
 ) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn,
     onSuccess: async (output) => {
-      await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
-      if (success) toast.success(typeof success === "function" ? success(output) : success);
+      await Promise.all(
+        invalidate.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      );
+      if (success)
+        toast.success(
+          typeof success === "function" ? success(output) : success,
+        );
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
@@ -24,8 +41,10 @@ const MESSAGES: Record<string, string> = {
   CATALOG_ITEM_DUPLICATE: "Ya existe uno con ese nombre.",
   DEBT_PAYMENT_EXCEEDS_BALANCE: "El abono es mayor que el saldo.",
   EXPENSE_NOT_SAVEABLE: "Faltan datos para guardarlo.",
-  EXPENSE_MOVE_BLOCKED: "No se puede mover todavía: revisa la categoría o termina la edición abierta en el bot.",
-  PAYMENT_METHOD_INCOMPLETE: "A la tarjeta le faltan datos: una de crédito necesita código, cierre y pago; una de débito, su banco.",
+  EXPENSE_MOVE_BLOCKED:
+    "No se puede mover todavía: revisa la categoría o termina la edición abierta en el bot.",
+  PAYMENT_METHOD_INCOMPLETE:
+    "A la tarjeta le faltan datos: una de crédito necesita código, cierre y pago; una de débito, su banco.",
   INVALID_CREDENTIALS: "Correo, celular o contraseña incorrectos.",
   TOO_MANY_ATTEMPTS: "Demasiados intentos fallidos: espera unos minutos.",
   USER_DISABLED: "Esta cuenta está desactivada.",
@@ -34,8 +53,10 @@ const MESSAGES: Record<string, string> = {
   WEAK_PASSWORD: "La contraseña es muy corta: usa al menos 10 caracteres.",
   LINK_CODE_INVALID: "El código de vinculación venció: genera uno nuevo.",
   FORBIDDEN_ROLE: "No tienes permiso para hacer esto.",
-  ATTACHMENT_INVALID: "El archivo no se puede adjuntar: usa una imagen, PDF, Word, Excel o texto de hasta 15 MB.",
-  COMMITMENT_PLAN_INCOMPLETE: "Faltan datos del plan de cuotas (cantidad, monto, día, inicio o categoría).",
+  ATTACHMENT_INVALID:
+    "El archivo no se puede adjuntar: usa una imagen, PDF, Word, Excel o texto de hasta 15 MB.",
+  COMMITMENT_PLAN_INCOMPLETE:
+    "Faltan datos del plan de cuotas (cantidad, monto, día, inicio o categoría).",
   API_KEY_REQUIRED: "La web no tiene la API key configurada.",
   API_KEY_INVALID: "La API key de la web no coincide con la de kogane-api.",
 };

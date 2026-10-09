@@ -1,6 +1,15 @@
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
-import { getCurrentMonth, getCurrentYear, getMonthName } from "@/shared/lib/dates";
+import {
+  getCurrentMonth,
+  getCurrentYear,
+  getMonthName,
+} from "@/shared/lib/dates";
 import { PERIOD_YEAR_MAX, PERIOD_YEAR_MIN } from "@/shared/constants/period";
 import type { MonthlyPeriod } from "@/shared/types/period";
 import { Button } from "@/ui/button";
@@ -45,12 +54,23 @@ export function MonthYearPicker({
           className,
         )}
       >
-        <CalendarDays aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-        {isCurrent && <span aria-label="Mes actual" className="size-1.5 shrink-0 rounded-full bg-brand" />}
+        <CalendarDays
+          aria-hidden="true"
+          className="size-4 shrink-0 text-muted-foreground"
+        />
+        {isCurrent && (
+          <span
+            aria-label="Mes actual"
+            className="size-1.5 shrink-0 rounded-full bg-brand"
+          />
+        )}
         <span className="min-w-0 flex-1 truncate tabular-nums">
           {getMonthName(value.month)} {value.year}
         </span>
-        <ChevronDown aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+        <ChevronDown
+          aria-hidden="true"
+          className="size-3.5 shrink-0 text-muted-foreground"
+        />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-72 space-y-3 rounded-xl p-3">
         <div className="flex items-center justify-between">
@@ -82,7 +102,8 @@ export function MonthYearPicker({
           {Array.from({ length: 12 }, (_, index) => {
             const month = index + 1;
             const selected = value.month === month && value.year === gridYear;
-            const current = month === getCurrentMonth() && gridYear === getCurrentYear();
+            const current =
+              month === getCurrentMonth() && gridYear === getCurrentYear();
             return (
               <button
                 key={month}
@@ -94,12 +115,16 @@ export function MonthYearPicker({
                 }}
                 className={cn(
                   "relative h-9 rounded-md text-sm transition-colors hover:bg-accent",
-                  selected && "bg-brand font-semibold text-background hover:bg-brand",
+                  selected &&
+                    "bg-brand font-semibold text-background hover:bg-brand",
                 )}
               >
                 {getMonthName(month).slice(0, 3)}
                 {current && !selected && (
-                  <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-brand" />
+                  <span
+                    aria-hidden="true"
+                    className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-brand"
+                  />
                 )}
               </button>
             );

@@ -22,11 +22,16 @@ export function OversizedAttachmentCard({
   const input = useRef<HTMLInputElement>(null);
   const [compressing, setCompressing] = useState(false);
   const Icon = getFileIcon(file.type || "application/octet-stream", file.name);
-  const canCompress = file.type.startsWith("image/") && file.type !== "image/gif" && file.type !== "image/svg+xml";
+  const canCompress =
+    file.type.startsWith("image/") &&
+    file.type !== "image/gif" &&
+    file.type !== "image/svg+xml";
 
   const compress = async () => {
     if (!canCompress) {
-      toast.info("Reduce el tamaño del archivo con la opción de exportar o guardar una copia comprimida, y selecciónala aquí.");
+      toast.info(
+        "Reduce el tamaño del archivo con la opción de exportar o guardar una copia comprimida, y selecciónala aquí.",
+      );
       input.current?.click();
       return;
     }
@@ -34,7 +39,9 @@ export function OversizedAttachmentCard({
     try {
       onReplace(await compressImage(file));
     } catch {
-      toast.info("No se pudo comprimir automáticamente. Elige una versión reducida del archivo.");
+      toast.info(
+        "No se pudo comprimir automáticamente. Elige una versión reducida del archivo.",
+      );
       input.current?.click();
     } finally {
       setCompressing(false);
@@ -58,15 +65,44 @@ export function OversizedAttachmentCard({
         <Icon aria-hidden="true" className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium" title={file.name}>{file.name}</p>
-        <p className="text-xs text-destructive">{formatAttachmentSize(file.size)} supera el límite de {ATTACHMENT_MAX_MB} MB</p>
-        {!canCompress && <p className="text-xs text-muted-foreground">Reduce el tamaño del archivo y selecciona la versión comprimida.</p>}
+        <p className="truncate text-sm font-medium" title={file.name}>
+          {file.name}
+        </p>
+        <p className="text-xs text-destructive">
+          {formatAttachmentSize(file.size)} supera el límite de{" "}
+          {ATTACHMENT_MAX_MB} MB
+        </p>
+        {!canCompress && (
+          <p className="text-xs text-muted-foreground">
+            Reduce el tamaño del archivo y selecciona la versión comprimida.
+          </p>
+        )}
       </div>
-      <Button type="button" size="sm" variant="outline" className="h-8 shrink-0" disabled={compressing} onClick={() => void compress()}>
-        {compressing ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : null}
-        {compressing ? "Comprimiendo…" : canCompress ? "Comprimir" : "Elegir reducido"}
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-8 shrink-0"
+        disabled={compressing}
+        onClick={() => void compress()}
+      >
+        {compressing ? (
+          <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+        ) : null}
+        {compressing
+          ? "Comprimiendo…"
+          : canCompress
+            ? "Comprimir"
+            : "Elegir reducido"}
       </Button>
-      <Button type="button" size="icon-sm" variant="ghost" className="shrink-0 text-destructive hover:text-destructive" aria-label={`Quitar ${file.name}`} onClick={onRemove}>
+      <Button
+        type="button"
+        size="icon-sm"
+        variant="ghost"
+        className="shrink-0 text-destructive hover:text-destructive"
+        aria-label={`Quitar ${file.name}`}
+        onClick={onRemove}
+      >
         <Trash2 aria-hidden="true" className="size-4" />
       </Button>
       <span className="sr-only">Tipo: {kind}</span>

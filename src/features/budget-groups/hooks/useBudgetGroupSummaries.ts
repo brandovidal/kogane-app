@@ -13,5 +13,9 @@ export function useBudgetGroupSummaries(month: number, year: number) {
   }));
 
   const salary = summary?.budget?.salary ?? 0;
-  return { salary, groups, summaries: buildBudgetGroupSummaries(groups, categories, spending, salary) };
+  return {
+    salary,
+    groups,
+    summaries: buildBudgetGroupSummaries(groups, categories, spending, salary),
+  };
 }

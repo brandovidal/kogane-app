@@ -201,7 +201,13 @@ export interface UpdateStatementBalanceInput {
 
 export const useUpdateStatementBalances = () =>
   useApiMutation(
-    ({ id, balances }: { id: string; balances: UpdateStatementBalanceInput[] }) =>
+    ({
+      id,
+      balances,
+    }: {
+      id: string;
+      balances: UpdateStatementBalanceInput[];
+    }) =>
       unwrap(
         api.PATCH("/v1/statements/{id}", {
           params: { path: { id } },

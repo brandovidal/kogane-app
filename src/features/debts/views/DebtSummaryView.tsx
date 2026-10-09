@@ -8,8 +8,15 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { useDebtSummaryData } from "../hooks/useDebtSummaryData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { DEBT_FILTER_KEYS, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
-import { ActiveDebtFilterChips, DebtFilterSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";
+import {
+  DEBT_FILTER_KEYS,
+  type DebtFilterValues,
+} from "@/features/debts/lib/debt-filters";
+import {
+  ActiveDebtFilterChips,
+  DebtFilterSheet,
+  DebtReportLinks as ReportLinks,
+} from "../sections/DebtListControls";
 import { DebtMovementTypeSheet } from "../sections/DebtMovementTypeSheet";
 import { StatementMinimumSection } from "../sections/StatementMinimumSection";
 import { PersonDebtSummaryCardList } from "../sections/PersonDebtSummaryCardList";
@@ -23,7 +30,10 @@ export function DebtSummaryView({
   month: number;
   year: number;
 }) {
-  const defaults: DebtFilterValues = { month: String(month), year: String(year) };
+  const defaults: DebtFilterValues = {
+    month: String(month),
+    year: String(year),
+  };
   const [filters, setFilters] = useUrlFilters<DebtFilterValues>(
     DEBT_FILTER_KEYS,
     defaults,
@@ -79,7 +89,16 @@ export function DebtSummaryView({
           resultLabel="cobros"
           hideDirection
         />
-        <DebtMovementTypeSheet showCollections={showCollections} showDebts={showDebts} onCollectionsChange={setShowCollections} onDebtsChange={setShowDebts} onReset={() => { setShowCollections(true); setShowDebts(true); }} />
+        <DebtMovementTypeSheet
+          showCollections={showCollections}
+          showDebts={showDebts}
+          onCollectionsChange={setShowCollections}
+          onDebtsChange={setShowDebts}
+          onReset={() => {
+            setShowCollections(true);
+            setShowDebts(true);
+          }}
+        />
         <ReportLinks filter={reportFilter} />
       </div>
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -91,19 +110,61 @@ export function DebtSummaryView({
           monthLabel={`${getMonthName(month)} ${year}`}
           defaults={defaults}
           directionFilterEnabled={false}
-          grouping={{ byPerson: false, byCard: false, onToggle: () => { }, movement: { showCollections, showDebts, onReset: () => { setShowCollections(true); setShowDebts(true); } } }}
+          grouping={{
+            byPerson: false,
+            byCard: false,
+            onToggle: () => {},
+            movement: {
+              showCollections,
+              showDebts,
+              onReset: () => {
+                setShowCollections(true);
+                setShowDebts(true);
+              },
+            },
+          }}
         />
-        <div className="flex justify-end"><ViewToggle value={view} onChange={setView} /></div>
+        <div className="flex justify-end">
+          <ViewToggle value={view} onChange={setView} />
+        </div>
       </div>
-      {showDebts && <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-primary/25 bg-primary/5 px-3 py-2 text-sm">
-        {showCollections && <span><span className="text-muted-foreground">Cobros</span> <strong className="font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</strong></span>}
-        <span><span className="text-muted-foreground">Lo que debo</span> <strong className="font-medium tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</strong></span>
-        <span className="font-semibold text-primary">{netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"} {formatCurrency(Math.abs(netTotal))}</span>
-      </div>}
-      {(!groups.length && !creditCards.length) || (!showCollections && !showDebts) ? (
-        <EmptyState description={!showCollections && !showDebts ? "Activa Cobros (+), Deudas (−) o ambos en los filtros." : "No hay deudas con saldo para este período"} />
+      {showDebts && (
+        <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-primary/25 bg-primary/5 px-3 py-2 text-sm">
+          {showCollections && (
+            <span>
+              <span className="text-muted-foreground">Cobros</span>{" "}
+              <strong className="font-semibold tabular-nums text-amber-300">
+                {formatCurrency(totalToCollect)}
+              </strong>
+            </span>
+          )}
+          <span>
+            <span className="text-muted-foreground">Lo que debo</span>{" "}
+            <strong className="font-medium tabular-nums text-muted-foreground">
+              {formatCurrency(totalToPay)}
+            </strong>
+          </span>
+          <span className="font-semibold text-primary">
+            {netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"}{" "}
+            {formatCurrency(Math.abs(netTotal))}
+          </span>
+        </div>
+      )}
+      {(!groups.length && !creditCards.length) ||
+      (!showCollections && !showDebts) ? (
+        <EmptyState
+          description={
+            !showCollections && !showDebts
+              ? "Activa Cobros (+), Deudas (−) o ambos en los filtros."
+              : "No hay deudas con saldo para este período"
+          }
+        />
       ) : (
-        <Tabs value={summaryView} onValueChange={setSummaryView} className="w-full">
+        <Tabs
+          value={summaryView}
+          onValueChange={setSummaryView}
+          className="w-full"
+        >
           <TabsList className="w-full justify-start sm:w-auto">
             <TabsTrigger value="consolidated">Consolidado</TabsTrigger>
             <TabsTrigger
@@ -116,12 +177,22 @@ export function DebtSummaryView({
           <TabsContent value={summaryView} className="mt-4 space-y-3">
             {summaryView === "minimum" ? (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Estados de cuenta y pagos mínimos de tus tarjetas.</p>
+                <p className="text-sm text-muted-foreground">
+                  Estados de cuenta y pagos mínimos de tus tarjetas.
+                </p>
                 {!showCollections ? (
-                  <Card><CardContent className="p-4 text-sm text-muted-foreground">El filtro está mostrando solo deudas. El pago mínimo corresponde a cobros del estado de cuenta; selecciona Cobros (+) para verlo.</CardContent></Card>
+                  <Card>
+                    <CardContent className="p-4 text-sm text-muted-foreground">
+                      El filtro está mostrando solo deudas. El pago mínimo
+                      corresponde a cobros del estado de cuenta; selecciona
+                      Cobros (+) para verlo.
+                    </CardContent>
+                  </Card>
                 ) : (
                   <StatementMinimumSection
-                    cards={creditCards.filter((_, index) => Boolean(statementChecks[index]?.data?.statementId))}
+                    cards={creditCards.filter((_, index) =>
+                      Boolean(statementChecks[index]?.data?.statementId),
+                    )}
                     isLoading={statementChecks.some((check) => check.isLoading)}
                     hasCreditCards={creditCards.length > 0}
                     month={selectedMonth}
@@ -144,11 +215,15 @@ export function DebtSummaryView({
                       showDebts={showDebts}
                     />
                   </div>
-
                 ) : (
                   <DebtSummaryMonthlyTable
                     rows={byMonth}
-                    recordCount={shown.length + (summaryView === "consolidated" ? personalExpenses.length : 0)}
+                    recordCount={
+                      shown.length +
+                      (summaryView === "consolidated"
+                        ? personalExpenses.length
+                        : 0)
+                    }
                     totalToCollect={totalToCollect}
                     totalToPay={totalToPay}
                     netTotal={netTotal}

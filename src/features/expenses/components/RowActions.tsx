@@ -132,7 +132,9 @@ export function RowActions({
                       <span className="flex flex-col">
                         Mover al mes anterior
                         {monthLabels?.previous && (
-                          <span className="text-xs text-muted-foreground">{monthLabels.previous}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {monthLabels.previous}
+                          </span>
                         )}
                       </span>
                     </DropdownMenuItem>
@@ -143,7 +145,9 @@ export function RowActions({
                       <span className="flex flex-col">
                         Mover al siguiente mes
                         {monthLabels?.next && (
-                          <span className="text-xs text-muted-foreground">{monthLabels.next}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {monthLabels.next}
+                          </span>
                         )}
                       </span>
                     </DropdownMenuItem>
@@ -158,12 +162,20 @@ export function RowActions({
             </>
           )}
           {files && (
-            <DropdownMenuItem onSelect={() => (onOpenFiles ? onOpenFiles() : setFilesOpen(true))}>
+            <DropdownMenuItem
+              onSelect={() =>
+                onOpenFiles ? onOpenFiles() : setFilesOpen(true)
+              }
+            >
               <Paperclip /> Archivos
             </DropdownMenuItem>
           )}
           {history && (
-            <DropdownMenuItem onSelect={() => (onOpenHistory ? onOpenHistory() : setHistoryOpen(true))}>
+            <DropdownMenuItem
+              onSelect={() =>
+                onOpenHistory ? onOpenHistory() : setHistoryOpen(true)
+              }
+            >
               <History /> Historial
             </DropdownMenuItem>
           )}

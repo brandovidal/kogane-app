@@ -18,7 +18,11 @@ function BudgetGroupPageView() {
 
   const selectedMonth = usePeriod((s) => s.month);
   const selectedYear = usePeriod((s) => s.year);
-  const { salary, groups: budgetGroups, summaries } = useBudgetGroupSummaries(selectedMonth, selectedYear);
+  const {
+    salary,
+    groups: budgetGroups,
+    summaries,
+  } = useBudgetGroupSummaries(selectedMonth, selectedYear);
   const deleteBudgetGroup = useDeleteBudgetGroup();
 
   const handleEdit = (groupId: string) => {
@@ -44,7 +48,8 @@ function BudgetGroupPageView() {
         <div className="flex items-center gap-3">
           <ViewToggle view={view} onChange={setView} />
           <span className="text-sm text-muted-foreground">
-            Sueldo: S/ {salary.toLocaleString()} · {budgetGroups.reduce((s, g) => s + g.percentage, 0)}% asignado
+            Sueldo: S/ {salary.toLocaleString()} ·{" "}
+            {budgetGroups.reduce((s, g) => s + g.percentage, 0)}% asignado
           </span>
         </div>
         <Button size="sm" onClick={handleAdd}>

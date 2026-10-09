@@ -6,10 +6,13 @@ interface PlatformHeaderState {
   setCount: (count: number | null) => void;
 }
 
-export const platformHeaderStore = createStore<PlatformHeaderState>()((set) => ({
-  count: null,
-  setCount: (count) => set({ count }),
-}));
+export const platformHeaderStore = createStore<PlatformHeaderState>()(
+  (set) => ({
+    count: null,
+    setCount: (count) => set({ count }),
+  }),
+);
 
-export const usePlatformHeader = <T,>(selector: (state: PlatformHeaderState) => T) =>
-  useStore(platformHeaderStore, selector);
+export const usePlatformHeader = <T>(
+  selector: (state: PlatformHeaderState) => T,
+) => useStore(platformHeaderStore, selector);

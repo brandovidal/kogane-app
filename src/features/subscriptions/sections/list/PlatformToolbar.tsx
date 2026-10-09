@@ -156,9 +156,7 @@ export function PlatformToolbar({
               <ActiveExpenseFilterChips
                 fields={PLATFORM_SHEET_FILTER_KEYS}
                 value={{ ...filters, q: undefined }}
-                onChange={(next) =>
-                  onFiltersChange({ ...next, q: filters.q })
-                }
+                onChange={(next) => onFiltersChange({ ...next, q: filters.q })}
                 tone="brand"
                 maxVisibleItems={3}
                 collapsible={false}

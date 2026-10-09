@@ -4,5 +4,11 @@ import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
 
 export function PersonSelect(props: CatalogSelectProps) {
   const options = usePeople().data?.filter((person) => person.isActive) ?? [];
-  return <CatalogSelectOptions placeholder="Selecciona persona" {...props} options={options} />;
+  return (
+    <CatalogSelectOptions
+      placeholder="Selecciona persona"
+      {...props}
+      options={options}
+    />
+  );
 }

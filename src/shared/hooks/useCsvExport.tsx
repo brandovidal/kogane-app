@@ -13,10 +13,17 @@ export function useCsvExport({ filename, headers, rows }: CsvExportData) {
     downloadCsv(`${filename}-excel.csv`, headers, rows, { delimiter: ";" });
   }, [filename, headers, rows]);
 
-  const items = useMemo<ExportMenuItem[]>(() => [
-    { label: "Exportar para Excel (.csv)", icon: <FileSpreadsheet />, onSelect: exportExcel },
-    { label: "Exportar CSV", icon: <FileText />, onSelect: exportCsv },
-  ], [exportCsv, exportExcel]);
+  const items = useMemo<ExportMenuItem[]>(
+    () => [
+      {
+        label: "Exportar para Excel (.csv)",
+        icon: <FileSpreadsheet />,
+        onSelect: exportExcel,
+      },
+      { label: "Exportar CSV", icon: <FileText />, onSelect: exportCsv },
+    ],
+    [exportCsv, exportExcel],
+  );
 
   return { items, exportCsv, exportExcel };
 }

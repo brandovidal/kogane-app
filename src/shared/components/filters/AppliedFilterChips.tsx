@@ -57,16 +57,20 @@ export function AppliedFilterChips({
           variant="outline"
           size="xs"
           aria-expanded={expanded}
-          aria-label={expanded ? "Ocultar filtros aplicados" : "Mostrar filtros aplicados"}
+          aria-label={
+            expanded ? "Ocultar filtros aplicados" : "Mostrar filtros aplicados"
+          }
           onClick={() => setExpanded((current) => !current)}
           className="shrink-0 gap-1.5"
         >
           <SlidersHorizontal aria-hidden="true" className="size-3.5" />
           {showCollapseLabel && <span>{expanded ? "Ocultar" : "Mostrar"}</span>}
-          <span className={cn(
-            "rounded-full px-1.5 text-[10px] font-medium tabular-nums",
-            tone === "brand" ? "bg-brand/15 text-brand" : "bg-muted",
-          )}>
+          <span
+            className={cn(
+              "rounded-full px-1.5 text-[10px] font-medium tabular-nums",
+              tone === "brand" ? "bg-brand/15 text-brand" : "bg-muted",
+            )}
+          >
             {items.length}
           </span>
           <ChevronDown

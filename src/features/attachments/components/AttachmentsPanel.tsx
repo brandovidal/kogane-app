@@ -76,8 +76,12 @@ export function AttachmentsPanel({
     onKindChange?.(next);
     if (kind === undefined) setLocalKind(next);
   };
-  const [uploadingFiles, setUploadingFiles] = useState<UploadingAttachment[]>([]);
-  const [oversizedFiles, setOversizedFiles] = useState<UploadingAttachment[]>([]);
+  const [uploadingFiles, setUploadingFiles] = useState<UploadingAttachment[]>(
+    [],
+  );
+  const [oversizedFiles, setOversizedFiles] = useState<UploadingAttachment[]>(
+    [],
+  );
   const [deletingFile, setDeletingFile] = useState<Attachment | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -94,16 +98,28 @@ export function AttachmentsPanel({
       let uploaded = 0;
       for (const queued of batch) {
         try {
-          const attachment = await upload.mutateAsync({ file: queued.file, refType, refId, kind: queued.kind });
+          const attachment = await upload.mutateAsync({
+            file: queued.file,
+            refType,
+            refId,
+            kind: queued.kind,
+          });
           uploaded += 1;
           onUploaded?.(attachment);
         } catch {
           toast.error(`No se pudo subir «${queued.file.name}».`);
         } finally {
-          setUploadingFiles((current) => current.filter((item) => item.id !== queued.id));
+          setUploadingFiles((current) =>
+            current.filter((item) => item.id !== queued.id),
+          );
         }
       }
-      if (uploaded) toast.success(uploaded === 1 ? "Archivo adjuntado" : `${uploaded} archivos adjuntados`);
+      if (uploaded)
+        toast.success(
+          uploaded === 1
+            ? "Archivo adjuntado"
+            : `${uploaded} archivos adjuntados`,
+        );
     })();
   };
 
@@ -112,23 +128,36 @@ export function AttachmentsPanel({
     // input.value also clears the selected files before they are queued.
     const selectedFiles = Array.from(selected);
     if (input.current) input.current.value = "";
-    const batch = selectedFiles.map((file) => ({ id: crypto.randomUUID(), file, kind: selectedKind }));
+    const batch = selectedFiles.map((file) => ({
+      id: crypto.randomUUID(),
+      file,
+      kind: selectedKind,
+    }));
     const limit = ATTACHMENT_MAX_MB * 1024 * 1024;
-    setOversizedFiles((current) => [...current, ...batch.filter((item) => item.file.size > limit)]);
+    setOversizedFiles((current) => [
+      ...current,
+      ...batch.filter((item) => item.file.size > limit),
+    ]);
     uploadBatch(batch.filter((item) => item.file.size <= limit));
   };
 
   const replaceOversizedFile = (id: string, file: File) => {
-    const kind = oversizedFiles.find((item) => item.id === id)?.kind ?? selectedKind;
+    const kind =
+      oversizedFiles.find((item) => item.id === id)?.kind ?? selectedKind;
     if (file.size > ATTACHMENT_MAX_MB * 1024 * 1024) {
-      setOversizedFiles((current) => current.map((item) => item.id === id ? { ...item, file } : item));
+      setOversizedFiles((current) =>
+        current.map((item) => (item.id === id ? { ...item, file } : item)),
+      );
       return;
     }
     setOversizedFiles((current) => current.filter((item) => item.id !== id));
     uploadBatch([{ id: crypto.randomUUID(), file, kind }]);
   };
 
-  const visibleFiles = filterKind === "all" ? files : files.filter((file) => file.kind === filterKind);
+  const visibleFiles =
+    filterKind === "all"
+      ? files
+      : files.filter((file) => file.kind === filterKind);
   const previewIndex = visibleFiles.findIndex((file) => file.id === previewId);
 
   return (
@@ -141,42 +170,50 @@ export function AttachmentsPanel({
         className="hidden"
         onChange={(event) => event.target.files && pick(event.target.files)}
       />
-      {(showKindSelect || !dropzone) && <div className="flex flex-wrap items-center gap-2">
-        {showKindSelect && <Select
-          value={selectedKind}
-          onValueChange={(value) => changeKind(value as Attachment["kind"])}
-        >
-          <SelectTrigger
-            className="h-9 w-[130px]"
-            aria-label="Tipo de archivo"
-            disabled={upload.isPending}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(ATTACHMENT_KIND_LABELS).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>}
-        {!dropzone && (
-          <Button
-            type="button"
-            size="sm"
-            className="h-9"
-            disabled={upload.isPending}
-            onClick={() => input.current?.click()}
-          >
-            <Paperclip className="mr-1.5 h-4 w-4" />{" "}
-            {upload.isPending ? "Subiendo…" : "Adjuntar"}
-          </Button>
-        )}
-        {!dropzone && <span className="text-xs text-muted-foreground">
-          Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB
-        </span>}
-      </div>}
+      {(showKindSelect || !dropzone) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {showKindSelect && (
+            <Select
+              value={selectedKind}
+              onValueChange={(value) => changeKind(value as Attachment["kind"])}
+            >
+              <SelectTrigger
+                className="h-9 w-[130px]"
+                aria-label="Tipo de archivo"
+                disabled={upload.isPending}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(ATTACHMENT_KIND_LABELS).map(
+                  ([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
+          )}
+          {!dropzone && (
+            <Button
+              type="button"
+              size="sm"
+              className="h-9"
+              disabled={upload.isPending}
+              onClick={() => input.current?.click()}
+            >
+              <Paperclip className="mr-1.5 h-4 w-4" />{" "}
+              {upload.isPending ? "Subiendo…" : "Adjuntar"}
+            </Button>
+          )}
+          {!dropzone && (
+            <span className="text-xs text-muted-foreground">
+              Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB
+            </span>
+          )}
+        </div>
+      )}
 
       {dropzone && (
         <div
@@ -217,23 +254,35 @@ export function AttachmentsPanel({
               </button>
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno · varios a la vez
+              Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno ·
+              varios a la vez
             </p>
           </div>
-          <Button type="button" size="sm" variant="outline" className="h-8 shrink-0 px-3" disabled={upload.isPending} onClick={() => input.current?.click()}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-8 shrink-0 px-3"
+            disabled={upload.isPending}
+            onClick={() => input.current?.click()}
+          >
             {upload.isPending ? "Subiendo…" : "Subir"}
           </Button>
         </div>
       )}
 
       {uploadingFiles.map(({ id, file, kind }) => (
-        <AttachmentFileCard key={id} uploading file={{
-          name: file.name,
-          contentType: file.type || "application/octet-stream",
-          sizeBytes: file.size,
-          kind,
-          url: null,
-        }} />
+        <AttachmentFileCard
+          key={id}
+          uploading
+          file={{
+            name: file.name,
+            contentType: file.type || "application/octet-stream",
+            sizeBytes: file.size,
+            kind,
+            url: null,
+          }}
+        />
       ))}
       {oversizedFiles.map(({ id, file, kind }) => (
         <OversizedAttachmentCard
@@ -241,7 +290,11 @@ export function AttachmentsPanel({
           file={file}
           kind={kind}
           onReplace={(replacement) => replaceOversizedFile(id, replacement)}
-          onRemove={() => setOversizedFiles((current) => current.filter((item) => item.id !== id))}
+          onRemove={() =>
+            setOversizedFiles((current) =>
+              current.filter((item) => item.id !== id),
+            )
+          }
         />
       ))}
       {listToolbar}
@@ -256,7 +309,9 @@ export function AttachmentsPanel({
       ) : visibleFiles.length === 0 ? (
         emptyMessage && (
           <p className="text-sm text-muted-foreground">
-            {filterKind === "all" ? emptyMessage : "No hay archivos de este tipo."}
+            {filterKind === "all"
+              ? emptyMessage
+              : "No hay archivos de este tipo."}
           </p>
         )
       ) : (

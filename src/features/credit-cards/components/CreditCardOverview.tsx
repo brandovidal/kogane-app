@@ -16,7 +16,10 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
 import { formatCurrency } from "@/shared/lib/currency";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
-import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
+import type {
+  ExpenseFilterKey,
+  ExpenseFilterValues,
+} from "@/features/expenses/types/expense-filters";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
@@ -24,7 +27,16 @@ import { Card, CardContent } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 
-const FILTERS: ExpenseFilterKey[] = ["person", "q", "category", "currency", "status", "installments", "type", "shared"];
+const FILTERS: ExpenseFilterKey[] = [
+  "person",
+  "q",
+  "category",
+  "currency",
+  "status",
+  "installments",
+  "type",
+  "shared",
+];
 
 interface CardRow {
   id: string;
@@ -44,7 +56,8 @@ function CreditCardOverviewView() {
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const creditCards = useCreditCards().data ?? [];
-  const expenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
+  const expenses =
+    useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("cards-overview", "cards");
   const me = useMe();
@@ -52,7 +65,9 @@ function CreditCardOverviewView() {
 
   const filtered = applyExpenseFilters(expenses, filters, me);
   const rows: CardRow[] = creditCards.map((card) => {
-    const ofCard = filtered.filter((expense) => expense.paymentMethodId === card.id);
+    const ofCard = filtered.filter(
+      (expense) => expense.paymentMethodId === card.id,
+    );
     const { paid, own } = totalsOf(ofCard);
     return {
       id: card.id,
@@ -64,7 +79,8 @@ function CreditCardOverviewView() {
       paid,
       own,
       count: ofCard.length,
-      pending: ofCard.filter((expense) => expense.paymentStatus === "pending").length,
+      pending: ofCard.filter((expense) => expense.paymentStatus === "pending")
+        .length,
     };
   });
   const totals = totalsOf(filtered);
@@ -76,7 +92,10 @@ function CreditCardOverviewView() {
       role: "title",
       cell: (row) => (
         <span className="flex items-center gap-2 font-medium">
-          <CreditCard className="h-4 w-4" style={{ color: row.color ?? "var(--muted-foreground)" }} />
+          <CreditCard
+            className="h-4 w-4"
+            style={{ color: row.color ?? "var(--muted-foreground)" }}
+          />
           {row.name}
         </span>
       ),
@@ -87,23 +106,36 @@ function CreditCardOverviewView() {
       role: "amount",
       cell: (row) => (
         <div>
-          <span className="font-semibold tabular-nums">{formatCurrency(row.paid)}</span>
+          <span className="font-semibold tabular-nums">
+            {formatCurrency(row.paid)}
+          </span>
           <OwnPart paid={row.paid} own={row.own} />
         </div>
       ),
     },
-    { key: "count", header: "Movimientos", cell: (row) => <span className="tabular-nums">{row.count}</span> },
+    {
+      key: "count",
+      header: "Movimientos",
+      cell: (row) => <span className="tabular-nums">{row.count}</span>,
+    },
     {
       key: "pending",
       header: "Pendientes",
-      cell: (row) => (row.pending ? <Badge variant="secondary">{row.pending}</Badge> : <span className="text-muted-foreground">—</span>),
+      cell: (row) =>
+        row.pending ? (
+          <Badge variant="secondary">{row.pending}</Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
     },
     {
       key: "days",
       header: "Cierre · pago",
       cell: (row) => (
         <span className="text-sm text-muted-foreground">
-          {row.billingCloseDay ? `día ${row.billingCloseDay} · día ${row.paymentDueDay}` : "sin días"}
+          {row.billingCloseDay
+            ? `día ${row.billingCloseDay} · día ${row.paymentDueDay}`
+            : "sin días"}
         </span>
       ),
     },
@@ -112,14 +144,19 @@ function CreditCardOverviewView() {
       header: "",
       role: "actions",
       cell: (row) => (
-        <a href={row.href} className="flex items-center gap-1 text-sm text-primary hover:underline">
+        <a
+          href={row.href}
+          className="flex items-center gap-1 text-sm text-primary hover:underline"
+        >
           Ver detalle <ArrowRight className="h-3.5 w-3.5" />
         </a>
       ),
     },
   ];
 
-  const upcoming = rows.filter((row) => row.paid > 0).sort((a, b) => a.paymentDueDay - b.paymentDueDay);
+  const upcoming = rows
+    .filter((row) => row.paid > 0)
+    .sort((a, b) => a.paymentDueDay - b.paymentDueDay);
 
   return (
     <div className="space-y-4">
@@ -134,7 +171,10 @@ function CreditCardOverviewView() {
         />
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <ViewToggle value={view} onChange={setView} />
-          <Button size="sm" onClick={() => openNewExpense({ destination: "credit_card" })}>
+          <Button
+            size="sm"
+            onClick={() => openNewExpense({ destination: "credit_card" })}
+          >
             <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
           </Button>
         </div>
@@ -144,22 +184,46 @@ function CreditCardOverviewView() {
         <Card>
           <CardContent className="flex h-full min-h-20 items-center justify-between gap-3 px-4 py-3">
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">Total tarjetas · {filtered.length} movimientos</p>
-              <span className="text-2xl font-bold tabular-nums">{formatCurrency(totals.paid)}</span>
+              <p className="text-xs text-muted-foreground">
+                Total tarjetas · {filtered.length} movimientos
+              </p>
+              <span className="text-2xl font-bold tabular-nums">
+                {formatCurrency(totals.paid)}
+              </span>
               <OwnPart {...totals} />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex min-h-20 flex-wrap items-center gap-2 px-4 py-3">
-            <span className="mr-1 text-xs font-medium text-muted-foreground">Próximos pagos</span>
-            {!upcoming.length && <span className="text-sm text-muted-foreground">Nada por pagar este mes</span>}
+            <span className="mr-1 text-xs font-medium text-muted-foreground">
+              Próximos pagos
+            </span>
+            {!upcoming.length && (
+              <span className="text-sm text-muted-foreground">
+                Nada por pagar este mes
+              </span>
+            )}
             {upcoming.map((row) => (
-              <div key={row.id} className="flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm" style={{ borderColor: row.color ?? "var(--border)" }}>
-                <Calendar className="h-3.5 w-3.5" style={{ color: row.color ?? "var(--muted-foreground)" }} />
-                <span className="text-muted-foreground">Día {row.paymentDueDay}</span>
+              <div
+                key={row.id}
+                className="flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm"
+                style={{ borderColor: row.color ?? "var(--border)" }}
+              >
+                <Calendar
+                  className="h-3.5 w-3.5"
+                  style={{ color: row.color ?? "var(--muted-foreground)" }}
+                />
+                <span className="text-muted-foreground">
+                  Día {row.paymentDueDay}
+                </span>
                 <span className="font-medium">{row.name}</span>
-                <span className="font-semibold tabular-nums" style={{ color: row.color ?? undefined }}>{formatCurrency(row.paid)}</span>
+                <span
+                  className="font-semibold tabular-nums"
+                  style={{ color: row.color ?? undefined }}
+                >
+                  {formatCurrency(row.paid)}
+                </span>
               </div>
             ))}
           </CardContent>
@@ -169,7 +233,12 @@ function CreditCardOverviewView() {
       {rows.length === 0 ? (
         <EmptyState description="No hay tarjetas activas" />
       ) : (
-        <DataView items={rows} columns={columns} rowKey={(row) => row.id} view={view} />
+        <DataView
+          items={rows}
+          columns={columns}
+          rowKey={(row) => row.id}
+          view={view}
+        />
       )}
     </div>
   );

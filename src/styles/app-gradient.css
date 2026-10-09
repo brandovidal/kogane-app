@@ -1,14 +1,30 @@
 .app-gradient {
   background-color: var(--background);
   background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(72, 94, 180, 0.09), transparent 44%),
-    radial-gradient(ellipse at 90% 85%, rgba(45, 150, 135, 0.07), transparent 38%);
+    radial-gradient(
+      ellipse at 20% 20%,
+      rgba(72, 94, 180, 0.09),
+      transparent 44%
+    ),
+    radial-gradient(
+      ellipse at 90% 85%,
+      rgba(45, 150, 135, 0.07),
+      transparent 38%
+    );
 }
 
 .dark .app-gradient,
 .app-gradient--dark {
   background-color: #090a0c;
   background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(72, 94, 180, 0.18), transparent 44%),
-    radial-gradient(ellipse at 90% 85%, rgba(45, 150, 135, 0.12), transparent 38%);
+    radial-gradient(
+      ellipse at 20% 20%,
+      rgba(72, 94, 180, 0.18),
+      transparent 44%
+    ),
+    radial-gradient(
+      ellipse at 90% 85%,
+      rgba(45, 150, 135, 0.12),
+      transparent 38%
+    );
 }

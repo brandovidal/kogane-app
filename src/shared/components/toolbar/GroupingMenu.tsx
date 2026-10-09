@@ -9,7 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-export interface GroupingMenuProps<T extends string | readonly string[] = string> {
+export interface GroupingMenuProps<
+  T extends string | readonly string[] = string,
+> {
   value: T;
   onChange: (value: T) => void;
   options: { value: string; label: string }[];
@@ -38,7 +40,8 @@ export function GroupingMenu<T extends string | readonly string[]>({
       ? [value as string]
       : [];
   const count = selected.length;
-  const change = (next: string[]) => onChange((multiple ? next : next[0] ?? "none") as T);
+  const change = (next: string[]) =>
+    onChange((multiple ? next : (next[0] ?? "none")) as T);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -59,7 +62,9 @@ export function GroupingMenu<T extends string | readonly string[]>({
         )}
         <DropdownMenuCheckboxItem
           checked={count === 0}
-          onSelect={multiple || ordered ? (event) => event.preventDefault() : undefined}
+          onSelect={
+            multiple || ordered ? (event) => event.preventDefault() : undefined
+          }
           onCheckedChange={() => change([])}
         >
           Sin agrupar
@@ -68,11 +73,19 @@ export function GroupingMenu<T extends string | readonly string[]>({
           <DropdownMenuCheckboxItem
             key={option.value}
             checked={selected.includes(option.value)}
-            onSelect={multiple || ordered ? (event) => event.preventDefault() : undefined}
+            onSelect={
+              multiple || ordered
+                ? (event) => event.preventDefault()
+                : undefined
+            }
             onCheckedChange={(checked) =>
-              change(checked
-                ? multiple ? [...selected, option.value] : [option.value]
-                : selected.filter((item) => item !== option.value))
+              change(
+                checked
+                  ? multiple
+                    ? [...selected, option.value]
+                    : [option.value]
+                  : selected.filter((item) => item !== option.value),
+              )
             }
           >
             {option.label}

@@ -12,7 +12,10 @@ export function FixedCostRecordCount() {
         ? "pendientes"
         : "deudas";
   return (
-    <span className="whitespace-nowrap text-sm font-medium tabular-nums text-muted-foreground" aria-live="polite">
+    <span
+      className="whitespace-nowrap text-sm font-medium tabular-nums text-muted-foreground"
+      aria-live="polite"
+    >
       {shown} {shown === 1 ? noun : plural}
     </span>
   );

@@ -10,7 +10,7 @@ export function DataViewTable<T>({
   columns,
   rowKey,
   footer,
-  summary,
+  summary: _summary,
   calculationStorageKey,
   calculationDefaults,
   tableClassName,

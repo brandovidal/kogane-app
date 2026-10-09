@@ -20,7 +20,10 @@ export function totalsOf(records: PaidRecord[]) {
   return records.reduce(
     (totals, record) => {
       const { paid, own } = paidAndOwn(record);
-      return { paid: round2(totals.paid + paid), own: round2(totals.own + own) };
+      return {
+        paid: round2(totals.paid + paid),
+        own: round2(totals.own + own),
+      };
     },
     { paid: 0, own: 0 },
   );
@@ -37,8 +40,17 @@ export interface ExpenseShare {
 export function shareParts(total: number, shares: ExpenseShare[]) {
   const parts = shares.map((share) => {
     const amount = round2(share.amount ?? total * (share.ratio ?? 0));
-    return { personId: share.personId, amount, percent: total ? Math.round((amount / total) * 100) : 0 };
+    return {
+      personId: share.personId,
+      amount,
+      percent: total ? Math.round((amount / total) * 100) : 0,
+    };
   });
-  const others = round2(Math.min(total, parts.reduce((sum, part) => sum + part.amount, 0)));
+  const others = round2(
+    Math.min(
+      total,
+      parts.reduce((sum, part) => sum + part.amount, 0),
+    ),
+  );
   return { parts, own: round2(total - others) };
 }

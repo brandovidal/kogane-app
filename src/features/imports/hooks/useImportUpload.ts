@@ -32,7 +32,8 @@ export function useImportUpload(onRead: (key: string) => void) {
   };
 
   const send = () => {
-    if (!files.length || upload.isPending || cardMissing || passwordMissing) return;
+    if (!files.length || upload.isPending || cardMissing || passwordMissing)
+      return;
     if (source === "notion") {
       notion.mutate(files, {
         onSuccess: (batch) => (reset(), onRead(`notion:${batch.id}`)),

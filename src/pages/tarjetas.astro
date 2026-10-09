@@ -6,8 +6,14 @@ import { CardRecordCount } from "@/features/credit-cards/components/header/CardR
 import "@/features/credit-cards/styles/cards.css";
 ---
 
-<DashboardLayout title="Tarjetas de crédito" section="Gastos" mainClass="app-gradient">
+<DashboardLayout
+  title="Tarjetas de crédito"
+  section="Gastos"
+  mainClass="app-gradient"
+>
   <CardRecordCount slot="title-extra" client:load />
-  <div slot="header-actions" class="hidden sm:block"><CardPeriodSelector client:load /></div>
+  <div slot="header-actions" class="hidden sm:block">
+    <CardPeriodSelector client:load />
+  </div>
   <CardsPage client:load />
 </DashboardLayout>

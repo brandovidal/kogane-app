@@ -106,7 +106,6 @@ function PlatformListPageContent() {
             onOpenChange={setFilterSheetOpen}
             filters={list.filters}
             onFiltersChange={list.setFilters}
-            me={list.me}
             resultCount={list.filtered.length}
             totalCount={list.items.length}
             personCounts={list.personCounts}

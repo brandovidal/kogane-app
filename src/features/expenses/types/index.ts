@@ -4,4 +4,10 @@ export type {
   ActiveExpenseFilterChipsOptions,
   ActiveExpenseFilterChipsProps,
 } from "./expense-filter-props";
-export type { ExpenseFilterValues, ExpenseFilterKey, FilterableExpense, InstallmentFilterValue, SharedFilterValue } from "./expense-filters";
+export type {
+  ExpenseFilterValues,
+  ExpenseFilterKey,
+  FilterableExpense,
+  InstallmentFilterValue,
+  SharedFilterValue,
+} from "./expense-filters";

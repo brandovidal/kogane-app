@@ -7,10 +7,20 @@ interface HistoryValueProps {
   formattedValue: string;
 }
 
-export function HistoryValue({ field, rawValue, formattedValue }: HistoryValueProps) {
-  if ((field === "paymentStatus" || field === "status") && typeof rawValue === "string" && PAYMENT_STATUS_LABELS[rawValue]) {
+export function HistoryValue({
+  field,
+  rawValue,
+  formattedValue,
+}: HistoryValueProps) {
+  if (
+    (field === "paymentStatus" || field === "status") &&
+    typeof rawValue === "string" &&
+    PAYMENT_STATUS_LABELS[rawValue]
+  ) {
     return <StatusBadge status={rawValue} />;
   }
 
-  return <span className="whitespace-pre-wrap wrap-anywhere">{formattedValue}</span>;
+  return (
+    <span className="whitespace-pre-wrap wrap-anywhere">{formattedValue}</span>
+  );
 }

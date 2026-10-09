@@ -16,7 +16,9 @@ export function FieldLabel({
 }: FieldLabelProps) {
   return (
     <span className={cn("inline-flex items-center gap-1.5", className)}>
-      {Icon && <Icon aria-hidden="true" className="size-3.5 text-muted-foreground" />}
+      {Icon && (
+        <Icon aria-hidden="true" className="size-3.5 text-muted-foreground" />
+      )}
       {children}
     </span>
   );
