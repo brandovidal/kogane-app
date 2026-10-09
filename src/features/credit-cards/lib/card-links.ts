@@ -5,3 +5,7 @@ export const cardHref = (code: string | null | undefined) =>
 // The card asked for in the address, or null for the overview of all of them
 export const cardFromSearch = (search: string) =>
   new URLSearchParams(search).get("tarjeta") || null;
+
+// "&vista=pago" opens the card straight in its payment tab
+export const tabFromSearch = (search: string) =>
+  new URLSearchParams(search).get("vista") === "pago" ? "payment" : null;

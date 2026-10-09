@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { useEffect, useState } from "react";
+import { tabFromSearch } from "../lib/card-links";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChartPie, LayoutGrid, List, Wallet } from "lucide-react";
@@ -138,6 +139,10 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     "expenses" | "card-detail" | "payment"
   >("expenses");
   const [editingCard, setEditingCard] = useState(false);
+  useEffect(() => {
+    const tab = tabFromSearch(window.location.search);
+    if (tab) setActiveTab(tab);
+  }, []);
 
   const card = creditCards?.find(
     (c) => c.code === cardCode || c.id === cardCode,
