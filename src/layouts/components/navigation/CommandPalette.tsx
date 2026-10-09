@@ -49,9 +49,11 @@ function CommandPaletteView() {
 
   useEffect(() => setSelected(0), [query, open]);
 
-  const go = (link: FlatLink) => {
+  // Ctrl/⌘ + ↵ (or Ctrl/⌘ + click) opens the screen in a new tab (board HdrBusqueda)
+  const go = (link: FlatLink, newTab = false) => {
     setOpen(false);
     if (link.action === "new-expense") newExpenseStore.getState().openWith();
+    else if (newTab) window.open(link.href, "_blank", "noopener");
     else window.location.href = link.href;
   };
 
@@ -79,11 +81,14 @@ function CommandPaletteView() {
               if (event.key === "ArrowUp")
                 setSelected((current) => Math.max(current - 1, 0));
               if (event.key === "Enter" && results[selected])
-                go(results[selected]);
+                go(results[selected], event.ctrlKey || event.metaKey);
             }}
-            placeholder="Ir a… (ej: borrador, io, deudas)"
+            placeholder="Buscar o ir a… (ej: borrador, io, deudas)"
             className="h-11 flex-1 bg-transparent text-sm outline-none"
           />
+          <kbd className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">
+            Esc
+          </kbd>
         </div>
         <ul className="max-h-80 overflow-y-auto p-1">
           {results.map((link, index) => (
@@ -91,7 +96,7 @@ function CommandPaletteView() {
               <button
                 type="button"
                 onMouseEnter={() => setSelected(index)}
-                onClick={() => go(link)}
+                onClick={(event) => go(link, event.ctrlKey || event.metaKey)}
                 className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${index === selected ? "bg-muted" : ""}`}
               >
                 <span>{link.label}</span>
@@ -109,6 +114,11 @@ function CommandPaletteView() {
             </li>
           )}
         </ul>
+        <div className="hidden items-center gap-4 border-t px-3 py-2 text-[11px] text-muted-foreground sm:flex">
+          <span>↑↓ navegar</span>
+          <span>↵ abrir</span>
+          <span>Ctrl ↵ abrir en pestaña nueva</span>
+        </div>
       </DialogContent>
     </Dialog>
   );
