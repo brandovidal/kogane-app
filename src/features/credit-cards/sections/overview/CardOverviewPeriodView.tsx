@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import type { CardOverviewRow } from "../../hooks/useCardOverview";
+import type { CardOverviewRow } from "../../types/card-overview";
 import { formatCurrency } from "@/shared/lib/currency";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 
@@ -8,6 +8,14 @@ const PERIODS = [
   { key: "middle", label: "Cierre del 11 al 20", from: 11, to: 20 },
   { key: "late", label: "Cierre del 21 al 31", from: 21, to: 31 },
 ] as const;
+
+interface CardClosePeriod {
+  key: string;
+  label: string;
+  from: number;
+  to: number;
+  rows: CardOverviewRow[];
+}
 
 function CardSwatch({ color }: { color: string | null }) {
   return (
@@ -38,16 +46,15 @@ export function CardOverviewPeriodView({
       </p>
     );
 
-  const periods: { key: string; label: string; rows: CardOverviewRow[] }[] =
-    PERIODS.map((period) => ({
-      ...period,
-      rows: rows.filter(
-        (row) =>
-          row.closeDay != null &&
-          row.closeDay >= period.from &&
-          row.closeDay <= period.to,
-      ),
-    }));
+  const periods: CardClosePeriod[] = PERIODS.map((period) => ({
+    ...period,
+    rows: rows.filter(
+      (row) =>
+        row.closeDay != null &&
+        row.closeDay >= period.from &&
+        row.closeDay <= period.to,
+    ),
+  }));
   const withoutCloseDay = rows.filter(
     (row) => row.closeDay == null || row.closeDay < 1 || row.closeDay > 31,
   );

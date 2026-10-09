@@ -8,8 +8,8 @@ import {
   type FixedCostStatusScope,
 } from "../../lib/fixed-cost-summary";
 import { totalsOf } from "@/features/expenses/lib/shared-expense";
-import { formatDayMonth } from "@/shared/lib/dates";
-import { localTodayKey, urgencyOf } from "../../lib/fixed-cost-views";
+import { formatDayMonth, localTodayKey } from "@/shared/lib/dates";
+import { urgencyOf } from "../../lib/fixed-cost-views";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import type { FixedCost } from "@/shared/api/types";
-import { formatDate } from "@/shared/lib/dates";
+import { formatDate, localTodayKey } from "@/shared/lib/dates";
 import { cn } from "@/shared/utils/cn";
 import {
   daysUntilDue,
   isCompletedFixedCost,
 } from "../../lib/fixed-cost-summary";
-import { localTodayKey, relativeDueLabel } from "../../lib/fixed-cost-views";
+import { relativeDueLabel } from "../../lib/fixed-cost-views";
 
 export function FixedCostDue({ cost }: { cost: FixedCost }) {
   const [todayKey, setTodayKey] = useState("");

@@ -58,6 +58,10 @@ export function PlatformDetailPage({
   initialTab,
   onClose,
   onEdit,
+  onMove,
+  onDuplicate,
+  onStatusChange,
+  onPaymentPeriodChange,
   onDelete,
   onNavigate,
 }: {

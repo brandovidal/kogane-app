@@ -17,7 +17,6 @@ export const queryClient = new QueryClient({
   },
 });
 
-// `export default withQuery(FixedCostTable)` so the island can use useQuery / useMutation
 export function withQuery<P extends object>(Component: ComponentType<P>) {
   function WithQuery(props: P) {
     return (

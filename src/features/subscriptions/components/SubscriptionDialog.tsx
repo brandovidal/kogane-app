@@ -28,8 +28,7 @@ import {
   SUBSCRIPTION_PERIODS,
   SUBSCRIPTION_STATUSES,
 } from "@/features/subscriptions/constants/subscriptions";
-import { toIsoDate } from "@/shared/lib/dates";
-import { localTodayKey } from "@/features/fixed-costs/lib/fixed-cost-views";
+import { localTodayKey, toIsoDate } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 
 const subscriptionFormSchema = z.object({

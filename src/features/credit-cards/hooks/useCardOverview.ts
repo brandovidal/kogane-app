@@ -19,28 +19,8 @@ import {
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { cardHref } from "../lib/card-links";
 import { cardHeaderStore } from "../stores/card-header.store";
-
-export interface CardOverviewRow {
-  card: PaymentMethod;
-  href: string;
-  expenses: CreditCardExpense[];
-  total: number;
-  pending: number;
-  count: number;
-  closeDay: number | null;
-  payDay: number | null;
-}
-
-const FILTER_KEYS = [
-  "person",
-  "q",
-  "installments",
-  "category",
-  "currency",
-  "status",
-  "type",
-  "shared",
-] as const;
+import { CARD_OVERVIEW_FILTER_KEYS } from "../constants/filters";
+import type { CardOverviewRow } from "../types/card-overview";
 const EMPTY_EXPENSES: CreditCardExpense[] = [];
 const EMPTY_CARDS: PaymentMethod[] = [];
 
@@ -58,7 +38,7 @@ export function useCardOverview() {
   const personName = nameById(people);
   const me = useMe();
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>([
-    ...FILTER_KEYS,
+    ...CARD_OVERVIEW_FILTER_KEYS,
   ]);
   const filtered = useMemo(
     () => applyExpenseFilters(expenses, filters, me),

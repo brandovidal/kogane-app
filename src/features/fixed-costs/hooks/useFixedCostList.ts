@@ -13,7 +13,11 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
-import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
+import {
+  getCurrentMonth,
+  getCurrentYear,
+  localTodayKey,
+} from "@/shared/lib/dates";
 import { buildFixedCostExport } from "@/features/fixed-costs/lib/fixed-cost-export";
 import { FIXED_COST_FILTER_KEYS } from "@/features/fixed-costs/lib/fixed-cost-filters";
 import { FIXED_COST_GROUP_VALUES } from "../constants/grouping";
@@ -28,7 +32,6 @@ import {
   findFixedCostSort,
   isFixedCostView,
   installmentSeries,
-  localTodayKey,
   payableByUrgency,
   type FixedCostView,
 } from "../lib/fixed-cost-views";

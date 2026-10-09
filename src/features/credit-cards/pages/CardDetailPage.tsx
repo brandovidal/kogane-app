@@ -59,10 +59,7 @@ import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFi
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
-import type {
-  ExpenseFilterKey,
-  ExpenseFilterValues,
-} from "@/features/expenses/types/expense-filters";
+import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { StatementMinimumCard } from "../components/StatementMinimumCard";
 import { StatementTotalCard } from "../components/StatementTotalCard";
@@ -87,22 +84,10 @@ import { CardDetailHeader } from "../sections/detail/CardDetailHeader";
 import { CardDetailMetrics } from "../sections/detail/CardDetailMetrics";
 import { CardEditorDialog } from "../components/CardEditorDialog";
 
-const FILTERS: ExpenseFilterKey[] = [
-  "person",
-  "q",
-  "category",
-  "currency",
-  "status",
-  "installments",
-  "type",
-  "shared",
-];
-const GROUP_BY_OPTIONS = [
-  { value: "category", label: "Categoría" },
-  { value: "currency", label: "Moneda" },
-  { value: "person", label: "Persona" },
-  { value: "installments", label: "Cuotas" },
-];
+import {
+  CARD_DETAIL_FILTER_KEYS,
+  CARD_DETAIL_GROUP_OPTIONS,
+} from "../constants/filters";
 
 interface CreditCardDetailProps {
   cardCode: string;
@@ -128,7 +113,9 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
   const uploadAttachment = useUploadAttachment({ quiet: true });
   const queryClient = useQueryClient();
   const openNewExpense = useNewExpense((state) => state.openWith);
-  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
+  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>([
+    ...CARD_DETAIL_FILTER_KEYS,
+  ]);
   const [groupBy, setGroupBy] = useState<string>("none");
   const me = useMe();
   const [view, setView] = useViewMode("card-detail", "table");
@@ -478,7 +465,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
 
         <TabsContent value="expenses" className="mt-3 space-y-3">
           <ExpenseFilters
-            fields={FILTERS}
+            fields={[...CARD_DETAIL_FILTER_KEYS]}
             value={filters}
             onChange={setFilters}
             statuses={CREDIT_CARD_STATUSES}
@@ -486,11 +473,11 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
             total={ofCard.length}
             groupBy={groupBy}
             onGroupByChange={setGroupBy}
-            groupByOptions={GROUP_BY_OPTIONS}
+            groupByOptions={[...CARD_DETAIL_GROUP_OPTIONS]}
             showActiveSummary={false}
             appliedFilters={
               <ActiveExpenseFilterChips
-                fields={FILTERS}
+                fields={[...CARD_DETAIL_FILTER_KEYS]}
                 value={filters}
                 onChange={setFilters}
                 me={me}

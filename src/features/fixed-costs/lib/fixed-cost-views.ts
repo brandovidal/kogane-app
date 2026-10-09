@@ -240,10 +240,6 @@ export function monthGroupLabel(key: string) {
   return `${getMonthName((index % 12) + 1)} ${Math.floor(index / 12)}`;
 }
 
-export function localTodayKey(date = new Date()) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
 export function relativeDueLabel(days: number | null) {
   if (days == null) return null;
   if (days < 0)

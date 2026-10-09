@@ -1,32 +1,22 @@
 import { useState } from "react";
-import {
-  Activity,
-  ChevronRight,
-  LayoutGrid,
-  ListFilter,
-  Table2,
-} from "lucide-react";
+import { Activity, ListFilter } from "lucide-react";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { INSTALLMENT_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { SearchField } from "@/shared/components/filters/SearchField";
-import { Button } from "@/ui/button";
 import { useMe } from "@/shared/api/hooks/catalogs";
-import { cn } from "@/shared/utils/cn";
 import { CardOverviewFilterSheet } from "./CardOverviewFilterSheet";
-
-const FILTERS = [
-  "person",
-  "q",
-  "installments",
-  "category",
-  "currency",
-  "status",
-  "type",
-  "shared",
-] as const;
+import { CARD_OVERVIEW_FILTER_KEYS } from "../../constants/filters";
+import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import {
+  AppliedFilterSection,
+  AppliedViewSummary,
+  AppliedViewToggle,
+  CountedToolbarButton,
+  ViewModeToggle,
+} from "@/shared/components/toolbar";
 
 export function CardOverviewToolbar({
   filters,
@@ -42,6 +32,10 @@ export function CardOverviewToolbar({
   const [filterOpen, setFilterOpen] = useState(false);
   const [showApplied, setShowApplied] = useState(false);
   const me = useMe();
+  const filterCount = countActiveExpenseFilters(
+    filters,
+    CARD_OVERVIEW_FILTER_KEYS,
+  );
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -85,82 +79,52 @@ export function CardOverviewToolbar({
               labelClassName="sr-only"
             />
           </div>
-          <Button
+          <CountedToolbarButton
+            label="Filtros"
+            icon={<ListFilter className="size-4" />}
+            count={filterCount}
             variant="ghost"
-            size="sm"
-            className="h-8 gap-1.5"
+            className="h-8 gap-1.5 text-muted-foreground"
             onClick={() => setFilterOpen(true)}
-          >
-            <ListFilter className="size-4" />
-            Filtros
-          </Button>
-          <span
-            aria-hidden="true"
-            className="mx-1 hidden h-5 w-px bg-border sm:block"
           />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1.5 text-xs"
-            onClick={() => setShowApplied(!showApplied)}
-            aria-expanded={showApplied}
-          >
-            <ChevronRight
-              className={cn(
-                "size-4 transition-transform",
-                showApplied && "rotate-90",
-              )}
-            />
-            Ver aplicados
-          </Button>
+          <AppliedViewToggle
+            count={filterCount}
+            open={showApplied}
+            onOpenChange={setShowApplied}
+          />
         </div>
-        <div
-          className="inline-flex shrink-0 rounded-lg border bg-card p-0.5"
-          role="group"
-          aria-label="Presentación de tarjetas"
-        >
-          <button
-            type="button"
-            onClick={() => onLayoutChange("table")}
-            className={cn(
-              "flex h-7 items-center gap-1 rounded-md px-2.5 text-sm",
-              layout === "table"
-                ? "bg-accent text-foreground"
-                : "text-muted-foreground",
-            )}
-          >
-            <Table2 className="size-4" />
-            Tabla
-          </button>
-          <button
-            type="button"
-            onClick={() => onLayoutChange("cards")}
-            className={cn(
-              "flex h-7 items-center gap-1 rounded-md px-2.5 text-sm",
-              layout === "cards"
-                ? "bg-accent text-foreground"
-                : "text-muted-foreground",
-            )}
-          >
-            <LayoutGrid className="size-4" />
-            Tarjetas
-          </button>
-        </div>
-      </div>
-      {showApplied && (
-        <ActiveExpenseFilterChips
-          fields={[...FILTERS]}
-          value={filters}
-          onChange={onFiltersChange}
-          me={me}
+        <ViewModeToggle
+          value={layout}
+          onChange={onLayoutChange}
+          label="Presentación de tarjetas"
         />
+      </div>
+      {showApplied && filterCount > 0 && (
+        <AppliedViewSummary
+          onAddFilter={() => setFilterOpen(true)}
+          onReset={() => onFiltersChange({})}
+          resetDisabled={filterCount === 0}
+        >
+          <AppliedFilterSection label="Filtros">
+            <ActiveExpenseFilterChips
+              fields={[...CARD_OVERVIEW_FILTER_KEYS]}
+              value={filters}
+              onChange={onFiltersChange}
+              me={me}
+              tone="brand"
+              maxVisibleItems={3}
+              collapsible={false}
+              showClearAll={false}
+            />
+          </AppliedFilterSection>
+        </AppliedViewSummary>
       )}
       <CardOverviewFilterSheet
         open={filterOpen}
         onOpenChange={setFilterOpen}
         filters={filters}
         onFiltersChange={onFiltersChange}
-        fields={[...FILTERS].filter((field) => field !== "q")}
+        fields={CARD_OVERVIEW_FILTER_KEYS.filter((field) => field !== "q")}
       />
     </>
   );

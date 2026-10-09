@@ -6,6 +6,7 @@ export {
   getMonthName,
   getCurrentMonth,
   getCurrentYear,
+  localTodayKey,
   formatDate,
   formatDayMonth,
   toIsoDate,

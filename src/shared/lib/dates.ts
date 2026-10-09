@@ -25,6 +25,10 @@ export function getCurrentYear(): number {
   return new Date().getFullYear();
 }
 
+export function localTodayKey(date = new Date()): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 // kogane-api stores dates at 00:00 UTC (spentAt, dueDate…): read them in UTC or Lima shows the day before
 export function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;

@@ -1,6 +1,6 @@
-import type { CardOverviewRow } from "../../hooks/useCardOverview";
+import type { CardOverviewRow } from "../../types/card-overview";
 import { formatCurrency } from "@/shared/lib/currency";
-import { localTodayKey } from "@/features/fixed-costs/lib/fixed-cost-views";
+import { localTodayKey } from "@/shared/lib/dates";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 
 function daysToPayment(day: number): number {

@@ -1,9 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Subscription } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
-import { formatDayMonth } from "@/shared/lib/dates";
+import { formatDayMonth, localTodayKey } from "@/shared/lib/dates";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
-import { localTodayKey } from "@/features/fixed-costs/lib/fixed-cost-views";
 import { periodStore } from "@/shared/stores/period.store";
 import { cn } from "@/shared/utils/cn";
 import { PlatformMark } from "../components/PlatformMark";

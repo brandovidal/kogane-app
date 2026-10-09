@@ -1,7 +1,7 @@
 import type { FixedCost } from "@/shared/api/types";
+import { localTodayKey } from "@/shared/lib/dates";
 import {
   URGENCY_GROUPS,
-  localTodayKey,
   monthGroupKey,
   monthGroupLabel,
   urgencyDotColor,

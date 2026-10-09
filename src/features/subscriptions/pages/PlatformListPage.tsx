@@ -15,8 +15,7 @@ import { PlatformFilterSheet } from "../sections/list/PlatformFilterSheet";
 import { PlatformResults } from "../sections/list/PlatformResults";
 import { PlatformBulkActions } from "../sections/list/PlatformBulkActions";
 import { PlatformDetailPage } from "./PlatformDetailPage";
-import { localTodayKey } from "@/features/fixed-costs/lib/fixed-cost-views";
-import { formatDate } from "@/shared/lib/dates";
+import { formatDate, localTodayKey } from "@/shared/lib/dates";
 const EXPORT_HEADERS = [
   "Plataforma",
   "Período",

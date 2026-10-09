@@ -13,10 +13,8 @@ import { MonthYearPicker } from "@/shared/components/navigation/MonthYearPicker"
 import { Switch } from "@/ui/switch";
 import { parseInstallment } from "@/features/expenses/lib/installments";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
-import {
-  localTodayKey,
-  relativeDueLabel,
-} from "@/features/fixed-costs/lib/fixed-cost-views";
+import { relativeDueLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
+import { localTodayKey } from "@/shared/lib/dates";
 import { cn } from "@/shared/utils/cn";
 import type {
   FixedCostForm,

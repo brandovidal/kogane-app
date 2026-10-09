@@ -13,7 +13,7 @@ import type { PlatformView } from "./PlatformViewBar";
 import { layoutForPlatformView } from "./PlatformViewBar";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../../constants/subscriptions";
 import { platformAmount } from "../../lib/platform-summary";
-import { localTodayKey } from "@/features/fixed-costs/lib/fixed-cost-views";
+import { localTodayKey } from "@/shared/lib/dates";
 import type { usePlatformTable } from "../../hooks/usePlatformTable";
 import type { usePlatformActions } from "../../hooks/usePlatformActions";
 
