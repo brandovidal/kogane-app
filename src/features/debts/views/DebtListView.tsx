@@ -9,7 +9,6 @@ import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
@@ -23,6 +22,8 @@ import {
   type DebtFilterValues,
   type Direction,
 } from "@/features/debts/lib/debt-filters";
+import { DebtIndicators } from "../sections/DebtIndicators";
+import { PeriodStatusNotice } from "@/shared/components/data-display/PeriodStatusNotice";
 import { CardCheckPanel } from "../sections/CardCheckPanel";
 import { DebtBulkBar } from "../sections/DebtBulkBar";
 import {
@@ -37,9 +38,22 @@ import { DebtDialog } from "../components/dialogs/DebtDialog";
 import { RegisterPaymentDialog } from "../components/dialogs/RegisterPaymentDialog";
 import { useDebtGrouping } from "../hooks/useDebtGrouping";
 
-const TEXTS: Record<Direction, { total: string; empty: string }> = {
-  owed_to_me: { total: "Por cobrar", empty: "Nadie te debe nada" },
-  i_owe: { total: "Por pagar", empty: "No debes nada" },
+const TEXTS: Record<
+  Direction,
+  { emptyTitle: string; emptyHint: string; createLabel: string }
+> = {
+  owed_to_me: {
+    emptyTitle: "Sin cobros este mes",
+    emptyHint:
+      "Registra lo que te deben o pásalo desde Mensajes para llevar el saldo de cada cuota.",
+    createLabel: "Nuevo cobro",
+  },
+  i_owe: {
+    emptyTitle: "Sin deudas este mes",
+    emptyHint:
+      "Registra lo que debes para llevar el saldo de cada cuota y no pasar la fecha límite.",
+    createLabel: "Nueva deuda",
+  },
 };
 
 export function DebtListView({
@@ -75,10 +89,9 @@ export function DebtListView({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [registering, setRegistering] = useState(false);
   const [editingDebt, setEditingDebt] = useState<Debt | undefined>();
+  const [creating, setCreating] = useState(false);
 
   const shown = applyDebtFilters(debts, filters, { month, year });
-  const total = shown.reduce((sum, debt) => sum + debt.balance, 0);
-  const paid = shown.reduce((sum, debt) => sum + debt.paidAmount, 0);
   const checked = shown.filter((debt) => selected.has(debt.id));
   const card = filters.card
     ? cards.find((item) => item.id === filters.card)
@@ -100,16 +113,8 @@ export function DebtListView({
 
   return (
     <div className="min-w-0 space-y-4">
+      <DebtIndicators debts={shown} direction={direction} />
       <RecordListToolbar
-        primary={
-          <div>
-            <p className="text-sm text-muted-foreground">{texts.total}</p>
-            <p className="text-2xl font-bold">{formatCurrency(total)}</p>
-            <p className="text-xs text-muted-foreground">
-              {shown.length} cuotas · pagado {formatCurrency(paid)}
-            </p>
-          </div>
-        }
         actions={
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
             <div className="flex flex-wrap items-center gap-2">
@@ -224,8 +229,33 @@ export function DebtListView({
 
       <DebtBulkBar selected={checked} onDone={() => setSelected(new Set())} />
 
+      {panelMonth && filters.year && (
+        <PeriodStatusNotice
+          month={panelMonth}
+          year={Number(filters.year)}
+          billedHint={
+            direction === "owed_to_me"
+              ? "revisa qué falta por cobrar y registra los pagos"
+              : "revisa lo que debes y registra los pagos"
+          }
+        />
+      )}
+
       {!debts.length ? (
-        <EmptyState description={texts.empty} />
+        <EmptyState
+          title={texts.emptyTitle}
+          description={texts.emptyHint}
+          action={
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button size="sm" onClick={() => setCreating(true)}>
+                {texts.createLabel}
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <a href="/importacion">Importar archivo…</a>
+              </Button>
+            </div>
+          }
+        />
       ) : !shown.length ? (
         <EmptyState
           variant="filters"
@@ -307,8 +337,12 @@ export function DebtListView({
         period={{ month, year }}
       />
       <DebtDialog
-        open={!!editingDebt}
-        onOpenChange={(open) => !open && setEditingDebt(undefined)}
+        open={!!editingDebt || creating}
+        onOpenChange={(open) => {
+          if (open) return;
+          setEditingDebt(undefined);
+          setCreating(false);
+        }}
         direction={direction}
         debt={editingDebt}
       />

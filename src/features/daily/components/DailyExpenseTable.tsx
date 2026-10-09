@@ -20,22 +20,20 @@ import { GroupedDataView } from "@/shared/components/data-display/GroupedDataVie
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column } from "@/shared/types/data-view";
+import { DailyIndicators } from "./DailyIndicators";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
-import { OwnPart } from "@/features/expenses/components/OwnPart";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type {
   ExpenseFilterKey,
   ExpenseFilterValues,
 } from "@/features/expenses/types/expense-filters";
-import { totalsOf } from "@/features/expenses/lib/shared-expense";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
@@ -76,7 +74,6 @@ function DailyExpenseTableView() {
   const sorted = applyExpenseFilters(expenses, filters, me).sort((a, b) =>
     b.spentAt.localeCompare(a.spentAt),
   );
-  const totals = totalsOf(sorted);
 
   const columns: Column<DailyExpense>[] = [
     {
@@ -174,15 +171,7 @@ function DailyExpenseTableView() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <div>
-          <p className="text-sm text-muted-foreground">
-            {sorted.length} gastos
-          </p>
-          <p className="text-2xl font-bold">{formatCurrency(totals.paid)}</p>
-          <OwnPart {...totals} />
-        </div>
-      </div>
+      <DailyIndicators expenses={sorted} month={month} year={year} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <ExpenseFilters
@@ -210,13 +199,32 @@ function DailyExpenseTableView() {
       </div>
 
       {sorted.length === 0 ? (
-        <EmptyState
-          description={
-            expenses.length
-              ? "No hay gastos con estos filtros"
-              : "No hay gastos del día a día en este mes"
-          }
-        />
+        expenses.length ? (
+          <EmptyState
+            variant="filters"
+            title="Sin resultados"
+            description="No hay gastos con estos filtros"
+          />
+        ) : (
+          <EmptyState
+            variant="period"
+            title="Sin gastos este mes"
+            description="Registra tu primer gasto o mándalo por Mensajes: una captura, un audio o un texto basta."
+            action={
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => openNewExpense({ destination: "daily" })}
+                >
+                  Nuevo gasto
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <a href="/mensajes">Ir a Mensajes</a>
+                </Button>
+              </div>
+            }
+          />
+        )
       ) : (
         <GroupedDataView
           items={sorted}
