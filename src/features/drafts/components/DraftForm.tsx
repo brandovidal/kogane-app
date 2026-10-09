@@ -90,11 +90,19 @@ export function DraftForm({
         />
       ) : (
         <div className="space-y-4">
-          <Field label="Descripción" missing={missing("description")}>
+          <Field
+            label="Descripción"
+            missing={missing("description")}
+            error={
+              missing("description")
+                ? "Escribe una descripción del gasto"
+                : undefined
+            }
+          >
             <Input
               value={value.description ?? ""}
               onChange={(e) => set("description", e.target.value)}
-              placeholder="Ej: Almuerzo, Netflix..."
+              placeholder="Ej: Almuerzo, taxi, supermercado…"
             />
           </Field>
 
@@ -102,6 +110,9 @@ export function DraftForm({
             <Field
               label={isDebt && value.installment ? "Monto por cuota" : "Monto"}
               missing={missing("amount")}
+              error={
+                missing("amount") ? "Ingresa un monto mayor a 0" : undefined
+              }
             >
               <Input
                 type="number"
@@ -153,6 +164,7 @@ export function DraftForm({
                     : "Para quién"
               }
               missing={missing("personId")}
+              error={missing("personId") ? "Elige para quién es" : undefined}
             >
               <PersonSelect
                 value={value.personId}
@@ -165,6 +177,9 @@ export function DraftForm({
             <Field
               label={rules.cardsOnly ? "Tarjeta" : "Medio de pago"}
               missing={missing("paymentMethodId")}
+              error={
+                missing("paymentMethodId") ? "Elige cómo pagaste" : undefined
+              }
             >
               <PaymentMethodSelect
                 type={rules.cardsOnly ? "credit_card" : undefined}
