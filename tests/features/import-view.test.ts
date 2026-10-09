@@ -68,3 +68,16 @@ describe("import view", () => {
     expect(monthMatches({ linked: 0, notionSpent: null })).toBe(false);
   });
 });
+
+describe("filterHistory", () => {
+  const items = [
+    { key: "a", pending: true },
+    { key: "b", pending: false },
+  ] as never[];
+  it("todos devuelve todo y pendientes solo lo que espera decisión", async () => {
+    const { filterHistory } =
+      await import("@/features/imports/lib/import-view");
+    expect(filterHistory(items, "all")).toHaveLength(2);
+    expect(filterHistory(items, "pending")).toHaveLength(1);
+  });
+});

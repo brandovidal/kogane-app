@@ -57,3 +57,9 @@ export const amountOf = (row: ImportRow) =>
 
 export const importRowFileName = (file: string) =>
   file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "");
+
+export type HistoryFilter = "all" | "pending";
+
+// Historial (board I11): todos, o solo lo que espera una decisión
+export const filterHistory = (items: HistoryItem[], filter: HistoryFilter) =>
+  filter === "pending" ? items.filter((item) => item.pending) : items;
