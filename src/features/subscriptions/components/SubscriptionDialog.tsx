@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import {
   Select,
   SelectContent,
@@ -286,7 +286,13 @@ export function SubscriptionDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Persona *</label>
-            <PersonSelect
+            <PersonFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="Selecciona persona"
+              includeUnassigned={false}
+              useMeAlias={false}
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })
@@ -301,11 +307,15 @@ export function SubscriptionDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Cuenta</label>
-            <PaymentMethodSelect
-              allowEmpty
-              groupByType
+            <PaymentMethodFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="—"
+              allowEmptySelection
+              label="Cuenta"
               value={watch("paymentMethodId")}
-              onChange={(id) => setValue("paymentMethodId", id)}
+              onChange={(id) => setValue("paymentMethodId", id ?? null)}
             />
           </div>
         </div>
@@ -313,21 +323,17 @@ export function SubscriptionDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Estado</label>
-            <Select
+            <StatusFilterFields
+              statuses={SUBSCRIPTION_STATUSES}
+              multiple={false}
+              presentation="popover"
+              width="w-full"
+              labelClassName="sr-only"
               value={watch("paymentStatus")}
-              onValueChange={(v) => setValue("paymentStatus", v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SUBSCRIPTION_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    <StatusBadge status={s} />
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(status) => {
+                if (status) setValue("paymentStatus", status);
+              }}
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Fecha vencimiento</label>

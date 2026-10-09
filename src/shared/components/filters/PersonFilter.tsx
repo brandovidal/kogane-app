@@ -22,6 +22,9 @@ export interface PersonFilterProps {
   labelClassName?: string;
   className?: string;
   presentation?: "popover" | "inline" | "responsive-sheet";
+  multiple?: boolean;
+  emptySelectionLabel?: string;
+  triggerClassName?: string;
 }
 
 export function PersonFilter({
@@ -35,6 +38,9 @@ export function PersonFilter({
   labelClassName = "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground",
   className,
   presentation = "responsive-sheet",
+  multiple = true,
+  emptySelectionLabel,
+  triggerClassName,
 }: PersonFilterProps) {
   const multiSelectOptions = options
     .filter((option) => includeUnassigned || !option.unassigned)
@@ -62,7 +68,7 @@ export function PersonFilter({
         onChange={(next) => onChange(next ?? [])}
         width={width}
         allLabel={PERSON_FILTER_LABELS.ALL}
-        emptySelectionLabel={PERSON_FILTER_LABELS.ALL}
+        emptySelectionLabel={emptySelectionLabel ?? PERSON_FILTER_LABELS.ALL}
         emptyDescription={(query) => (
           <>
             Nadie coincide con «{query}».
@@ -76,6 +82,9 @@ export function PersonFilter({
         presentation={presentation}
         activeMarker={activeMarker}
         labelClassName={labelClassName}
+        multiple={multiple}
+        showSelectionFooter={multiple}
+        triggerClassName={triggerClassName}
       />
     </div>
   );

@@ -12,7 +12,7 @@ export interface ExpenseFilterValues {
   person?: string; // Comma-separated person ids; PERSON_ME and PERSON_UNASSIGNED are special values.
   q?: string;
   category?: string;
-  method?: string;
+  method?: string; // Comma-separated payment method ids; no value means all active methods.
   currency?: string;
   type?: string;
   status?: string;

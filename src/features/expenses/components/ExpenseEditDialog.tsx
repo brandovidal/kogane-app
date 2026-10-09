@@ -18,9 +18,10 @@ import {
   type CreditCardExpense,
   type DailyExpense,
 } from "@/shared/api/types";
-import { CategorySelect } from "@/features/categories/components/CategorySelect";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
+import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
@@ -32,7 +33,6 @@ import {
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import {
   Select,
   SelectContent,
@@ -292,8 +292,13 @@ export function ExpenseEditDialog({
                 {isCard ? "Tarjeta *" : "Medio de pago *"}
               </FieldLabel>
             </label>
-            <PaymentMethodSelect
+            <PaymentMethodFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              label={isCard ? "Tarjeta" : "Medio de pago"}
               type={isCard ? "credit_card" : undefined}
+              emptySelectionLabel="Selecciona medio de pago"
               value={watch("paymentMethodId")}
               onChange={(id) =>
                 setValue("paymentMethodId", id ?? "", { shouldValidate: true })
@@ -353,7 +358,13 @@ export function ExpenseEditDialog({
             <label className="text-sm font-medium">
               <FieldLabel icon={UserRound}>Persona *</FieldLabel>
             </label>
-            <PersonSelect
+            <PersonFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="Selecciona persona"
+              includeUnassigned={false}
+              useMeAlias={false}
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })
@@ -369,10 +380,14 @@ export function ExpenseEditDialog({
             <label className="text-sm font-medium">
               <FieldLabel icon={Tags}>Categoría</FieldLabel>
             </label>
-            <CategorySelect
-              allowEmpty
+            <CategoryFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="—"
+              allowEmptySelection
               value={watch("categoryId")}
-              onChange={(id) => setValue("categoryId", id)}
+              onChange={(id) => setValue("categoryId", id ?? null)}
             />
           </div>
         </div>
@@ -403,26 +418,20 @@ export function ExpenseEditDialog({
               <label className="text-sm font-medium">
                 <FieldLabel icon={CircleCheck}>Estado</FieldLabel>
               </label>
-              <Select
+              <StatusFilterFields
+                statuses={CREDIT_CARD_STATUSES}
+                multiple={false}
+                presentation="popover"
+                labelClassName="sr-only"
                 value={watch("paymentStatus")}
-                onValueChange={(value) =>
-                  setValue(
-                    "paymentStatus",
-                    value as ExpenseForm["paymentStatus"],
-                  )
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CREDIT_CARD_STATUSES.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      <StatusBadge status={status} />
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(status) => {
+                  if (status)
+                    setValue(
+                      "paymentStatus",
+                      status as ExpenseForm["paymentStatus"],
+                    );
+                }}
+              />
             </div>
           ) : (
             <div className="space-y-1.5">

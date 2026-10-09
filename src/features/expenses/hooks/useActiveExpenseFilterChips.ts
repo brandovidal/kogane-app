@@ -96,7 +96,11 @@ export function useActiveExpenseFilterChips<
           .join(", ")}`
       : undefined,
     method: value.method
-      ? `Medio de pago: ${methods.find((method) => method.id === value.method)?.name ?? value.method}`
+      ? `Medio de pago: ${value.method
+          .split(",")
+          .filter(Boolean)
+          .map((id) => methods.find((method) => method.id === id)?.name ?? id)
+          .join(", ")}`
       : undefined,
     currency: value.currency ? `Moneda: ${value.currency}` : undefined,
     status: value.status
@@ -140,6 +144,37 @@ export function useActiveExpenseFilterChips<
       : undefined,
   };
 
+  const personChips: AppliedFilterChip[] =
+    value.person && value.person !== PERSON_ALL
+      ? allPeopleSelected
+        ? [
+            {
+              key: "person-all",
+              label: "Persona: Todos",
+              onRemove: () => onChange({ ...value, person: undefined }),
+            },
+          ]
+        : [...selectedPersonIds].map((id) => ({
+            key: `person-${id}`,
+            label: `Persona: ${
+              id === PERSON_UNASSIGNED
+                ? "Sin asignar"
+                : id === PERSON_ME || id === me
+                  ? meName
+                  : personName(id)
+            }`,
+            onRemove: () => {
+              const remaining = [...selectedPersonIds].filter(
+                (personId) => personId !== id,
+              );
+              onChange({
+                ...value,
+                person: remaining.length ? remaining.join(",") : undefined,
+              });
+            },
+          }))
+      : [];
+
   const chips: AppliedFilterChip[] = [
     ...(periodChip
       ? [
@@ -153,7 +188,9 @@ export function useActiveExpenseFilterChips<
     ...fields
       .filter(
         (key) =>
-          labels[key] && !(periodChip && (key === "month" || key === "year")),
+          labels[key] &&
+          key !== "person" &&
+          !(periodChip && (key === "month" || key === "year")),
       )
       .map((key) => ({
         key,
@@ -163,6 +200,7 @@ export function useActiveExpenseFilterChips<
             ? onChange({ ...value, amountFrom: undefined, amountTo: undefined })
             : onChange({ ...value, [key]: undefined }),
       })),
+    ...personChips,
   ];
 
   const isGrouped = Array.isArray(groupBy)

@@ -59,8 +59,6 @@ export const useBudgetGroups = () =>
     staleTime: CATALOG_STALE_MS,
   });
 
-// Credit cards are payment methods of type credit_card (D62); only the ones you have (isActive, Configuración ▸
-// Cuentas y tarjetas) show in the menu and the pages
 export const useCreditCards = () => {
   const query = usePaymentMethods();
   return {

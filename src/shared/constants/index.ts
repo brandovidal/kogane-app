@@ -10,6 +10,11 @@ export {
   NO_PAYMENT_STATUS_FILTER,
 } from "./finance";
 export {
+  PAYMENT_METHOD_ICONS,
+  PAYMENT_METHOD_TYPE_LABELS,
+  PAYMENT_METHOD_TYPE_ORDER,
+} from "./payment-methods";
+export {
   PERSON_ALL,
   PERSON_ME,
   PERSON_UNASSIGNED,

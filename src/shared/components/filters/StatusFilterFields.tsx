@@ -19,6 +19,8 @@ export interface StatusFilterFieldsProps {
   icon?: LucideIcon;
   width?: string;
   labelClassName?: string;
+  multiple?: boolean;
+  presentation?: "popover" | "inline" | "responsive-sheet";
 }
 
 export function StatusFilterFields({
@@ -32,6 +34,8 @@ export function StatusFilterFields({
   icon,
   width,
   labelClassName = "text-sm font-medium",
+  multiple = true,
+  presentation = "responsive-sheet",
 }: StatusFilterFieldsProps) {
   const groups = new Map<string, string>();
   for (const group of PAYMENT_STATUS_GROUPS) {
@@ -44,7 +48,11 @@ export function StatusFilterFields({
       value={
         value === NO_PAYMENT_STATUS_FILTER
           ? []
-          : (value?.split(",").filter(Boolean) ?? null)
+          : multiple
+            ? (value?.split(",").filter(Boolean) ?? null)
+            : value
+              ? [value]
+              : []
       }
       options={statuses.map((status) => ({
         value: status,
@@ -54,11 +62,13 @@ export function StatusFilterFields({
       }))}
       onChange={(next) =>
         onChange(
-          next === null
-            ? undefined
-            : next.length
-              ? next.join(",")
-              : NO_PAYMENT_STATUS_FILTER,
+          !multiple
+            ? (next?.[0] ?? undefined)
+            : next === null
+              ? undefined
+              : next.length
+                ? next.join(",")
+                : NO_PAYMENT_STATUS_FILTER,
         )
       }
       allLabel={allLabel}
@@ -71,6 +81,10 @@ export function StatusFilterFields({
       listClassName="max-h-[min(70vh,38rem)]"
       searchable
       labelClassName={labelClassName}
+      multiple={multiple}
+      emptySelectionLabel={emptySelectionLabel}
+      showSelectionFooter={multiple}
+      presentation={presentation}
     />
   );
 }

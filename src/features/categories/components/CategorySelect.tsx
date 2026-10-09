@@ -1,24 +1,24 @@
-import { useCategories } from "@/shared/api/hooks/catalogs";
+import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import type { CatalogSelectProps } from "@/shared/types/catalog-select";
-import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
-import { CategoryLabel } from "./CategoryLabel";
 
-export function CategorySelect(props: CatalogSelectProps) {
-  const options = (useCategories().data ?? []).map((category) => ({
-    ...category,
-    content: (
-      <CategoryLabel
-        name={category.name}
-        icon={category.icon}
-        color={category.color}
-      />
-    ),
-  }));
+export function CategorySelect({
+  value,
+  onChange,
+  placeholder = "Selecciona categoría",
+  allowEmpty = false,
+  className,
+}: CatalogSelectProps) {
   return (
-    <CatalogSelectOptions
-      placeholder="Selecciona categoría"
-      {...props}
-      options={options}
+    <CategoryFilterFields
+      multiple={false}
+      presentation="popover"
+      labelClassName="sr-only"
+      label="Categoría"
+      value={value}
+      onChange={(id) => onChange(id ?? null)}
+      emptySelectionLabel={placeholder}
+      allowEmptySelection={allowEmpty}
+      triggerClassName={className}
     />
   );
 }

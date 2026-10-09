@@ -1,14 +1,24 @@
-import { usePeople } from "@/shared/api/hooks/catalogs";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import type { CatalogSelectProps } from "@/shared/types/catalog-select";
-import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
 
-export function PersonSelect(props: CatalogSelectProps) {
-  const options = usePeople().data?.filter((person) => person.isActive) ?? [];
+export function PersonSelect({
+  value,
+  onChange,
+  placeholder = "Selecciona persona",
+  className,
+}: CatalogSelectProps) {
   return (
-    <CatalogSelectOptions
-      placeholder="Selecciona persona"
-      {...props}
-      options={options}
+    <PersonFilterFields
+      value={value ?? undefined}
+      onChange={(id) => onChange(id ?? null)}
+      label="Persona"
+      labelClassName="sr-only"
+      emptySelectionLabel={placeholder}
+      includeUnassigned={false}
+      multiple={false}
+      useMeAlias={false}
+      presentation="popover"
+      triggerClassName={className}
     />
   );
 }

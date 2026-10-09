@@ -10,20 +10,17 @@ import {
   UserRound,
   WalletCards,
 } from "lucide-react";
-import { CategorySelect } from "@/features/categories/components/CategorySelect";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
+import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { FormField } from "@/shared/components/forms/FormField";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { CatalogSelectOptions } from "@/shared/components/forms/CatalogSelect";
+import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
 import {
   CURRENCIES,
   EXPENSE_TYPE_LABELS,
   EXPENSE_TYPES,
-  PAYMENT_STATUS_LABELS,
 } from "@/shared/constants/finance";
-import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
-import { groupPaymentStatuses } from "@/features/expenses/lib/group-payment-statuses";
 import { Input } from "@/ui/input";
 import {
   InputGroup,
@@ -153,13 +150,15 @@ export function FixedCostGeneralSection() {
             icon={Tags}
             error={errors.categoryId?.message}
           >
-            <CategorySelect
-              className="w-full"
+            <CategoryFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="Selecciona categoría"
               value={watch("categoryId")}
               onChange={(id) =>
                 setValue("categoryId", id ?? "", { shouldValidate: true })
               }
-              placeholder="Selecciona categoría"
             />
           </FormField>
           <FormField
@@ -167,8 +166,13 @@ export function FixedCostGeneralSection() {
             icon={UserRound}
             error={errors.personId?.message}
           >
-            <PersonSelect
-              className="w-full"
+            <PersonFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="Selecciona persona"
+              includeUnassigned={false}
+              useMeAlias={false}
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })
@@ -197,13 +201,15 @@ export function FixedCostGeneralSection() {
             </Select>
           </FormField>
           <FormField label="Cuenta" icon={WalletCards}>
-            <PaymentMethodSelect
-              className="w-full"
-              placeholder="Selecciona cuenta"
-              groupByType
-              allowEmpty
+            <PaymentMethodFilterFields
+              multiple={false}
+              presentation="popover"
+              labelClassName="sr-only"
+              emptySelectionLabel="—"
+              allowEmptySelection
+              label="Cuenta"
               value={watch("paymentMethodId")}
-              onChange={(id) => setValue("paymentMethodId", id)}
+              onChange={(id) => setValue("paymentMethodId", id ?? null)}
             />
           </FormField>
           <div className="sm:col-span-2">
@@ -212,24 +218,16 @@ export function FixedCostGeneralSection() {
               icon={CircleCheck}
               htmlFor="fixed-cost-status"
             >
-              <CatalogSelectOptions
-                id="fixed-cost-status"
-                aria-label="Estado"
-                className="w-full"
-                placeholder="Selecciona estado"
+              <StatusFilterFields
+                multiple={false}
+                width="w-full"
+                labelClassName="sr-only"
+                emptySelectionLabel="Selecciona estado"
                 value={watch("paymentStatus")}
                 onChange={(status) => {
                   if (status) setValue("paymentStatus", status);
                 }}
-                options={groupPaymentStatuses(FIXED_COST_STATUSES).flatMap(
-                  (group) =>
-                    group.options.map((status) => ({
-                      id: status,
-                      name: PAYMENT_STATUS_LABELS[status] ?? status,
-                      group: group.label,
-                      content: <StatusBadge status={status} />,
-                    })),
-                )}
+                statuses={FIXED_COST_STATUSES}
               />
             </FormField>
           </div>

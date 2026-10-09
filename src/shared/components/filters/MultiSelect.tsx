@@ -25,9 +25,13 @@ export interface MultiSelectOption {
   value: string;
   label: string;
   group?: string;
+  groupDecoration?: ReactNode;
   color?: string;
   decoration?: ReactNode;
+  meta?: string;
+  badge?: string;
   searchTerms?: readonly string[];
+  searchAliases?: readonly string[];
   count?: number;
   separatorBefore?: boolean;
 }
@@ -47,13 +51,16 @@ export interface MultiSelectProps {
   triggerClassName?: string;
   emptyDescription?: string | ((query: string) => ReactNode);
   emptySelectionLabel?: string;
-  summaryMode?: "field" | "chip" | "person";
+  summaryMode?: "field" | "chip" | "person" | "payment-method" | "category";
   presentation?: "popover" | "inline" | "responsive-sheet";
   emptyValueMeansAll?: boolean;
   highlightMatches?: boolean;
   hierarchicalGroups?: boolean;
   circularSelectionMarks?: boolean;
   listClassName?: string;
+  multiple?: boolean;
+  allowEmptySelection?: boolean;
+  showSelectionFooter?: boolean;
 }
 
 function SelectionMark({
@@ -109,6 +116,9 @@ export function MultiSelect({
   hierarchicalGroups = false,
   circularSelectionMarks = false,
   listClassName,
+  multiple = true,
+  allowEmptySelection = false,
+  showSelectionFooter = true,
 }: MultiSelectProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -130,23 +140,35 @@ export function MultiSelect({
         [
           group,
           items.filter((item) =>
-            [item.label, ...(item.searchTerms ?? []), group].some((text) =>
-              normalize(text).includes(normalizedQuery),
-            ),
+            [
+              item.label,
+              ...(item.searchTerms ?? []),
+              ...(item.searchAliases ?? []),
+              group,
+            ].some((text) => normalize(text).includes(normalizedQuery)),
           ),
         ] as const,
     )
     .filter(([, items]) => items.length > 0);
   const selectedValues = value ?? [];
   const allSelected =
-    options.length > 0 && options.every((option) => selected.has(option.value));
-  const noFilter = value === null || (emptyValueMeansAll && value.length === 0);
-  const allChecked = (value === null && !emptyValueMeansAll) || allSelected;
+    multiple &&
+    options.length > 0 &&
+    options.every((option) => selected.has(option.value));
+  const noFilter =
+    multiple && (value === null || (emptyValueMeansAll && value.length === 0));
+  const allChecked = noFilter || allSelected;
   const isSelected = (optionValue: string) =>
-    selected.has(optionValue) || (value === null && !emptyValueMeansAll);
+    selected.has(optionValue) || noFilter;
   const active = !noFilter && !allSelected;
   const selectedNames = selectedValues.map(
     (value) => options.find((option) => option.value === value)?.label ?? value,
+  );
+  const completeSelectedGroup = groups.find(
+    ([group, items]) =>
+      group &&
+      items.length === selectedValues.length &&
+      items.every((item) => selected.has(item.value)),
   );
   const summaryAccessibleText =
     noFilter || allSelected
@@ -162,7 +184,29 @@ export function MultiSelect({
     ) : summaryMode === "person" ? (
       selectedValues.length === 1 ? (
         (selectedNames[0] ?? selectedValues[0])
-      ) : selectedValues.length < 3 ? (
+      ) : selectedValues.length <= 3 ? (
+        <>
+          <span className="truncate">
+            {selectedNames.slice(0, 3).join(", ")}
+          </span>
+          <span className="shrink-0 font-semibold text-brand">
+            {selectedValues.length}
+          </span>
+        </>
+      ) : (
+        `${selectedValues.length} seleccionadas`
+      )
+    ) : summaryMode === "payment-method" ? (
+      completeSelectedGroup ? (
+        <>
+          <span className="truncate">{completeSelectedGroup[0]}</span>
+          <span className="shrink-0 font-semibold text-brand">
+            {selectedValues.length}
+          </span>
+        </>
+      ) : selectedValues.length === 1 ? (
+        (selectedNames[0] ?? selectedValues[0])
+      ) : selectedValues.length <= 3 ? (
         <>
           <span className="truncate">{selectedNames.join(", ")}</span>
           <span className="shrink-0 font-semibold text-brand">
@@ -170,7 +214,34 @@ export function MultiSelect({
           </span>
         </>
       ) : (
-        `${selectedValues.length} seleccionadas`
+        `${selectedValues.length} cuentas`
+      )
+    ) : summaryMode === "category" ? (
+      completeSelectedGroup ? (
+        <>
+          <span className="truncate">{completeSelectedGroup[0]}</span>
+          <span className="shrink-0 font-semibold text-brand">
+            {selectedValues.length}
+          </span>
+        </>
+      ) : selectedValues.length === 1 ? (
+        (selectedNames[0] ?? selectedValues[0])
+      ) : selectedValues.length <= 3 ? (
+        <>
+          <span className="truncate">{selectedNames.join(", ")}</span>
+          <span className="shrink-0 font-semibold text-brand">
+            {selectedValues.length}
+          </span>
+        </>
+      ) : (
+        <>
+          <span className="truncate">
+            {selectedNames.slice(0, 2).join(", ")}
+          </span>
+          <span className="shrink-0 font-semibold text-brand">
+            +{selectedValues.length - 2} {selectedValues.length}
+          </span>
+        </>
       )
     ) : summaryMode === "chip" ? (
       selectedValues.length === 1 ? (
@@ -189,19 +260,22 @@ export function MultiSelect({
     );
 
   const updateSelection = (next: string[]) => {
-    onChange(
-      options.length > 0 &&
-        next.length === options.length &&
-        !emptyValueMeansAll
-        ? null
-        : next,
-    );
+    if (multiple && options.length > 0 && next.length === options.length) {
+      onChange(emptyValueMeansAll ? [] : null);
+      return;
+    }
+    onChange(next);
   };
   const toggle = (optionValue: string) => {
+    if (!multiple) {
+      onChange([optionValue]);
+      setOpen(false);
+      return;
+    }
     const current = selectedValues;
     updateSelection(
       isSelected(optionValue)
-        ? value === null && !emptyValueMeansAll
+        ? noFilter
           ? options
               .map((option) => option.value)
               .filter((item) => item !== optionValue)
@@ -215,7 +289,7 @@ export function MultiSelect({
     const current = selectedValues;
     updateSelection(
       everySelected
-        ? value === null && !emptyValueMeansAll
+        ? noFilter
           ? options
               .map((option) => option.value)
               .filter((item) => !groupValues.includes(item))
@@ -225,7 +299,11 @@ export function MultiSelect({
   };
   const toggleAll = () => {
     if (emptyValueMeansAll) {
-      onChange(allSelected ? [] : options.map((option) => option.value));
+      if (allChecked) {
+        onChange([]);
+        return;
+      }
+      updateSelection(options.map((option) => option.value));
       return;
     }
     onChange(allChecked ? [] : null);
@@ -236,7 +314,10 @@ export function MultiSelect({
     (count, [, items]) => count + items.length,
     0,
   );
-  const noResults = visibleGroups.length === 0 && normalizedQuery;
+  const noResults =
+    visibleGroups.length === 0 &&
+    normalizedQuery &&
+    !normalize(allLabel).includes(normalizedQuery);
   const renderLabel = (text: string) => {
     if (!highlightMatches || !query.trim()) return text;
     const index = text
@@ -275,30 +356,35 @@ export function MultiSelect({
           </div>
         </div>
       )}
-      <div className={cn("max-h-60 overflow-y-auto p-1", listClassName)}>
-        {(!normalizedQuery ||
-          normalize(allLabel).includes(normalizedQuery)) && (
-          <button
-            type="button"
-            role="checkbox"
-            aria-checked={allChecked ? true : value?.length ? "mixed" : false}
-            onClick={toggleAll}
-            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium hover:bg-accent"
-          >
-            <SelectionMark
-              checked={
-                allChecked ? true : value?.length ? "indeterminate" : false
-              }
-              circular={circularSelectionMarks}
-            />
-            <span className="flex-1">{allLabel}</span>
-            {hierarchicalGroups && (
-              <span className="text-xs tabular-nums text-muted-foreground">
-                {options.length}
-              </span>
-            )}
-          </button>
-        )}
+      <div
+        role={multiple ? undefined : "radiogroup"}
+        aria-label={multiple ? undefined : label}
+        className={cn("max-h-60 overflow-y-auto p-1", listClassName)}
+      >
+        {multiple &&
+          (!normalizedQuery ||
+            normalize(allLabel).includes(normalizedQuery)) && (
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={allChecked ? true : value?.length ? "mixed" : false}
+              onClick={toggleAll}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium hover:bg-accent"
+            >
+              <SelectionMark
+                checked={
+                  allChecked ? true : value?.length ? "indeterminate" : false
+                }
+                circular={circularSelectionMarks}
+              />
+              <span className="flex-1">{allLabel}</span>
+              {hierarchicalGroups && (
+                <span className="text-xs tabular-nums text-muted-foreground">
+                  {options.length}
+                </span>
+              )}
+            </button>
+          )}
         {noResults ? (
           <p className="px-3 py-6 text-center text-sm text-muted-foreground">
             {typeof emptyDescription === "function"
@@ -307,10 +393,14 @@ export function MultiSelect({
           </p>
         ) : (
           visibleGroups.map(([group, items]) => {
-            const chosen = items.filter((item) =>
+            const groupItems = hierarchicalGroups
+              ? (groups.find(([candidate]) => candidate === group)?.[1] ??
+                items)
+              : items;
+            const chosen = groupItems.filter((item) =>
               isSelected(item.value),
             ).length;
-            const groupChecked = chosen === items.length;
+            const groupChecked = chosen === groupItems.length;
             const groupState = groupChecked
               ? true
               : chosen > 0
@@ -321,36 +411,43 @@ export function MultiSelect({
                 key={group || "ungrouped"}
                 className={cn(hierarchicalGroups && "mt-1 border-t pt-1")}
               >
-                {group && (
-                  <button
-                    type="button"
-                    role="checkbox"
-                    aria-checked={
-                      groupState === "indeterminate" ? "mixed" : groupState
-                    }
-                    onClick={() => toggleGroup(items)}
-                    className={cn(
-                      "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:bg-accent/60 hover:text-foreground",
-                      hierarchicalGroups && "bg-muted/50",
-                    )}
-                  >
-                    <SelectionMark
-                      checked={groupState}
-                      circular={circularSelectionMarks}
-                    />
-                    <span className="flex-1">{group}</span>
-                    {hierarchicalGroups && (
-                      <span
-                        className={cn(
-                          "text-xs tabular-nums",
-                          chosen > 0 && "text-brand",
-                        )}
-                      >
-                        {chosen}/{items.length}
-                      </span>
-                    )}
-                  </button>
-                )}
+                {group &&
+                  (multiple ? (
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={
+                        groupState === "indeterminate" ? "mixed" : groupState
+                      }
+                      onClick={() => toggleGroup(groupItems)}
+                      className={cn(
+                        "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+                        hierarchicalGroups && "bg-muted/50",
+                      )}
+                    >
+                      <SelectionMark
+                        checked={groupState}
+                        circular={circularSelectionMarks}
+                      />
+                      {hierarchicalGroups && items[0]?.groupDecoration}
+                      <span className="flex-1">{group}</span>
+                      {hierarchicalGroups && (
+                        <span
+                          className={cn(
+                            "text-xs tabular-nums",
+                            chosen > 0 && "text-brand",
+                          )}
+                        >
+                          {chosen}/{groupItems.length}
+                        </span>
+                      )}
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      {hierarchicalGroups && items[0]?.groupDecoration}
+                      <span>{group}</span>
+                    </div>
+                  ))}
                 <div
                   className={cn(
                     hierarchicalGroups &&
@@ -362,7 +459,7 @@ export function MultiSelect({
                     <button
                       key={option.value}
                       type="button"
-                      role="checkbox"
+                      role={multiple ? "checkbox" : "radio"}
                       aria-checked={isSelected(option.value)}
                       onClick={() => toggle(option.value)}
                       className={cn(
@@ -375,7 +472,7 @@ export function MultiSelect({
                     >
                       <SelectionMark
                         checked={isSelected(option.value)}
-                        circular={circularSelectionMarks}
+                        circular={circularSelectionMarks || !multiple}
                       />
                       {option.color && (
                         <span
@@ -390,6 +487,28 @@ export function MultiSelect({
                       <span className="min-w-0 flex-1 truncate">
                         {renderLabel(option.label)}
                       </span>
+                      {option.searchAliases?.some((alias) =>
+                        normalize(alias).includes(normalizedQuery),
+                      ) &&
+                        normalizedQuery &&
+                        !normalize(option.label).includes(normalizedQuery) && (
+                          <span className="shrink-0 text-xs text-muted-foreground">
+                            alias ·{" "}
+                            {option.searchAliases.find((alias) =>
+                              normalize(alias).includes(normalizedQuery),
+                            )}
+                          </span>
+                        )}
+                      {option.badge && (
+                        <span className="rounded-full bg-brand/15 px-1.5 text-[10px] font-semibold text-brand">
+                          {option.badge}
+                        </span>
+                      )}
+                      {option.meta && (
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {option.meta}
+                        </span>
+                      )}
                       {option.count != null && (
                         <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
                           {option.count}
@@ -403,26 +522,40 @@ export function MultiSelect({
           })
         )}
       </div>
-      <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
-        <span>
-          {normalizedQuery
-            ? `${matchCount} resultado${matchCount === 1 ? "" : "s"}`
-            : noFilter
-              ? `Sin filtro · se muestran ${emptyValueMeansAll ? "todas" : "todos"}`
-              : `${value?.length ?? 0} ${emptyValueMeansAll ? "seleccionadas" : "seleccionados"}`}
-        </span>
+      {allowEmptySelection && !multiple && (
         <button
           type="button"
-          className="font-medium text-foreground disabled:cursor-default disabled:opacity-50"
-          disabled={!normalizedQuery && noFilter}
+          className="flex w-full items-center border-t px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent"
           onClick={() => {
-            if (normalizedQuery) setQuery("");
-            else resetSelection();
+            onChange([]);
+            setOpen(false);
           }}
         >
-          Limpiar
+          {emptySelectionLabel}
         </button>
-      </div>
+      )}
+      {showSelectionFooter && multiple && (
+        <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
+          <span>
+            {normalizedQuery
+              ? `${matchCount} resultado${matchCount === 1 ? "" : "s"}`
+              : noFilter
+                ? `Sin filtro · se muestran ${emptyValueMeansAll ? "todas" : "todos"}`
+                : `${value?.length ?? 0} ${emptyValueMeansAll ? "seleccionadas" : "seleccionados"}`}
+          </span>
+          <button
+            type="button"
+            className="font-medium text-foreground disabled:cursor-default disabled:opacity-50"
+            disabled={!normalizedQuery && noFilter}
+            onClick={() => {
+              if (normalizedQuery) setQuery("");
+              else resetSelection();
+            }}
+          >
+            Limpiar
+          </button>
+        </div>
+      )}
     </div>
   );
 

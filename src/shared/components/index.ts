@@ -3,6 +3,9 @@ export { PeriodFields, type PeriodFieldsProps } from "./forms/PeriodFields";
 export { DataView } from "./data-display/DataView";
 export type { NameAvatarProps } from "./data-display/NameAvatar";
 export { NameAvatar } from "./data-display/NameAvatar";
+export { CategoryIcon } from "./data-display/CategoryIcon";
+export type { PaymentMethodIconProps } from "./data-display/PaymentMethodIcon";
+export { PaymentMethodIcon } from "./data-display/PaymentMethodIcon";
 export type { SummaryCardProps } from "./data-display/SummaryCard";
 export { SummaryCard } from "./data-display/SummaryCard";
 export {
@@ -37,6 +40,10 @@ export type {
 export { PersonFilter } from "./filters/PersonFilter";
 export type { PersonFilterFieldsProps } from "./filters/PersonFilterFields";
 export { PersonFilterFields } from "./filters/PersonFilterFields";
+export type { PaymentMethodFilterFieldsProps } from "./filters/PaymentMethodFilterFields";
+export { PaymentMethodFilterFields } from "./filters/PaymentMethodFilterFields";
+export type { CategoryFilterFieldsProps } from "./filters/CategoryFilterFields";
+export { CategoryFilterFields } from "./filters/CategoryFilterFields";
 export type { StatusFilterFieldsProps } from "./filters/StatusFilterFields";
 export { StatusFilterFields } from "./filters/StatusFilterFields";
 export { MoreFilters, type MoreFiltersProps } from "./filters/MoreFilters";

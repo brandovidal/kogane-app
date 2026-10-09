@@ -1,11 +1,11 @@
-import { usePaymentMethods, useCategories } from "@/shared/api/hooks/catalogs";
+import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
+import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
 import { Input } from "@/ui/input";
-import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
-import { PAYMENT_METHOD_TYPE_LABELS } from "@/features/settings/constants/payment-methods";
+import { PAYMENT_METHOD_TYPE_LABELS } from "@/shared/constants/payment-methods";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import {
   CURRENCY_FILTER_OPTIONS,
@@ -17,7 +17,6 @@ import type {
   ExpenseFilterKey,
   ExpenseFilterValues,
 } from "@/features/expenses/types/expense-filters";
-import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 
 export function PlatformFilterFields({
   filters,
@@ -30,18 +29,10 @@ export function PlatformFilterFields({
   personCounts: Record<string, number>;
   statuses: string[];
 }) {
-  const methods =
-    usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
-  const categories = useCategories().data ?? [];
   const set = (key: ExpenseFilterKey, value: string | undefined) =>
     onFiltersChange({ ...filters, [key]: value || undefined });
   const moreCount = countPlatformFilters(filters, PLATFORM_MORE_FILTER_KEYS);
   const amountPrefix = filters.currency === "USD" ? "$" : "S/";
-  const accountOptions = methods.map((method) => ({
-    value: method.id,
-    label: method.name,
-    decoration: <PaymentMethodIcon type={method.type} color={method.color} />,
-  }));
   const methodTypeOptions = Object.entries(PAYMENT_METHOD_TYPE_LABELS).map(
     ([value, label]) => ({ value, label }),
   );
@@ -66,17 +57,15 @@ export function PlatformFilterFields({
           presentation="popover"
           labelClassName="text-sm font-medium"
         />
-        <FilterSelect
+        <PaymentMethodFilterFields
           label="Cuenta de cobro"
           value={filters.method}
-          options={accountOptions}
           onChange={(method) => set("method", method)}
           width="w-full"
           allLabel="Todas las cuentas"
-          allTriggerLabel="Todas"
-          searchable
           activeMarker
           labelClassName="text-sm font-medium"
+          presentation="popover"
         />
       </section>
 
@@ -181,25 +170,13 @@ export function PlatformFilterFields({
               </label>
             </div>
           </div>
-          <FilterSelect
+          <CategoryFilterFields
             label="Categoría"
             value={filters.category}
-            options={categories.map((category) => ({
-              value: category.id,
-              label: category.name,
-              decoration: (
-                <CategoryIcon
-                  icon={category.icon}
-                  color={category.color}
-                  size="xs"
-                />
-              ),
-            }))}
             onChange={(value) => set("category", value)}
             width="w-full"
-            searchable
-            multiple
             activeMarker
+            presentation="popover"
             labelClassName="text-sm font-medium"
           />
           <FilterSelect

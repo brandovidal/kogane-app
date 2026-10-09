@@ -8,11 +8,10 @@ import {
   UsersRound,
   WalletCards,
 } from "lucide-react";
-import { useCategories, usePaymentMethods } from "@/shared/api/hooks/catalogs";
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/subscriptions";
-import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
-import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
+import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
+import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
@@ -49,9 +48,6 @@ export function ExpenseFilterFields({
   statusAllLabel = "Todos",
   sharedOwnLabel,
 }: ExpenseFilterFieldsProps) {
-  const categories = useCategories().data ?? [];
-  const methods =
-    usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
   const set = (key: ExpenseFilterKey, next: string | undefined) =>
     onChange({ ...value, [key]: next || undefined });
   const width = panel || fullWidth ? "w-full" : undefined;
@@ -83,46 +79,27 @@ export function ExpenseFilterFields({
           />
         )}
         {has("category") && (
-          <FilterSelect
+          <CategoryFilterFields
             label="Categoría"
             icon={showIcons ? Tags : undefined}
             value={value.category}
-            options={categories.map((category) => ({
-              value: category.id,
-              label: category.name,
-              decoration: (
-                <CategoryIcon
-                  icon={category.icon}
-                  color={category.color}
-                  size="xs"
-                />
-              ),
-            }))}
             onChange={(next) => set("category", next)}
             width={width}
-            searchable={panel}
-            multiple={panel}
+            presentation={panel ? "popover" : "responsive-sheet"}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />
         )}
         {has("method") && (
-          <FilterSelect
+          <PaymentMethodFilterFields
             label="Medio de pago"
             icon={showIcons ? WalletCards : undefined}
             value={value.method}
-            options={methods.map((method) => ({
-              value: method.id,
-              label: method.name,
-              decoration: (
-                <PaymentMethodIcon type={method.type} color={method.color} />
-              ),
-            }))}
             onChange={(next) => set("method", next)}
             width={width}
-            searchable={panel}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
+            presentation={panel ? "popover" : "responsive-sheet"}
           />
         )}
         {has("currency") && (

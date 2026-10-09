@@ -51,6 +51,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
   const amountFrom = filters.amountFrom ? Number(filters.amountFrom) : null;
   const amountTo = filters.amountTo ? Number(filters.amountTo) : null;
   const categories = filters.category?.split(",").filter(Boolean) ?? [];
+  const methods = filters.method?.split(",").filter(Boolean) ?? [];
   return records.filter((record) => {
     const amount = filters.currency
       ? record.amount
@@ -67,7 +68,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
           (text) => text && fold(text).includes(q),
         )) &&
       (!categories.length || categories.includes(record.categoryId ?? "")) &&
-      (!filters.method || record.paymentMethodId === filters.method) &&
+      (!methods.length || methods.includes(record.paymentMethodId ?? "")) &&
       (!filters.currency || record.currency === filters.currency) &&
       (!filters.type || record.expenseType === filters.type) &&
       (!filters.status ||
