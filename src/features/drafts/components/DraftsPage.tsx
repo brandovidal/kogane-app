@@ -2,28 +2,36 @@ import { useEffect, useState } from "react";
 import { shareParts } from "@/features/expenses/lib/shared-expense";
 import { toast } from "sonner";
 import {
+  AlertTriangle,
   Check,
   ImageIcon,
+  Inbox,
   Mic,
   MessageSquare,
-  Pencil,
+  Plus,
   RotateCw,
   Send,
-  X,
+  Trash2,
+  Upload,
 } from "lucide-react";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { DataView } from "@/shared/components/data-display/DataView";
+import { cn } from "@/shared/utils/cn";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column, type ViewMode } from "@/shared/types/data-view";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { getDraft } from "@/features/drafts/services/draft.service";
+import {
+  draftMediaKind,
+  useOpenDraftMedia,
+} from "@/features/drafts/hooks/draft-media";
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import {
   useDiscardDraft,
+  useDraftTabCounts,
   useDrafts,
   useRetryDraft,
   useSaveDraft,
@@ -31,14 +39,22 @@ import {
   type DraftFields,
   type DraftTab,
 } from "@/features/drafts/hooks/drafts";
-import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import type { Schemas } from "@/shared/api/client";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { toDraftBody } from "@/features/drafts/lib/draft-form";
+import {
+  missingLabels,
+  readyDrafts,
+  summarizeDrafts,
+} from "@/features/drafts/lib/draft-view";
+import { DraftCard } from "./DraftCard";
+import { DraftActionsMenu } from "./DraftActionsMenu";
+import { DraftFailedCard, failureReason } from "./DraftFailedCard";
 import { DraftForm } from "./DraftForm";
+import { DraftIndicators } from "./DraftIndicators";
 
 type Draft = NonNullable<
   Schemas["DraftListResponseDto"]["data"]
@@ -56,25 +72,91 @@ const FIELD_LABELS: Record<string, string> = {
 
 const CHANNEL_ICONS = { telegram: Send, web: MessageSquare } as const;
 
+const TAB_META = {
+  review: { label: "Por revisar", icon: Inbox },
+  failed: { label: "Fallidos", icon: AlertTriangle },
+  discarded: { label: "Descartados", icon: Trash2 },
+} as const;
+
 // Borrador (D50): what the bot or the web could not save yet. Por revisar · Fallidos · Descartados
 function DraftsPageView() {
   const [tab, setTab] = useState<DraftTab>("review");
   const [editing, setEditing] = useState<Draft | undefined>();
   const [view, setView] = useViewMode("drafts", "cards");
+  const counts = useDraftTabCounts();
+  const review = useDrafts("review").data?.items ?? [];
+  const failed = useDrafts("failed").data?.items ?? [];
+  const saveDraft = useSaveDraft({ quiet: true });
+  const retryDraft = useRetryDraft();
+  const ready = readyDrafts(review);
+
+  const saveReady = async () => {
+    const results = await Promise.allSettled(
+      ready.map((draft) => saveDraft.mutateAsync(draft.id)),
+    );
+    const saved = results.filter((r) => r.status === "fulfilled").length;
+    if (saved) toast.success(`${saved} guardados`);
+  };
+  const retryAll = async () => {
+    await Promise.allSettled(
+      failed.map((draft) => retryDraft.mutateAsync(draft.id)),
+    );
+  };
 
   return (
     <div className="space-y-4">
       <Tabs value={tab} onValueChange={(value) => setTab(value as DraftTab)}>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <TabsList>
-            <TabsTrigger value="review">Por revisar</TabsTrigger>
-            <TabsTrigger value="failed">Fallidos</TabsTrigger>
-            <TabsTrigger value="discarded">Descartados</TabsTrigger>
+            {(Object.keys(TAB_META) as DraftTab[]).map((value) => {
+              const { label, icon: Icon } = TAB_META[value];
+              return (
+                <TabsTrigger key={value} value={value} className="gap-1.5">
+                  <Icon className="size-3.5" />
+                  {label}
+                  {counts[value] != null && (
+                    <span
+                      className={cn(
+                        "rounded-full px-1.5 text-xs tabular-nums",
+                        value === "failed" && counts.failed
+                          ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {counts[value]}
+                    </span>
+                  )}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
-          <ViewToggle value={view} onChange={setView} />
+          <div className="flex items-center gap-2">
+            {tab === "review" && ready.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={saveReady}
+                disabled={saveDraft.isPending}
+              >
+                <Check className="size-4" /> Guardar listos ({ready.length})
+              </Button>
+            )}
+            {tab === "failed" && failed.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={retryAll}
+                disabled={retryDraft.isPending}
+              >
+                <RotateCw className="size-4" /> Reintentar todos
+              </Button>
+            )}
+            <ViewToggle value={view} onChange={setView} />
+          </div>
         </div>
         {(["review", "failed", "discarded"] as const).map((value) => (
-          <TabsContent key={value} value={value} className="mt-4">
+          <TabsContent key={value} value={value} className="mt-4 space-y-4">
+            {value === "review" && review.length > 0 && (
+              <DraftIndicators summary={summarizeDrafts(review)} />
+            )}
             <DraftList tab={value} view={view} onEdit={setEditing} />
           </TabsContent>
         ))}
@@ -102,12 +184,35 @@ function DraftList({
   if (isLoading) return null;
   const items = data?.items ?? [];
   if (!items.length) {
-    const empty = {
-      review: "Nada pendiente de revisar 🎉",
-      failed: "Nada falló",
-      discarded: "No hay descartados",
-    };
-    return <EmptyState description={empty[tab]} />;
+    if (tab === "review")
+      return (
+        <EmptyState
+          tone="success"
+          icon={Check}
+          title="Todo al día"
+          description="No hay gastos por revisar. Lo que registres por Mensajes o Importación llegará aquí."
+          className="min-h-[50vh] border-transparent bg-transparent"
+          action={
+            <>
+              <Button asChild>
+                <a href="/mensajes">
+                  <MessageSquare className="size-4" /> Ir a Mensajes
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="/importacion">
+                  <Upload className="size-4" /> Importar estado de cuenta
+                </a>
+              </Button>
+            </>
+          }
+        />
+      );
+    return (
+      <EmptyState
+        description={tab === "failed" ? "Nada falló" : "No hay descartados"}
+      />
+    );
   }
 
   const columns: Column<Draft>[] = [
@@ -136,6 +241,24 @@ function DraftList({
         </div>
       ),
     },
+    ...(tab === "review"
+      ? [
+          {
+            key: "state",
+            header: "Estado",
+            cell: (draft: Draft) =>
+              draft.missingFields.length ? (
+                <span className="text-xs text-amber-600 dark:text-amber-400">
+                  Falta: {missingLabels(draft).join(", ").toLowerCase()}
+                </span>
+              ) : (
+                <Badge variant="outline" className="text-emerald-600">
+                  Listo
+                </Badge>
+              ),
+          },
+        ]
+      : []),
     {
       key: "amount",
       header: "Monto",
@@ -199,10 +322,10 @@ function DraftList({
               <ChannelIcon className="h-3 w-3" />
               {formatDate(draft.createdAt)}
             </Badge>
-            {draft.inputType !== "text" && draft.inputType !== "manual" && (
+            {draftMediaKind(draft.inputType) && (
               <MediaLink
                 draftId={draft.id}
-                kind={draft.inputType === "audio" ? "audio" : "image"}
+                kind={draftMediaKind(draft.inputType)!}
               />
             )}
           </span>
@@ -214,15 +337,16 @@ function DraftList({
       header: "",
       role: "actions",
       cell: (draft) => (
-        <div className="flex flex-wrap justify-end gap-1">
+        <div className="flex items-center justify-end gap-1">
           {tab === "failed" ? (
             <Button
               size="sm"
               variant="outline"
+              className="gap-1.5"
               onClick={() => retryDraft.mutate(draft.id)}
               disabled={retryDraft.isPending}
             >
-              <RotateCw className="mr-1 h-3.5 w-3.5" /> Reintentar
+              <RotateCw className="size-3.5" /> Reintentar
             </Button>
           ) : (
             <Button
@@ -233,29 +357,75 @@ function DraftList({
               <Check className="mr-1 h-3.5 w-3.5" /> Guardar
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="outline"
-            aria-label="Editar"
-            onClick={() => onEdit(draft)}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          {tab !== "discarded" && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-destructive"
-              aria-label="Descartar"
-              onClick={() => discardDraft.mutate(draft.id)}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          )}
+          <DraftActionsMenu
+            draft={draft}
+            tab={tab}
+            label={draft.description ?? draft.rawText ?? "borrador"}
+            onSave={() => saveDraft.mutate(draft.id)}
+            onRetry={() => retryDraft.mutate(draft.id)}
+            onEdit={() => onEdit(draft)}
+            onDiscard={() => discardDraft.mutate(draft.id)}
+          />
         </div>
       ),
     },
   ];
+
+  const actionsColumn = columns[columns.length - 1];
+  const failedColumns: Column<Draft>[] = [
+    {
+      key: "concept",
+      header: "Descripción",
+      role: "title",
+      cell: (draft) => (
+        <p className="truncate font-medium">
+          {draft.description ?? draft.rawText ?? "Sin descripción"}
+        </p>
+      ),
+    },
+    {
+      key: "reason",
+      header: "Motivo",
+      cell: (draft) => (
+        <span className="text-xs text-destructive">{failureReason(draft)}</span>
+      ),
+    },
+    columns.find((column) => column.key === "origin")!,
+    {
+      key: "date",
+      header: "Fecha",
+      cell: (draft) => (
+        <span className="text-sm">{formatDate(draft.createdAt)}</span>
+      ),
+    },
+    actionsColumn,
+  ];
+
+  if (tab === "failed")
+    return (
+      <DataView
+        items={items}
+        columns={failedColumns}
+        rowKey={(draft) => draft.id}
+        view={view}
+        cardRenderer={(draft) => (
+          <DraftFailedCard
+            draft={draft}
+            busy={retryDraft.isPending}
+            onRetry={() => retryDraft.mutate(draft.id)}
+            onWriteManually={() => onEdit(draft)}
+            onDiscard={() => discardDraft.mutate(draft.id)}
+          />
+        )}
+      />
+    );
+
+  const cardRows = (draft: Draft) =>
+    columns
+      .filter((column) =>
+        ["destination", "person", "shared", "origin"].includes(column.key),
+      )
+      .map((column) => ({ label: column.header, value: column.cell(draft) }));
 
   return (
     <DataView
@@ -263,11 +433,39 @@ function DraftList({
       columns={columns}
       rowKey={(draft) => draft.id}
       view={view}
+      cardRenderer={(draft) => (
+        <DraftCard
+          draft={draft}
+          rows={cardRows(draft)}
+          discarded={tab === "discarded"}
+          busy={saveDraft.isPending}
+          onSave={() => saveDraft.mutate(draft.id)}
+          onEdit={() => onEdit(draft)}
+          onDiscard={() => discardDraft.mutate(draft.id)}
+        />
+      )}
+      extraCard={
+        tab === "review" ? (
+          <div className="flex h-full min-h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed p-4 text-center">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-muted/60">
+              <Plus className="size-5" />
+            </span>
+            <b className="text-sm">Registrar más</b>
+            <p className="text-xs text-muted-foreground">
+              Escribe o envía una captura desde Mensajes
+            </p>
+            <Button asChild variant="outline" size="sm">
+              <a href="/mensajes">
+                <MessageSquare className="size-4" /> Ir a Mensajes
+              </a>
+            </Button>
+          </div>
+        ) : undefined
+      }
     />
   );
 }
 
-// The screenshot or voice note lives in R2 (D58): a 10 minute link is asked for only when opened
 function MediaLink({
   draftId,
   kind,
@@ -275,20 +473,12 @@ function MediaLink({
   draftId: string;
   kind: "image" | "audio";
 }) {
-  const open = async () => {
-    try {
-      const draft = await getDraft(draftId);
-      if (draft.mediaUrl) window.open(draft.mediaUrl, "_blank", "noopener");
-      else toast.info("El archivo ya expiró (7 días) o no se guardó.");
-    } catch (error) {
-      toast.error(errorMessage(error));
-    }
-  };
+  const openMedia = useOpenDraftMedia();
   const Icon = kind === "audio" ? Mic : ImageIcon;
   return (
     <button
       type="button"
-      onClick={open}
+      onClick={() => void openMedia(draftId)}
       className="flex items-center gap-1 text-xs text-primary hover:underline"
     >
       <Icon className="h-3.5 w-3.5" />{" "}

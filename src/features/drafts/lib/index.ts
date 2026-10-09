@@ -5,3 +5,11 @@ export {
   emptyDraftFields,
   toDraftBody,
 } from "./draft-form";
+export {
+  DRAFT_FIELD_LABELS,
+  draftState,
+  missingLabels,
+  readyDrafts,
+  summarizeDrafts,
+} from "./draft-view";
+export type { DraftState, DraftSummary } from "./draft-view";

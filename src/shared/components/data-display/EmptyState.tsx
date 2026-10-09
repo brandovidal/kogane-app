@@ -30,6 +30,8 @@ export interface EmptyStateProps {
   /** Mensaje corto sin icono, como en "Búsqueda sin resultados". */
   variant?: EmptyStateVariant;
   icon?: LucideIcon;
+  /** `success`: recuadro verde, para "todo al día". */
+  tone?: "default" | "success";
   /** Contenido entre la descripción y las acciones (chips, listas). */
   children?: ReactNode;
   action?: ReactNode;
@@ -41,6 +43,7 @@ export function EmptyState({
   description = "No hay registros para mostrar",
   variant = "empty",
   icon,
+  tone = "default",
   children,
   action,
   className,
@@ -58,7 +61,14 @@ export function EmptyState({
       )}
     >
       {variant !== "search" && (
-        <span className="relative flex size-14 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground">
+        <span
+          className={cn(
+            "relative flex size-14 items-center justify-center rounded-2xl",
+            tone === "success"
+              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
+              : "bg-muted/60 text-muted-foreground",
+          )}
+        >
           <Icon aria-hidden="true" className="size-6" />
           {Badge && (
             <span className="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full border bg-background">
