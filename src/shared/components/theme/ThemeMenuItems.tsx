@@ -21,11 +21,12 @@ export function ThemeMenuItems() {
 
   return (
     <>
-      <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+      <DropdownMenuLabel className="px-2 pt-1 pb-0.5 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
         Apariencia
       </DropdownMenuLabel>
       <DropdownMenuRadioGroup
         aria-label="Apariencia"
+        className="mx-1 mb-1 grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
         value={preference}
         onValueChange={(value) => {
           if (
@@ -42,7 +43,7 @@ export function ThemeMenuItems() {
             <DropdownMenuRadioItem
               key={option.value}
               value={option.value}
-              className="min-h-9 gap-2"
+              className="min-h-8 justify-center gap-1.5 rounded-md px-2 text-xs data-[state=checked]:bg-accent data-[state=checked]:font-medium [&>span:first-child]:hidden"
             >
               <Icon aria-hidden="true" className="size-4" />
               {option.label}

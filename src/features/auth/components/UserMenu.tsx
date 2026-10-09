@@ -75,16 +75,25 @@ function UserMenuView() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-64 max-w-[calc(100vw-2rem)]"
+          className="w-80 max-w-[calc(100vw-2rem)]"
         >
-          <DropdownMenuLabel className="space-y-0.5">
-            <p className="truncate text-sm font-medium">{me.name}</p>
-            <p className="truncate text-xs font-normal text-muted-foreground">
-              {me.email}
-            </p>
-            <p className="text-xs font-normal text-muted-foreground">
-              {AUTH_ROLE_LABELS[me.role] ?? me.role}
-            </p>
+          <DropdownMenuLabel className="flex items-center gap-3 px-3 py-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold">
+              {initials || <User className="size-4" />}
+            </span>
+            <span className="min-w-0 space-y-0.5">
+              <span className="flex items-center gap-2">
+                <span className="truncate text-sm font-semibold">
+                  {me.name}
+                </span>
+                <span className="rounded-full bg-brand/20 px-2 text-[11px] font-medium text-brand">
+                  {AUTH_ROLE_LABELS[me.role] ?? me.role}
+                </span>
+              </span>
+              <span className="block truncate text-xs font-normal text-muted-foreground">
+                {me.email}
+              </span>
+            </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="min-h-9">
@@ -97,7 +106,6 @@ function UserMenuView() {
               <Banknote aria-hidden="true" /> Sueldo e ingresos
             </a>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <SettingsMenuItems
             isAdmin={
               me.role === AUTH_ROLE.ADMIN || me.role === AUTH_ROLE.SUPERADMIN
@@ -121,6 +129,7 @@ function UserMenuView() {
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
+            variant="destructive"
             className="min-h-9"
             disabled={logout.isPending}
             onSelect={() =>
