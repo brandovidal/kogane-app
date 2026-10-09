@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { CalendarDays, List, Plus } from "lucide-react";
 
 import {
   nameById,
@@ -21,6 +21,7 @@ import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column } from "@/shared/types/data-view";
 import { dayKey, dayLabel } from "../lib/day-label";
+import { DailyCalendar } from "./DailyCalendar";
 import { DailyIndicators } from "./DailyIndicators";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
@@ -70,6 +71,7 @@ function DailyExpenseTableView() {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("daily", "table");
   const [groupBy, setGroupBy] = useState("none");
+  const [layout, setLayout] = useState<"list" | "calendar">("list");
   // Hoy/Ayer depend on the browser clock: only after mount, so the server HTML matches
   const [today, setToday] = useState<Date | null>(null);
   useEffect(() => setToday(new Date()), []);
@@ -193,7 +195,29 @@ function DailyExpenseTableView() {
           ]}
         />
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          <ViewToggle value={view} onChange={setView} />
+          <div
+            role="group"
+            aria-label="Vista de gastos"
+            className="inline-flex rounded-md border p-0.5"
+          >
+            <Button
+              size="sm"
+              variant={layout === "list" ? "secondary" : "ghost"}
+              aria-pressed={layout === "list"}
+              onClick={() => setLayout("list")}
+            >
+              <List aria-hidden="true" /> Lista
+            </Button>
+            <Button
+              size="sm"
+              variant={layout === "calendar" ? "secondary" : "ghost"}
+              aria-pressed={layout === "calendar"}
+              onClick={() => setLayout("calendar")}
+            >
+              <CalendarDays aria-hidden="true" /> Calendario
+            </Button>
+          </div>
+          {layout === "list" && <ViewToggle value={view} onChange={setView} />}
           <Button
             size="sm"
             onClick={() => openNewExpense({ destination: "daily" })}
@@ -230,6 +254,14 @@ function DailyExpenseTableView() {
             }
           />
         )
+      ) : layout === "calendar" ? (
+        <DailyCalendar
+          year={year}
+          month={month}
+          expenses={sorted}
+          onEdit={setEditing}
+          onNewExpense={() => openNewExpense({ destination: "daily" })}
+        />
       ) : (
         <GroupedDataView
           items={sorted}
