@@ -21,7 +21,7 @@ import { usePeriod } from "@/shared/stores/period.store";
 
 const debtFormSchema = z.object({
   direction: z.enum(["owed_to_me", "i_owe"]),
-  description: z.string().trim().min(1, "Descripción requerida"),
+  description: z.string().trim().min(1, "Escribe un concepto"),
   amount: z
     .number({ error: "Monto requerido" })
     .positive("Monto debe ser positivo"),
@@ -142,7 +142,11 @@ export function DebtDialog({
             ? "Nueva deuda (debo)"
             : "Nuevo préstamo (me deben)"
       }
-      description="Si son cuotas, el monto es el de cada cuota"
+      description={
+        debt
+          ? "Modifica los datos del cobro. Si son cuotas, el monto es el de cada cuota."
+          : `${watch("direction") === "i_owe" ? "Registra lo que debes" : "Registra lo que alguien te debe"}. Si son cuotas, el monto es el de cada cuota.`
+      }
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -182,7 +186,12 @@ export function DebtDialog({
         )}
         <div className="space-y-1.5">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Persona *</label>
+            <label className="text-sm font-medium">
+              {watch("direction") === "i_owe"
+                ? "A quién le debes"
+                : "Quién te debe"}{" "}
+              *
+            </label>
             <PersonSelect
               value={watch("personId")}
               onChange={(id) =>
@@ -201,7 +210,7 @@ export function DebtDialog({
           <label className="text-sm font-medium">Descripción *</label>
           <Input
             {...register("description")}
-            placeholder="Ej: Préstamo, Iphone 16..."
+            placeholder="Ej: BCP, Stream, préstamo…"
           />
           {errors.description && (
             <p className="text-xs text-destructive">
