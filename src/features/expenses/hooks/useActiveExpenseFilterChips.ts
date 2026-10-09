@@ -8,6 +8,7 @@ import {
   PAYMENT_STATUS_LABELS,
 } from "@/shared/constants/finance";
 import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/subscriptions";
+import { PAYMENT_METHOD_TYPE_LABELS } from "@/features/settings/constants/payment-methods";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import type { AppliedFilterChip } from "@/shared/components/filters/AppliedFilterChips";
 import {
@@ -35,6 +36,7 @@ export function useActiveExpenseFilterChips<
   groupByLabel,
   groupByLabels,
   periodChip,
+  formatFilterLabel,
   showClearAll = true,
   onClearAll,
 }: ActiveExpenseFilterChipsOptions<T>) {
@@ -75,7 +77,7 @@ export function useActiveExpenseFilterChips<
       : undefined,
     currency: value.currency ? `Moneda: ${value.currency}` : undefined,
     status: value.status
-      ? `Estado: ${PAYMENT_STATUS_LABELS[value.status] ?? value.status}`
+      ? `Estado: ${value.status.split(",").map((status) => PAYMENT_STATUS_LABELS[status] ?? status).join(", ")}`
       : undefined,
     type: value.type
       ? `Tipo: ${EXPENSE_TYPE_LABELS[value.type] ?? value.type}`
@@ -93,13 +95,26 @@ export function useActiveExpenseFilterChips<
       ? `Vence desde: ${formatDate(value.dueFrom)}`
       : undefined,
     dueTo: value.dueTo ? `Vence hasta: ${formatDate(value.dueTo)}` : undefined,
+    hasNote: value.hasNote
+      ? value.hasNote === "yes"
+        ? "Con nota"
+        : "Sin nota"
+      : undefined,
+    amountFrom:
+      value.amountFrom || value.amountTo
+        ? `Monto: ${value.amountFrom || "0"} – ${value.amountTo || "Sin límite"}`
+        : undefined,
+    amountTo: undefined,
+    methodType: value.methodType
+      ? `Medio de pago: ${PAYMENT_METHOD_TYPE_LABELS[value.methodType as keyof typeof PAYMENT_METHOD_TYPE_LABELS] ?? value.methodType}`
+      : undefined,
   };
 
   const chips: AppliedFilterChip[] = [
     ...(periodChip
       ? [
           {
-            key: "period",
+            key: periodChip.key ?? "period-chip",
             label: periodChip.label,
             onRemove: periodChip.onRemove,
           },
@@ -108,12 +123,16 @@ export function useActiveExpenseFilterChips<
     ...fields
       .filter(
         (key) =>
-          labels[key] && !(periodChip && (key === "month" || key === "year")),
+          labels[key] &&
+          !(periodChip && (key === "month" || key === "year")),
       )
       .map((key) => ({
         key,
-        label: labels[key]!,
-        onRemove: () => onChange({ ...value, [key]: undefined }),
+        label: formatFilterLabel?.(key, labels[key]!) ?? labels[key]!,
+        onRemove: () =>
+          key === "amountFrom"
+            ? onChange({ ...value, amountFrom: undefined, amountTo: undefined })
+            : onChange({ ...value, [key]: undefined }),
       })),
   ];
 

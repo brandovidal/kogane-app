@@ -12,10 +12,16 @@ import { cn } from "@/shared/utils/cn";
 export interface MoreFiltersProps {
   activeCount?: number;
   defaultOpen?: boolean;
+  activeCountDisplay?: "badge" | "inline";
   children: ReactNode;
 }
 
-export function MoreFilters({ activeCount = 0, defaultOpen = false, children }: MoreFiltersProps) {
+export function MoreFilters({
+  activeCount = 0,
+  defaultOpen = false,
+  activeCountDisplay = "badge",
+  children,
+}: MoreFiltersProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -29,8 +35,13 @@ export function MoreFilters({ activeCount = 0, defaultOpen = false, children }: 
           </MarkerIcon>
           <MarkerContent className="flex-1 text-foreground">
             {open ? "Ver menos filtros" : "Ver más filtros"}
+            {activeCountDisplay === "inline" && activeCount > 0 && (
+              <span className="ml-2 text-sm font-normal text-brand">
+                · {activeCount} aplicado{activeCount === 1 ? "" : "s"}
+              </span>
+            )}
           </MarkerContent>
-          {activeCount > 0 && (
+          {activeCountDisplay === "badge" && activeCount > 0 && (
             <Badge
               variant="secondary"
               className="shrink-0 text-xs tabular-nums"

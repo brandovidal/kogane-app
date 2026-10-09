@@ -30,6 +30,13 @@ type PeriodValues = {
   hasta?: string;
 };
 type PeriodMode = "month" | "year" | "range" | "all";
+type PeriodValue = { month: number; year: number };
+type FixedCostPeriodSelectorProps = {
+  value?: PeriodValue;
+  onChange?: (value: PeriodValue) => void;
+  modes?: PeriodMode[];
+  showPresets?: boolean;
+};
 
 const PERIOD_KEYS = ["month", "year", "desde", "hasta"] as const;
 const MODES: { value: PeriodMode; label: string }[] = [
@@ -39,18 +46,31 @@ const MODES: { value: PeriodMode; label: string }[] = [
   { value: "all", label: "Todo" },
 ];
 
-export function FixedCostPeriodSelector() {
+export function FixedCostPeriodSelector({
+  value: controlledValue,
+  onChange: onControlledChange,
+  modes,
+  showPresets = true,
+}: FixedCostPeriodSelectorProps = {}) {
+  const isControlled = controlledValue != null && onControlledChange != null;
   const currentMonth = getCurrentMonth();
   const currentYear = getCurrentYear();
-  const [values, setValues] = useUrlFilters<PeriodValues>(PERIOD_KEYS, {
-    month: String(currentMonth),
-    year: String(currentYear),
-  });
-  const [{ vista }] = useUrlFilters<{ vista?: string }>(["vista"]);
+  const [urlValues, setUrlValues] = useUrlFilters<PeriodValues>(
+    isControlled ? [] : PERIOD_KEYS,
+    { month: String(currentMonth), year: String(currentYear) },
+  );
+  const values = isControlled
+    ? { month: String(controlledValue.month), year: String(controlledValue.year) }
+    : urlValues;
+  const [{ vista }] = useUrlFilters<{ vista?: string }>(isControlled ? [] : ["vista"]);
   const view = isFixedCostView(vista) ? vista : "mes";
   const scope = FIXED_COST_VIEW_PERIOD[view];
   const [open, setOpen] = useState(false);
-  const mode = useFixedCostPeriodMode(values, scope);
+  const derivedMode = useFixedCostPeriodMode(values, scope);
+  const mode = isControlled
+    ? (modes?.length === 1 ? modes[0] : "month")
+    : derivedMode;
+  const availableModes = modes ?? MODES.map((option) => option.value);
   const month = Number(values.month) || currentMonth;
   const year = Number(values.year) || currentYear;
   const [gridYear, setGridYear] = useState(year);
@@ -59,8 +79,16 @@ export function FixedCostPeriodSelector() {
     mode === "month" && month === currentMonth && year === currentYear;
   const nowIndex = currentYear * 12 + currentMonth - 1;
 
-  const write = (next: PeriodValues) =>
-    setValues({ desde: undefined, hasta: undefined, ...next });
+  const write = (next: PeriodValues) => {
+    if (isControlled) {
+      onControlledChange({
+        month: Number(next.month ?? month),
+        year: Number(next.year ?? year),
+      });
+      return;
+    }
+    setUrlValues({ desde: undefined, hasta: undefined, ...next });
+  };
   const setMonth = (index: number) =>
     write({
       month: String((index % 12) + 1),
@@ -154,13 +182,13 @@ export function FixedCostPeriodSelector() {
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </PopoverTrigger>
         <PopoverContent align="end" className="w-80 space-y-3 rounded-xl p-3">
-          {scope === "month" && (
+          {scope === "month" && availableModes.length > 1 && (
             <div
               role="radiogroup"
               aria-label="Tipo de período"
               className="grid grid-cols-4 gap-1 rounded-lg bg-muted p-1"
             >
-              {MODES.map((option) => (
+              {MODES.filter((option) => availableModes.includes(option.value)).map((option) => (
                 <button
                   key={option.value}
                   type="button"
@@ -246,7 +274,7 @@ export function FixedCostPeriodSelector() {
               )}
             </>
           )}
-          {scope === "month" && (
+          {showPresets && scope === "month" && (
             <div className="flex flex-wrap gap-1.5 border-t pt-3">
               {presets.map((preset) => (
                 <button

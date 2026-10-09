@@ -48,33 +48,53 @@ export function applyExpenseFilters<T extends FilterableExpense>(
     .filter((person): person is string => !!person);
   const dueFrom = filters.dueFrom || null;
   const dueTo = filters.dueTo || null;
+  const amountFrom = filters.amountFrom ? Number(filters.amountFrom) : null;
+  const amountTo = filters.amountTo ? Number(filters.amountTo) : null;
   const categories = filters.category?.split(",").filter(Boolean) ?? [];
   return records.filter(
-    (record) =>
-      (!selectedPeople?.length || selectedPeople.some((person) =>
-        person === PERSON_UNASSIGNED ? !record.personId : record.personId === person,
-      )) &&
-      (!q ||
-        [record.description, record.merchant, record.notes].some(
-          (text) => text && fold(text).includes(q),
-        )) &&
-      (!categories.length || categories.includes(record.categoryId ?? "")) &&
-      (!filters.method || record.paymentMethodId === filters.method) &&
-      (!filters.currency || record.currency === filters.currency) &&
-      (!filters.type || record.expenseType === filters.type) &&
-      (!filters.status || record.paymentStatus === filters.status) &&
-      (!filters.period || record.period === filters.period) &&
-      (!filters.month || record.paymentMonth === Number(filters.month)) &&
-      (!filters.year || record.paymentYear === Number(filters.year)) &&
-      (!filters.installments ||
-        hasInstallments(record.installment) ===
-          (filters.installments === INSTALLMENT_FILTER.WITH)) &&
-      (!filters.shared ||
-        (record.othersShare ?? 0) > 0 ===
-          (filters.shared === SHARED_FILTER.SHARED)) &&
-      (!(dueFrom || dueTo) || !!record.dueDate) &&
-      (!dueFrom || (record.dueDate?.slice(0, 10) ?? "") >= dueFrom) &&
-      (!dueTo || (record.dueDate?.slice(0, 10) ?? "") <= dueTo),
+    (record) => {
+      const amount = filters.currency
+        ? record.amount
+        : (record.amountInPen ?? record.amount);
+      return (
+        (!selectedPeople?.length ||
+          selectedPeople.some((person) =>
+            person === PERSON_UNASSIGNED
+              ? !record.personId
+              : record.personId === person,
+          )) &&
+        (!q ||
+          [record.description, record.merchant, record.notes].some(
+            (text) => text && fold(text).includes(q),
+          )) &&
+        (!categories.length || categories.includes(record.categoryId ?? "")) &&
+        (!filters.method || record.paymentMethodId === filters.method) &&
+        (!filters.currency || record.currency === filters.currency) &&
+        (!filters.type || record.expenseType === filters.type) &&
+        (!filters.status ||
+          filters.status.split(",").includes(record.paymentStatus ?? "")) &&
+        (!filters.period || record.period === filters.period) &&
+        (!filters.hasNote ||
+          Boolean(record.notes?.trim()) === (filters.hasNote === "yes")) &&
+        (amountFrom == null ||
+          Number.isNaN(amountFrom) ||
+          (amount ?? 0) >= amountFrom) &&
+        (amountTo == null ||
+          Number.isNaN(amountTo) ||
+          (amount ?? 0) <= amountTo) &&
+        (!filters.month || record.paymentMonth === Number(filters.month)) &&
+        (!filters.year || record.paymentYear === Number(filters.year)) &&
+        (!filters.installments ||
+          hasInstallments(record.installment) ===
+            (filters.installments === INSTALLMENT_FILTER.WITH)) &&
+        (!filters.shared ||
+          (record.othersShare ?? 0) > 0 ===
+            (filters.shared === SHARED_FILTER.SHARED)) &&
+        (!(dueFrom || dueTo) || !!record.dueDate) &&
+        (!dueFrom || (record.dueDate?.slice(0, 10) ?? "") >= dueFrom) &&
+        (!dueTo || (record.dueDate?.slice(0, 10) ?? "") <= dueTo)
+      );
+    },
   );
 }
 

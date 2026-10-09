@@ -2,7 +2,7 @@ import { UserRound } from "lucide-react";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { cn } from "@/shared/utils/cn";
 import { useMe } from "@/shared/api/hooks/catalogs";
-import { PERSON_ALL, PERSON_FILTER_LABELS, PERSON_ME, PERSON_UNASSIGNED } from "../../constants/expense-filters";
+import { PERSON_ALL, PERSON_FILTER_LABELS, PERSON_ME } from "../../constants/expense-filters";
 import { useExpensePersonOptions } from "../../hooks/useExpensePersonOptions";
 
 interface ExpensePersonFilterProps {
@@ -31,16 +31,12 @@ export function ExpensePersonFilter({
     .map((person) => person === me ? PERSON_ME : person)
     .filter((person, index, people) => people.indexOf(person) === index)
     .join(",");
-  const options = useExpensePersonOptions().map((option) => ({
-    ...option,
-    count: counts?.[option.value === "__me__" ? me ?? option.value : option.value],
-  }));
-  const optionsWithUnassigned = options.map((option) =>
-    option.value === PERSON_UNASSIGNED
-      ? { ...option, count: counts?.[PERSON_UNASSIGNED] }
-      : option,
-  );
-
+  const optionsWithUnassigned = useExpensePersonOptions()
+    .map((option) => {
+      const countKey = option.value === "__me__" ? me ?? option.value : option.value;
+      return { ...option, count: counts?.[countKey] };
+    })
+    .filter((option) => counts == null || (option.count ?? 0) > 0);
   if (compact) {
     return (
       <div

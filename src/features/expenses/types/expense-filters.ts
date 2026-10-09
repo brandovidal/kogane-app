@@ -21,6 +21,10 @@ export interface ExpenseFilterValues {
   shared?: SharedFilterValue;
   dueFrom?: string;
   dueTo?: string;
+  hasNote?: "yes" | "no";
+  amountFrom?: string;
+  amountTo?: string;
+  methodType?: string;
   month?: string;
   year?: string;
 }
@@ -34,6 +38,8 @@ export interface FilterableExpense {
   notes?: string | null;
   categoryId?: string | null;
   paymentMethodId?: string | null;
+  amount?: number;
+  amountInPen?: number | null;
   currency?: string | null;
   expenseType?: string | null;
   paymentStatus?: string | null;

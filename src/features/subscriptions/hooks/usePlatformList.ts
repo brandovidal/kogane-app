@@ -25,10 +25,31 @@ export function usePlatformList() {
   const me = useMe();
   const people = usePeople().data;
   const personName = nameById(people);
-  const accountName = nameById(usePaymentMethods().data);
+  const paymentMethods = usePaymentMethods().data;
+  const accountName = nameById(paymentMethods);
+  const personCounts = useMemo(
+    () =>
+      items.reduce<Record<string, number>>((counts, item) => {
+        const id = item.personId ?? "__unassigned__";
+        counts[id] = (counts[id] ?? 0) + 1;
+        return counts;
+      }, {}),
+    [items],
+  );
   const filtered = useMemo(
-    () => applyExpenseFilters(items, filters, me),
-    [items, filters, me],
+    () => {
+      const matches = applyExpenseFilters(items, filters, me);
+      if (!filters.methodType) return matches;
+      const methodTypes = new Map(
+        (paymentMethods ?? []).map((method) => [method.id, method.type]),
+      );
+      return matches.filter(
+        (item) =>
+          item.paymentMethodId != null &&
+          methodTypes.get(item.paymentMethodId) === filters.methodType,
+      );
+    },
+    [items, filters, me, paymentMethods],
   );
   const groupBy = (groupParams.group?.split(",") ?? []).filter(
     (field): field is "person" | "period" => field === "person" || field === "period",
@@ -54,6 +75,7 @@ export function usePlatformList() {
     me,
     personName,
     accountName,
+    personCounts,
     loading: query.isLoading,
     error: query.isError,
     resetKey: JSON.stringify([month, year, filters, groupBy]),

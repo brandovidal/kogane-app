@@ -6,6 +6,10 @@ import {
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
+  ComboboxGroup,
+  ComboboxGroupLabel,
+  ComboboxCollection,
+  ComboboxSeparator,
   ComboboxItem,
   ComboboxItemIndicator,
   ComboboxList,
@@ -29,6 +33,7 @@ import { normalize } from "@/shared/lib/text";
 export interface FilterSelectOption {
   value: string;
   label: string;
+  group?: string;
   decoration?: ReactNode;
   searchTerms?: readonly string[];
   count?: number;
@@ -62,6 +67,40 @@ function matchesOption(option: FilterSelectOption, query: string) {
   const normalizedQuery = normalize(query);
   return [option.label, ...(option.searchTerms ?? [])].some((text) =>
     normalize(text).includes(normalizedQuery),
+  );
+}
+
+function FilterOptionItem({
+  option,
+  multiple,
+  allValue,
+  selectedValues,
+}: {
+  option: FilterSelectOption;
+  multiple: boolean;
+  allValue: string;
+  selectedValues: string[];
+}) {
+  return (
+    <ComboboxItem value={option.value}>
+      {multiple && (
+        <span className="relative inline-flex size-5 shrink-0 items-center justify-center rounded-[4px] border border-input bg-background">
+          {option.value === allValue && selectedValues.length > 0 ? (
+            <Minus className="size-3.5" />
+          ) : (
+            <ComboboxItemIndicator>
+              <Check className="size-3.5" />
+            </ComboboxItemIndicator>
+          )}
+        </span>
+      )}
+      {option.decoration}
+      <span className="min-w-0 flex-1 truncate">{option.label}</span>
+      {option.count != null && (
+        <span className="text-xs tabular-nums text-muted-foreground">{option.count}</span>
+      )}
+      {!multiple && <ComboboxItemIndicator><Check className="size-4" /></ComboboxItemIndicator>}
+    </ComboboxItem>
   );
 }
 
@@ -111,6 +150,18 @@ export function FilterSelect({
       : selectedOptions.map((option) => option.label).join(", ")
     : (allTriggerLabel ?? allLabel);
   const hasSearchTerms = options.some((option) => option.searchTerms?.length);
+  const groupedOptions = useMemo(() => {
+    const groups = new Map<string, FilterSelectOption[]>();
+    const ungrouped: FilterSelectOption[] = [];
+    for (const option of [{ value: allValue, label: allLabel }, ...options]) {
+      if (option.group) {
+        groups.set(option.group, [...(groups.get(option.group) ?? []), option]);
+      } else {
+        ungrouped.push(option);
+      }
+    }
+    return { ungrouped, groups: [...groups] };
+  }, [allLabel, allValue, options]);
 
   return (
     <div className={cn("block min-w-0 space-y-1.5", containerClassName)}>
@@ -166,27 +217,26 @@ export function FilterSelect({
               </div>
             </div>
             <ComboboxList className="max-h-60 overflow-y-auto p-1">
-              {(option: FilterSelectOption) => (
-                <ComboboxItem key={option.value} value={option.value}>
-                  {multiple && (
-                    <span className="relative inline-flex size-5 shrink-0 items-center justify-center rounded-[4px] border border-input bg-background">
-                      {option.value === allValue && selectedValues.length > 0 ? (
-                        <Minus className="size-3.5" />
-                      ) : (
-                        <ComboboxItemIndicator>
-                          <Check className="size-3.5" />
-                        </ComboboxItemIndicator>
-                      )}
-                    </span>
-                  )}
-                  {option.decoration}
-                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                  {option.count != null && (
-                    <span className="text-xs tabular-nums text-muted-foreground">{option.count}</span>
-                  )}
-                  {!multiple && <ComboboxItemIndicator><Check className="size-4" /></ComboboxItemIndicator>}
-                </ComboboxItem>
+              {groupedOptions.ungrouped.length > 0 && (
+                <ComboboxGroup items={groupedOptions.ungrouped}>
+                  <ComboboxCollection>
+                    {(option: FilterSelectOption) => (
+                      <FilterOptionItem key={option.value} option={option} multiple={multiple} allValue={allValue} selectedValues={selectedValues} />
+                    )}
+                  </ComboboxCollection>
+                </ComboboxGroup>
               )}
+              {groupedOptions.groups.map(([group, groupOptions], index) => (
+                <ComboboxGroup key={group} items={groupOptions}>
+                  {(index > 0 || groupedOptions.ungrouped.length > 0) && <ComboboxSeparator className="my-1 h-px bg-border" />}
+                  <ComboboxGroupLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{group}</ComboboxGroupLabel>
+                  <ComboboxCollection>
+                    {(option: FilterSelectOption) => (
+                      <FilterOptionItem key={option.value} option={option} multiple={multiple} allValue={allValue} selectedValues={selectedValues} />
+                    )}
+                  </ComboboxCollection>
+                </ComboboxGroup>
+              ))}
             </ComboboxList>
             <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">
               {emptyDescription ?? "No se encontraron opciones."}

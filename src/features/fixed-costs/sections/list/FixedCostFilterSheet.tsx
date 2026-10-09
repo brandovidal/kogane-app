@@ -101,12 +101,11 @@ export function FixedCostFilterSheet({
     >
       {showPeriod && (
         <section className="space-y-2">
-          <h3 className="eyebrow">Período</h3>
+          <h4 className="eyebrow">Período</h4>
           <FixedCostPeriodSelector />
         </section>
       )}
       <section className="space-y-3">
-        <h3 className="eyebrow">Filtros</h3>
         <div className="flex flex-col gap-3">
           <ExpenseFilterFields
             fields={FIXED_COST_PANEL_FILTER_KEYS}

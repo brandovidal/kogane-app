@@ -12,9 +12,11 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   groupByLabel,
   groupByLabels,
   periodChip,
+  formatFilterLabel,
   tone,
   maxVisibleItems,
   collapsible = true,
+  showCollapseLabel,
   showClearAll = true,
   onClearAll,
 }: ActiveExpenseFilterChipsProps<T>) {
@@ -28,6 +30,7 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
     groupByLabel,
     groupByLabels,
     periodChip,
+    formatFilterLabel,
     showClearAll,
     onClearAll,
   });
@@ -41,6 +44,7 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
       collapsible={collapsible}
       tone={tone}
       maxVisibleItems={maxVisibleItems}
+      showCollapseLabel={showCollapseLabel}
     />
   );
 }

@@ -19,6 +19,7 @@ export interface AppliedFilterChipsProps {
   onClearAll?: () => void;
   tone?: "default" | "brand";
   maxVisibleItems?: number;
+  showCollapseLabel?: boolean;
 }
 
 export function AppliedFilterChips({
@@ -28,6 +29,7 @@ export function AppliedFilterChips({
   onClearAll,
   tone = "default",
   maxVisibleItems,
+  showCollapseLabel = true,
 }: AppliedFilterChipsProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [expanded, setExpanded] = useState(!collapsible);
@@ -55,12 +57,16 @@ export function AppliedFilterChips({
           variant="outline"
           size="xs"
           aria-expanded={expanded}
+          aria-label={expanded ? "Ocultar filtros aplicados" : "Mostrar filtros aplicados"}
           onClick={() => setExpanded((current) => !current)}
           className="shrink-0 gap-1.5"
         >
           <SlidersHorizontal aria-hidden="true" className="size-3.5" />
-          <span>{expanded ? "Ocultar" : "Mostrar"}</span>
-          <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">
+          {showCollapseLabel && <span>{expanded ? "Ocultar" : "Mostrar"}</span>}
+          <span className={cn(
+            "rounded-full px-1.5 text-[10px] font-medium tabular-nums",
+            tone === "brand" ? "bg-brand/15 text-brand" : "bg-muted",
+          )}>
             {items.length}
           </span>
           <ChevronDown

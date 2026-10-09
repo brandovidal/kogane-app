@@ -10,6 +10,7 @@ import { SubscriptionDialog } from "../components/SubscriptionDialog";
 import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
 import { PlatformViewBar } from "../sections/list/PlatformViewBar";
 import { PlatformOverview } from "../sections/list/PlatformOverview";
+import { PlatformToolbar } from "../sections/list/PlatformToolbar";
 import { PlatformFilterSheet } from "../sections/list/PlatformFilterSheet";
 import { PlatformResults } from "../sections/list/PlatformResults";
 import { PlatformBulkActions } from "../sections/list/PlatformBulkActions";
@@ -31,6 +32,7 @@ function PlatformListPageContent() {
   const list = usePlatformList();
   const actions = usePlatformActions();
   const bulk = usePlatformBulkActions(list.filtered, list.resetKey);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
   const tableState = usePlatformTable({
@@ -88,18 +90,31 @@ function PlatformListPageContent() {
         loading={list.loading}
       />
       {list.view !== "calendar" && (
-        <PlatformFilterSheet
-          filters={list.filters}
-          onFiltersChange={list.setFilters}
-          groupBy={list.groupBy}
-          onGroupByChange={list.setGroupBy}
-          view={list.view}
-          onViewChange={list.setView}
-          table={tableState.table}
-          resultCount={list.filtered.length}
-          totalCount={list.items.length}
-          items={list.items}
-        />
+        <>
+          <PlatformToolbar
+            filters={list.filters}
+            onFiltersChange={list.setFilters}
+            groupBy={list.groupBy}
+            onGroupByChange={list.setGroupBy}
+            view={list.view}
+            onViewChange={list.setView}
+            table={tableState.table}
+            resultCount={list.filtered.length}
+            totalCount={list.items.length}
+            personCounts={list.personCounts}
+            onOpenFilters={() => setFilterSheetOpen(true)}
+          />
+          <PlatformFilterSheet
+            open={filterSheetOpen}
+            onOpenChange={setFilterSheetOpen}
+            filters={list.filters}
+            onFiltersChange={list.setFilters}
+            me={list.me}
+            resultCount={list.filtered.length}
+            totalCount={list.items.length}
+            personCounts={list.personCounts}
+          />
+        </>
       )}
       <PlatformBulkActions bulk={bulk} onExport={selectedExport.exportCsv} />
       <PlatformResults
