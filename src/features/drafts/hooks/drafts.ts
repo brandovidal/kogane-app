@@ -70,10 +70,10 @@ export const useSaveDraft = ({ quiet = false }: { quiet?: boolean } = {}) =>
     ...(quiet ? {} : { success: "Guardado" }),
   });
 
-export const useDiscardDraft = () =>
+export const useDiscardDraft = ({ quiet = false }: { quiet?: boolean } = {}) =>
   useApiMutation((id: string) => discardDraft(id), {
     invalidate: [draftKeys.all],
-    success: "Descartado",
+    ...(quiet ? {} : { success: "Descartado" }),
   });
 
 export const useRetryDraft = () =>

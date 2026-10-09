@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { shareParts } from "@/features/expenses/lib/shared-expense";
 import { toast } from "sonner";
 import {
@@ -23,7 +23,6 @@ import { cn } from "@/shared/utils/cn";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column, type ViewMode } from "@/shared/types/data-view";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import {
   draftMediaKind,
   useOpenDraftMedia,
@@ -35,8 +34,6 @@ import {
   useDrafts,
   useRetryDraft,
   useSaveDraft,
-  useUpdateDraft,
-  type DraftFields,
   type DraftTab,
 } from "@/features/drafts/hooks/drafts";
 import { withQuery } from "@/shared/api/query";
@@ -44,7 +41,6 @@ import type { Schemas } from "@/shared/api/client";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
-import { toDraftBody } from "@/features/drafts/lib/draft-form";
 import {
   missingLabels,
   readyDrafts,
@@ -53,8 +49,19 @@ import {
 import { DraftCard } from "./DraftCard";
 import { DraftActionsMenu } from "./DraftActionsMenu";
 import { DraftFailedCard, failureReason } from "./DraftFailedCard";
-import { DraftForm } from "./DraftForm";
+import { DraftEditDialog } from "./DraftEditDialog";
 import { DraftIndicators } from "./DraftIndicators";
+import { DraftSelectionBar } from "./DraftSelectionBar";
+import { DraftToolbar } from "./DraftToolbar";
+import {
+  EMPTY_DRAFT_FILTERS,
+  filterDrafts,
+  groupDrafts,
+  hasActiveFilters,
+  summarizeSelection,
+  type DraftFilters,
+  type DraftGroupBy,
+} from "@/features/drafts/lib/draft-filters";
 
 type Draft = NonNullable<
   Schemas["DraftListResponseDto"]["data"]
@@ -83,6 +90,8 @@ function DraftsPageView() {
   const [tab, setTab] = useState<DraftTab>("review");
   const [editing, setEditing] = useState<Draft | undefined>();
   const [view, setView] = useViewMode("drafts", "cards");
+  const [filters, setFilters] = useState<DraftFilters>(EMPTY_DRAFT_FILTERS);
+  const [groupBy, setGroupBy] = useState<DraftGroupBy>("none");
   const counts = useDraftTabCounts();
   const review = useDrafts("review").data?.items ?? [];
   const failed = useDrafts("failed").data?.items ?? [];
@@ -157,7 +166,21 @@ function DraftsPageView() {
             {value === "review" && review.length > 0 && (
               <DraftIndicators summary={summarizeDrafts(review)} />
             )}
-            <DraftList tab={value} view={view} onEdit={setEditing} />
+            <DraftToolbar
+              filters={filters}
+              onFiltersChange={setFilters}
+              groupBy={groupBy}
+              onGroupByChange={setGroupBy}
+              showState={value === "review"}
+            />
+            <DraftList
+              tab={value}
+              view={view}
+              filters={filters}
+              groupBy={groupBy}
+              onClearFilters={() => setFilters(EMPTY_DRAFT_FILTERS)}
+              onEdit={setEditing}
+            />
           </TabsContent>
         ))}
       </Tabs>
@@ -169,10 +192,16 @@ function DraftsPageView() {
 function DraftList({
   tab,
   view,
+  filters,
+  groupBy,
+  onClearFilters,
   onEdit,
 }: {
   tab: DraftTab;
   view: ViewMode;
+  filters: DraftFilters;
+  groupBy: DraftGroupBy;
+  onClearFilters: () => void;
   onEdit: (draft: Draft) => void;
 }) {
   const { data, isLoading } = useDrafts(tab);
@@ -180,10 +209,14 @@ function DraftList({
   const saveDraft = useSaveDraft();
   const discardDraft = useDiscardDraft();
   const retryDraft = useRetryDraft();
+  const quietSave = useSaveDraft({ quiet: true });
+  const quietDiscard = useDiscardDraft({ quiet: true });
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   if (isLoading) return null;
-  const items = data?.items ?? [];
-  if (!items.length) {
+  const allItems = data?.items ?? [];
+  const items = filterDrafts(allItems, filters);
+  if (!allItems.length) {
     if (tab === "review")
       return (
         <EmptyState
@@ -401,10 +434,58 @@ function DraftList({
     actionsColumn,
   ];
 
-  if (tab === "failed")
+  if (!items.length)
     return (
+      <EmptyState
+        variant="filters"
+        title="Sin resultados"
+        description="Ningún borrador coincide con la búsqueda o los filtros."
+        action={
+          <Button variant="outline" onClick={onClearFilters}>
+            Limpiar filtros
+          </Button>
+        }
+      />
+    );
+
+  const cardRows = (draft: Draft) =>
+    columns
+      .filter((column) =>
+        ["destination", "person", "shared", "origin"].includes(column.key),
+      )
+      .map((column) => ({ label: column.header, value: column.cell(draft) }));
+
+  // Selección múltiple solo en la tabla de Por revisar (board B3)
+  const selectable = tab === "review" && view === "table";
+  const summary = summarizeSelection(items, selected);
+  const groups = groupDrafts(items, groupBy, {
+    destination: (value) => DESTINATION_LABELS[value] ?? value,
+    person: personName,
+  });
+  const showRegisterMore = tab === "review" && !hasActiveFilters(filters);
+
+  const saveSelected = async () => {
+    const results = await Promise.allSettled(
+      summary.ready.map((draft) => quietSave.mutateAsync(draft.id)),
+    );
+    const saved = results.filter((r) => r.status === "fulfilled").length;
+    if (saved) toast.success(`${saved} guardados`);
+    setSelected(new Set());
+  };
+  const discardSelected = async () => {
+    const chosen = items.filter((draft) => selected.has(draft.id));
+    const results = await Promise.allSettled(
+      chosen.map((draft) => quietDiscard.mutateAsync(draft.id)),
+    );
+    const done = results.filter((r) => r.status === "fulfilled").length;
+    if (done) toast.success(`${done} descartados`);
+    setSelected(new Set());
+  };
+
+  const renderView = (rows: Draft[], withExtra: boolean) =>
+    tab === "failed" ? (
       <DataView
-        items={items}
+        items={rows}
         columns={failedColumns}
         rowKey={(draft) => draft.id}
         view={view}
@@ -418,51 +499,71 @@ function DraftList({
           />
         )}
       />
+    ) : (
+      <DataView
+        items={rows}
+        columns={columns}
+        rowKey={(draft) => draft.id}
+        view={view}
+        selected={selectable ? selected : undefined}
+        onSelectedChange={selectable ? setSelected : undefined}
+        cardRenderer={(draft) => (
+          <DraftCard
+            draft={draft}
+            rows={cardRows(draft)}
+            discarded={tab === "discarded"}
+            busy={saveDraft.isPending}
+            onSave={() => saveDraft.mutate(draft.id)}
+            onEdit={() => onEdit(draft)}
+            onDiscard={() => discardDraft.mutate(draft.id)}
+          />
+        )}
+        extraCard={
+          withExtra && showRegisterMore ? (
+            <div className="flex h-full min-h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed p-4 text-center">
+              <span className="flex size-12 items-center justify-center rounded-xl bg-muted/60">
+                <Plus className="size-5" />
+              </span>
+              <b className="text-sm">Registrar más</b>
+              <p className="text-xs text-muted-foreground">
+                Escribe o envía una captura desde Mensajes
+              </p>
+              <Button asChild variant="outline" size="sm">
+                <a href="/mensajes">
+                  <MessageSquare className="size-4" /> Ir a Mensajes
+                </a>
+              </Button>
+            </div>
+          ) : undefined
+        }
+      />
     );
 
-  const cardRows = (draft: Draft) =>
-    columns
-      .filter((column) =>
-        ["destination", "person", "shared", "origin"].includes(column.key),
-      )
-      .map((column) => ({ label: column.header, value: column.cell(draft) }));
-
   return (
-    <DataView
-      items={items}
-      columns={columns}
-      rowKey={(draft) => draft.id}
-      view={view}
-      cardRenderer={(draft) => (
-        <DraftCard
-          draft={draft}
-          rows={cardRows(draft)}
-          discarded={tab === "discarded"}
-          busy={saveDraft.isPending}
-          onSave={() => saveDraft.mutate(draft.id)}
-          onEdit={() => onEdit(draft)}
-          onDiscard={() => discardDraft.mutate(draft.id)}
+    <>
+      {groups.map((group, index) => (
+        <section key={group.key} className="space-y-3">
+          {group.label && (
+            <h3 className="text-sm font-semibold">
+              {group.label}{" "}
+              <span className="font-normal text-muted-foreground">
+                {group.items.length}
+              </span>
+            </h3>
+          )}
+          {renderView(group.items, index === groups.length - 1)}
+        </section>
+      ))}
+      {selectable && (
+        <DraftSelectionBar
+          summary={summary}
+          busy={quietSave.isPending || quietDiscard.isPending}
+          onSaveReady={() => void saveSelected()}
+          onDiscard={() => void discardSelected()}
+          onClear={() => setSelected(new Set())}
         />
       )}
-      extraCard={
-        tab === "review" ? (
-          <div className="flex h-full min-h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed p-4 text-center">
-            <span className="flex size-12 items-center justify-center rounded-xl bg-muted/60">
-              <Plus className="size-5" />
-            </span>
-            <b className="text-sm">Registrar más</b>
-            <p className="text-xs text-muted-foreground">
-              Escribe o envía una captura desde Mensajes
-            </p>
-            <Button asChild variant="outline" size="sm">
-              <a href="/mensajes">
-                <MessageSquare className="size-4" /> Ir a Mensajes
-              </a>
-            </Button>
-          </div>
-        ) : undefined
-      }
-    />
+    </>
   );
 }
 
@@ -484,72 +585,6 @@ function MediaLink({
       <Icon className="h-3.5 w-3.5" />{" "}
       {kind === "audio" ? "Escuchar nota de voz" : "Ver captura"}
     </button>
-  );
-}
-
-function DraftEditDialog({
-  draft,
-  onClose,
-}: {
-  draft?: Draft;
-  onClose: () => void;
-}) {
-  const updateDraft = useUpdateDraft();
-  const [fields, setFields] = useState<DraftFields>({});
-
-  useEffect(() => {
-    if (draft) {
-      setFields({
-        destination: (draft.destination as DraftFields["destination"]) ?? null,
-        description: draft.description,
-        amount: draft.amount,
-        currency: (draft.currency as DraftFields["currency"]) ?? "PEN",
-        spentAt: draft.spentAt?.slice(0, 10) ?? null,
-        expenseType: (draft.expenseType as DraftFields["expenseType"]) ?? null,
-        installment: draft.installment,
-        period: (draft.period as DraftFields["period"]) ?? null,
-        personId: draft.personId,
-        paymentMethodId: draft.paymentMethodId,
-        categoryId: draft.categoryId,
-        merchant: draft.merchant,
-        operationNumber: draft.operationNumber,
-        notes: draft.notes,
-        sharedWith: draft.sharedWith?.shares.length ? draft.sharedWith : null,
-      });
-    }
-  }, [draft]);
-
-  const save = () => {
-    if (!draft) return;
-    updateDraft.mutate(
-      { id: draft.id, body: toDraftBody(fields) },
-      { onSuccess: onClose },
-    );
-  };
-
-  return (
-    <ResponsiveDialog
-      open={!!draft}
-      onOpenChange={(open) => !open && onClose()}
-      title="Editar borrador"
-      description="Queda en Por revisar hasta que lo guardes"
-      footer={
-        <>
-          <Button variant="outline" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button onClick={save} disabled={updateDraft.isPending}>
-            Guardar cambios
-          </Button>
-        </>
-      }
-    >
-      <DraftForm
-        value={fields}
-        onChange={setFields}
-        missingFields={draft?.missingFields}
-      />
-    </ResponsiveDialog>
   );
 }
 
