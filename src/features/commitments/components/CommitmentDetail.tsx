@@ -183,6 +183,7 @@ export function CommitmentDetail({
                 refType="commitment"
                 refId={commitment.id}
                 defaultKind="contrato"
+                dropzone
               />
             </TabsContent>
           </Tabs>

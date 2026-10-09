@@ -5,6 +5,7 @@ import { useRecordHistory } from "@/features/history/hooks/history";
 import { Button } from "@/ui/button";
 import { HistoryTimeline } from "./HistoryTimeline";
 import { HistoryTimelineLoading } from "./HistoryTimelineLoading";
+import { emptyFilterCopy, historyFooter } from "../lib/history-view";
 
 type HistoryFilter = "all" | "edits" | "status" | "files";
 const FILTERS: { id: HistoryFilter; label: string }[] = [
@@ -91,10 +92,10 @@ export function RecordHistoryPanel({
             aria-hidden="true"
             className="mx-auto mb-3 size-5 text-muted-foreground"
           />
-          <p className="text-sm font-medium">Sin cambios registrados</p>
+          <p className="text-sm font-medium">Aún no hay cambios</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            El registro puede ser anterior al historial o provenir de una
-            importación.
+            Cuando edites este registro, cambies su estado o adjuntes archivos,
+            lo verás aquí.
           </p>
         </div>
       ) : (
@@ -125,12 +126,6 @@ export function RecordHistoryPanel({
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-              <span>
-                {entries.length} de {total} cambios
-              </span>
-              <span>Más recientes primero</span>
-            </div>
             {filteredEntries.length ? (
               <HistoryTimeline
                 entries={filteredEntries}
@@ -138,9 +133,29 @@ export function RecordHistoryPanel({
                 compact={compact}
               />
             ) : (
-              <p className="rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-                No hay cambios para este filtro.
-              </p>
+              <div className="rounded-lg border border-dashed px-4 py-8 text-center">
+                <p className="text-sm font-medium">
+                  {filter === "all"
+                    ? "Sin cambios"
+                    : emptyFilterCopy(filter).title}
+                </p>
+                {filter !== "all" && (
+                  <>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {emptyFilterCopy(filter).description}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-3"
+                      onClick={() => setFilter("all")}
+                    >
+                      Ver todos los cambios
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
             {query.isError && hasLoadedEntries && (
               <p role="alert" className="text-sm text-destructive">
@@ -167,6 +182,14 @@ export function RecordHistoryPanel({
                     : `Cargar ${Math.min(pageSize, total - entries.length)} cambios más`}
               </Button>
             )}
+            <p className="text-xs text-muted-foreground">
+              {historyFooter({
+                shown: filteredEntries.length,
+                loaded: entries.length,
+                total,
+                filter,
+              })}
+            </p>
           </div>
         </>
       )}

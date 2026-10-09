@@ -78,3 +78,23 @@ describe("history-view", () => {
     expect(line.after).toBe("•••");
   });
 });
+
+describe("historial: textos y pie", () => {
+  it("emptyFilterCopy y historyFooter", async () => {
+    const { emptyFilterCopy, historyFooter, isLongValue, truncateValue } =
+      await import("@/features/history/lib/history-view");
+    expect(emptyFilterCopy("status").title).toBe("Sin cambios de estado");
+    expect(
+      historyFooter({ shown: 2, loaded: 10, total: 10, filter: "files" }),
+    ).toBe("2 cambios · filtro: Archivos");
+    expect(
+      historyFooter({ shown: 2, loaded: 2, total: 10, filter: "all" }),
+    ).toBe("Mostrando 2 de 10 cambios");
+    expect(
+      historyFooter({ shown: 10, loaded: 10, total: 10, filter: "all" }),
+    ).toBe("10 cambios · más recientes primero");
+    expect(isLongValue("x".repeat(121))).toBe(true);
+    expect(truncateValue("x".repeat(200)).endsWith("…")).toBe(true);
+    expect(truncateValue("corto")).toBe("corto");
+  });
+});

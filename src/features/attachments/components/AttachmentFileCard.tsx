@@ -14,12 +14,14 @@ import {
 } from "@/ui/attachment";
 import { ATTACHMENT_KIND_LABELS } from "../constants/attachments";
 import { formatAttachmentSize } from "../lib/attachment-size";
+import { uploadedLabel } from "../lib/attachment-view";
 
 export interface AttachmentFileCardProps {
   file: Pick<
     AttachmentRecord,
     "name" | "contentType" | "kind" | "sizeBytes" | "url"
-  >;
+  > &
+    Partial<Pick<AttachmentRecord, "createdAt">>;
   uploading?: boolean;
   onRemove?: () => void;
   onPreview?: () => void;
@@ -75,6 +77,9 @@ export function AttachmentFileCard({
               ? "Subiendo…"
               : (ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind)}{" "}
             · {formatAttachmentSize(file.sizeBytes)}
+            {!uploading && file.createdAt
+              ? ` · ${uploadedLabel(file.createdAt)}`
+              : ""}
           </AttachmentDescription>
           {uploading && (
             <div

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { Camera, CloudUpload, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -23,7 +23,13 @@ import {
   SelectValue,
 } from "@/ui/select";
 
+import {
+  attachmentsSummary,
+  kindCounts,
+} from "@/features/attachments/lib/attachment-view";
 import { AttachmentFileCard } from "./AttachmentFileCard";
+import { AttachmentFilterChips } from "./AttachmentFilterChips";
+import { AttachmentKindChips } from "./AttachmentKindChips";
 import { AttachmentPreviewDialog } from "./dialogs/AttachmentPreviewDialog";
 import { OversizedAttachmentCard } from "./OversizedAttachmentCard";
 
@@ -58,9 +64,9 @@ export function AttachmentsPanel({
   showKindSelect = true,
   onUploaded,
   dropzone = false,
-  filterKind = "all",
+  filterKind,
   listToolbar,
-  emptyMessage = "Sin archivos todavía.",
+  emptyMessage,
   onInvalidFilesChange,
 }: AttachmentsPanelProps) {
   const {
@@ -85,7 +91,9 @@ export function AttachmentsPanel({
   const [deletingFile, setDeletingFile] = useState<Attachment | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [localFilter, setLocalFilter] = useState<string>("all");
   const input = useRef<HTMLInputElement>(null);
+  const camera = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     onInvalidFilesChange?.(oversizedFiles.length);
@@ -154,10 +162,13 @@ export function AttachmentsPanel({
     uploadBatch([{ id: crypto.randomUUID(), file, kind }]);
   };
 
+  // Con `filterKind` el padre controla el filtro; sin él, los chips con conteo lo hacen aquí (board 14b)
+  const activeFilter = filterKind ?? localFilter;
+  const counts = kindCounts(files);
   const visibleFiles =
-    filterKind === "all"
+    activeFilter === "all"
       ? files
-      : files.filter((file) => file.kind === filterKind);
+      : files.filter((file) => file.kind === activeFilter);
   const previewIndex = visibleFiles.findIndex((file) => file.id === previewId);
 
   return (
@@ -170,7 +181,22 @@ export function AttachmentsPanel({
         className="hidden"
         onChange={(event) => event.target.files && pick(event.target.files)}
       />
-      {(showKindSelect || !dropzone) && (
+      <input
+        ref={camera}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(event) => event.target.files && pick(event.target.files)}
+      />
+      {showKindSelect && dropzone && (
+        <AttachmentKindChips
+          value={selectedKind}
+          onChange={changeKind}
+          disabled={upload.isPending}
+        />
+      )}
+      {!dropzone && (
         <div className="flex flex-wrap items-center gap-2">
           {showKindSelect && (
             <Select
@@ -236,38 +262,74 @@ export function AttachmentsPanel({
           }}
           tabIndex={0}
           aria-label="Suelta o pega archivos aquí para adjuntarlos"
-          className={`flex min-h-[4.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-3 py-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:text-left ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
+          className={`rounded-lg border border-dashed px-3 py-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${dragging ? "border-brand bg-brand/5" : "border-border/80 bg-muted/15"}`}
         >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
-            <CloudUpload aria-hidden="true" className="size-4" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">
-              Arrastra, pega con ⌘V o{" "}
-              <button
+          {!isLoading && files.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 px-2 py-4">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground">
+                <Paperclip aria-hidden="true" className="size-5" />
+              </span>
+              <b className="text-sm">Aún no hay archivos adjuntos</b>
+              <p className="max-w-xs text-xs text-muted-foreground">
+                Sube la boleta, el recibo o el contrato para tener el respaldo
+                de este registro.
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={upload.isPending}
+                  onClick={() => input.current?.click()}
+                >
+                  <CloudUpload className="size-4" /> Seleccionar archivos
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={upload.isPending}
+                  onClick={() => camera.current?.click()}
+                >
+                  <Camera className="size-4" /> Tomar foto
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                o arrastra aquí · pega con ⌘V · hasta {ATTACHMENT_MAX_MB} MB
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:text-left">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
+                <CloudUpload aria-hidden="true" className="size-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">
+                  Arrastra, pega con ⌘V o{" "}
+                  <button
+                    type="button"
+                    disabled={upload.isPending}
+                    onClick={() => input.current?.click()}
+                    className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    selecciónalos
+                  </button>
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Imagen, PDF o documento · hasta {ATTACHMENT_MAX_MB} MB
+                </p>
+              </div>
+              <Button
                 type="button"
+                size="sm"
+                variant="outline"
+                className="h-8 shrink-0 px-3"
                 disabled={upload.isPending}
                 onClick={() => input.current?.click()}
-                className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                selecciónalos
-              </button>
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno ·
-              varios a la vez
-            </p>
-          </div>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="h-8 shrink-0 px-3"
-            disabled={upload.isPending}
-            onClick={() => input.current?.click()}
-          >
-            {upload.isPending ? "Subiendo…" : "Subir"}
-          </Button>
+                {upload.isPending ? "Subiendo…" : "Subir"}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
@@ -298,6 +360,23 @@ export function AttachmentsPanel({
         />
       ))}
       {listToolbar}
+      {!isLoading && !isError && files.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between gap-2">
+            <b className="text-sm">Adjuntos</b>
+            <span className="text-xs text-muted-foreground">
+              {attachmentsSummary(files)}
+            </span>
+          </div>
+          {filterKind === undefined && Object.keys(counts).length > 2 && (
+            <AttachmentFilterChips
+              counts={counts}
+              value={activeFilter}
+              onChange={setLocalFilter}
+            />
+          )}
+        </div>
+      )}
       {isLoading ? (
         <p role="status" className="text-sm text-muted-foreground">
           Cargando archivos…
@@ -307,12 +386,17 @@ export function AttachmentsPanel({
           No se pudieron cargar los archivos.
         </p>
       ) : visibleFiles.length === 0 ? (
-        emptyMessage && (
+        files.length > 0 ? (
           <p className="text-sm text-muted-foreground">
-            {filterKind === "all"
-              ? emptyMessage
-              : "No hay archivos de este tipo."}
+            No hay archivos de este tipo.
           </p>
+        ) : (
+          // The dropzone shows its own empty state; without it keep the quiet message
+          !dropzone && (
+            <p className="text-sm text-muted-foreground">
+              {emptyMessage ?? "Aún no hay archivos adjuntos."}
+            </p>
+          )
         )
       ) : (
         <ul className="grid w-full grid-cols-1 gap-2">
