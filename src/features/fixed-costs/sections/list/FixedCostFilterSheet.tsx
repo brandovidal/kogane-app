@@ -117,6 +117,7 @@ export function FixedCostFilterSheet({
         value={filters}
         onChange={onFiltersChange}
         panel
+        fullWidth
         personInPanel
         personCounts={personCounts}
         activeMarkers
