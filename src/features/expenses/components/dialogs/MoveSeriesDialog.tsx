@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { api, unwrap } from "@/shared/api/client";
+import { previewMoveSeries } from "../../services/expense.service";
 import {
   useMoveSeries,
   type MoveSeries,
@@ -101,10 +101,7 @@ export function MoveSeriesDialog({
 
   const preview = useQuery({
     queryKey: ["expense-moves", source.resource, source.id, destination.key],
-    queryFn: () =>
-      unwrap(
-        api.POST("/v1/expense-moves", { body: { ...body, dryRun: true } }),
-      ),
+    queryFn: () => previewMoveSeries(body),
   });
   const series = preview.data;
   const needsCategory = !!series?.withoutCategory;

@@ -1,9 +1,10 @@
-import { api, unwrap } from "@/shared/api/client";
 import type { ExpenseResource } from "@/shared/api/types";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
 import { expenseKeys } from "./expense-keys";
+import { saveExpense } from "../services/expense.service";
+import type { ExpenseInputDto } from "../services/dto/expense.dto";
 
-export type ExpenseInput = Record<string, unknown>;
+export type { ExpenseInputDto as ExpenseInput } from "../services/dto/expense.dto";
 
 const invalidateFor = (resource: ExpenseResource) => [
   expenseKeys.resource(resource),
@@ -14,19 +15,7 @@ const invalidateFor = (resource: ExpenseResource) => [
 
 export const useSaveExpense = (resource: ExpenseResource) =>
   useApiMutation(
-    ({ id, body }: { id?: string; body: ExpenseInput }) =>
-      id
-        ? unwrap(
-            api.PATCH("/v1/expenses/{resource}/{id}", {
-              params: { path: { resource, id } },
-              body: body as never,
-            }),
-          )
-        : unwrap(
-            api.POST("/v1/expenses/{resource}", {
-              params: { path: { resource } },
-              body: body as never,
-            }),
-          ),
+    ({ id, body }: { id?: string; body: ExpenseInputDto }) =>
+      saveExpense(resource, { id, body }),
     { invalidate: invalidateFor(resource), success: "Guardado" },
   );

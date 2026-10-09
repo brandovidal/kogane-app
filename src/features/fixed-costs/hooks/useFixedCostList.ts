@@ -71,7 +71,7 @@ export function useFixedCostList() {
     Number.isInteger(year) &&
     year >= 1 &&
     year <= 9999;
-  // One-month views request just that month; year, range and all-period modes load the data they need locally.
+
   const query = useExpenses(
     EXPENSE_RESOURCES.fixedCost,
     hasPeriod ? { month, year } : undefined,
@@ -80,6 +80,7 @@ export function useFixedCostList() {
   const previousMonthIndex = year * 12 + month - 2;
   const shouldLoadPreviousMonth =
     page === "mes" && hasPeriod && query.isSuccess && fixedCosts.length === 0;
+
   const previousMonthQuery = useExpenses(
     EXPENSE_RESOURCES.fixedCost,
     shouldLoadPreviousMonth

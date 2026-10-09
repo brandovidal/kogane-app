@@ -56,3 +56,11 @@ export {
 export { paidAndOwn, totalsOf, shareParts } from "./lib/shared-expense";
 export type { ExpenseShare } from "./lib/shared-expense";
 export type { ExpenseFiltersProps } from "./types/expense-filter-props";
+export {
+  getExpense,
+  getExpenses,
+  saveExpense,
+  deleteExpense,
+  previewMoveSeries,
+  moveSeries,
+} from "./services";

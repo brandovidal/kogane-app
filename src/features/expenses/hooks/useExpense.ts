@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { api, unwrap } from "@/shared/api/client";
-import type { ExpenseByResource, ExpenseResource } from "@/shared/api/types";
+import type { ExpenseResource } from "@/shared/api/types";
 import { expenseKeys } from "./expense-keys";
+import { getExpense } from "../services/expense.service";
 
 export function useExpense<R extends ExpenseResource>(
   resource: R,
@@ -11,12 +11,7 @@ export function useExpense<R extends ExpenseResource>(
   return useQuery({
     queryKey: expenseKeys.record(resource, id),
     enabled: enabled && !!id,
-    queryFn: async () =>
-      (await unwrap(
-        api.GET("/v1/expenses/{resource}/{id}", {
-          params: { path: { resource, id: id! } },
-        }),
-      )) as ExpenseByResource[R],
+    queryFn: () => getExpense(resource, id!),
     staleTime: 0,
   });
 }
