@@ -1,5 +1,6 @@
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
+import { HistoryExpandableText } from "./HistoryExpandableText";
 
 interface HistoryValueProps {
   field: string;
@@ -20,7 +21,5 @@ export function HistoryValue({
     return <StatusBadge status={rawValue} />;
   }
 
-  return (
-    <span className="whitespace-pre-wrap wrap-anywhere">{formattedValue}</span>
-  );
+  return <HistoryExpandableText text={formattedValue} />;
 }

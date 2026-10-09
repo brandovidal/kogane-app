@@ -214,3 +214,62 @@ export const SUMMARY_FIELDS = [
   "personId",
   "installment",
 ];
+
+export type HistoryFilterId = "all" | "edits" | "status" | "files";
+
+const FILTER_NAMES: Record<Exclude<HistoryFilterId, "all">, string> = {
+  edits: "ediciones",
+  status: "estado",
+  files: "archivos",
+};
+
+// Textos cuando un filtro no deja nada (board 14g)
+export function emptyFilterCopy(filter: Exclude<HistoryFilterId, "all">) {
+  const copy = {
+    edits: {
+      title: "Sin ediciones",
+      description:
+        "Este registro todavía no tiene ediciones de campos. Prueba con otro filtro.",
+    },
+    status: {
+      title: "Sin cambios de estado",
+      description:
+        "Este registro todavía no cambió de estado. Prueba con otro filtro.",
+    },
+    files: {
+      title: "Sin cambios de archivos",
+      description:
+        "Todavía no se adjuntaron ni quitaron archivos. Prueba con otro filtro.",
+    },
+  } as const;
+  return copy[filter];
+}
+
+// Pie del historial (boards 14d–14h): cuántos se ven, de cuántos, y con qué filtro
+export function historyFooter({
+  shown,
+  loaded,
+  total,
+  filter,
+}: {
+  shown: number;
+  loaded: number;
+  total: number;
+  filter: HistoryFilterId;
+}) {
+  if (filter !== "all")
+    return `${shown} ${shown === 1 ? "cambio" : "cambios"} · filtro: ${FILTER_NAMES[filter][0].toUpperCase()}${FILTER_NAMES[filter].slice(1)}`;
+  if (loaded < total) return `Mostrando ${loaded} de ${total} cambios`;
+  return `${total} ${total === 1 ? "cambio" : "cambios"} · más recientes primero`;
+}
+
+export const HISTORY_VALUE_PREVIEW_CHARS = 120;
+
+// «Ver completo» (board 14i): un valor largo se corta y se puede expandir
+export const isLongValue = (text: string, max = HISTORY_VALUE_PREVIEW_CHARS) =>
+  text.length > max;
+
+export const truncateValue = (
+  text: string,
+  max = HISTORY_VALUE_PREVIEW_CHARS,
+) => (isLongValue(text, max) ? `${text.slice(0, max).trimEnd()}…` : text);
