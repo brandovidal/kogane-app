@@ -31,6 +31,7 @@ export interface ImportHistoryCardProps {
   items: HistoryItem[];
   current: string | null;
   onSelect: (key: string) => void;
+  onClose?: () => void;
 }
 export interface ImportRowsTabProps {
   batchId: string;

@@ -17,17 +17,18 @@ export function ImportsPageView() {
   if (current)
     return (
       <div className="space-y-3">
-        <div className="flex justify-end">
-          <Button variant="outline" size="sm" onClick={startNew}>
-            <Replace className="size-4" />{" "}
-            {source === "notion"
-              ? "Cambiar export"
-              : "Cambiar estado de cuenta"}
-          </Button>
-        </div>
+        {source === "notion" && (
+          <div className="flex justify-end">
+            <Button variant="outline" size="sm" onClick={startNew}>
+              <Replace className="size-4" /> Cambiar export
+            </Button>
+          </div>
+        )}
         <div className="min-w-0">
           {source === "notion" && <NotionImportDetailView id={id} />}
-          {source === "statement" && <StatementPreview id={id} />}
+          {source === "statement" && (
+            <StatementPreview id={id} onChangeFile={startNew} />
+          )}
         </div>
       </div>
     );
@@ -38,16 +39,18 @@ export function ImportsPageView() {
         <ImportUploadCard onRead={setSelected} />
       </div>
       <div className="space-y-4">
-        <ImportRecents
-          items={history}
-          onSelect={setSelected}
-          onViewAll={() => setShowHistory((value) => !value)}
-        />
-        {showHistory && (
+        {showHistory ? (
           <ImportHistoryCard
             items={history}
             current={current}
             onSelect={setSelected}
+            onClose={() => setShowHistory(false)}
+          />
+        ) : (
+          <ImportRecents
+            items={history}
+            onSelect={setSelected}
+            onViewAll={() => setShowHistory(true)}
           />
         )}
       </div>
