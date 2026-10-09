@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Acciones de la tabla</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--mf:oklch(0.72 0.02 258);--accent:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--blue:oklch(0.488 0.243 264.376);--blue-t:oklch(0.72 0.14 264);--amber:oklch(0.82 0.16 85);--orange:oklch(0.75 0.17 55);--green:oklch(0.696 0.17 162.48);--red:oklch(0.637 0.237 25.331);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--foreground);background:var(--background);width:1440px;height:820px;padding:36px 48px;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;gap:16px}
+.k *{box-sizing:border-box}
+.k svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+.cap{font-size:12px;font-weight:600;color:var(--mf);text-transform:uppercase;letter-spacing:.08em}
+.bulk{display:flex;align-items:center;gap:8px;height:48px;padding:0 8px 0 16px;border:1px solid var(--blue);border-radius:10px;background:oklch(0.488 0.243 264.376 / .1)}
+.bulk b{font-weight:600;margin-right:8px}
+.bulk .sp{flex:1}
+.btn{height:32px;padding:0 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--background);font-weight:500;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.btn.gh{border-color:transparent;background:none;color:var(--mf)}
+.btn.dg{color:var(--red)}
+.cb{width:16px;height:16px;border:1px solid var(--mf);border-radius:4px;display:grid;place-items:center}
+.cb.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.cb.on svg{width:12px;height:12px;stroke-width:3}
+.cols{display:grid;grid-template-columns:280px 280px 300px 1fr;gap:28px;align-items:start;margin-top:12px}
+.col{display:flex;flex-direction:column;gap:10px}
+.menu{background:var(--background);border:1px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 12px 32px rgb(0 0 0/.5);display:flex;flex-direction:column}
+.mi{display:flex;align-items:center;gap:10px;min-height:34px;padding:0 10px;border-radius:6px;border:0;background:none;text-align:left;width:100%;font-size:13px}
+.mi>svg:first-child{color:var(--mf)}
+.mi.on{background:var(--accent)}
+.mi .sc{margin-left:auto;font-size:11px;color:var(--mf)}
+.mi .ch{margin-left:auto;color:var(--mf);display:flex;align-items:center;gap:6px}
+.mi.pri,.mi.pri svg{color:var(--green)}
+.mi.dg,.mi.dg>svg{color:var(--red)}
+.mi .sub{font-size:11px;color:var(--mf);display:block}
+.lbl{font-size:11px;color:var(--mf);padding:8px 10px 4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.sep{height:1px;background:var(--border);margin:4px -4px}
+.st{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:99px;font-size:12px;font-weight:500}
+.st i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-ni{background:oklch(0.29 0.016 258);color:var(--mf)}
+.s-pe{background:oklch(0.82 0.16 85 / .15);color:var(--amber)}
+.s-pp{background:oklch(0.75 0.17 55 / .15);color:var(--orange)}
+.s-ab{background:oklch(0.696 0.17 162.48 / .15);color:var(--green)}
+.s-ex{background:oklch(0.29 0.016 258);color:oklch(0.85 0.012 258)}
+.s-pa{background:oklch(0.488 0.243 264.376 / .2);color:var(--blue-t)}
+.chk{margin-left:auto;color:var(--foreground)}
+.mo{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px}
+.mo button{border:1px solid var(--border);background:none;border-radius:6px;height:34px;font-size:12px;color:var(--mf)}
+.mo button.cur{border-color:var(--blue);color:var(--foreground);background:oklch(0.488 0.243 264.376 / .12)}
+.note{border:1px dashed var(--border);border-radius:10px;padding:16px;color:var(--mf);font-size:13px;line-height:1.6}
+.note b{color:var(--foreground);font-weight:600}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+</style>
+</helmet>
+<div class="k">
+  <span class="cap">Barra de selección múltiple</span>
+  <div class="bulk" role="toolbar" aria-label="Acciones en lote">
+    <span class="cb on"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+    <b>2 seleccionados · S/ 2,992.76</b>
+    <button class="btn">Cambiar estado <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="btn"><svg viewBox="0 0 24 24"><path d="M7 16 3 12l4-4M17 8l4 4-4 4M3 12h18"/></svg>Transferir <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="btn"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Duplicar</button>
+    <button class="btn"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></svg>Exportar</button>
+    <button class="btn dg"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Eliminar</button>
+    <span class="sp"></span>
+    <button class="btn gh">Deseleccionar</button>
+  </div>
+
+  <div class="cols">
+    <div class="col">
+      <span class="cap">1 · Menú de fila</span>
+      <div class="menu" role="menu" aria-label="Acciones de BCP">
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Editar<span class="sc">E</span></button>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Duplicar<span class="sc">D</span></button>
+        <button class="mi on" role="menuitem" aria-haspopup="true" aria-expanded="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>Estado<span class="ch"><span class="st s-pa"><i></i>Pagado</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+        <button class="mi" role="menuitem" aria-haspopup="true"><svg viewBox="0 0 24 24"><path d="M7 16 3 12l4-4M17 8l4 4-4 4M3 12h18"/></svg>Transferir<span class="ch"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+        <div class="sep"></div>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg>Archivos<span class="sc" style="background:var(--accent);border-radius:99px;padding:0 7px;color:var(--foreground);line-height:18px">1</span></button>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>Historial<span class="sc">10 cambios</span></button>
+        <div class="sep"></div>
+        <button class="mi dg" role="menuitem"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Eliminar</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <span class="cap">2 · Submenú Estado</span>
+      <div class="menu" role="menu" aria-label="Cambiar estado">
+        <div class="lbl">Por iniciar</div>
+        <button class="mi" role="menuitemradio"><span class="st s-ni"><i></i>No iniciado</span></button>
+        <div class="sep"></div>
+        <div class="lbl">En curso</div>
+        <button class="mi" role="menuitemradio"><span class="st s-pe"><i></i>Pendiente</span></button>
+        <button class="mi" role="menuitemradio"><span class="st s-pp"><i></i>Parcialmente pagado</span></button>
+        <div class="sep"></div>
+        <div class="lbl">Completados</div>
+        <button class="mi" role="menuitemradio"><span class="st s-ab"><i></i>Abonado</span></button>
+        <button class="mi" role="menuitemradio"><span class="st s-ex"><i></i>Exonerado</span></button>
+        <button class="mi on" role="menuitemradio" aria-checked="true"><span class="st s-pa"><i></i>Pagado</span><svg class="chk" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></button>
+      </div>
+    </div>
+
+    <div class="col">
+      <span class="cap">3 · Submenú Transferir</span>
+      <div class="menu" role="menu" aria-label="Transferir">
+        <div class="lbl">Mover de mes</div>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg><span>Mes anterior<span class="sub">Septiembre 2026</span></span></button>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg><span>Mes siguiente<span class="sub">Noviembre 2026</span></span></button>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18"/></svg><span>Elegir mes…</span></button>
+        <div class="mo" aria-label="Selector rápido de mes">
+          <button>Ago</button><button>Sep</button><button class="cur">Oct</button><button>Nov</button><button>Dic</button><button>Ene</button>
+        </div>
+        <div class="sep"></div>
+        <div class="lbl">Mover a otra sección</div>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M3 8h14v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM17 10h2a2 2 0 0 1 0 4h-2"/></svg>Día a día</button>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="m8 3 4 4 4-4"/></svg>Plataformas</button>
+        <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/></svg>Otra sección…</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <span class="cap">Notas</span>
+      <div class="note">
+        <b>Estado:</b> el submenú muestra los 6 estados agrupados como hoy, con el actual marcado. El estado actual también se ve en la fila del menú, así no hace falta abrirlo.<br><br>
+        <b>Transferir:</b> mes anterior y siguiente muestran a qué mes se mueve. "Elegir mes…" abre un selector compacto para saltar varios meses.<br><br>
+        <b>Archivos e Historial:</b> abren el panel lateral del registro en la pestaña correspondiente. Clic en la descripción abre la pestaña Detalle (ver pantallas 6a–6c).
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":820}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

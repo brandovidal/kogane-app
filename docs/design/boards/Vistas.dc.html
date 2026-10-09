@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Otras vistas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--mf:oklch(0.72 0.02 258);--accent:oklch(0.29 0.016 258);--blue:oklch(0.488 0.243 264.376);--blue-t:oklch(0.72 0.14 264);--amber:oklch(0.769 0.188 70.08);--green:oklch(0.696 0.17 162.48);--red:oklch(0.637 0.237 25.331);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--foreground);background:oklch(0.12 0.012 258);width:1440px;height:960px;padding:36px 48px;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:28px;overflow:hidden}
+.k *{box-sizing:border-box}
+.k svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+.col{display:flex;flex-direction:column;gap:10px}
+.cap{font-size:12px;font-weight:600;color:var(--mf);text-transform:uppercase;letter-spacing:.08em}
+.cap b{color:var(--foreground);text-transform:none;letter-spacing:0;font-size:13px;margin-left:6px;font-weight:500}
+.pane{background:var(--background);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;height:390px;overflow:hidden}
+.hd{display:flex;justify-content:space-between;align-items:center}
+.hd h3{margin:0;font-size:15px;font-weight:600}
+.seg{display:inline-flex;background:var(--muted);border-radius:var(--r);padding:3px;gap:2px}
+.seg button{border:0;background:none;height:24px;padding:0 9px;border-radius:6px;font-size:12px;color:var(--mf);font-weight:500}
+.seg button.on{background:var(--background);color:var(--foreground)}
+.per{display:flex;align-items:center;gap:4px;font-weight:600}
+.per button{border:0;background:none;color:var(--mf);width:24px;height:24px;display:grid;place-items:center;border-radius:6px}
+.sec{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--mf);text-transform:uppercase;letter-spacing:.06em;padding-top:4px}
+.sec .s{margin-left:auto;text-transform:none;letter-spacing:0;font-variant-numeric:tabular-nums}
+.sec .dot{width:7px;height:7px;border-radius:50%}
+.it{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.it .m{display:flex;flex-direction:column;gap:2px}
+.it small{font-size:12px;color:var(--mf)}
+.n{font-weight:600;font-variant-numeric:tabular-nums}
+.due{font-size:12px;color:var(--amber);white-space:nowrap}
+.pay{height:28px;padding:0 10px;border-radius:7px;border:1px solid var(--border);background:none;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.empty{border:1px dashed var(--border);border-radius:10px;padding:10px 12px;color:var(--mf);font-size:12px}
+.q{display:grid;grid-template-columns:1.4fr 1.6fr .9fr .9fr;gap:12px;align-items:center;padding:12px 4px;border-top:1px solid var(--border)}
+.q.h{border-top:0;color:var(--mf);font-size:12px;padding-top:0}
+.q .bar{height:8px;border-radius:99px;background:var(--accent);overflow:hidden}
+.q .bar i{display:block;height:100%;background:var(--blue)}
+.q .pc{display:flex;flex-direction:column;gap:6px}
+.q .pc small{display:flex;justify-content:space-between;color:var(--mf);font-size:11px}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.kb{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:1}
+.kc{background:var(--muted);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.kc .t{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.kc .t span{margin-left:auto;color:var(--mf);font-weight:500;font-variant-numeric:tabular-nums}
+.kc .dot{width:7px;height:7px;border-radius:50%}
+.card{background:var(--background);border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.card .rw{display:flex;justify-content:space-between}
+.card small{font-size:11px;color:var(--mf)}
+.drop{border:1px dashed var(--border);border-radius:8px;padding:14px;text-align:center;color:var(--mf);font-size:11px}
+.mo{display:flex;align-items:center;gap:8px;padding:8px 4px;border-top:1px solid var(--border);font-weight:600}
+.mo:first-of-type{border-top:0}
+.mo .c{font-size:12px;color:var(--mf);font-weight:400}
+.mo .s{margin-left:auto;font-variant-numeric:tabular-nums}
+.mo .pz{font-size:11px;font-weight:500;padding:1px 8px;border-radius:99px}
+.li{display:grid;grid-template-columns:1fr 110px 90px;gap:10px;padding:6px 4px 6px 26px;color:var(--mf);font-size:12px}
+.li span:first-child{color:var(--foreground)}
+.li .r{color:var(--foreground)}
+.st{display:inline-flex;align-items:center;gap:5px;font-size:11px}
+.st i{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+</style>
+</helmet>
+<div class="k">
+
+  <div class="col">
+    <span class="cap">Vista · Por pagar<b>lo que falta pagar, de cualquier mes</b></span>
+    <div class="pane">
+      <div class="hd"><h3>Por pagar · S/ 2,100.00</h3><div class="seg"><button class="on">Hasta hoy</button><button>30 días</button><button>Todo</button></div></div>
+      <div class="sec"><span class="dot" style="background:var(--red)"></span>Vencidos<span class="s">0</span></div>
+      <div class="empty">Nada vencido.</div>
+      <div class="sec"><span class="dot" style="background:var(--amber)"></span>Esta semana<span class="s">S/ 2,100.00</span></div>
+      <div class="it"><div class="m"><b style="font-weight:500">Inmueble</b><small>Préstamo · cuota 13/36</small></div><span class="due">Lun 05/10 · en 3 días</span><span style="display:flex;gap:10px;align-items:center"><span class="n">S/ 1,500.00</span><button class="pay"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Pagado</button></span></div>
+      <div class="it"><div class="m"><b style="font-weight:500">Alquiler</b><small>Casa</small></div><span class="due">Mar 06/10 · en 4 días</span><span style="display:flex;gap:10px;align-items:center"><span class="n">S/ 600.00</span><button class="pay"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Pagado</button></span></div>
+      <div class="sec"><span class="dot" style="background:var(--mf)"></span>Después<span class="s">0</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <span class="cap">Vista · Cuotas<b>una fila por deuda, no por mes</b></span>
+    <div class="pane">
+      <div class="hd"><h3>Cuotas activas · 1</h3><div class="seg"><button class="on">Activas</button><button>Terminadas</button></div></div>
+      <div class="q h"><span>Deuda</span><span>Avance</span><span class="r">Cuota mensual</span><span class="r">Próximo pago</span></div>
+      <div class="q"><div><b style="font-weight:500">Inmueble</b><br><small style="color:var(--mf)">Préstamo · Brando</small></div>
+        <div class="pc"><div class="bar"><i style="width:36%"></i></div><small><span>13 de 36</span><span>36%</span></small></div>
+        <span class="r n">S/ 1,500.00</span><span class="r due">05/10</span></div>
+      <div class="q" style="color:var(--mf)"><span>Total mensual en cuotas</span><span></span><span class="r n" style="color:var(--foreground)">S/ 1,500.00</span><span></span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <span class="cap">Vista · Por estado<b>tablero, arrastrar cambia el estado</b></span>
+    <div class="pane">
+      <div class="hd"><h3>Octubre 2026</h3><div class="per"><button aria-label="Mes anterior"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>Octubre 2026<button aria-label="Mes siguiente"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      <div class="kb">
+        <div class="kc"><div class="t"><span class="dot" style="background:var(--mf)"></span>Por iniciar<span>2 · S/ 2,100.00</span></div>
+          <div class="card"><div class="rw"><b style="font-weight:500">Inmueble</b><span class="n">S/ 1,500.00</span></div><small>Préstamo · vence 05/10</small><span class="st" style="color:var(--mf)"><i></i>No iniciado</span></div>
+          <div class="card"><div class="rw"><b style="font-weight:500">Alquiler</b><span class="n">S/ 600.00</span></div><small>Casa · vence 06/10</small><span class="st" style="color:var(--mf)"><i></i>No iniciado</span></div>
+        </div>
+        <div class="kc"><div class="t"><span class="dot" style="background:var(--amber)"></span>En curso<span>0</span></div><div class="drop">Pendiente · Parcialmente pagado<br>Suelta aquí</div></div>
+        <div class="kc"><div class="t"><span class="dot" style="background:var(--green)"></span>Completados<span>0</span></div><div class="drop">Abonado · Exonerado · Pagado<br>Suelta aquí</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <span class="cap">Vista · Todos<b>historial por año, agrupado por mes</b></span>
+    <div class="pane">
+      <div class="hd"><h3>Todos · 2026</h3><div class="per"><button aria-label="Año anterior"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>2026<button aria-label="Año siguiente"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      <div class="mo"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>Octubre<span class="c">2 costos</span><span class="pz" style="background:oklch(0.769 0.188 70.08 / .15);color:var(--amber)">0 de 2 pagados</span><span class="s">S/ 2,100.00</span></div>
+      <div class="li"><span>Inmueble</span><span>No iniciado</span><span class="r">S/ 1,500.00</span></div>
+      <div class="li"><span>Alquiler</span><span>No iniciado</span><span class="r">S/ 600.00</span></div>
+      <div class="mo"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>Septiembre<span class="c">4 costos</span><span class="pz" style="background:oklch(0.696 0.17 162.48 / .15);color:var(--green)">completo</span><span class="s">S/ 2,215.00</span></div>
+      <div class="li"><span>Inmueble</span><span>Pagado</span><span class="r">S/ 1,500.00</span></div>
+      <div class="li"><span>Alquiler</span><span>Pagado</span><span class="r">S/ 600.00</span></div>
+      <div class="li"><span>Luz</span><span>Pagado</span><span class="r">S/ 70.00</span></div>
+      <div class="li"><span>Agua</span><span>Pagado</span><span class="r">S/ 45.00</span></div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

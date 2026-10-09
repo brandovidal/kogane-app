@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Estados vacíos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--mf:oklch(0.72 0.02 258);--sidebar:oklch(0.155 0.014 258);--accent:oklch(0.29 0.016 258);--blue:oklch(0.488 0.243 264.376);--blue-t:oklch(0.72 0.14 264);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--foreground);background:var(--background);width:1440px;height:1000px;display:grid;grid-template-columns:64px 1fr;box-sizing:border-box;overflow:hidden}
+.k *{box-sizing:border-box}
+.k svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+.rail{background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0}
+.logo{width:36px;height:36px;border-radius:9px;background:var(--accent);display:grid;place-items:center;font-weight:700;margin-bottom:10px}
+.ri{width:40px;height:40px;border-radius:var(--r);background:none;display:block}
+.ri.on{background:var(--accent)}
+.main{display:flex;flex-direction:column;min-width:0}
+.top{height:64px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.top h1{font-size:18px;margin:0;font-weight:600}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:12px;font-weight:600}
+.body{padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.grp{display:flex;align-items:center;gap:8px}
+.inp{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border:1px solid var(--border);border-radius:var(--r);background:oklch(0.29 0.016 258 / .35);color:var(--mf);width:230px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-weight:500}
+.btn.icon{width:36px;padding:0;justify-content:center;color:var(--mf)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.lb{height:32px;padding:0 10px;font-size:13px;color:var(--mf);gap:6px}
+.btn.lb svg{width:15px;height:15px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.card .d{font-size:13px;color:var(--mf)}
+.card .t{font-size:24px;font-weight:700;color:var(--mf)}
+.card .f{font-size:12px;color:var(--mf)}
+.cap{font-size:12px;font-weight:600;color:var(--mf);text-transform:uppercase;letter-spacing:.08em}
+.two{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+.empty{border:1px dashed var(--border);border-radius:12px;padding:48px 32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.ill{width:64px;height:64px;border-radius:16px;background:var(--muted);display:grid;place-items:center;color:var(--mf);margin-bottom:6px;position:relative}
+.ill svg{width:28px;height:28px}
+.ill .b{position:absolute;bottom:-6px;right:-6px;width:26px;height:26px;border-radius:50%;background:var(--background);border:1px solid var(--border);display:grid;place-items:center}
+.ill .b svg{width:13px;height:13px}
+.empty h2{margin:0;font-size:18px;font-weight:600}
+.empty p{margin:0;color:var(--mf);max-width:420px;line-height:1.5}
+.acts{display:flex;gap:8px;margin-top:10px}
+.prev{margin-top:14px;width:100%;max-width:440px;border:1px solid var(--border);border-radius:10px;text-align:left}
+.prev .h{padding:10px 14px;font-size:12px;color:var(--mf);display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
+.prev .r{display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:13px}
+.prev .r+.r{border-top:1px solid var(--border)}
+.cb{width:16px;height:16px;border-radius:4px;background:var(--blue);display:grid;place-items:center;color:#fff}
+.cb svg{width:11px;height:11px;stroke-width:3}
+.prev .r span:last-child{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--mf)}
+.pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+.pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:99px;border:1px solid oklch(0.488 0.243 264.376 / .45);background:oklch(0.488 0.243 264.376 / .12);color:var(--blue-t);font-size:12px;font-weight:500}
+.pill svg{width:12px;height:12px}
+.kbd{font-size:12px;color:var(--mf);margin-top:6px}
+.kbd span{border:1px solid var(--border);border-radius:4px;padding:0 5px;font-size:11px}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+</style>
+</helmet>
+<div class="k">
+  <nav class="rail" aria-label="Navegación"><div class="logo">K</div><span class="ri"></span><span class="ri"></span><span class="ri on"></span><span class="ri"></span><span class="ri"></span><span class="ri"></span></nav>
+  <div class="main">
+    <header class="top"><div style="display:flex;flex-direction:column;gap:3px"><span class="eb">Gastos</span><h1>Costos fijos</h1></div><div style="display:flex;align-items:center;gap:4px"><button aria-label="Notificaciones, 16 sin leer" style="position:relative;width:34px;height:34px;border:0;background:none;color:var(--mf);display:grid;place-items:center;border-radius:8px;margin-right:8px"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:0;right:-2px;background:oklch(0.577 0.245 27.325);color:#fff;border-radius:99px;font-size:10px;font-weight:600;line-height:16px;min-width:16px;padding:0 4px;text-align:center;border:2px solid var(--background)">16</span></button><div class="avatar">BV</div></div></header>
+    <div class="body">
+      <div class="bar">
+        <div class="grp">
+          <label class="inp" style="width:360px"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar en costos fijos</label>
+        </div>
+        <div class="grp"><button class="btn icon" aria-label="Más: exportar, importar"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button><button class="btn pri"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Crear</button></div>
+      </div>
+      <div class="cards">
+        <div class="card"><span class="d">Total del mes</span><span class="t">S/ 0.00</span><span class="f">Sin costos · Nov 2026</span></div>
+        <div class="card"><span class="d">Completado</span><span class="t">—</span><span class="f">&nbsp;</span></div>
+        <div class="card"><span class="d">Por pagar</span><span class="t">—</span><span class="f">&nbsp;</span></div>
+        <div class="card"><span class="d">Próximo vencimiento</span><span class="t">—</span><span class="f">&nbsp;</span></div>
+      </div>
+
+      <div class="two">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span class="cap">A · Mes sin registros</span>
+          <div class="empty">
+            <div class="ill"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span class="b"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></div>
+            <h2>Aún no hay costos fijos en noviembre</h2>
+            <p>Octubre tuvo 2 costos fijos por S/ 2,992.76. Puedes traerlos a este mes y ajustar lo que cambie.</p>
+            <div class="prev" aria-label="Costos de octubre">
+              <div class="h"><span>Desde octubre 2026</span><span>2 de 2 seleccionados</span></div>
+              <label class="r"><span class="cb"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>Terreno <span style="color:var(--mf);font-size:12px">cuota 18/48</span><span>S/ 1,042.00</span></label>
+              <label class="r"><span class="cb"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>BCP <span style="color:var(--mf);font-size:12px">cuota 14/36</span><span>S/ 1,950.76</span></label>
+            </div>
+            <div class="acts">
+              <button class="btn">Crear desde cero</button>
+              <button class="btn pri"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar 2 de octubre</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span class="cap">B · Filtros sin resultados</span>
+          <div class="empty">
+            <div class="ill"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="b"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span></div>
+            <h2>Ningún costo coincide</h2>
+            <p>Hay 2 costos en octubre, pero ninguno cumple estos filtros:</p>
+            <div class="pills">
+              <span class="pill">Estado: Pagado <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+              <span class="pill">Persona: Brando <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+              <span class="pill">Moneda: USD <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+            </div>
+            <div class="acts">
+              <button class="btn">Editar filtros</button>
+              <button class="btn pri">Limpiar filtros</button>
+            </div>
+          </div>
+          <span class="cap" style="margin-top:8px">C · Búsqueda sin resultados</span>
+          <div class="empty" style="padding:28px">
+            <h2 style="font-size:15px">Sin resultados para "luz"</h2>
+            <p style="font-size:13px">Revisa la ortografía o busca en todos los meses.</p>
+            <div class="acts" style="margin-top:4px"><button class="btn lb">Buscar en todos los meses</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

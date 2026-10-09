@@ -222,10 +222,12 @@ export function FixedCostMonthOverview({
               {
                 label: "Vencidos",
                 value: formatCurrency(groupAmount(overdue)),
+                tone: overdue.length > 0 ? "danger" : undefined,
               },
               {
                 label: "Esta semana",
                 value: formatCurrency(groupAmount(week)),
+                tone: week.length > 0 ? "pending" : undefined,
               },
               {
                 label: "Próximos 30 días",
@@ -341,18 +343,12 @@ export function FixedCostMonthOverview({
             {
               label: "Por pagar",
               value: formatCurrency(summary.totalCount ? summary.payable : 0),
-              valueClass:
-                summary.payableCount > 0
-                  ? "text-amber-600 dark:text-amber-300"
-                  : undefined,
+              tone: summary.payableCount > 0 ? "pending" : undefined,
             },
             {
               label: "Completado",
               value: formatCurrency(summary.totalCount ? summary.completed : 0),
-              valueClass:
-                summary.completedCount > 0
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : undefined,
+              tone: summary.completedCount > 0 ? "done" : undefined,
             },
             {
               label: "Próximo vencimiento",

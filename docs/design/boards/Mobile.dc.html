@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Costos fijos móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--mf:oklch(0.72 0.02 258);--accent:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--blue:oklch(0.488 0.243 264.376);--amber:oklch(0.769 0.188 70.08);--green:oklch(0.696 0.17 162.48);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--foreground);background:var(--background);width:390px;height:844px;box-sizing:border-box;padding:16px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.k *{box-sizing:border-box;min-width:0}
+.k svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+.t{display:flex;align-items:center;gap:8px}
+.t h1{margin:0;font-size:20px;font-weight:600;flex:1}
+.btn{height:44px;width:44px;border-radius:var(--r);border:1px solid var(--border);background:none;display:inline-flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;padding:0}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn .bd{position:absolute;top:-5px;right:-5px;background:var(--blue);color:#fff;border-radius:99px;font-size:10px;line-height:16px;min-width:16px;padding:0 4px}
+.m{display:flex;align-items:center;gap:8px}
+.m b{flex:1;text-align:center;font-weight:600}
+.sum{border:1px solid var(--border);border-radius:12px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sum small{color:var(--mf);font-size:12px;display:block;margin-bottom:2px}
+.sum b{font-size:20px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sum .prog{grid-column:1/-1;height:5px;border-radius:99px;background:var(--accent);overflow:hidden}
+.sum .prog i{display:block;height:100%;width:0;background:var(--green)}
+.sc{display:grid;grid-template-columns:repeat(4,auto);background:var(--muted);border-radius:var(--r);padding:3px;gap:2px}
+.sc button{border:0;background:none;height:34px;border-radius:6px;font-size:12px;color:var(--mf);padding:0 6px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:4px}
+.sc button.on{background:var(--background);color:var(--foreground);box-shadow:0 1px 2px rgb(0 0 0/.4)}
+.sc .dot{width:6px;height:6px;border-radius:50%}
+.pills{display:flex;gap:6px;align-items:center}
+.pill{height:28px;padding:0 10px;border-radius:99px;border:1px solid oklch(0.488 0.243 264.376 / .45);background:oklch(0.488 0.243 264.376 / .12);color:oklch(0.72 0.14 264);font-size:12px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center}
+.pill.more{border-style:dashed;background:none;color:var(--foreground);border-color:var(--border)}
+.gh{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mf);padding:2px 2px 0}
+.gh b{color:var(--foreground);font-weight:600}
+.gh .s{margin-left:auto;color:var(--foreground);font-weight:600;font-variant-numeric:tabular-nums}
+.list{display:flex;flex-direction:column;gap:10px}
+.cd{border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.r{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.r .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.n{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bd2{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:99px;border:1px solid var(--border);font-size:12px;color:var(--mf);white-space:nowrap}
+.dt{width:7px;height:7px;border-radius:50%;background:currentColor}
+.due{font-size:12px;color:var(--amber);white-space:nowrap}
+.pg{height:4px;border-radius:99px;background:var(--accent);overflow:hidden}
+.pg i{display:block;height:100%;background:var(--blue)}
+.s{font-size:12px;color:var(--mf);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.more-b{height:32px;width:32px;border:0;background:none;color:var(--mf);display:grid;place-items:center;border-radius:6px;flex-shrink:0;padding:0}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+</style>
+</helmet>
+<div class="k">
+  <div class="t">
+    <div style="display:flex;flex-direction:column;gap:3px"><span class="eb">Gastos</span><h1>Costos fijos</h1></div>
+    <button class="btn" aria-label="Filtros (5)"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="bd">5</span></button>
+    <button class="btn pri" aria-label="Crear"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  </div>
+  <div class="m">
+    <button class="btn" aria-label="Mes anterior"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+    <b>Octubre 2026</b>
+    <button class="btn" aria-label="Mes siguiente"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+  </div>
+  <div class="sum">
+    <div><small>Total del mes</small><b>S/ 2,992.76</b></div>
+    <div style="text-align:right"><small>Completado</small><b style="color:var(--mf)">S/ 0.00</b></div>
+    <div class="prog"><i></i></div>
+  </div>
+  <div class="sc" role="tablist" aria-label="Estado">
+    <button class="on" role="tab">Todos 2</button>
+    <button role="tab"><span class="dot" style="background:var(--mf)"></span>Por iniciar 2</button>
+    <button role="tab"><span class="dot" style="background:var(--amber)"></span>En curso 0</button>
+    <button role="tab"><span class="dot" style="background:var(--green)"></span>Complet. 0</button>
+  </div>
+  <div class="pills">
+    <span class="pill">Oct 2026</span><span class="pill">Brando</span><span class="pill">PEN</span><button class="pill more">+2</button>
+  </div>
+  <div class="gh"><b>Brando</b>2 costos<span class="s">S/ 2,992.76</span></div>
+  <div class="list">
+    <div class="cd">
+      <div class="r"><span class="nm">BCP</span><span class="n">S/ 1,950.76</span></div>
+      <div class="r"><span class="bd2"><span class="dt"></span>No iniciado</span><span class="due">Vence en 3 días · 05/10</span></div>
+      <div class="pg"><i style="width:36%"></i></div>
+      <div class="r"><span class="s">Préstamo · Cuota 13/36</span><button class="more-b" aria-label="Acciones de BCP"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+    </div>
+    <div class="cd">
+      <div class="r"><span class="nm">Terreno</span><span class="n">S/ 1,042.00</span></div>
+      <div class="r"><span class="bd2"><span class="dt"></span>No iniciado</span><span class="due">Vence en 4 días · 06/10</span></div>
+      <div class="pg"><i style="width:35%"></i></div>
+      <div class="r"><span class="s">Casa · Cuota 17/48</span><button class="more-b" aria-label="Acciones de Terreno"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

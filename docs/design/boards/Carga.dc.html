@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Estado de carga</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--mf:oklch(0.72 0.02 258);--sidebar:oklch(0.155 0.014 258);--accent:oklch(0.29 0.016 258);--blue:oklch(0.488 0.243 264.376);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--foreground);background:var(--background);width:1440px;height:1000px;display:grid;grid-template-columns:64px 1fr;box-sizing:border-box;overflow:hidden}
+.k *{box-sizing:border-box}
+.k svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.sk{background:var(--accent);border-radius:6px;animation:pulse 1.6s ease-in-out infinite;display:block}
+.rail{background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0}
+.logo{width:36px;height:36px;border-radius:9px;background:var(--accent);display:grid;place-items:center;font-weight:700;margin-bottom:10px}
+.ri{width:40px;height:40px;border-radius:var(--r);display:block}
+.ri.on{background:var(--accent)}
+.main{display:flex;flex-direction:column;min-width:0;position:relative}
+.top{height:64px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.top h1{font-size:18px;margin:0;font-weight:600}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:12px;font-weight:600}
+.loadbar{position:absolute;top:63px;left:0;right:0;height:2px;background:transparent;overflow:hidden}
+.loadbar i{display:block;width:30%;height:100%;background:var(--blue)}
+.body{padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.grp{display:flex;align-items:center;gap:8px}
+.inp{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border:1px solid var(--border);border-radius:var(--r);color:var(--mf);width:230px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-weight:500}
+.btn.icon{width:36px;padding:0;justify-content:center;color:var(--mf)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn[disabled]{opacity:.5}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.card .d{font-size:13px;color:var(--mf)}
+.tbl{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tr{display:grid;grid-template-columns:44px 2.1fr 1.1fr 1fr 1.1fr 1fr 1.3fr 1fr 48px;align-items:center;padding:0 12px;min-height:56px;border-top:1px solid var(--border);gap:0}
+.tr.h{min-height:42px;border-top:0;color:var(--mf);font-size:13px;font-weight:500;background:oklch(0.29 0.016 258 / .25)}
+.g1{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:44px;border-top:1px solid var(--border);background:oklch(0.215 0.015 258 / .6)}
+.cap{font-size:12px;font-weight:600;color:var(--mf);text-transform:uppercase;letter-spacing:.08em}
+.toast{position:absolute;bottom:24px;right:28px;width:360px;border:1px solid var(--border);border-radius:10px;background:var(--background);box-shadow:0 12px 32px rgb(0 0 0/.5);padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.toast .ic{color:oklch(0.637 0.237 25.331)}
+.toast b{display:block;font-weight:600;margin-bottom:2px}
+.toast small{color:var(--mf);font-size:13px}
+.toast button{margin-top:10px;height:30px;font-size:13px}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+</style>
+</helmet>
+<div class="k">
+  <nav class="rail" aria-label="Navegación"><div class="logo">K</div><span class="ri"></span><span class="ri"></span><span class="ri on"></span><span class="ri"></span><span class="ri"></span><span class="ri"></span></nav>
+  <div class="main" aria-busy="true">
+    <header class="top"><div style="display:flex;flex-direction:column;gap:3px"><span class="eb">Gastos</span><h1>Costos fijos</h1></div><div style="display:flex;align-items:center;gap:4px"><button aria-label="Notificaciones, 16 sin leer" style="position:relative;width:34px;height:34px;border:0;background:none;color:var(--mf);display:grid;place-items:center;border-radius:8px;margin-right:8px"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:0;right:-2px;background:oklch(0.577 0.245 27.325);color:#fff;border-radius:99px;font-size:10px;font-weight:600;line-height:16px;min-width:16px;padding:0 4px;text-align:center;border:2px solid var(--background)">16</span></button><div class="avatar">BV</div></div></header>
+    <div class="loadbar" role="progressbar" aria-label="Cargando"><i></i></div>
+    <div class="body">
+      <div class="bar">
+        <div class="grp">
+          <label class="inp" style="width:360px"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar en costos fijos</label>
+        </div>
+        <div class="grp"><button class="btn icon" aria-label="Más: exportar, importar"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button><button class="btn pri"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Crear</button></div>
+      </div>
+
+      <div class="cards">
+        <div class="card"><span class="d">Total del mes</span><span class="sk" style="width:60%;height:26px"></span><span class="sk" style="width:40%;height:10px"></span></div>
+        <div class="card"><span class="d">Completado</span><span class="sk" style="width:45%;height:26px"></span><span class="sk" style="width:100%;height:5px"></span></div>
+        <div class="card"><span class="d">Por pagar</span><span class="sk" style="width:55%;height:26px"></span><span class="sk" style="width:35%;height:10px"></span></div>
+        <div class="card"><span class="d">Próximo vencimiento</span><span class="sk" style="width:50%;height:22px"></span><span class="sk" style="width:65%;height:10px"></span></div>
+      </div>
+
+      <div class="bar">
+        <div class="grp"><span class="sk" style="width:90px;height:32px;border-radius:8px"></span><span class="sk" style="width:90px;height:32px;border-radius:8px"></span><span class="sk" style="width:90px;height:32px;border-radius:8px"></span><span class="sk" style="width:100px;height:32px;border-radius:8px"></span></div>
+        <span class="sk" style="width:170px;height:32px;border-radius:8px"></span>
+      </div>
+      <div class="grp"><span class="sk" style="width:420px;height:38px;border-radius:8px"></span></div>
+
+      <div class="tbl">
+        <div class="tr h"><span></span><span>Descripción</span><span>Categoría</span><span style="text-align:right;padding-right:24px">Monto</span><span>Estado</span><span>Persona</span><span>Vencimiento</span><span>Cuenta</span><span></span></div>
+        <div class="g1"><span class="sk" style="width:22px;height:22px;border-radius:50%"></span><span class="sk" style="width:120px;height:12px"></span><span class="sk" style="width:80px;height:12px;margin-left:auto"></span></div>
+        <div class="tr"><span class="sk" style="width:16px;height:16px;border-radius:4px"></span><span class="sk" style="width:65%;height:12px"></span><span class="sk" style="width:60%;height:12px"></span><span class="sk" style="width:70%;height:12px;justify-self:end;margin-right:24px"></span><span class="sk" style="width:80px;height:20px;border-radius:99px"></span><span class="sk" style="width:60%;height:12px"></span><span class="sk" style="width:55%;height:12px"></span><span class="sk" style="width:30%;height:12px"></span><span></span></div>
+        <div class="tr"><span class="sk" style="width:16px;height:16px;border-radius:4px"></span><span class="sk" style="width:45%;height:12px"></span><span class="sk" style="width:70%;height:12px"></span><span class="sk" style="width:60%;height:12px;justify-self:end;margin-right:24px"></span><span class="sk" style="width:80px;height:20px;border-radius:99px"></span><span class="sk" style="width:50%;height:12px"></span><span class="sk" style="width:55%;height:12px"></span><span class="sk" style="width:30%;height:12px"></span><span></span></div>
+        <div class="tr"><span class="sk" style="width:16px;height:16px;border-radius:4px"></span><span class="sk" style="width:55%;height:12px"></span><span class="sk" style="width:50%;height:12px"></span><span class="sk" style="width:65%;height:12px;justify-self:end;margin-right:24px"></span><span class="sk" style="width:80px;height:20px;border-radius:99px"></span><span class="sk" style="width:60%;height:12px"></span><span class="sk" style="width:55%;height:12px"></span><span class="sk" style="width:30%;height:12px"></span><span></span></div>
+      </div>
+    </div>
+
+    <div class="toast" role="alert">
+      <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div><b>No se pudo cargar octubre</b><small>Revisa tu conexión. Mostramos lo último guardado.</small><br><button class="btn">Reintentar</button></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

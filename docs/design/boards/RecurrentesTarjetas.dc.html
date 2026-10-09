@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Recurrentes · del mes (tarjetas)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--mf:oklch(0.72 0.02 258);--sidebar:oklch(0.155 0.014 258);--accent:oklch(0.29 0.016 258);--blue:oklch(0.488 0.243 264.376);--blue-t:oklch(0.72 0.14 264);--amber:oklch(0.769 0.188 70.08);--green:oklch(0.696 0.17 162.48);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--foreground);background:var(--background);width:1440px;height:950px;display:grid;grid-template-columns:64px 1fr;box-sizing:border-box;overflow:hidden}
+.k *{box-sizing:border-box}
+.k svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+.rail{background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0}
+.logo{width:36px;height:36px;border-radius:9px;background:var(--accent);display:grid;place-items:center;font-weight:700;margin-bottom:10px}
+.ri{width:40px;height:40px;border-radius:var(--r);border:0;background:none;color:var(--mf);display:grid;place-items:center}
+.ri.on{background:var(--accent);color:var(--foreground)}
+.main{display:flex;flex-direction:column;min-width:0}
+.top{height:64px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.tt{display:flex;align-items:center;gap:20px}
+.tt h1{font-size:18px;margin:0;font-weight:600}
+.views{display:flex;gap:2px}
+.views button{border:0;background:none;height:30px;padding:0 10px;border-radius:6px;color:var(--mf);display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.views button.on{background:var(--accent);color:var(--foreground)}
+.views svg{width:14px;height:14px}
+.right{display:flex;align-items:center;gap:16px}
+.per{display:flex;align-items:center;gap:2px}
+.per .ar{border:0;background:none;color:var(--mf);width:28px;height:28px;border-radius:6px;display:grid;place-items:center}
+.per .ar svg{width:15px;height:15px}
+.per .lbl{border:0;background:none;height:28px;padding:0 8px;border-radius:6px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
+.per .lbl svg{width:13px;height:13px;color:var(--mf)}
+.today{width:6px;height:6px;border-radius:50%;background:var(--blue-t)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:12px;font-weight:600}
+.body{padding:20px 28px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.grp{display:flex;align-items:center;gap:6px}
+.inp{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid var(--border);border-radius:var(--r);background:oklch(0.29 0.016 258 / .35);color:var(--mf);width:200px;font-size:13px}
+.inp kbd{margin-left:auto;font:inherit;font-size:11px;border:1px solid var(--border);border-radius:4px;padding:0 4px}
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-weight:500;font-size:13px;color:var(--mf)}
+.btn svg{width:15px;height:15px}
+.btn.on{color:var(--foreground);background:var(--accent)}
+.btn.icon{width:32px;padding:0;justify-content:center}
+.cn{background:var(--blue);color:#fff;border-radius:99px;font-size:11px;line-height:18px;min-width:18px;padding:0 6px;text-align:center;font-weight:600}
+.vsep{width:1px;height:20px;background:var(--border);margin:0 4px}
+.sum-t{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:var(--r);border:1px dashed var(--border);background:none;font-size:12px;color:var(--mf)}
+.sum-t b{color:var(--foreground);font-weight:500}
+.sum-t svg{width:14px;height:14px}
+.tool{display:flex;border:1px solid var(--border);border-radius:var(--r);padding:2px;gap:2px}
+.tool .btn{border:0;height:26px}
+.split{display:flex}
+.split .btn{background:var(--blue);border-color:var(--blue);color:#fff;height:36px}
+.split .btn:first-child{border-radius:var(--r) 0 0 var(--r)}
+.split .btn:last-child{border-radius:0 var(--r) var(--r) 0;border-left:1px solid oklch(1 0 0 / .25);padding:0 7px}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.card{border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--background);position:relative}
+.card.sel{border-color:var(--blue);box-shadow:0 0 0 3px oklch(0.488 0.243 264.376 / .25)}
+.card .d{font-size:13px;color:var(--mf);display:flex;align-items:center;gap:6px}
+.card .d .dot{width:7px;height:7px;border-radius:50%}
+.card .t{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .f{font-size:12px;color:var(--mf)}
+.card .chk{position:absolute;top:12px;right:12px;font-size:11px;color:var(--blue-t);font-weight:500}
+.subs{display:flex;gap:6px;margin-top:2px}
+.subs span{font-size:12px;border:1px solid var(--border);border-radius:99px;padding:1px 8px;color:var(--mf)}
+.prog{height:5px;border-radius:99px;background:var(--accent);overflow:hidden;margin:3px 0 1px}
+.prog i{display:block;height:100%;background:var(--green)}
+.tbl{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tr{display:grid;grid-template-columns:44px 2.1fr 1.1fr 1fr 1.1fr 1fr 1.3fr 1fr 48px;align-items:center;padding:0 12px;min-height:54px;border-top:1px solid var(--border)}
+.tr.h{min-height:40px;border-top:0;color:var(--mf);font-size:13px;font-weight:500;background:oklch(0.29 0.016 258 / .25)}
+.tr.h span{display:flex;align-items:center;gap:4px}
+.g1,.g2{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:42px;border-top:1px solid var(--border);background:oklch(0.215 0.015 258 / .6)}
+.g2{background:none;padding-left:36px;min-height:38px}
+.g1 .n,.g2 .n{font-size:12px;color:var(--mf)}
+.g1 .sum,.g2 .sum{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums;font-size:13px}
+.g2 .sum{color:var(--mf);font-weight:500}
+.chev{border:0;background:none;color:var(--mf);width:24px;height:24px;display:grid;place-items:center;border-radius:4px}
+.tr.ind{padding-left:36px}
+.tr.ft{background:oklch(0.29 0.016 258 / .25);min-height:42px}
+.lab{font-size:11px;letter-spacing:.08em;color:var(--mf);text-transform:uppercase;margin-right:6px}
+.cb{width:16px;height:16px;border:1px solid var(--mf);border-radius:4px;display:inline-block}
+.badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:99px;font-size:12px;font-weight:500;border:1px solid var(--border)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.cat{display:inline-flex;align-items:center;gap:8px}
+.cat span.i{width:24px;height:24px;border-radius:7px;display:grid;place-items:center}
+.cat span.i svg{width:13px;height:13px}
+.num{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;padding-right:24px}
+.mini{width:110px;height:4px;border-radius:99px;background:var(--accent);margin-top:6px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--blue)}
+.who{display:flex;align-items:center;gap:8px}
+.who i{width:22px;height:22px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:10px;font-style:normal;font-weight:600}
+.due{display:flex;flex-direction:column;line-height:1.3}
+.due small{font-size:12px;color:var(--amber)}
+.tvb{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:4px}
+.gb.pchip{border:1px solid oklch(0.488 0.243 264.376 / .45);background:oklch(0.488 0.243 264.376 / .12);color:var(--blue-t);border-radius:99px;padding:0 10px;margin-right:4px}
+.gb{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 8px;border-radius:6px;border:0;background:none;color:var(--mf);font-size:13px;font-weight:500}
+.gb:hover{background:var(--accent);color:var(--foreground)}
+.gb svg{width:15px;height:15px}
+.gb .c{color:var(--blue-t);font-weight:600;font-size:12px}
+.gb .c.mute{color:var(--mf);font-weight:500}
+.gb.sm{font-size:12px}
+.desc{display:flex;align-items:center;gap:12px}
+.th{width:36px;height:36px;border-radius:8px;flex-shrink:0;position:relative;border:0;padding:0;background:repeating-linear-gradient(45deg,oklch(0.92 0.01 255),oklch(0.92 0.01 255) 4px,oklch(0.82 0.01 255) 4px,oklch(0.82 0.01 255) 8px)}
+.th .c{position:absolute;bottom:-5px;right:-5px;background:var(--background);border:1px solid var(--border);border-radius:99px;font-size:10px;line-height:14px;padding:0 4px;color:var(--foreground)}
+.th.none{background:none;border:1px dashed var(--border);color:var(--mf);display:grid;place-items:center}
+.tip{position:absolute;left:0;top:42px;white-space:nowrap;background:oklch(0.12 0.012 258);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--foreground);z-index:2}
+.pg{display:flex;justify-content:space-between;align-items:center;color:var(--mf);font-size:13px}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+/* === Plataformas y tarjetas === */
+.lg{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0}
+.ok{color:var(--green);border-color:transparent;background:oklch(0.845 0.143 164.978 / .14)}
+.off{color:var(--mf);border-color:transparent;background:rgb(255 255 255/.06)}
+.warn{color:var(--amber);border-color:transparent;background:oklch(0.879 0.169 91.605 / .14)}
+.crumb{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 6px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--mf);font-size:13px;font-weight:500;margin-right:16px}
+.tk{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.cc{border:1px solid var(--border);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;background:var(--surface);text-align:left}
+.cc .hd{display:flex;align-items:center;justify-content:space-between}
+.cc .nm{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.cc .nm i{width:30px;height:22px;border-radius:5px;display:block}
+.cc .go{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--mf);border:0;background:none}
+.cc .go svg{width:13px;height:13px}
+.cc .am{font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.cc dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:8px 12px;font-size:13px}
+.cc dt{color:var(--mf)}
+.cc dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.cc.dim .am{color:var(--mf)}
+.pay{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pchip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border:1px solid var(--border);border-radius:99px;font-size:13px;background:rgb(255 255 255/.03)}
+.pchip b{font-weight:600;font-variant-numeric:tabular-nums}
+.pchip small{color:var(--amber);font-size:12px}
+.pchip.n{border-color:rgb(165 180 252/.45);background:rgb(165 180 252/.1)}
+.span3{grid-column:span 3}
+
+/* === v2 === */
+.pn{border:1px solid var(--border);border-radius:18px;background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.pn h3{margin:0;font-size:15px;font-weight:600}.pn .sub{margin:0;color:var(--mf);font-size:12.5px}
+.pn .ph{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.pn .ph a{color:var(--mf);font-size:12px;text-decoration:underline}
+.kv{margin:0;display:grid;grid-template-columns:1fr auto;gap:10px 16px;font-size:13px}
+.kv dt{color:var(--mf)}.kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.kv .tot{font-weight:600;color:var(--foreground)}
+.kv .sep{grid-column:1/-1;border-top:1px solid var(--border)}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.warnb{border:1px solid rgb(251 191 36/.3);background:rgb(251 191 36/.07);color:var(--amber);border-radius:12px;padding:10px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat3 div{background:rgb(255 255 255/.03);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.stat3 small{color:var(--mf);font-size:12px}.stat3 b{font-size:15px;font-variant-numeric:tabular-nums}
+.stat4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat4 div{background:rgb(255 255 255/.03);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.stat4 small{color:var(--mf);font-size:12px}.stat4 b{font-size:15px;font-variant-numeric:tabular-nums}
+.stat4 .g{background:oklch(0.845 0.143 164.978 / .1);border-color:transparent}.stat4 .g b{color:var(--green)}
+.stat4 .bl{background:rgb(165 180 252/.1);border-color:transparent}.stat4 .bl b{color:var(--blue-t)}
+.stat4 .am{background:oklch(0.879 0.169 91.605 / .1);border-color:transparent}.stat4 .am b{color:var(--amber)}
+.pbar{height:8px;border-radius:99px;background:rgb(255 255 255/.08);overflow:hidden}.pbar i{display:block;height:100%;background:var(--indigo);border-radius:99px}
+.chkb{width:16px;height:16px;border-radius:4px;border:1px solid var(--border);display:grid;place-items:center;flex-shrink:0}
+.chkb.on{background:var(--indigo);border-color:var(--indigo)}.chkb svg{width:11px;height:11px;stroke:#101114;stroke-width:3;fill:none}
+.prow2{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.prow2 span:first-child{display:flex;align-items:center;gap:10px}
+.donut{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.donut::before{content:"";width:116px;height:116px;border-radius:50%;background:var(--surface);grid-area:1/1}
+.donut span{grid-area:1/1;text-align:center;font-size:12px;color:var(--mf);z-index:1}.donut b{display:block;color:var(--foreground);font-size:15px}
+.crow{display:grid;grid-template-columns:30px 1.4fr 1.6fr 90px 110px 24px;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--border);border-radius:12px}
+.crow .nm{font-weight:500}.crow small{display:block;color:var(--mf);font-size:12px;margin-top:2px}
+.leg{display:flex;align-items:center;gap:10px;font-size:13px}.leg i{width:10px;height:10px;border-radius:3px;flex-shrink:0}.leg em{margin-left:auto;font-style:normal;color:var(--mf);font-variant-numeric:tabular-nums}
+.pg4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pc{border:1px solid var(--border);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;background:var(--surface)}
+.pc .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pc .nm{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.pc .am{font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.pc .am small{font-size:13px;font-weight:500;color:var(--mf);margin-left:4px}
+.pc dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:8px 12px;font-size:13px}.pc dt{color:var(--mf)}.pc dd{margin:0;text-align:right}
+.pc.add{border-style:dashed;background:none;align-items:center;justify-content:center;color:var(--mf);font-size:13px;gap:8px;min-height:200px}
+.kb{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kc{border:1px solid var(--border);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;background:rgb(255 255 255/.02);min-height:520px}
+.kh{display:flex;align-items:center;gap:8px;font-weight:600;padding:2px 4px}.kh .n{color:var(--mf);font-weight:400;font-size:12px}.kh .s{margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px}
+.kh .d{width:8px;height:8px;border-radius:50%}
+.kcd{border:1px solid var(--border);border-radius:14px;padding:12px 14px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.kcd .r1{display:flex;align-items:center;justify-content:space-between;gap:10px}.kcd .nm{display:flex;align-items:center;gap:10px;font-weight:600}
+.kcd .r2{display:flex;justify-content:space-between;font-size:13px;color:var(--mf)}
+.kadd{border:0;background:none;color:var(--mf);font-size:13px;text-align:left;padding:4px 6px;display:flex;align-items:center;gap:6px}
+.cl{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--border);border-radius:18px;overflow:hidden;background:var(--surface)}
+.cal .dh{padding:9px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--mf);border-bottom:1px solid var(--border);background:rgb(255 255 255/.025)}
+.cal .dc{min-height:108px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:7px 8px;font-size:12px;color:var(--mf);display:flex;flex-direction:column;gap:5px}
+.cal .dc:nth-child(7n){border-right:0}.cal .dc.o{opacity:.35}
+.cal .dc.tdy{background:rgb(165 180 252/.08)}.cal .dc.tdy b{color:var(--blue-t)}
+.ev{border-radius:6px;padding:4px 7px;font-size:10.5px;white-space:nowrap;font-weight:600;display:flex;justify-content:space-between;gap:6px;color:#fff}
+.nx{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--border);font-size:13px}
+.nx:first-of-type{border-top:0}
+.nx>span:first-child{display:flex;align-items:center;gap:10px}
+.nx small{display:block;color:var(--mf);font-size:12px}
+.strip{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--mf)}
+.chipa{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:1px solid var(--border);border-radius:8px;color:var(--foreground);font-weight:600;font-size:14px;background:rgb(255 255 255/.04)}
+.chipa small{color:var(--mf);font-size:10px;font-weight:500}
+
+.ind{display:block}
+.ind>summary{list-style:none;display:flex;align-items:center;gap:16px;height:40px;padding:0 14px;border:1px solid var(--border);border-radius:12px;background:rgb(255 255 255/.02);font-size:13.5px;cursor:pointer;user-select:none;color:var(--foreground)}
+.ind>summary::-webkit-details-marker{display:none}
+.ind>summary:hover{background:rgb(255 255 255/.04)}
+.ind[open]>summary{margin-bottom:10px}
+.ind .indt{font-weight:500}
+.ind .sum{display:none;align-items:center;gap:18px;color:var(--mf);font-size:12.5px;min-width:0;overflow:hidden;white-space:nowrap}
+.ind .sum b{color:var(--foreground);font-weight:600;margin-left:6px;font-variant-numeric:tabular-nums}
+.ind .sum span+span{padding-left:18px;border-left:1px solid var(--border)}
+.ind:not([open])>summary .sum{display:flex}
+.ind .ix{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--mf);font-size:12.5px;flex-shrink:0}
+.ind .ix svg{width:14px;height:14px}
+.ind .ix .e{display:none}.ind:not([open]) .ix .e{display:inline-flex;align-items:center;gap:6px}
+.ind:not([open]) .ix .r{display:none}.ind[open] .ix .r{display:inline-flex;align-items:center;gap:6px}
+.t2{font-size:15px;font-weight:600;color:var(--mf);margin-left:10px;letter-spacing:0;white-space:nowrap}.sm2{display:block;font-size:12px;font-weight:500;color:var(--mf);line-height:1.2;margin-top:1px}
+/* === indicadores con color de estado === */
+.k .ind .sum{gap:6px}
+.k .ind .sum>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;border-left:0}
+.k .ind .sum .ipd{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.k .ind .sum .ia{background:rgb(251 191 36/.12);box-shadow:inset 0 0 0 1px rgb(251 191 36/.28)}
+.k .ind .sum .ia .ipd{background:var(--amber)}.k .ind .sum .ia b{color:var(--amber)}
+.k .ind .sum .ig{background:rgb(52 211 153/.10);box-shadow:inset 0 0 0 1px rgb(52 211 153/.25)}
+.k .ind .sum .ig .ipd{background:var(--green)}.k .ind .sum .ig b{color:var(--green)}
+.k .ind .sum .ig.z{background:none;box-shadow:none}.k .ind .sum .ig.z b{color:var(--foreground)}
+.k .ind .sum .ir{background:rgb(248 113 113/.12);box-shadow:inset 0 0 0 1px rgb(248 113 113/.3)}
+.k .ind .sum .ir .ipd{background:oklch(0.75 0.16 25)}.k .ind .sum .ir b{color:oklch(0.8 0.14 25)}
+.k .ind .sum .ipm{width:40px;height:5px;border-radius:99px;background:rgb(255 255 255/.14);overflow:hidden;display:inline-block}
+.k .ind .sum .ipm u{display:block;height:100%;background:var(--green);text-decoration:none}
+.k .ind .sum .ipp{font-style:normal;font-size:11.5px;color:var(--green);font-variant-numeric:tabular-nums}
+.k .ind .sum .ig.z .ipp{color:var(--mf)}
+.k .ind .sum .ips{font-style:normal;font-size:11.5px;color:var(--amber);opacity:.9}
+.k .ind .sum .ipg{font-style:normal;font-size:11.5px;color:var(--green)}
+.k .ppi .a4 i{background:var(--amber)}
+.k .tt2 b{color:var(--amber)}
+.k .card .t.am{color:var(--amber)}.k .card .t.rd{color:oklch(0.8 0.14 25)}.k .card .t.gr{color:var(--green)}
+.k .card .prog.gp i{background:var(--green)}
+.k .card .d .ipd2{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px}
+</style>
+</helmet>
+<div class="k">
+  <nav class="rail" aria-label="Navegación">
+    <div class="logo">K</div>
+    <button class="ri" aria-label="Inicio"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+    <button class="ri" aria-label="Día a día"><svg viewBox="0 0 24 24"><path d="M3 8h14v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM17 10h2a2 2 0 0 1 0 4h-2"/></svg></button>
+    <button class="ri" aria-label="Costos fijos"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></button>
+    <button class="ri" aria-label="Plataformas"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="m8 3 4 4 4-4"/></svg></button>
+    <button class="ri" aria-label="Tarjetas"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></button>
+    <button class="ri on" aria-label="Recurrentes"><svg viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/></svg></button>
+    <button class="ri" aria-label="Calendario"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></button>
+  </nav>
+  <div class="main">
+    <header class="top">
+      <div class="tt">
+        <div style="display:flex;flex-direction:column;gap:3px"><span class="eb">Gastos</span><h1>Recurrentes<span style="font-size:13px;font-weight:500;color:var(--mf);margin-left:10px">6 este mes</span></h1></div>
+      </div>
+      <div class="right">
+        <button aria-label="Período: Octubre 2026. Cambiar mes, año o rango" style="display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 10px 0 12px;border:1px solid var(--border);border-radius:8px;background:oklch(0.29 0.016 258 / .35);font-weight:600;font-size:13px;margin-right:12px"><svg viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--mf)"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Octubre 2026<svg viewBox="0 0 24 24" style="width:13px;height:13px;color:var(--mf)"><path d="m6 9 6 6 6-6"/></svg></button><button aria-label="Notificaciones, 23 sin leer" style="position:relative;width:34px;height:34px;border:0;background:none;color:var(--mf);display:grid;place-items:center;border-radius:8px;margin-right:8px"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:0;right:-2px;background:oklch(0.577 0.245 27.325);color:#fff;border-radius:99px;font-size:10px;font-weight:600;line-height:16px;min-width:16px;padding:0 4px;text-align:center;border:2px solid var(--background)">23</span></button><div class="avatar">BV</div>
+      </div>
+    </header>
+    <div class="body">
+      <div class="bar">
+        <div class="views" role="tablist" aria-label="Vistas"><button class="on" role="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18"/></svg>Del mes</button><button role="tab"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a2 2 0 0 1 2-2h11"/></svg>Plantillas</button><button aria-label="Nueva vista"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="grp">
+          <button class="btn icon" style="width:36px;height:36px" aria-label="Más: exportar, importar"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+          <div class="split"><button class="btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nuevo recurrente</button><button class="btn" aria-label="Más opciones de creación"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+        </div>
+      </div>
+      <details class="ind" open><summary><span class="indt">Indicadores</span><span class="sum"><span>Total recurrente<b>S/ 2,268.06 + US$ 2.99</b></span><span class="ia"><i class="ipd"></i>Por pagar<b>S/ 1,668.06 + US$ 2.99</b></span><span class="ig"><i class="ipd"></i>Pagado<b>S/ 600.00</b><i class="ipm"><u style="width:26%"></u></i><em class="ipp">26%</em></span><span class="ia"><i class="ipd"></i>Próximo cobro<b>Netflix · 08/10</b><em class="ips">en 2 días</em></span></span><span class="ix"><span class="r">Reducir <svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></span><span class="e">Expandir <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></span></summary><div class="cards" role="radiogroup" aria-label="Indicadores">
+        <button class="card sel" role="radio" aria-checked="true"><span class="d">Total recurrente</span><span class="t">S/ 2,268.06<span class="t2">+ US$ 2.99</span></span><span class="f">6 recurrentes este mes</span><span class="chk">Mostrando</span></button><button class="card" role="radio"><span class="d"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber)"></span>Por pagar</span></span><span class="t am" style="color:var(--amber)">S/ 1,668.06<span class="t2">+ US$ 2.99</span></span><span class="f">5 pendientes · 1 vencido</span></button><button class="card" role="radio"><span class="d"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:var(--green)"></span>Pagado</span></span><span class="t gr">S/ 600.00</span><div class="prog gp"><i style="width:26%"></i></div><span class="f">1 de 6 · 26% del mes en S/</span></button><button class="card" role="radio"><span class="d"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber)"></span>Próximo cobro</span></span><span class="t am" style="font-size:19px;padding-top:2px">Netflix · 08/10</span><span class="f">S/ 53.06 · <span style="color:var(--amber)">en 2 días</span></span></button>
+      </div></details>
+      <div class="tvb">
+        <div class="grp" role="toolbar" aria-label="Herramientas">
+          <label class="inp" style="width:220px;height:30px"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar<kbd>/</kbd></label><span class="vsep"></span>
+          <button class="gb"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Persona<span class="c mute">Todos</span></button>
+          <button class="gb"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtros</button>
+          <button class="gb"><svg viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>Agrupar</button>
+        </div>
+        <div class="grp"><button class="gb" aria-label="Ajustes de vista"><svg viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></svg></button><span class="vsep"></span><div class="tool" role="radiogroup" aria-label="Diseño"><button class="btn" role="radio" aria-checked="false" style="height:26px"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Tabla</button><button class="btn on" role="radio" aria-checked="true" style="height:26px"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Tarjetas</button></div></div>
+      </div>
+      <div class="pg4" style="margin-top:-4px">
+        <article class="pc" aria-label="Alquiler">
+          <div class="hd"><span class="nm"><span class="lg" style="width:36px;height:36px;background:oklch(0.845 0.143 164.978 / .16);color:var(--green)" aria-hidden="true">A</span>Alquiler</span><button class="chev" style="width:32px;height:32px" aria-label="Acciones de Alquiler"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+          <div class="am">S/ 600.00<small>/ mes</small></div>
+          <dl><dt>Origen</dt><dd><span class="badge" style="background:rgb(165 180 252/.12);color:var(--blue-t);border-color:transparent">Costos fijos</span></dd><dt>Estado</dt><dd><span class="badge ok"><span class="dot" style="background:currentColor"></span>Pagado</span></dd><dt>Fecha de cobro</dt><dd>01/10/2026</dd><dt>Persona</dt><dd>Brando</dd></dl>
+        </article>
+        <article class="pc" aria-label="Inmueble">
+          <div class="hd"><span class="nm"><span class="lg" style="width:36px;height:36px;background:oklch(0.637 0.237 25.331 / .2);color:oklch(0.8 0.12 25)" aria-hidden="true">I</span>Inmueble</span><button class="chev" style="width:32px;height:32px" aria-label="Acciones de Inmueble"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+          <div class="am">S/ 1,500.00<small>/ mes</small></div>
+          <dl><dt>Origen</dt><dd><span class="badge" style="background:rgb(165 180 252/.12);color:var(--blue-t);border-color:transparent">Costos fijos</span></dd><dt>Estado</dt><dd><span class="badge warn"><span class="dot" style="background:currentColor"></span>Vencido</span></dd><dt>Fecha de cobro</dt><dd>05/10/2026<br><span style="color:var(--amber);font-size:12px">venció hace 1 día</span></dd><dt>Persona</dt><dd>Brando</dd></dl>
+        </article>
+        <article class="pc" aria-label="Netflix">
+          <div class="hd"><span class="nm"><span class="lg" style="width:36px;height:36px;background:oklch(0.637 0.237 25.331 / .2);color:oklch(0.8 0.12 25)" aria-hidden="true">N</span>Netflix</span><button class="chev" style="width:32px;height:32px" aria-label="Acciones de Netflix"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+          <div class="am">S/ 53.06<small>/ mes</small></div>
+          <dl><dt>Origen</dt><dd><span class="badge" style="background:oklch(0.845 0.143 164.978 / .14);color:var(--green);border-color:transparent">Plataformas</span></dd><dt>Estado</dt><dd><span class="badge off"><span class="dot" style="background:currentColor"></span>Por pagar</span></dd><dt>Fecha de cobro</dt><dd>08/10/2026<br><span style="color:var(--amber);font-size:12px">en 2 días</span></dd><dt>Persona</dt><dd>Brando</dd></dl>
+        </article>
+        <article class="pc" aria-label="Luz">
+          <div class="hd"><span class="nm"><span class="lg" style="width:36px;height:36px;background:oklch(0.879 0.169 91.605 / .16);color:var(--amber)" aria-hidden="true">L</span>Luz</span><button class="chev" style="width:32px;height:32px" aria-label="Acciones de Luz"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+          <div class="am">S/ 70.00<small>/ mes</small></div>
+          <dl><dt>Origen</dt><dd><span class="badge" style="background:rgb(165 180 252/.12);color:var(--blue-t);border-color:transparent">Costos fijos</span></dd><dt>Estado</dt><dd><span class="badge off"><span class="dot" style="background:currentColor"></span>Por pagar</span></dd><dt>Fecha de cobro</dt><dd>10/10/2026<br><span style="color:var(--amber);font-size:12px">en 4 días</span></dd><dt>Persona</dt><dd>Brando</dd></dl>
+        </article>
+        <article class="pc" aria-label="Agua">
+          <div class="hd"><span class="nm"><span class="lg" style="width:36px;height:36px;background:oklch(0.488 0.243 264.376 / .25);color:var(--blue-t)" aria-hidden="true">A</span>Agua</span><button class="chev" style="width:32px;height:32px" aria-label="Acciones de Agua"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+          <div class="am">S/ 45.00<small>/ mes</small></div>
+          <dl><dt>Origen</dt><dd><span class="badge" style="background:rgb(165 180 252/.12);color:var(--blue-t);border-color:transparent">Costos fijos</span></dd><dt>Estado</dt><dd><span class="badge off"><span class="dot" style="background:currentColor"></span>Por pagar</span></dd><dt>Fecha de cobro</dt><dd>12/10/2026<br><span style="color:var(--amber);font-size:12px">en 6 días</span></dd><dt>Persona</dt><dd>Brando</dd></dl>
+        </article>
+        <article class="pc" aria-label="Apple Cloud">
+          <div class="hd"><span class="nm"><span class="lg" style="width:36px;height:36px;background:oklch(0.585 0.233 277.117 / .25);color:var(--blue-t)" aria-hidden="true">A</span>Apple Cloud</span><button class="chev" style="width:32px;height:32px" aria-label="Acciones de Apple Cloud"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+          <div class="am">US$ 2.99<small>/ mes</small></div>
+          <dl><dt>Origen</dt><dd><span class="badge" style="background:oklch(0.845 0.143 164.978 / .14);color:var(--green);border-color:transparent">Plataformas</span></dd><dt>Estado</dt><dd><span class="badge off"><span class="dot" style="background:currentColor"></span>Por pagar</span></dd><dt>Fecha de cobro</dt><dd>20/10/2026<br><span style="color:var(--amber);font-size:12px">en 14 días</span></dd><dt>Persona</dt><dd>Brando</dd></dl>
+        </article>
+        <div class="pc add"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2"><path d="M12 5v14M5 12h14"/></svg>Nuevo recurrente</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":950}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
