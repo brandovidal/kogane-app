@@ -42,6 +42,10 @@ export function ExpenseFilters({
   showActiveSummary = true,
   filterOpen,
   onFilterOpenChange,
+  panelExtraFields,
+  extraFilterCount = 0,
+  onClearFilters,
+  activeMarkers = false,
 }: ExpenseFiltersProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = filterOpen ?? internalOpen;
@@ -53,7 +57,7 @@ export function ExpenseFilters({
     onChange({ ...value, [key]: next || undefined });
   const has = (key: ExpenseFilterKey) => fields.includes(key);
   const panel = usesPanel(fields);
-  const count = countActiveExpenseFilters(value, fields);
+  const count = countActiveExpenseFilters(value, fields) + extraFilterCount;
 
   const personControl = has("person") && (
     <PersonFilterFields
@@ -72,6 +76,7 @@ export function ExpenseFilters({
       panel={panel}
       personInPanel={personInPanel}
       searchInPanel={searchInPanel}
+      activeMarkers={activeMarkers}
     />
   );
 
@@ -115,15 +120,18 @@ export function ExpenseFilters({
           countLabel={countLabel}
           compactCountInTitle={compactCountInTitle}
           count={count}
-          onClear={() =>
-            onChange(
-              personInPanel
-                ? { q: value.q }
-                : { person: value.person, q: value.q },
-            )
+          onClear={
+            onClearFilters ??
+            (() =>
+              onChange(
+                personInPanel
+                  ? { q: value.q }
+                  : { person: value.person, q: value.q },
+              ))
           }
         >
           {controls}
+          {panelExtraFields}
         </ExpenseFiltersPanel>
       ) : (
         controls

@@ -10,6 +10,7 @@ import { PaymentMethodSelect } from "@/features/settings/components/PaymentMetho
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { Switch } from "@/ui/switch";
 import {
   Select,
   SelectContent,
@@ -18,7 +19,7 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { useSaveExpense } from "@/features/expenses/hooks/expenses";
-import { EXPENSE_RESOURCES } from "@/shared/api/types";
+import { EXPENSE_RESOURCES, type RecurringExpense } from "@/shared/api/types";
 import {
   CURRENCIES,
   EXPENSE_TYPE_LABELS,
@@ -51,6 +52,7 @@ const recurringFormSchema = z
     kind: z.string(),
     period: z.string(),
     supplyNumber: z.string().trim().max(40),
+    isActive: z.boolean(),
   })
   // A card expense needs its card, like in kogane-api
   .refine(
@@ -76,15 +78,22 @@ const emptyForm: RecurringForm = {
   kind: "service",
   period: "monthly",
   supplyNumber: "",
+  isActive: true,
 };
 
 interface RecurringDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  recurring?: RecurringExpense;
 }
 
-export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
+export function RecurringDialog({
+  open,
+  onOpenChange,
+  recurring,
+}: RecurringDialogProps) {
   const saveRecurring = useSaveExpense(EXPENSE_RESOURCES.recurring);
+  const isEdit = !!recurring;
 
   const {
     register,
@@ -104,9 +113,28 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
   useEffect(() => {
     if (open) {
       reset(emptyForm);
-      setSharedWith(null);
+      if (recurring) {
+        reset({
+          description: recurring.description,
+          amount: recurring.amount,
+          currency: recurring.currency as RecurringForm["currency"],
+          targetType: recurring.targetType,
+          dayOfMonth: recurring.dayOfMonth,
+          personId: recurring.personId,
+          paymentMethodId: recurring.paymentMethodId,
+          categoryId: recurring.categoryId,
+          expenseType: recurring.expenseType,
+          kind: recurring.kind,
+          period: recurring.period,
+          supplyNumber: recurring.supplyNumber ?? "",
+          isActive: recurring.isActive,
+        });
+        setSharedWith(recurring.sharedWith);
+      } else {
+        setSharedWith(null);
+      }
     }
-  }, [open, reset]);
+  }, [open, recurring, reset]);
 
   const onSubmit = handleSubmit(({ kind, period, supplyNumber, ...rest }) => {
     const subscription = rest.targetType === "subscription";
@@ -117,22 +145,29 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
         : rest),
       sharedWith: shares.length ? { shares } : null,
     };
-    saveRecurring.mutate({ body }, { onSuccess: () => onOpenChange(false) });
+    saveRecurring.mutate(
+      { id: recurring?.id, body },
+      { onSuccess: () => onOpenChange(false) },
+    );
   });
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Nuevo gasto recurrente"
-      description="Se repite en el día indicado: cada mes, o según su período si es un recurrente"
+      title={isEdit ? "Editar recurrente" : "Nuevo recurrente"}
+      description={
+        isEdit
+          ? `Modifica la plantilla de ${recurring.description}. Los meses ya generados no cambian.`
+          : "Se repite cada período. Elige dónde registrarlo."
+      }
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button onClick={onSubmit} disabled={saveRecurring.isPending}>
-            Crear
+            Guardar
           </Button>
         </>
       }
@@ -189,7 +224,7 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Tipo destino *</label>
+            <label className="text-sm font-medium">Registrar en *</label>
             <Select
               value={targetType}
               onValueChange={(v) => setValue("targetType", v)}
@@ -310,6 +345,23 @@ export function RecurringDialog({ open, onOpenChange }: RecurringDialogProps) {
           currency={watch("currency")}
           onChange={setSharedWith}
         />
+
+        <div className="flex items-center justify-between rounded-lg border p-3">
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium">
+              Generar automáticamente según la frecuencia
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Se crea el registro en cada período en el día de cobro que
+              elegiste.
+            </p>
+          </div>
+          <Switch
+            checked={watch("isActive")}
+            onCheckedChange={(checked) => setValue("isActive", checked)}
+            aria-label="Generar automáticamente"
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">

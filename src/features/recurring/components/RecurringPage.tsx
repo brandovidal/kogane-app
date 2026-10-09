@@ -1,22 +1,58 @@
 import { SubscriptionList } from "@/features/subscriptions/components/SubscriptionList";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import { useState } from "react";
+import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
+import { withQuery } from "@/shared/api/query";
+import { RecurringDialog } from "./RecurringDialog";
 
 import { RecurringList } from "./RecurringList";
 
 // Recurrentes (D107, D108): the services, yearly and other charges of the month, and the templates that create them
-export function RecurringPage() {
+function RecurringPageView() {
+  const [params, setParams] = useUrlFilters<{ vista?: string }>(["vista"]);
+  const [createOpen, setCreateOpen] = useState(false);
+  const view = params.vista === "plantillas" ? "plantillas" : "mes";
   return (
-    <Tabs defaultValue="month">
-      <TabsList>
-        <TabsTrigger value="month">Del mes</TabsTrigger>
-        <TabsTrigger value="templates">Plantillas</TabsTrigger>
-      </TabsList>
-      <TabsContent value="month" className="mt-4">
-        <SubscriptionList group="recurring" />
-      </TabsContent>
-      <TabsContent value="templates" className="mt-4">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <div
+          role="tablist"
+          aria-label="Vistas de recurrentes"
+          className="inline-flex h-9 items-center gap-1 rounded-lg bg-muted/60 p-1"
+        >
+          {(
+            [
+              ["mes", "Del mes"],
+              ["plantillas", "Plantillas"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={view === value}
+              onClick={() => setParams(value === "mes" ? {} : { vista: value })}
+              className={`h-7 rounded-md px-2.5 text-sm transition-colors ${
+                view === value
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      {view === "mes" ? (
+        <SubscriptionList
+          group="recurring"
+          onCreateRecurringTemplate={() => setCreateOpen(true)}
+        />
+      ) : (
         <RecurringList />
-      </TabsContent>
-    </Tabs>
+      )}
+      <RecurringDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </div>
   );
 }
+
+export const RecurringPage = withQuery(RecurringPageView);

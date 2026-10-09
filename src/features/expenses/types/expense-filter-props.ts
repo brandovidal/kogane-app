@@ -25,6 +25,10 @@ export interface ExpenseFiltersProps {
   appliedFilters?: ReactNode;
   viewToggle?: ReactNode;
   showActiveSummary?: boolean;
+  panelExtraFields?: ReactNode;
+  extraFilterCount?: number;
+  onClearFilters?: () => void;
+  activeMarkers?: boolean;
 }
 
 export type ExpenseFilterFieldsProps = Pick<

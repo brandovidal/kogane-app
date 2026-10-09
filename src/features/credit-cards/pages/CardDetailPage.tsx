@@ -340,28 +340,7 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     {
       key: "status",
       header: "Estado",
-      cell: (exp) => (
-        <Select
-          value={exp.paymentStatus}
-          onValueChange={(v) =>
-            saveExpense.mutate({
-              id: exp.id,
-              body: { paymentStatus: v },
-            })
-          }
-        >
-          <SelectTrigger className="h-7 w-auto border-0 p-0">
-            <StatusBadge status={exp.paymentStatus} />
-          </SelectTrigger>
-          <SelectContent>
-            {CREDIT_CARD_STATUSES.map((status) => (
-              <SelectItem key={status} value={status}>
-                <StatusBadge status={status} />
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ),
+      cell: (exp) => <StatusBadge status={exp.paymentStatus} />,
     },
     {
       key: "person",

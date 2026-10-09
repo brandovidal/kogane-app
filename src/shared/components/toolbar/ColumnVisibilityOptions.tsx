@@ -7,6 +7,7 @@ export interface ColumnVisibilityOption {
   id: string;
   label: string;
   visible: boolean;
+  disabled?: boolean;
   onVisibleChange: (visible: boolean) => void;
 }
 
@@ -25,6 +26,7 @@ export function ColumnVisibilityOptions({
         <DropdownMenuCheckboxItem
           key={column.id}
           checked={column.visible}
+          disabled={column.disabled}
           onSelect={(event) => event.preventDefault()}
           onCheckedChange={column.onVisibleChange}
           className={className}

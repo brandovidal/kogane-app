@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ChevronDown,
   ChevronLeft,
@@ -62,6 +62,7 @@ function GroupSection<T>({
   primary: boolean;
 }) {
   const [open, setOpen] = useState(initiallyOpen);
+  useEffect(() => setOpen(initiallyOpen), [initiallyOpen]);
   const { pageIndex, pageSize, hidden: paginationHidden } = pagination;
   const pageCount = Math.max(1, Math.ceil(count / pageSize));
   const currentPage = Math.min(pageIndex, pageCount - 1);
