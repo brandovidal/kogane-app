@@ -10,21 +10,26 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { ApiError, api, apiFetch, unwrap } from "@/shared/api/client";
-import type { ImportDetail } from "@/shared/api/types";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
+import {
+  applyImport,
+  discardImport,
+  getImport,
+  getImportRows,
+  getImports,
+  uploadNotionImport,
+} from "../services/import.service";
 
 export const useImports = () =>
   useQuery({
     queryKey: importKeys.list,
-    queryFn: () => unwrap(api.GET("/v1/imports")),
+    queryFn: getImports,
   });
 
 export const useImport = (id: string | null) =>
   useQuery({
     queryKey: importKeys.detail(id ?? ""),
-    queryFn: () =>
-      unwrap(api.GET("/v1/imports/{id}", { params: { path: { id: id! } } })),
+    queryFn: () => getImport(id!),
     enabled: !!id,
   });
 
@@ -32,15 +37,7 @@ export const useImport = (id: string | null) =>
 export const useImportRows = (id: string, params: ImportRowsParams) =>
   useQuery({
     queryKey: importKeys.rows(id, params),
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/imports/{id}/rows", {
-          params: {
-            path: { id },
-            query: { ...params, q: params.q || undefined },
-          },
-        }),
-      ),
+    queryFn: () => getImportRows(id, params),
     placeholderData: keepPreviousData,
   });
 
@@ -48,25 +45,7 @@ export const useImportRows = (id: string, params: ImportRowsParams) =>
 export function useUploadNotion() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (files: File[]): Promise<ImportDetail> => {
-      const form = new FormData();
-      files.forEach((file) => form.append("files", file));
-      const response = await apiFetch("/api/v1/imports/notion", {
-        method: "POST",
-        body: form,
-        headers: { accept: "application/json" },
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new ApiError(
-          response.status,
-          body.code ?? "UNKNOWN_ERROR",
-          body.message ?? response.statusText,
-          body.details,
-        );
-      }
-      return body.data as ImportDetail;
-    },
+    mutationFn: uploadNotionImport,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: importKeys.all });
       toast.success("Listo para revisar: todavía no se guardó nada");
@@ -76,28 +55,20 @@ export function useUploadNotion() {
 
 // Applying writes expenses, debts, the budget and the calendar
 export const useApplyImport = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.POST("/v1/imports/{id}/apply", { params: { path: { id } } })),
-    {
-      invalidate: [
-        importKeys.all,
-        ["expenses"],
-        ["debts"],
-        ["budget"],
-        ["summary"],
-        ["calendar"],
-      ],
-      success: "Importado",
-    },
-  );
+  useApiMutation((id: string) => applyImport(id), {
+    invalidate: [
+      importKeys.all,
+      ["expenses"],
+      ["debts"],
+      ["budget"],
+      ["summary"],
+      ["calendar"],
+    ],
+    success: "Importado",
+  });
 
 export const useDiscardImport = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.DELETE("/v1/imports/{id}", { params: { path: { id } } })),
-    {
-      invalidate: [importKeys.all],
-      success: "Previsualización descartada",
-    },
-  );
+  useApiMutation((id: string) => discardImport(id), {
+    invalidate: [importKeys.all],
+    success: "Previsualización descartada",
+  });

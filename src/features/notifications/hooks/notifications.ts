@@ -1,8 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api, unwrap, type Schemas } from "@/shared/api/client";
-import type { paths } from "@/shared/api/schema";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
+import {
+  getNotificationHistory,
+  getNotificationSettings,
+  getRecentNotifications,
+  getUnreadCount,
+  markAllNotificationsRead,
+  markNotificationRead,
+  markNotificationUnread,
+  updateNotificationSettings,
+  type NotificationHistoryQuery,
+  type UpdateNotificationSettingsDto,
+} from "../services/notification.service";
 
 export const notificationKeys = {
   all: ["notifications"] as const,
@@ -13,9 +23,7 @@ export const notificationKeys = {
   settings: ["notifications", "settings"] as const,
 };
 
-type HistoryFilter = NonNullable<
-  paths["/v1/notifications"]["get"]["parameters"]["query"]
->;
+type HistoryFilter = NotificationHistoryQuery;
 
 // The bell checks every minute (D86): Workers has no WebSocket and one person is enough for polling
 const BELL_REFRESH_MS = 60_000;
@@ -23,17 +31,14 @@ const BELL_REFRESH_MS = 60_000;
 export const useRecentNotifications = (limit = 20) =>
   useQuery({
     queryKey: notificationKeys.recent,
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/notifications/recent", { params: { query: { limit } } }),
-      ),
+    queryFn: () => getRecentNotifications(limit),
     refetchInterval: BELL_REFRESH_MS,
   });
 
 export const useUnreadCount = () =>
   useQuery({
     queryKey: notificationKeys.unread,
-    queryFn: () => unwrap(api.GET("/v1/notifications/unread-count")),
+    queryFn: getUnreadCount,
     select: (data) => data.unread,
     refetchInterval: BELL_REFRESH_MS,
   });
@@ -41,33 +46,22 @@ export const useUnreadCount = () =>
 export const useNotificationHistory = (filter: HistoryFilter) =>
   useQuery({
     queryKey: notificationKeys.history(filter),
-    queryFn: () =>
-      unwrap(api.GET("/v1/notifications", { params: { query: filter } })),
+    queryFn: () => getNotificationHistory(filter),
   });
 
 export const useMarkNotificationRead = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(
-        api.PATCH("/v1/notifications/{id}/read", { params: { path: { id } } }),
-      ),
-    { invalidate: [notificationKeys.all] },
-  );
+  useApiMutation((id: string) => markNotificationRead(id), {
+    invalidate: [notificationKeys.all],
+  });
 
 // Back to unread: the bell counts it again
 export const useMarkNotificationUnread = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(
-        api.PATCH("/v1/notifications/{id}/unread", {
-          params: { path: { id } },
-        }),
-      ),
-    { invalidate: [notificationKeys.all] },
-  );
+  useApiMutation((id: string) => markNotificationUnread(id), {
+    invalidate: [notificationKeys.all],
+  });
 
 export const useMarkAllNotificationsRead = () =>
-  useApiMutation(() => unwrap(api.POST("/v1/notifications/read-all")), {
+  useApiMutation(() => markAllNotificationsRead(), {
     invalidate: [notificationKeys.all],
     success: "Notificaciones leídas",
   });
@@ -75,12 +69,11 @@ export const useMarkAllNotificationsRead = () =>
 export const useNotificationSettings = () =>
   useQuery({
     queryKey: notificationKeys.settings,
-    queryFn: () => unwrap(api.GET("/v1/notifications/settings")),
+    queryFn: getNotificationSettings,
   });
 
 export const useUpdateNotificationSettings = () =>
   useApiMutation(
-    (body: Schemas["UpdateNotificationSettingsDto"]) =>
-      unwrap(api.PUT("/v1/notifications/settings", { body })),
+    (body: UpdateNotificationSettingsDto) => updateNotificationSettings(body),
     { invalidate: [notificationKeys.settings], success: "Avisos guardados" },
   );

@@ -20,7 +20,7 @@ import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column, type ViewMode } from "@/shared/types/data-view";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { api, unwrap } from "@/shared/api/client";
+import { getDraft } from "@/features/drafts/services/draft.service";
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
 import {
   useDiscardDraft,
@@ -277,9 +277,7 @@ function MediaLink({
 }) {
   const open = async () => {
     try {
-      const draft = await unwrap(
-        api.GET("/v1/drafts/{id}", { params: { path: { id: draftId } } }),
-      );
+      const draft = await getDraft(draftId);
       if (draft.mediaUrl) window.open(draft.mediaUrl, "_blank", "noopener");
       else toast.info("El archivo ya expiró (7 días) o no se guardó.");
     } catch (error) {

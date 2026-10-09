@@ -53,7 +53,7 @@ const formSchema = z.object({
     .positive("Monto debe ser positivo"),
   currency: z.enum(CURRENCIES),
   exchangeRate: z.number().positive().nullable(),
-  expenseType: z.string(),
+  expenseType: z.enum(["essential", "guilty_pleasure"]),
   personId: z.string().min(1, "Persona requerida"),
   categoryId: z.string().nullable(),
   paymentMethodId: z.string().min(1, "Medio de pago requerido"),
@@ -63,7 +63,17 @@ const formSchema = z.object({
     (value) => !value || /^\d{1,3}\/\d{1,3}$/.test(value),
     "Usa n/m, ej: 3/6",
   ),
-  paymentStatus: z.string(),
+  paymentStatus: z.enum([
+    "not_started",
+    "pending",
+    "partially_paid",
+    "deposited",
+    "waived",
+    "paid",
+    "amortized",
+    "cashback",
+    "skipped",
+  ]),
   paymentMonth: z.number().int().min(1).max(12),
   paymentYear: z.number().int().min(2020).max(2100),
   notes: optionalText,
@@ -372,7 +382,9 @@ export function ExpenseEditDialog({
             <label className="text-sm font-medium">Tipo de gasto</label>
             <Select
               value={watch("expenseType")}
-              onValueChange={(value) => setValue("expenseType", value)}
+              onValueChange={(value) =>
+                setValue("expenseType", value as ExpenseForm["expenseType"])
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -393,7 +405,12 @@ export function ExpenseEditDialog({
               </label>
               <Select
                 value={watch("paymentStatus")}
-                onValueChange={(value) => setValue("paymentStatus", value)}
+                onValueChange={(value) =>
+                  setValue(
+                    "paymentStatus",
+                    value as ExpenseForm["paymentStatus"],
+                  )
+                }
               >
                 <SelectTrigger>
                   <SelectValue />

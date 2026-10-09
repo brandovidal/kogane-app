@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { RowSelectionState } from "@tanstack/react-table";
 import { toast } from "sonner";
-import { api, unwrap } from "@/shared/api/client";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { expenseKeys } from "@/features/expenses/hooks/expenses";
+import {
+  deleteExpense,
+  saveExpense,
+} from "@/features/expenses/services/expense.service";
 import { FIXED_COST_BULK_LABELS } from "../constants/bulk-actions";
 import type {
   FixedCostBulkAction,
@@ -52,25 +55,15 @@ export function useFixedCostBulkActions(items: FixedCost[], scopeKey: string) {
       const succeeded: string[] = [];
       const failed: FixedCostBulkFailure[] = [];
       const perform = (record: FixedCost) => {
-        if (action === "delete")
-          return unwrap(
-            api.DELETE("/v1/expenses/{resource}/{id}", {
-              params: { path: { resource, id: record.id } },
-            }),
-          );
+        if (action === "delete") return deleteExpense(resource, record.id);
         if (action === "duplicate")
-          return unwrap(
-            api.POST("/v1/expenses/{resource}", {
-              params: { path: { resource } },
-              body: duplicateBody(resource, record) as never,
-            }),
-          );
-        return unwrap(
-          api.PATCH("/v1/expenses/{resource}/{id}", {
-            params: { path: { resource, id: record.id } },
-            body: { paymentStatus: status } as never,
-          }),
-        );
+          return saveExpense(resource, {
+            body: duplicateBody(resource, record),
+          });
+        return saveExpense(resource, {
+          id: record.id,
+          body: { paymentStatus: status },
+        });
       };
       // Limit concurrent writes; the current API exposes individual record endpoints.
       for (let index = 0; index < records.length; index += 5) {

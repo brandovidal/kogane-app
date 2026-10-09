@@ -12,6 +12,7 @@ import {
   useExpenses,
   useSaveExpense,
 } from "@/features/expenses/hooks/expenses";
+import { saveExpense as saveExpenseRequest } from "@/features/expenses/services/expense.service";
 import {
   useStatement,
   useStatements,
@@ -76,7 +77,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/ui/alert-dialog";
-import { api, unwrap } from "@/shared/api/client";
 import { expenseKeys } from "@/features/expenses/hooks/expenses";
 import { isPaidStatus } from "@/features/expenses/lib/expense-actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -177,14 +177,10 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
     setPayingSelected(true);
     const results = await Promise.allSettled(
       selectedPending.map((expense) =>
-        unwrap(
-          api.PATCH("/v1/expenses/{resource}/{id}", {
-            params: {
-              path: { resource: EXPENSE_RESOURCES.creditCard, id: expense.id },
-            },
-            body: { paymentStatus: "paid" } as never,
-          }),
-        ),
+        saveExpenseRequest(EXPENSE_RESOURCES.creditCard, {
+          id: expense.id,
+          body: { paymentStatus: "paid" },
+        }),
       ),
     );
     const completedExpenses = selectedPending.filter(
@@ -305,7 +301,10 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
         <Select
           value={exp.paymentStatus}
           onValueChange={(v) =>
-            saveExpense.mutate({ id: exp.id, body: { paymentStatus: v } })
+            saveExpense.mutate({
+              id: exp.id,
+              body: { paymentStatus: v },
+            })
           }
         >
           <SelectTrigger className="h-7 w-auto border-0 p-0">
@@ -373,7 +372,12 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
             value: exp.paymentStatus,
             options: CREDIT_CARD_STATUSES,
             onChange: (paymentStatus) =>
-              saveExpense.mutate({ id: exp.id, body: { paymentStatus } }),
+              saveExpense.mutate({
+                id: exp.id,
+                body: {
+                  paymentStatus,
+                },
+              }),
           }}
         />
       ),

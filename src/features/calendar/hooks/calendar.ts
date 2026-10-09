@@ -1,7 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api, unwrap, type Schemas } from "@/shared/api/client";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
+import {
+  getCalendar,
+  getCommittedInstallments,
+  getReminders,
+  payCalendarEvent,
+  type PayEventDto,
+} from "../services/calendar.service";
 
 export const calendarKeys = {
   all: ["calendar"] as const,
@@ -16,25 +22,20 @@ export const calendarKeys = {
 export const useCalendar = (from: string, to: string) =>
   useQuery({
     queryKey: calendarKeys.events(from, to),
-    queryFn: () =>
-      unwrap(api.GET("/v1/calendar", { params: { query: { from, to } } })),
+    queryFn: () => getCalendar(from, to),
   });
 
 // What is due in the next days (the Redis list of kogane-api)
 export const useReminders = (days = 14) =>
   useQuery({
     queryKey: calendarKeys.reminders(days),
-    queryFn: () =>
-      unwrap(api.GET("/v1/reminders", { params: { query: { days } } })),
+    queryFn: () => getReminders(days),
   });
 
 export const useCommittedInstallments = (months = 3) =>
   useQuery({
     queryKey: calendarKeys.installments(months),
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/calendar/installments", { params: { query: { months } } }),
-      ),
+    queryFn: () => getCommittedInstallments(months),
   });
 
 const PAY_OUTCOME_TEXTS: Record<string, string> = {
@@ -47,8 +48,8 @@ const PAY_OUTCOME_TEXTS: Record<string, string> = {
 // ✅ Pagado of the calendar: the same as the button of the bot. Returns the text to show
 export const usePayCalendarEvent = () =>
   useApiMutation(
-    async (body: Schemas["PayEventDto"]) => {
-      const { outcome } = await unwrap(api.POST("/v1/calendar/pay", { body }));
+    async (body: PayEventDto) => {
+      const { outcome } = await payCalendarEvent(body);
       return PAY_OUTCOME_TEXTS[outcome] ?? outcome;
     },
     { invalidate: [calendarKeys.all, ["expenses"], ["debts"], ["summary"]] },

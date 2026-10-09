@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api, unwrap } from "@/shared/api/client";
-import type { paths } from "@/shared/api/schema";
+import {
+  getHistory,
+  getRecordHistory,
+  type HistoryFilter,
+} from "../services/history.service";
 
 export const historyKeys = {
   all: ["history"] as const,
@@ -10,16 +13,13 @@ export const historyKeys = {
     ["history", "record", entity, id, page] as const,
 };
 
-export type HistoryFilter = NonNullable<
-  paths["/v1/history"]["get"]["parameters"]["query"]
->;
+export type { HistoryFilter } from "../services/history.service";
 
 // Every change, newest first, filtered by table, source and dates (P29)
 export const useHistory = (filter: HistoryFilter) =>
   useQuery({
     queryKey: historyKeys.list(filter),
-    queryFn: () =>
-      unwrap(api.GET("/v1/history", { params: { query: filter } })),
+    queryFn: () => getHistory(filter),
     staleTime: 0,
   });
 
@@ -31,12 +31,7 @@ export const useRecordHistory = (
 ) =>
   useQuery({
     queryKey: historyKeys.record(entity, id, options.page),
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/history/{entity}/{id}", {
-          params: { path: { entity, id }, query: { page: options.page } },
-        }),
-      ),
+    queryFn: () => getRecordHistory(entity, id, options.page),
     staleTime: 0,
     enabled: options.enabled ?? true,
   });

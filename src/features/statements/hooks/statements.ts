@@ -1,9 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { ApiError, api, apiFetch, unwrap } from "@/shared/api/client";
-import type { Statement } from "@/shared/api/types";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
+import {
+  assignStatementRows,
+  createStatementRows,
+  deleteStatement,
+  getStatement,
+  getStatements,
+  updateStatement,
+  updateStatementRow,
+  uploadStatement,
+  type UpdateRowDto,
+} from "../services/statement.service";
 
 export const statementKeys = {
   all: ["statements"] as const,
@@ -23,59 +32,24 @@ const invalidate = [
 export const useStatements = () =>
   useQuery({
     queryKey: statementKeys.list,
-    queryFn: () => unwrap(api.GET("/v1/statements")),
+    queryFn: getStatements,
   });
 
 export const useStatement = (id: string | null) =>
   useQuery({
     queryKey: statementKeys.detail(id ?? ""),
-    queryFn: () =>
-      unwrap(api.GET("/v1/statements/{id}", { params: { path: { id: id! } } })),
+    queryFn: () => getStatement(id!),
     enabled: !!id,
   });
 
-export interface StatementUploadInput {
-  file: File;
-  password?: string;
-  paymentMethodId?: string;
-  personId?: string;
-  savePassword?: boolean; // keep the typed password as the person's document number (D94)
-}
+export type { StatementUploadInput } from "../services/statement.service";
 
 // Multipart through the /api proxy: the PDF, and the password or the card only when the first try asked for them.
 // The errors come back to the form (STATEMENT_PASSWORD, STATEMENT_UNREADABLE) instead of a toast
 export function useUploadStatement() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      file,
-      password,
-      paymentMethodId,
-      personId,
-      savePassword,
-    }: StatementUploadInput): Promise<Statement> => {
-      const form = new FormData();
-      form.set("file", file);
-      if (password) form.set("password", password);
-      if (paymentMethodId) form.set("paymentMethodId", paymentMethodId);
-      if (personId) form.set("personId", personId);
-      if (password && savePassword) form.set("savePassword", "true");
-      const response = await apiFetch("/api/v1/statements", {
-        method: "POST",
-        body: form,
-        headers: { accept: "application/json" },
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new ApiError(
-          response.status,
-          body.code ?? "UNKNOWN_ERROR",
-          body.message ?? response.statusText,
-          body.details,
-        );
-      }
-      return body.data as Statement;
-    },
+    mutationFn: uploadStatement,
     onSuccess: async () => {
       await Promise.all(
         invalidate.map((queryKey) =>
@@ -90,12 +64,7 @@ export function useUploadStatement() {
 export const useCreateStatementRows = () =>
   useApiMutation(
     ({ id, rowIds }: { id: string; rowIds?: string[] }) =>
-      unwrap(
-        api.POST("/v1/statements/{id}/create-new", {
-          params: { path: { id } },
-          body: { rowIds },
-        }),
-      ),
+      createStatementRows(id, rowIds),
     { invalidate, success: "Gastos creados" },
   );
 
@@ -112,13 +81,7 @@ export const useUpdateStatementRow = () =>
       result?: "ignored" | "new";
       label?: string | null;
       personId?: string | null; // who made the purchase (D113); null = the statement's person
-    }) =>
-      unwrap(
-        api.PATCH("/v1/statements/{id}/rows/{rowId}", {
-          params: { path: { id, rowId } },
-          body,
-        }),
-      ),
+    }) => updateStatementRow(id, rowId, body as UpdateRowDto),
     { invalidate },
   );
 
@@ -133,13 +96,7 @@ export const useAssignStatementRows = () =>
       id: string;
       rowIds: string[];
       personId: string | null;
-    }) =>
-      unwrap(
-        api.POST("/v1/statements/{id}/rows/assign", {
-          params: { path: { id } },
-          body: { rowIds, personId },
-        }),
-      ),
+    }) => assignStatementRows(id, { rowIds, personId }),
     { invalidate, success: "Persona asignada" },
   );
 
@@ -147,12 +104,7 @@ export const useAssignStatementRows = () =>
 export const useAssignStatementPerson = () =>
   useApiMutation(
     ({ id, personId }: { id: string; personId: string }) =>
-      unwrap(
-        api.PATCH("/v1/statements/{id}", {
-          params: { path: { id } },
-          body: { personId },
-        }),
-      ),
+      updateStatement(id, { personId }),
     { invalidate, success: "Persona asignada" },
   );
 
@@ -161,12 +113,7 @@ export const useAssignStatementPerson = () =>
 export const useAssignStatementCard = () =>
   useApiMutation(
     ({ id, paymentMethodId }: { id: string; paymentMethodId: string }) =>
-      unwrap(
-        api.PATCH("/v1/statements/{id}", {
-          params: { path: { id } },
-          body: { paymentMethodId },
-        }),
-      ),
+      updateStatement(id, { paymentMethodId }),
     { invalidate, success: "Tarjeta corregida" },
   );
 
@@ -180,10 +127,7 @@ export const useUpdateStatementMinimum = () =>
       currency?: "PEN" | "USD";
       minimumDue?: number | null;
       minimumAllocations?: Record<string, number> | null;
-    }) =>
-      unwrap(
-        api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body }),
-      ),
+    }) => updateStatement(id, body),
     {
       invalidate: [statementKeys.all, ["debts"]],
       success: "Pago mínimo actualizado",
@@ -207,19 +151,12 @@ export const useUpdateStatementBalances = () =>
     }: {
       id: string;
       balances: UpdateStatementBalanceInput[];
-    }) =>
-      unwrap(
-        api.PATCH("/v1/statements/{id}", {
-          params: { path: { id } },
-          body: { balances },
-        }),
-      ),
+    }) => updateStatement(id, { balances }),
     { invalidate, success: "Saldos actualizados" },
   );
 
 export const useDeleteStatement = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.DELETE("/v1/statements/{id}", { params: { path: { id } } })),
-    { invalidate, success: "Estado de cuenta eliminado" },
-  );
+  useApiMutation((id: string) => deleteStatement(id), {
+    invalidate,
+    success: "Estado de cuenta eliminado",
+  });

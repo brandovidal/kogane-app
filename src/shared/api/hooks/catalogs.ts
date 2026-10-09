@@ -1,7 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api, unwrap, type Schemas } from "../client";
 import { useApiMutation } from "./use-api-mutation";
+import {
+  deleteBudgetGroup,
+  deleteCategory,
+  getBudgetGroups,
+  getCardHolders,
+  getCategories,
+  getPaymentMethods,
+  getPeople,
+  saveBudgetGroup,
+  saveCardHolders,
+  saveCategory,
+  savePaymentMethod,
+  savePerson,
+  type CardHoldersDto,
+  type CreateBudgetGroupDto,
+  type CreateCategoryDto,
+  type CreatePaymentMethodDto,
+  type CreatePersonDto,
+} from "../services/catalog.service";
 
 // Catalogs change little: long stale time, refreshed after every write
 const CATALOG_STALE_MS = 5 * 60_000;
@@ -16,28 +34,28 @@ export const catalogKeys = {
 export const usePeople = () =>
   useQuery({
     queryKey: catalogKeys.people,
-    queryFn: () => unwrap(api.GET("/v1/people")),
+    queryFn: getPeople,
     staleTime: CATALOG_STALE_MS,
   });
 
 export const usePaymentMethods = () =>
   useQuery({
     queryKey: catalogKeys.paymentMethods,
-    queryFn: () => unwrap(api.GET("/v1/payment-methods")),
+    queryFn: getPaymentMethods,
     staleTime: CATALOG_STALE_MS,
   });
 
 export const useCategories = () =>
   useQuery({
     queryKey: catalogKeys.categories,
-    queryFn: () => unwrap(api.GET("/v1/categories")),
+    queryFn: getCategories,
     staleTime: CATALOG_STALE_MS,
   });
 
 export const useBudgetGroups = () =>
   useQuery({
     queryKey: catalogKeys.budgetGroups,
-    queryFn: () => unwrap(api.GET("/v1/budget-groups")),
+    queryFn: getBudgetGroups,
     staleTime: CATALOG_STALE_MS,
   });
 
@@ -55,26 +73,14 @@ export const useCreditCards = () => {
 
 export const useSavePerson = () =>
   useApiMutation(
-    ({ id, ...body }: Schemas["CreatePersonDto"] & { id?: string }) =>
-      id
-        ? unwrap(
-            api.PATCH("/v1/people/{id}", { params: { path: { id } }, body }),
-          )
-        : unwrap(api.POST("/v1/people", { body })),
+    (input: CreatePersonDto & { id?: string }) => savePerson(input),
     { invalidate: [catalogKeys.people], success: "Persona guardada" },
   );
 
 export const useSavePaymentMethod = () =>
   useApiMutation(
-    ({ id, ...body }: Schemas["CreatePaymentMethodDto"] & { id?: string }) =>
-      id
-        ? unwrap(
-            api.PATCH("/v1/payment-methods/{id}", {
-              params: { path: { id } },
-              body,
-            }),
-          )
-        : unwrap(api.POST("/v1/payment-methods", { body })),
+    (input: CreatePaymentMethodDto & { id?: string }) =>
+      savePaymentMethod(input),
     {
       invalidate: [catalogKeys.paymentMethods],
       success: "Medio de pago guardado",
@@ -83,39 +89,19 @@ export const useSavePaymentMethod = () =>
 
 export const useSaveCategory = () =>
   useApiMutation(
-    ({ id, ...body }: Schemas["CreateCategoryDto"] & { id?: string }) =>
-      id
-        ? unwrap(
-            api.PATCH("/v1/categories/{id}", {
-              params: { path: { id } },
-              body,
-            }),
-          )
-        : unwrap(api.POST("/v1/categories", { body })),
+    (input: CreateCategoryDto & { id?: string }) => saveCategory(input),
     { invalidate: [catalogKeys.categories], success: "Categoría guardada" },
   );
 
 export const useDeleteCategory = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.DELETE("/v1/categories/{id}", { params: { path: { id } } })),
-    {
-      invalidate: [catalogKeys.categories],
-      success: "Categoría eliminada",
-    },
-  );
+  useApiMutation((id: string) => deleteCategory(id), {
+    invalidate: [catalogKeys.categories],
+    success: "Categoría eliminada",
+  });
 
 export const useSaveBudgetGroup = () =>
   useApiMutation(
-    ({ id, ...body }: Schemas["CreateBudgetGroupDto"] & { id?: string }) =>
-      id
-        ? unwrap(
-            api.PATCH("/v1/budget-groups/{id}", {
-              params: { path: { id } },
-              body,
-            }),
-          )
-        : unwrap(api.POST("/v1/budget-groups", { body })),
+    (input: CreateBudgetGroupDto & { id?: string }) => saveBudgetGroup(input),
     {
       invalidate: [catalogKeys.budgetGroups, ["summary"]],
       success: "Grupo guardado",
@@ -123,16 +109,10 @@ export const useSaveBudgetGroup = () =>
   );
 
 export const useDeleteBudgetGroup = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(
-        api.DELETE("/v1/budget-groups/{id}", { params: { path: { id } } }),
-      ),
-    {
-      invalidate: [catalogKeys.budgetGroups, ["summary"]],
-      success: "Grupo eliminado",
-    },
-  );
+  useApiMutation((id: string) => deleteBudgetGroup(id), {
+    invalidate: [catalogKeys.budgetGroups, ["summary"]],
+    success: "Grupo eliminado",
+  });
 
 // Lookup by id for tables (person and payment method names)
 export const nameById = <T extends { id: string; name: string }>(
@@ -150,30 +130,14 @@ export const useMe = () =>
 export const useCardHolders = (paymentMethodId: string | null) =>
   useQuery({
     queryKey: ["catalogs", "card-holders", paymentMethodId],
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/payment-methods/{id}/holders", {
-          params: { path: { id: paymentMethodId! } },
-        }),
-      ),
+    queryFn: () => getCardHolders(paymentMethodId!),
     enabled: !!paymentMethodId,
   });
 
 export const useSaveCardHolders = () =>
   useApiMutation(
-    ({
-      id,
-      holders,
-    }: {
-      id: string;
-      holders: Schemas["CardHoldersDto"]["holders"];
-    }) =>
-      unwrap(
-        api.PUT("/v1/payment-methods/{id}/holders", {
-          params: { path: { id } },
-          body: { holders },
-        }),
-      ),
+    ({ id, holders }: { id: string; holders: CardHoldersDto["holders"] }) =>
+      saveCardHolders(id, holders),
     {
       invalidate: [["catalogs", "card-holders"]],
       success: "Titular y adicionales guardados",

@@ -1,10 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api, unwrap, type Schemas } from "@/shared/api/client";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
+import {
+  createDraft,
+  discardDraft,
+  getDrafts,
+  retryDraft,
+  saveDraft,
+  updateDraft,
+  type DraftFieldsDto,
+  type DraftTab,
+} from "../services/draft.service";
 
-export type DraftTab = "review" | "failed" | "discarded";
-export type DraftFields = Schemas["DraftFieldsDto"];
+export type { DraftTab } from "../services/draft.service";
+export type DraftFields = DraftFieldsDto;
 
 export const draftKeys = {
   all: ["drafts"] as const,
@@ -15,24 +24,14 @@ export const draftKeys = {
 export const useDrafts = (tab: DraftTab, limit = 50) =>
   useQuery({
     queryKey: draftKeys.list(tab),
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/drafts", { params: { query: { tab, limit, offset: 0 } } }),
-      ),
+    queryFn: () => getDrafts(tab, limit),
   });
 
 // The counter of the menu: only the total of "Por revisar"
 export const useDraftCount = () =>
   useQuery({
     queryKey: [...draftKeys.list("review"), "count"],
-    queryFn: async () =>
-      (
-        await unwrap(
-          api.GET("/v1/drafts", {
-            params: { query: { tab: "review", limit: 1, offset: 0 } },
-          }),
-        )
-      ).total,
+    queryFn: async () => (await getDrafts("review", 1)).total,
     refetchInterval: 60_000,
   });
 
@@ -40,45 +39,31 @@ export const useDraftCount = () =>
 const afterSave = [draftKeys.all, ["expenses"], ["summary"], ["debts"]];
 
 export const useCreateDraft = () =>
-  useApiMutation(
-    (body: DraftFields) => unwrap(api.POST("/v1/drafts", { body })),
-    { invalidate: [draftKeys.all] },
-  );
+  useApiMutation((body: DraftFields) => createDraft(body), {
+    invalidate: [draftKeys.all],
+  });
 
 export const useUpdateDraft = () =>
   useApiMutation(
-    ({ id, body }: { id: string; body: DraftFields }) =>
-      unwrap(api.PATCH("/v1/drafts/{id}", { params: { path: { id } }, body })),
+    ({ id, body }: { id: string; body: DraftFields }) => updateDraft(id, body),
     { invalidate: [draftKeys.all] },
   );
 
 // `quiet`: the caller shows its own message (Nuevo gasto says where it went)
 export const useSaveDraft = ({ quiet = false }: { quiet?: boolean } = {}) =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.POST("/v1/drafts/{id}/save", { params: { path: { id } } })),
-    {
-      invalidate: afterSave,
-      ...(quiet ? {} : { success: "Guardado" }),
-    },
-  );
+  useApiMutation((id: string) => saveDraft(id), {
+    invalidate: afterSave,
+    ...(quiet ? {} : { success: "Guardado" }),
+  });
 
 export const useDiscardDraft = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.POST("/v1/drafts/{id}/discard", { params: { path: { id } } })),
-    {
-      invalidate: [draftKeys.all],
-      success: "Descartado",
-    },
-  );
+  useApiMutation((id: string) => discardDraft(id), {
+    invalidate: [draftKeys.all],
+    success: "Descartado",
+  });
 
 export const useRetryDraft = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.POST("/v1/drafts/{id}/retry", { params: { path: { id } } })),
-    {
-      invalidate: [draftKeys.all],
-      success: "Reintentado",
-    },
-  );
+  useApiMutation((id: string) => retryDraft(id), {
+    invalidate: [draftKeys.all],
+    success: "Reintentado",
+  });

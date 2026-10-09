@@ -8,7 +8,7 @@ export type {
   BotReply,
   OutgoingMessage,
 } from "./hooks/messages";
-export { sendMessage, pressButton } from "./hooks/messages";
+export { sendMessage, pressButton } from "./services/message.service";
 export type { ChatMessage } from "./lib/chat";
 export {
   newMessageId,

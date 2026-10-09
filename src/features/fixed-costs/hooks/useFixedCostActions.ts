@@ -5,7 +5,6 @@ import {
   useDeleteExpense,
   useSaveExpense,
 } from "@/features/expenses/hooks/expenses";
-import { api, unwrap } from "@/shared/api/client";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
 import type { MoveSource } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
@@ -15,6 +14,7 @@ import {
   previousMonthBody,
 } from "@/features/expenses/lib/expense-actions";
 import { expenseKeys } from "@/features/expenses/hooks/expense-keys";
+import { saveExpense } from "@/features/expenses/services/expense.service";
 import type { FixedCostActions } from "@/features/fixed-costs/types/fixed-cost-types";
 
 export function useFixedCostActions() {
@@ -50,12 +50,7 @@ export function useFixedCostActions() {
           ).getUTCDate();
           body.dueDate = `${paymentYear}-${String(paymentMonth).padStart(2, "0")}-${String(Math.min(day, lastDay)).padStart(2, "0")}`;
         }
-        return unwrap(
-          api.POST("/v1/expenses/{resource}", {
-            params: { path: { resource: EXPENSE_RESOURCES.fixedCost } },
-            body: body as never,
-          }),
-        );
+        return saveExpense(EXPENSE_RESOURCES.fixedCost, { body });
       }),
     );
     const copied = results.filter(

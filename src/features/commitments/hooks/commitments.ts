@@ -1,9 +1,21 @@
 import { attachmentKeys } from "@/features/attachments/constants/query-keys";
 import { useQuery } from "@tanstack/react-query";
 
-import { api, unwrap, type Schemas } from "@/shared/api/client";
-import type { paths } from "@/shared/api/schema";
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
+import {
+  createCommitment,
+  createInstallments,
+  deleteCommitment,
+  deleteContribution,
+  getCommitment,
+  getCommitments,
+  saveContribution,
+  updateCommitment,
+  type CommitmentQuery,
+  type ContributionDto,
+  type CreateCommitmentDto,
+  type UpdateCommitmentDto,
+} from "../services/commitment.service";
 
 export const commitmentKeys = {
   all: ["commitments"] as const,
@@ -11,12 +23,10 @@ export const commitmentKeys = {
   detail: (id: string) => ["commitments", "detail", id] as const,
 };
 
-type CommitmentFilter = NonNullable<
-  paths["/v1/commitments"]["get"]["parameters"]["query"]
->;
-export type CommitmentBody = Schemas["CreateCommitmentDto"];
-export type CommitmentPatch = Schemas["UpdateCommitmentDto"];
-export type ContributionBody = Schemas["ContributionDto"];
+type CommitmentFilter = CommitmentQuery;
+export type CommitmentBody = CreateCommitmentDto;
+export type CommitmentPatch = UpdateCommitmentDto;
+export type ContributionBody = ContributionDto;
 
 // The installments are fixed costs: they move the month, the budget and the calendar too
 const invalidate = [
@@ -30,63 +40,42 @@ const invalidate = [
 export const useCommitments = (filter: CommitmentFilter = {}) =>
   useQuery({
     queryKey: commitmentKeys.list(filter),
-    queryFn: () =>
-      unwrap(api.GET("/v1/commitments", { params: { query: filter } })),
+    queryFn: () => getCommitments(filter),
   });
 
 // One commitment with its installments and contributions
 export const useCommitment = (id: string | null) =>
   useQuery({
     queryKey: commitmentKeys.detail(id ?? ""),
-    queryFn: () =>
-      unwrap(
-        api.GET("/v1/commitments/{id}", { params: { path: { id: id! } } }),
-      ),
+    queryFn: () => getCommitment(id!),
     enabled: !!id,
   });
 
 export const useCreateCommitment = () =>
-  useApiMutation(
-    (body: CommitmentBody) => unwrap(api.POST("/v1/commitments", { body })),
-    {
-      invalidate,
-      success: "Compromiso creado",
-    },
-  );
+  useApiMutation((body: CommitmentBody) => createCommitment(body), {
+    invalidate,
+    success: "Compromiso creado",
+  });
 
 export const useUpdateCommitment = () =>
   useApiMutation(
     ({ id, body }: { id: string; body: CommitmentPatch }) =>
-      unwrap(
-        api.PATCH("/v1/commitments/{id}", { params: { path: { id } }, body }),
-      ),
+      updateCommitment(id, body),
     { invalidate, success: "Guardado" },
   );
 
 export const useDeleteCommitment = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(api.DELETE("/v1/commitments/{id}", { params: { path: { id } } })),
-    {
-      invalidate: [...invalidate, attachmentKeys.all],
-      success: "Compromiso eliminado (sus cuotas siguen en Costos fijos)",
-    },
-  );
+  useApiMutation((id: string) => deleteCommitment(id), {
+    invalidate: [...invalidate, attachmentKeys.all],
+    success: "Compromiso eliminado (sus cuotas siguen en Costos fijos)",
+  });
 
 export const useCreateInstallments = () =>
-  useApiMutation(
-    (id: string) =>
-      unwrap(
-        api.POST("/v1/commitments/{id}/installments", {
-          params: { path: { id } },
-        }),
-      ),
-    {
-      invalidate,
-      success: ({ created }) =>
-        created ? `${created} cuota(s) creadas` : "No faltaba ninguna cuota",
-    },
-  );
+  useApiMutation((id: string) => createInstallments(id), {
+    invalidate,
+    success: ({ created }) =>
+      created ? `${created} cuota(s) creadas` : "No faltaba ninguna cuota",
+  });
 
 export const useSaveContribution = () =>
   useApiMutation(
@@ -98,31 +87,14 @@ export const useSaveContribution = () =>
       id: string;
       contributionId?: string;
       body: ContributionBody;
-    }) =>
-      contributionId
-        ? unwrap(
-            api.PATCH("/v1/commitments/{id}/contributions/{contributionId}", {
-              params: { path: { id, contributionId } },
-              body,
-            }),
-          )
-        : unwrap(
-            api.POST("/v1/commitments/{id}/contributions", {
-              params: { path: { id } },
-              body,
-            }),
-          ),
+    }) => saveContribution(id, body, contributionId),
     { invalidate: [commitmentKeys.all], success: "Aporte guardado" },
   );
 
 export const useDeleteContribution = () =>
   useApiMutation(
     ({ id, contributionId }: { id: string; contributionId: string }) =>
-      unwrap(
-        api.DELETE("/v1/commitments/{id}/contributions/{contributionId}", {
-          params: { path: { id, contributionId } },
-        }),
-      ),
+      deleteContribution(id, contributionId),
     {
       invalidate: [commitmentKeys.all, attachmentKeys.all],
       success: "Aporte eliminado",
