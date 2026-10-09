@@ -1,29 +1,86 @@
 import { describe, expect, it } from "vitest";
 
-import { activePanelCount, applyExpenseFilters, hasActiveFilters, PERSON_ME, usesPanel } from "@/features/expenses/lib/expense-filters";
+import {
+  activePanelCount,
+  applyExpenseFilters,
+  hasActiveFilters,
+  PERSON_ME,
+  usesPanel,
+} from "@/features/expenses/lib/expense-filters";
 
 const records = [
-  { description: "Netflix", categoryId: "fun", paymentMethodId: "io", expenseType: "essential", paymentStatus: "pending", period: "monthly", installment: null, othersShare: 32 },
-  { description: "Laptop", merchant: "MP*MERCADOLIBRE", categoryId: "tech", paymentMethodId: "io", expenseType: "guilty_pleasure", paymentStatus: "paid", installment: "1/10", othersShare: 0 },
-  { description: "Almuerzo", notes: "con el equipo", categoryId: "food", paymentMethodId: "yape", expenseType: "essential", installment: "1/1" },
+  {
+    description: "Netflix",
+    categoryId: "fun",
+    paymentMethodId: "io",
+    expenseType: "essential",
+    paymentStatus: "pending",
+    period: "monthly",
+    installment: null,
+    othersShare: 32,
+  },
+  {
+    description: "Laptop",
+    merchant: "MP*MERCADOLIBRE",
+    categoryId: "tech",
+    paymentMethodId: "io",
+    expenseType: "guilty_pleasure",
+    paymentStatus: "paid",
+    installment: "1/10",
+    othersShare: 0,
+  },
+  {
+    description: "Almuerzo",
+    notes: "con el equipo",
+    categoryId: "food",
+    paymentMethodId: "yape",
+    expenseType: "essential",
+    installment: "1/1",
+  },
 ];
 
 describe("expense filters (D79)", () => {
   it("should search the concept, the merchant and the note without accents or case", () => {
-    expect(applyExpenseFilters(records, { q: "mercadolibre" }).map((r) => r.description)).toEqual(["Laptop"]);
-    expect(applyExpenseFilters(records, { q: "EQUIPO" }).map((r) => r.description)).toEqual(["Almuerzo"]);
+    expect(
+      applyExpenseFilters(records, { q: "mercadolibre" }).map(
+        (r) => r.description,
+      ),
+    ).toEqual(["Laptop"]);
+    expect(
+      applyExpenseFilters(records, { q: "EQUIPO" }).map((r) => r.description),
+    ).toEqual(["Almuerzo"]);
   });
 
   it("should combine category, payment method, type, status and period", () => {
-    expect(applyExpenseFilters(records, { method: "io", type: "essential" }).map((r) => r.description)).toEqual(["Netflix"]);
-    expect(applyExpenseFilters(records, { status: "paid" }).map((r) => r.description)).toEqual(["Laptop"]);
-    expect(applyExpenseFilters(records, { period: "monthly", category: "fun" })).toHaveLength(1);
+    expect(
+      applyExpenseFilters(records, { method: "io", type: "essential" }).map(
+        (r) => r.description,
+      ),
+    ).toEqual(["Netflix"]);
+    expect(
+      applyExpenseFilters(records, { status: "paid" }).map(
+        (r) => r.description,
+      ),
+    ).toEqual(["Laptop"]);
+    expect(
+      applyExpenseFilters(records, { period: "monthly", category: "fun" }),
+    ).toHaveLength(1);
   });
 
   it("should tell purchases in installments and shared expenses apart", () => {
-    expect(applyExpenseFilters(records, { installments: "with" }).map((r) => r.description)).toEqual(["Laptop"]);
-    expect(applyExpenseFilters(records, { installments: "without" }).map((r) => r.description)).toEqual(["Netflix", "Almuerzo"]);
-    expect(applyExpenseFilters(records, { shared: "yes" }).map((r) => r.description)).toEqual(["Netflix"]);
+    expect(
+      applyExpenseFilters(records, { installments: "with" }).map(
+        (r) => r.description,
+      ),
+    ).toEqual(["Laptop"]);
+    expect(
+      applyExpenseFilters(records, { installments: "without" }).map(
+        (r) => r.description,
+      ),
+    ).toEqual(["Netflix", "Almuerzo"]);
+    expect(
+      applyExpenseFilters(records, { shared: "yes" }).map((r) => r.description),
+    ).toEqual(["Netflix"]);
     expect(applyExpenseFilters(records, { shared: "no" })).toHaveLength(2);
   });
 
@@ -33,9 +90,19 @@ describe("expense filters (D79)", () => {
       { description: "De Danery", personId: "danery" },
     ];
     expect(applyExpenseFilters(people, {}, "me")).toHaveLength(2);
-    expect(applyExpenseFilters(people, { person: PERSON_ME }, "me").map((r) => r.description)).toEqual(["Mío"]);
-    expect(applyExpenseFilters(people, { person: "all" }, "me")).toHaveLength(2);
-    expect(applyExpenseFilters(people, { person: "danery" }, "me").map((r) => r.description)).toEqual(["De Danery"]);
+    expect(
+      applyExpenseFilters(people, { person: PERSON_ME }, "me").map(
+        (r) => r.description,
+      ),
+    ).toEqual(["Mío"]);
+    expect(applyExpenseFilters(people, { person: "all" }, "me")).toHaveLength(
+      2,
+    );
+    expect(
+      applyExpenseFilters(people, { person: "danery" }, "me").map(
+        (r) => r.description,
+      ),
+    ).toEqual(["De Danery"]);
   });
 
   it("should know when a filter is on", () => {
@@ -45,16 +112,41 @@ describe("expense filters (D79)", () => {
   });
 
   it("should put the filters behind a panel only when a page has more than 3 of them (D98)", () => {
-    expect(usesPanel(["person", "q", "status", "period", "shared"])).toBe(false); // Plataformas
-    expect(usesPanel(["person", "q", "category", "method", "type", "shared"])).toBe(true); // Día a día
-    expect(usesPanel(["person", "q", "status", "category", "method", "type", "shared"])).toBe(true); // Costos fijos
+    expect(usesPanel(["person", "q", "status", "period", "shared"])).toBe(
+      false,
+    ); // Plataformas
+    expect(
+      usesPanel(["person", "q", "category", "method", "type", "shared"]),
+    ).toBe(true); // Día a día
+    expect(
+      usesPanel([
+        "person",
+        "q",
+        "status",
+        "category",
+        "method",
+        "type",
+        "shared",
+      ]),
+    ).toBe(true); // Costos fijos
   });
 
   it("should count the active filters of the panel, not the search nor the person", () => {
-    const fields = ["person", "q", "category", "method", "type", "shared"] as const;
+    const fields = [
+      "person",
+      "q",
+      "category",
+      "method",
+      "type",
+      "shared",
+    ] as const;
 
     expect(activePanelCount({ q: "uber", person: "all" }, [...fields])).toBe(0);
-    expect(activePanelCount({ category: "c1", shared: "yes", q: "uber" }, [...fields])).toBe(2);
+    expect(
+      activePanelCount({ category: "c1", shared: "yes", q: "uber" }, [
+        ...fields,
+      ]),
+    ).toBe(2);
     expect(activePanelCount({ status: "paid" }, [...fields])).toBe(0); // not a filter of that page
   });
 });

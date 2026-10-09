@@ -7,7 +7,13 @@ describe("budget groups", () => {
   it("should give each group salary × % and what its categories spent, in order", () => {
     const groups = [
       { id: "savings", name: "Ahorro", emoji: "💰", percentage: 14, order: 2 },
-      { id: "fixed", name: "Costos fijos", emoji: "🏠", percentage: 36, order: 1 },
+      {
+        id: "fixed",
+        name: "Costos fijos",
+        emoji: "🏠",
+        percentage: 36,
+        order: 1,
+      },
     ] as BudgetGroup[];
     const categories = [
       { id: "rent", name: "Alquiler", color: "#111", budgetGroupId: "fixed" },
@@ -20,9 +26,22 @@ describe("budget groups", () => {
       { categoryId: "loose", amount: 99, amountInPen: null },
     ];
 
-    const [fixed, savings] = buildBudgetGroupSummaries(groups, categories, spending, 5000);
+    const [fixed, savings] = buildBudgetGroupSummaries(
+      groups,
+      categories,
+      spending,
+      5000,
+    );
 
-    expect(fixed).toMatchObject({ assignedAmount: 1800, spentAmount: 1037.5, categoryIds: ["rent", "water"] });
-    expect(savings).toMatchObject({ assignedAmount: 700, spentAmount: 0, categories: [] });
+    expect(fixed).toMatchObject({
+      assignedAmount: 1800,
+      spentAmount: 1037.5,
+      categoryIds: ["rent", "water"],
+    });
+    expect(savings).toMatchObject({
+      assignedAmount: 700,
+      spentAmount: 0,
+      categories: [],
+    });
   });
 });

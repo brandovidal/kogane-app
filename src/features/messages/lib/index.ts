@@ -16,3 +16,4 @@ export {
   startsNewDay,
 } from "./chat-view";
 export { formatFileSize, waveformBars } from "./chat-view";
+export { parseDraftCard, actionRole, buttonText } from "./draft-card";

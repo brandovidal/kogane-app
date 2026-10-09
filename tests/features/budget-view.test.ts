@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { donutSlices, incomeOf, limitUsage } from "@/features/budget/lib/budget-view";
+import {
+  donutSlices,
+  incomeOf,
+  limitUsage,
+} from "@/features/budget/lib/budget-view";
 import type { Summary } from "@/shared/api/types";
 
 const summary = {
@@ -28,12 +32,18 @@ describe("budget view (D78)", () => {
   });
 
   it("should draw the groups with the theme colors, in a fixed order", () => {
-    expect(donutSlices(summary, "groups")).toEqual([{ key: "basic", name: "🏠 Básicos", value: 500, fill: "var(--chart-1)" }]);
+    expect(donutSlices(summary, "groups")).toEqual([
+      { key: "basic", name: "🏠 Básicos", value: 500, fill: "var(--chart-1)" },
+    ]);
     expect(donutSlices(undefined, "groups")).toEqual([]);
   });
 
   it("should add the extras to the salary and tell how much of the limit was used", () => {
-    expect(incomeOf(summary)).toEqual({ salary: 4000, extra: 300, total: 4300 });
+    expect(incomeOf(summary)).toEqual({
+      salary: 4000,
+      extra: 300,
+      total: 4300,
+    });
     expect(limitUsage(summary)).toBe(30);
     expect(limitUsage(undefined)).toBeNull();
   });

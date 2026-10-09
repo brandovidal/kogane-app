@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type Ref,
+} from "react";
 import {
   ArrowUp,
   ImagePlus,
@@ -55,7 +62,14 @@ export interface ChatInputValue {
   durationSeconds?: number;
 }
 
+export interface ChatInputHandle {
+  fillText: (text: string) => void;
+  pickImage: () => void;
+  startRecording: () => void;
+}
+
 interface ChatInputProps {
+  ref?: Ref<ChatInputHandle>;
   onSend: (value: ChatInputValue) => void;
   disabled: boolean;
   /** Muestra las sugerencias rápidas (conversación sin mensajes del usuario). */
@@ -64,6 +78,7 @@ interface ChatInputProps {
 
 // Text, an image with an optional caption, or a voice note (layout of lp-clemente-restaurante, D49)
 export function ChatInput({
+  ref,
   onSend,
   disabled,
   showSuggestions = false,
@@ -111,6 +126,15 @@ export function ChatInput({
     setActiveCommand(0);
     textRef.current?.focus();
   };
+
+  useImperativeHandle(ref, () => ({
+    fillText: (value) => {
+      setText(value);
+      textRef.current?.focus();
+    },
+    pickImage: () => fileRef.current?.click(),
+    startRecording: () => void startRecording(),
+  }));
 
   const send = () => {
     if (disabled) return;
@@ -197,11 +221,11 @@ export function ChatInput({
   };
 
   const barClass =
-    "flex items-center gap-2 rounded-full border bg-card px-2 py-1.5 focus-within:ring-2 focus-within:ring-primary/30";
+    "flex items-center gap-2 rounded-2xl border bg-foreground/[0.04] py-1.5 pl-2.5 pr-2 focus-within:ring-2 focus-within:ring-primary/30";
 
   return (
     <div className="border-t p-3">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-[820px]">
         {showSuggestions && !recording && !text && !image && (
           <div className="mb-2 flex flex-wrap justify-center gap-2">
             {CHAT_SUGGESTIONS.map((suggestion) => (
@@ -334,7 +358,7 @@ export function ChatInput({
               </span>
               <Button
                 size="icon"
-                className="size-9 shrink-0 rounded-full"
+                className="size-9 shrink-0 rounded-xl"
                 onClick={stopRecording}
                 aria-label="Detener y enviar"
               >
@@ -374,7 +398,7 @@ export function ChatInput({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="size-9 shrink-0 rounded-full"
+                  className="size-9 shrink-0 rounded-xl"
                   onClick={startRecording}
                   disabled={disabled}
                   aria-label="Grabar nota de voz"
@@ -384,7 +408,7 @@ export function ChatInput({
               )}
               <Button
                 size="icon"
-                className="size-9 shrink-0 rounded-full"
+                className="size-9 shrink-0 rounded-xl"
                 onClick={send}
                 disabled={disabled || !(text.trim() || image)}
                 aria-label="Enviar"

@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { formatCurrency, convertToPEN, calculateAmountInPEN } from "@/shared/lib/currency";
+import {
+  formatCurrency,
+  convertToPEN,
+  calculateAmountInPEN,
+} from "@/shared/lib/currency";
 
 describe("currency", () => {
   it("formats PEN correctly", () => {

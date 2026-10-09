@@ -32,7 +32,11 @@ const cost = (overrides: Partial<FixedCost>): FixedCost =>
 
 describe("fixed cost views", () => {
   it("should read installments and ignore single payments", () => {
-    expect(parseInstallment("17/48")).toEqual({ current: 17, total: 48, percent: 35 });
+    expect(parseInstallment("17/48")).toEqual({
+      current: 17,
+      total: 48,
+      percent: 35,
+    });
     expect(parseInstallment("1/1")).toBeNull();
     expect(parseInstallment("50/48")).toBeNull();
     expect(parseInstallment(null)).toBeNull();
@@ -45,8 +49,12 @@ describe("fixed cost views", () => {
       cost({ id: "oct", paymentMonth: 10 }),
       cost({ id: "jan", paymentMonth: 1, paymentYear: 2027 }),
     ];
-    expect(filterByMonthRange(records, "2026-08", "2026-10").map((item) => item.id)).toEqual(["aug", "oct"]);
-    expect(filterByMonthRange(records, "2026-10").map((item) => item.id)).toEqual(["oct", "jan"]);
+    expect(
+      filterByMonthRange(records, "2026-08", "2026-10").map((item) => item.id),
+    ).toEqual(["aug", "oct"]);
+    expect(
+      filterByMonthRange(records, "2026-10").map((item) => item.id),
+    ).toEqual(["oct", "jan"]);
     expect(monthRangeLabel("2026-08", "2026-10")).toBe("Ago – Oct 2026");
   });
 
@@ -60,19 +68,33 @@ describe("fixed cost views", () => {
       cost({ id: "none", dueDate: null }),
     ];
     expect(urgencyOf(records[1], today)).toBe("week");
-    expect(payableByUrgency(records, today).map((item) => item.id)).toEqual(["late", "week", "later", "none"]);
+    expect(payableByUrgency(records, today).map((item) => item.id)).toEqual([
+      "late",
+      "week",
+      "later",
+      "none",
+    ]);
   });
 
   it("should keep the latest month of each installment series and estimate what is left", () => {
     const [series] = installmentSeries([
-      cost({ id: "sep", paymentMonth: 9, installment: "16/48", paymentStatus: "paid" }),
+      cost({
+        id: "sep",
+        paymentMonth: 9,
+        installment: "16/48",
+        paymentStatus: "paid",
+      }),
       cost({ id: "oct", paymentMonth: 10, installment: "17/48" }),
     ]);
     expect(series.latest.id).toBe("oct");
     expect(series.paid).toBe(16);
     expect(series.remaining).toBe(32);
     expect(series.estimatedBalance).toBe(33344);
-    expect(monthGroupLabel(monthGroupKey(cost({ paymentMonth: 5, paymentYear: 2029 })))).toBe("Mayo 2029");
+    expect(
+      monthGroupLabel(
+        monthGroupKey(cost({ paymentMonth: 5, paymentYear: 2029 })),
+      ),
+    ).toBe("Mayo 2029");
     // Cuota 17 en octubre 2026 → la 48 cae 31 meses después: mayo 2029
     expect(series.endIndex).toBe(2029 * 12 + 4);
   });
@@ -81,6 +103,9 @@ describe("fixed cost views", () => {
     expect(relativeDueLabel(3)).toBe("en 3 días");
     expect(relativeDueLabel(0)).toBe("vence hoy");
     expect(relativeDueLabel(-1)).toBe("venció hace 1 día");
-    expect(previousMonthBody({ paymentMonth: 1, paymentYear: 2026 })).toEqual({ paymentMonth: 12, paymentYear: 2025 });
+    expect(previousMonthBody({ paymentMonth: 1, paymentYear: 2026 })).toEqual({
+      paymentMonth: 12,
+      paymentYear: 2025,
+    });
   });
 });
