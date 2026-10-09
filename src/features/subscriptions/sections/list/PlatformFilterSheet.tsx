@@ -1,5 +1,4 @@
 import { Trash2 } from "lucide-react";
-import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
 import { Button } from "@/ui/button";
@@ -18,7 +17,12 @@ const PLATFORM_SHEET_FILTER_KEYS = PLATFORM_FILTER_KEYS.filter(
   (key) => key !== "q",
 );
 
-type ViewPeriod = { month?: string; year?: string; desde?: string; hasta?: string };
+type ViewPeriod = {
+  month?: string;
+  year?: string;
+  desde?: string;
+  hasta?: string;
+};
 const VIEW_PERIOD_KEYS = ["month", "year", "desde", "hasta"] as const;
 
 export function PlatformFilterSheet({
@@ -46,16 +50,24 @@ export function PlatformFilterSheet({
     VIEW_PERIOD_KEYS,
     { month: String(selectedMonth), year: String(selectedYear) },
   );
-  const hasPeriod = !!(viewPeriod.month || viewPeriod.year || viewPeriod.desde || viewPeriod.hasta);
-  const count = countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS) + Number(hasPeriod);
+  const hasPeriod = !!(
+    viewPeriod.month ||
+    viewPeriod.year ||
+    viewPeriod.desde ||
+    viewPeriod.hasta
+  );
+  const count =
+    countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS) +
+    Number(hasPeriod);
   const monthName = viewPeriod.month
     ? getMonthName(Number(viewPeriod.month))
     : undefined;
-  const periodLabel = viewPeriod.desde || viewPeriod.hasta
-    ? monthRangeLabel(viewPeriod.desde, viewPeriod.hasta)
-    : viewPeriod.month && viewPeriod.year
-      ? `${monthName?.charAt(0).toLocaleUpperCase()}${monthName?.slice(1)} ${viewPeriod.year}`
-      : viewPeriod.year ?? "";
+  const periodLabel =
+    viewPeriod.desde || viewPeriod.hasta
+      ? monthRangeLabel(viewPeriod.desde, viewPeriod.hasta)
+      : viewPeriod.month && viewPeriod.year
+        ? `${monthName?.charAt(0).toLocaleUpperCase()}${monthName?.slice(1)} ${viewPeriod.year}`
+        : (viewPeriod.year ?? "");
 
   return (
     <FilterSheetShell
@@ -78,31 +90,6 @@ export function PlatformFilterSheet({
           <SheetDescription>
             Mostrando {resultCount} de {totalCount} plataformas
           </SheetDescription>
-          <ActiveExpenseFilterChips
-            fields={PLATFORM_SHEET_FILTER_KEYS}
-            value={filters}
-            onChange={onFiltersChange}
-            me={me}
-            maxVisibleItems={3}
-            collapsible={false}
-            formatFilterLabel={(key, label) =>
-              key === "currency"
-                ? label.replace(/^(Persona|Período|Moneda):\s*/, "")
-                : key === "method"
-                  ? label.replace(/^Medio de pago:/, "Cuenta de cobro:")
-                  : label
-            }
-            tone="brand"
-            periodChip={
-              hasPeriod
-                ? {
-                    key: "view-period",
-                    label: periodLabel,
-                    onRemove: () => setViewPeriod({}),
-                  }
-                : undefined
-            }
-          />
         </>
       }
       footer={
@@ -132,21 +119,23 @@ export function PlatformFilterSheet({
       }
     >
       <section className="space-y-2">
-        <h3 className="eyebrow">Período de la vista</h3>
+        <h3 className="flex items-center gap-2 text-sm font-medium">
+          {hasPeriod && (
+            <span aria-hidden="true" className="size-2 rounded-full bg-brand" />
+          )}
+          Período
+        </h3>
         <FixedCostPeriodSelector
           defaultValue={{ month: selectedMonth, year: selectedYear }}
           showPresets={false}
         />
       </section>
-      <section className="space-y-3">
-        <h3 className="eyebrow">Filtros</h3>
-        <PlatformFilterFields
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          statuses={SUBSCRIPTION_STATUSES}
-          personCounts={personCounts}
-        />
-      </section>
+      <PlatformFilterFields
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+        statuses={SUBSCRIPTION_STATUSES}
+        personCounts={personCounts}
+      />
     </FilterSheetShell>
   );
 }

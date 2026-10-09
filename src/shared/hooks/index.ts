@@ -10,3 +10,5 @@ export { useUrlGrouping } from "./useUrlGrouping";
 export { useUrlPeriod } from "./useUrlPeriod";
 export { useDataTableCalculations } from "./useDataTableCalculations";
 export { useSkeletonItems } from "./useSkeletonItems";
+export { useInitials } from "./useInitials";
+export { useSearchShortcut } from "./useSearchShortcut";

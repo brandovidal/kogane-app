@@ -1,5 +1,4 @@
-import { getMonthName } from "@/shared/lib/dates";
-import { SearchField } from "@/shared/components/filters/SearchField";
+import { RecordSearchField } from "@/shared/components/filters/RecordSearchField";
 import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { Button } from "@/ui/button";
@@ -10,13 +9,10 @@ import type {
   ExpenseFilterKey,
   ExpenseFilterValues,
 } from "@/features/expenses/types/expense-filters";
-import { SHARED_FILTER } from "@/features/expenses/constants/expense-filters";
-import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { ExpenseFilterFields } from "@/features/expenses/components/filters/ExpenseFilterFields";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import { FixedCostPeriodSelector } from "../../components/header/FixedCostPeriodSelector";
 import { FIXED_COST_STATUSES } from "../../constants/statuses";
-import { FIXED_COST_PANEL_FILTER_KEYS } from "../../lib/fixed-cost-filters";
 
 const PRIMARY_FIELDS: ExpenseFilterKey[] = ["person", "category"];
 const ADDITIONAL_FIELDS: ExpenseFilterKey[] = [
@@ -33,7 +29,6 @@ export function FixedCostFilterSheet({
   onOpenChange,
   filters,
   onFiltersChange,
-  me,
   shown,
   total,
   filterCount,
@@ -45,7 +40,6 @@ export function FixedCostFilterSheet({
   onOpenChange: (open: boolean) => void;
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
-  me?: string;
   shown: number;
   total: number;
   filterCount: number;
@@ -56,16 +50,6 @@ export function FixedCostFilterSheet({
   const hasSelectedPeriod = !!(filters.month || filters.year);
   const appliedCount = filterCount + (showPeriod && hasSelectedPeriod ? 1 : 0);
   const additionalCount = countActiveExpenseFilters(filters, ADDITIONAL_FIELDS);
-  const monthName = filters.month
-    ? getMonthName(Number(filters.month))
-    : undefined;
-  const periodLabel = [
-    monthName && monthName.charAt(0).toLocaleUpperCase() + monthName.slice(1),
-    filters.year,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return (
     <FilterSheetShell
       open={open}
@@ -87,33 +71,6 @@ export function FixedCostFilterSheet({
           <SheetDescription>
             Mostrando {shown} de {total} costos fijos
           </SheetDescription>
-          <ActiveExpenseFilterChips
-            fields={FIXED_COST_PANEL_FILTER_KEYS}
-            value={filters}
-            onChange={onFiltersChange}
-            me={me}
-            tone="brand"
-            collapsible={false}
-            periodChip={
-              showPeriod && hasSelectedPeriod
-                ? {
-                    key: "fixed-cost-period",
-                    label: periodLabel,
-                    onRemove: () =>
-                      onFiltersChange({
-                        ...filters,
-                        month: undefined,
-                        year: undefined,
-                      }),
-                  }
-                : undefined
-            }
-            formatFilterLabel={(key, label) =>
-              key === "shared" && filters.shared === SHARED_FILTER.OWN
-                ? "No compartidos"
-                : label.replace(/^[^:]+:\s*/, "")
-            }
-          />
         </>
       }
       footer={
@@ -139,16 +96,23 @@ export function FixedCostFilterSheet({
         </>
       }
     >
-      <SearchField
+      <RecordSearchField
         value={filters.q ?? ""}
         onChange={(q) => onFiltersChange({ ...filters, q: q || undefined })}
-        placeholder="Buscar registros..."
-        className="w-full"
+        className="w-full sm:hidden"
       />
 
       {showPeriod && (
         <section className="space-y-2">
-          <h3 className="text-sm font-medium">Per&iacute;odo</h3>
+          <h3 className="flex items-center gap-2 text-sm font-medium">
+            {hasSelectedPeriod && (
+              <span
+                aria-hidden="true"
+                className="size-2 rounded-full bg-brand"
+              />
+            )}
+            Período
+          </h3>
           <FixedCostPeriodSelector showPresets={false} />
         </section>
       )}

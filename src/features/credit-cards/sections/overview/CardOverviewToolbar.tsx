@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
-import { ExpensePersonFilter } from "@/features/expenses/components/filters/ExpensePersonFilter";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { INSTALLMENT_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { SearchField } from "@/shared/components/filters/SearchField";
@@ -61,10 +61,10 @@ export function CardOverviewToolbar({
             aria-hidden="true"
             className="mx-1 hidden h-5 w-px bg-border sm:block"
           />
-          <ExpensePersonFilter
-            compact
+          <PersonFilterFields
             value={filters.person}
             onChange={(person) => onFiltersChange({ ...filters, person })}
+            width="w-56"
           />
           <div className="flex items-center gap-1.5">
             <Activity className="size-4 text-muted-foreground" />

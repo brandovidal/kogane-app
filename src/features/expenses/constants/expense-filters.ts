@@ -1,12 +1,13 @@
 import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
+import {
+  PERSON_ALL,
+  PERSON_FILTER_LABELS,
+  PERSON_ME,
+  PERSON_UNASSIGNED,
+} from "@/shared/constants/person-filter";
 import type { ExpenseFilterKey } from "../types/expense-filters";
 
-export const PERSON_ALL = "all";
-export const PERSON_ME = "__me__";
-export const PERSON_UNASSIGNED = "__unassigned__";
-// URL value for an explicit empty status selection; undefined still means all statuses.
-export const NO_STATUS_FILTER = "__none__";
-export const PERSON_FILTER_LABELS = { ALL: "Todos", ME: "Yo" } as const;
+export { PERSON_ALL, PERSON_FILTER_LABELS, PERSON_ME, PERSON_UNASSIGNED };
 
 export const INSTALLMENT_FILTER = { WITH: "with", WITHOUT: "without" } as const;
 export const SHARED_FILTER = { SHARED: "yes", OWN: "no" } as const;

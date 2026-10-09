@@ -299,7 +299,7 @@ function SubscriptionListView({
             <button
               type="button"
               onClick={newPlatform}
-              className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground hover:bg-muted/50"
+              className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground hover:bg-muted/50"
             >
               <Plus className="h-5 w-5" /> {texts.add}
             </button>

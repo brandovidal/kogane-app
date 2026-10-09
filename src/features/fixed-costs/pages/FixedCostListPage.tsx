@@ -62,10 +62,7 @@ function FixedCostListPageContent() {
       : "este período";
   const hasNonPeriodCriteria = Object.entries(list.filters).some(
     ([key, value]) =>
-      key !== "month" &&
-      key !== "year" &&
-      value != null &&
-      value !== "",
+      key !== "month" && key !== "year" && value != null && value !== "",
   );
   const hasEmptyCriteria = hasNonPeriodCriteria || list.scope !== "all";
 
@@ -73,7 +70,6 @@ function FixedCostListPageContent() {
     <FixedCostToolbar
       filters={list.filters}
       onFiltersChange={list.setFilters}
-      me={list.me}
       shown={list.filtered.length}
       total={list.fixedCosts.length}
       groupBy={list.groupBy}
@@ -116,7 +112,9 @@ function FixedCostListPageContent() {
   else if (page === "estado")
     body = (
       <FixedCostStatusBoard
-        items={dataTable.table.getSortedRowModel().rows.map((row) => row.original)}
+        items={dataTable.table
+          .getSortedRowModel()
+          .rows.map((row) => row.original)}
         categories={list.categories}
         personName={list.personName}
         groupBy={list.groupBy}

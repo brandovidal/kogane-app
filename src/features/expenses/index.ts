@@ -16,10 +16,8 @@ export type { MoveSource } from "./components/dialogs/MoveSeriesDialog";
 export { MoveSeriesDialog } from "./components/dialogs/MoveSeriesDialog";
 export type { ActiveExpenseFilterChipsProps } from "./types/expense-filter-props";
 export { ActiveExpenseFilterChips } from "./components/filters/ActiveExpenseFilterChips";
-export { ExpensePersonFilter } from "./components/filters/ExpensePersonFilter";
 export { ExpenseFilterFields } from "./components/filters/ExpenseFilterFields";
 export { ExpenseFilters } from "./components/filters/ExpenseFilters";
-export { useExpensePersonOptions } from "./hooks/useExpensePersonOptions";
 export {
   expenseKeys,
   useExpense,

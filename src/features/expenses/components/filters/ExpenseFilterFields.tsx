@@ -9,28 +9,21 @@ import {
   WalletCards,
 } from "lucide-react";
 import { useCategories, usePaymentMethods } from "@/shared/api/hooks/catalogs";
-import {
-  EXPENSE_TYPE_LABELS,
-  PAYMENT_STATUS_DOT_COLORS,
-  PAYMENT_STATUS_LABELS,
-} from "@/shared/constants/finance";
-import { NO_STATUS_FILTER } from "../../constants/expense-filters";
+import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/subscriptions";
 import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
 import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
-import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import { ExpensePersonFilter } from "./ExpensePersonFilter";
-import { SearchField } from "@/shared/components/filters/SearchField";
+import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { RecordSearchField } from "@/shared/components/filters/RecordSearchField";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFields";
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { cn } from "@/shared/utils/cn";
-import { Marker, MarkerContent } from "@/ui/marker";
 import { entriesOf } from "@/shared/utils/entries";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
-import { groupPaymentStatuses } from "../../lib/group-payment-statuses";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
 import type { ExpenseFilterFieldsProps } from "../../types/expense-filter-props";
 import {
@@ -62,6 +55,7 @@ export function ExpenseFilterFields({
   const set = (key: ExpenseFilterKey, next: string | undefined) =>
     onChange({ ...value, [key]: next || undefined });
   const width = panel || fullWidth ? "w-full" : undefined;
+
   const renderFields = (keys: readonly ExpenseFilterKey[]) => {
     const has = (key: ExpenseFilterKey) => keys.includes(key);
     return (
@@ -79,14 +73,13 @@ export function ExpenseFilterFields({
           </div>
         )}
         {personInPanel && has("person") && (
-          <ExpensePersonFilter
+          <PersonFilterFields
             value={value.person}
             onChange={(next) => set("person", next)}
             width={width}
-            searchable={panel}
             counts={personCounts}
-            activeMarker={activeMarkers}
-            showIcon={showIcons}
+            activeMarker
+            presentation={panel ? "popover" : "responsive-sheet"}
           />
         )}
         {has("category") && (
@@ -146,36 +139,15 @@ export function ExpenseFilterFields({
           />
         )}
         {has("status") && (
-          <MultiSelect
-            label="Estado"
+          <StatusFilterFields
             icon={showIcons ? CircleCheck : undefined}
-            value={
-              value.status === NO_STATUS_FILTER
-                ? []
-                : value.status?.split(",").filter(Boolean) ?? null
+            statuses={statuses}
+            value={value.status}
+            onChange={(next) => set("status", next)}
+            allLabel={
+              statusAllLabel === "Todos" ? "Todos los estados" : statusAllLabel
             }
-            options={groupPaymentStatuses(statuses).flatMap((group) =>
-              group.options.map((status) => ({
-                value: status,
-                label: PAYMENT_STATUS_LABELS[status] ?? status,
-                group: group.label,
-                color: PAYMENT_STATUS_DOT_COLORS[status],
-              })),
-            )}
-            onChange={(next) =>
-              set(
-                "status",
-                next === null
-                  ? undefined
-                  : next.length
-                    ? next.join(",")
-                    : NO_STATUS_FILTER,
-              )
-            }
-            emptySelectionLabel="Ninguno"
-            allLabel={statusAllLabel === "Todos" ? "Todos los estados" : statusAllLabel}
             width={width}
-            searchable
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />
@@ -289,31 +261,39 @@ export function ExpenseFilterFields({
       {primary.length > 0 && (
         <section aria-label="Filtros principales" className="space-y-2">
           {searchInPanel && fields.includes("q") && (
-            <SearchField
+            <RecordSearchField
               label="Buscar"
               className="w-full"
-              placeholder="Buscar registros..."
               value={value.q ?? ""}
               active={!!value.q?.trim()}
               onChange={(next) => set("q", next)}
             />
           )}
-          <div className={cn("grid gap-3", fullWidth ? "grid-cols-1" : "grid-cols-2")}>
+          <div
+            className={cn(
+              "grid gap-3",
+              fullWidth ? "grid-cols-1" : "grid-cols-2",
+            )}
+          >
             {renderFields(primary)}
           </div>
         </section>
       )}
-      {additional.length > 0 && (
-        wrapAdditionalFilters ? (
-          <MoreFilters activeCount={countActiveExpenseFilters(value, additional)} defaultOpen={panel}>
+      {additional.length > 0 &&
+        (wrapAdditionalFilters ? (
+          <MoreFilters
+            activeCount={countActiveExpenseFilters(value, additional)}
+            defaultOpen={panel}
+          >
             <div className="grid grid-cols-2 gap-3">
               {renderFields(additional)}
             </div>
           </MoreFilters>
         ) : (
-          <div className="grid grid-cols-2 gap-3">{renderFields(additional)}</div>
-        )
-      )}
+          <div className="grid grid-cols-2 gap-3">
+            {renderFields(additional)}
+          </div>
+        ))}
     </div>
   );
 }

@@ -99,9 +99,6 @@ function PlatformListPageContent() {
             view={list.view}
             onViewChange={list.setView}
             table={tableState.table}
-            resultCount={list.filtered.length}
-            totalCount={list.items.length}
-            personCounts={list.personCounts}
             onOpenFilters={() => setFilterSheetOpen(true)}
           />
           <PlatformFilterSheet

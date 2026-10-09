@@ -5,6 +5,7 @@ import {
 } from "@/shared/api/hooks/catalogs";
 import {
   EXPENSE_TYPE_LABELS,
+  NO_PAYMENT_STATUS_FILTER,
   PAYMENT_STATUS_LABELS,
 } from "@/shared/constants/finance";
 import { SUBSCRIPTION_PERIOD_LABELS } from "@/features/subscriptions/constants/subscriptions";
@@ -13,7 +14,6 @@ import { formatDate, getMonthName } from "@/shared/lib/dates";
 import type { AppliedFilterChip } from "@/shared/components/filters/AppliedFilterChips";
 import {
   INSTALLMENT_FILTER,
-  NO_STATUS_FILTER,
   PERSON_ALL,
   PERSON_FILTER_LABELS,
   PERSON_ME,
@@ -78,7 +78,7 @@ export function useActiveExpenseFilterChips<
       : undefined,
     currency: value.currency ? `Moneda: ${value.currency}` : undefined,
     status: value.status
-      ? `Estado: ${value.status === NO_STATUS_FILTER ? "Ninguno" : value.status.split(",").map((status) => PAYMENT_STATUS_LABELS[status] ?? status).join(", ")}`
+      ? `Estado: ${value.status === NO_PAYMENT_STATUS_FILTER ? "Ninguno" : value.status.split(",").map((status) => PAYMENT_STATUS_LABELS[status] ?? status).join(", ")}`
       : undefined,
     type: value.type
       ? `Tipo: ${EXPENSE_TYPE_LABELS[value.type] ?? value.type}`

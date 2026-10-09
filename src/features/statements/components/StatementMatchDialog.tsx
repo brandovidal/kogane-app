@@ -158,10 +158,10 @@ export function StatementMatchDialog({
                       <TableCell className="text-muted-foreground">
                         {item.label}
                       </TableCell>
-                      <TableCell className="min-w-36 whitespace-normal break-words">
+                      <TableCell className="min-w-36 whitespace-normal wrap-break-word">
                         {item.pdf}
                       </TableCell>
-                      <TableCell className="min-w-36 whitespace-normal break-words">
+                      <TableCell className="min-w-36 whitespace-normal wrap-break-word">
                         {item.saved}
                       </TableCell>
                     </TableRow>

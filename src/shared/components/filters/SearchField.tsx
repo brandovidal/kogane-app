@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Search } from "lucide-react";
 
 import { cn } from "@/shared/utils/cn";
+import { useSearchShortcut } from "@/shared/hooks/useSearchShortcut";
 import { Input } from "@/ui/input";
 
 export interface SearchFieldProps {
@@ -26,26 +27,7 @@ export function SearchField({
   shortcut,
 }: SearchFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (shortcut !== "/") return;
-    const focusOnShortcut = (event: KeyboardEvent) => {
-      const target = event.target;
-      if (
-        event.key !== "/" ||
-        event.altKey ||
-        event.ctrlKey ||
-        event.metaKey ||
-        document.querySelector('[role="dialog"], [role="alertdialog"]') ||
-        (target instanceof HTMLElement &&
-          (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)))
-      ) return;
-      event.preventDefault();
-      inputRef.current?.focus();
-    };
-    window.addEventListener("keydown", focusOnShortcut);
-    return () => window.removeEventListener("keydown", focusOnShortcut);
-  }, [shortcut]);
+  useSearchShortcut(inputRef, shortcut);
 
   return (
     <div className={cn("space-y-1.5", className)}>

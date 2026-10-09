@@ -15,7 +15,6 @@ import {
 import { toast } from "sonner";
 import type { Subscription } from "@/shared/api/types";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
-import { ExpensePersonFilter } from "@/features/expenses/components/filters/ExpensePersonFilter";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { Button } from "@/ui/button";
 import {
@@ -44,9 +43,6 @@ export function PlatformToolbar({
   view,
   onViewChange,
   table,
-  resultCount,
-  totalCount,
-  personCounts,
   onOpenFilters,
 }: {
   filters: ExpenseFilterValues;
@@ -56,9 +52,6 @@ export function PlatformToolbar({
   view: PlatformView;
   onViewChange: (view: PlatformView) => void;
   table: Table<Subscription>;
-  resultCount: number;
-  totalCount: number;
-  personCounts: Record<string, number>;
   onOpenFilters: () => void;
 }) {
   const activeFilters = countPlatformFilters(
@@ -99,12 +92,6 @@ export function PlatformToolbar({
           <span
             aria-hidden="true"
             className="mx-1 hidden h-5 w-px bg-border sm:block"
-          />
-          <ExpensePersonFilter
-            compact
-            value={filters.person}
-            onChange={(person) => onFiltersChange({ ...filters, person })}
-            counts={personCounts}
           />
           <Button
             type="button"

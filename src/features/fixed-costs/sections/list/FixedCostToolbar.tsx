@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/shared/utils/cn";
-
 import type { Table } from "@tanstack/react-table";
 import {
   ArrowDownUp,
@@ -747,7 +746,6 @@ export function FixedCostToolbar({
         onOpenChange={setSheetOpen}
         filters={filters}
         onFiltersChange={onFiltersChange}
-        me={me}
         shown={shown}
         total={total}
         filterCount={filterCount}

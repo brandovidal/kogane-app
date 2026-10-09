@@ -1,6 +1,8 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { PeriodFields, type PeriodFieldsProps } from "./forms/PeriodFields";
 export { DataView } from "./data-display/DataView";
+export type { NameAvatarProps } from "./data-display/NameAvatar";
+export { NameAvatar } from "./data-display/NameAvatar";
 export type { SummaryCardProps } from "./data-display/SummaryCard";
 export { SummaryCard } from "./data-display/SummaryCard";
 export {
@@ -25,9 +27,20 @@ export type {
 export { FilterSelect } from "./filters/FilterSelect";
 export type { MultiSelectOption, MultiSelectProps } from "./filters/MultiSelect";
 export { MultiSelect } from "./filters/MultiSelect";
+export type {
+  PersonFilterOption,
+  PersonFilterProps,
+} from "./filters/PersonFilter";
+export { PersonFilter } from "./filters/PersonFilter";
+export type { PersonFilterFieldsProps } from "./filters/PersonFilterFields";
+export { PersonFilterFields } from "./filters/PersonFilterFields";
+export type { StatusFilterFieldsProps } from "./filters/StatusFilterFields";
+export { StatusFilterFields } from "./filters/StatusFilterFields";
 export { MoreFilters, type MoreFiltersProps } from "./filters/MoreFilters";
 export type { SearchFieldProps } from "./filters/SearchField";
 export { SearchField } from "./filters/SearchField";
+export type { RecordSearchFieldProps } from "./filters/RecordSearchField";
+export { RecordSearchField } from "./filters/RecordSearchField";
 export { CatalogSelectOptions } from "./forms/CatalogSelect";
 export type { DatePickerProps } from "./forms/DatePicker";
 export { DatePicker } from "./forms/DatePicker";

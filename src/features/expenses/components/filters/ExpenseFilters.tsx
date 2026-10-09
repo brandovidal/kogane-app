@@ -15,7 +15,7 @@ import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar
 import { GroupingMenu } from "@/shared/components/toolbar/GroupingMenu";
 import { CountedToolbarButton } from "@/shared/components/toolbar/CountedToolbarButton";
 import { ExpenseFilterFields } from "./ExpenseFilterFields";
-import { ExpensePersonFilter } from "./ExpensePersonFilter";
+import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { ExpenseFiltersPanel } from "./ExpenseFiltersPanel";
 
 export function ExpenseFilters({
@@ -48,10 +48,10 @@ export function ExpenseFilters({
   const count = countActiveExpenseFilters(value, fields);
 
   const personControl = has("person") && (
-    <ExpensePersonFilter
-      compact
+    <PersonFilterFields
       value={value.person}
       onChange={(next) => set("person", next)}
+      width="w-56"
     />
   );
 

@@ -2,6 +2,9 @@
 
 export const CURRENCIES = ["PEN", "USD"] as const;
 
+// URL value for an explicit empty status selection; undefined still means all statuses.
+export const NO_PAYMENT_STATUS_FILTER = "__none__";
+
 export const EXPENSE_TYPE_LABELS: Record<string, string> = {
   essential: "Necesario",
   guilty_pleasure: "Con culpa",
