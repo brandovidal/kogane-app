@@ -2,11 +2,12 @@ import { usePaymentMethods, useCategories } from "@/shared/api/hooks/catalogs";
 import { ExpensePersonFilter } from "@/features/expenses/components/filters/ExpensePersonFilter";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
+import { MultiSelect } from "@/shared/components/filters/MultiSelect";
 import { Input } from "@/ui/input";
 import { PaymentMethodIcon } from "@/features/settings/components/PaymentMethodIcon";
 import { PAYMENT_METHOD_TYPE_LABELS } from "@/features/settings/constants/payment-methods";
-import { EXPENSE_TYPE_LABELS, PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
-import { CURRENCY_FILTER_OPTIONS, SHARED_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
+import { EXPENSE_TYPE_LABELS, PAYMENT_STATUS_DOT_COLORS, PAYMENT_STATUS_GROUPS, PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
+import { CURRENCY_FILTER_OPTIONS, NO_STATUS_FILTER, SHARED_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import { countPlatformFilters } from "../../lib/platform-filters";
 import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
@@ -55,26 +56,37 @@ export function PlatformFilterFields({
   return (
     <div className="space-y-5">
       <section className="space-y-2">
-        <FilterSelect
+        <MultiSelect
           label="Estado"
           icon={CircleCheck}
-          value={filters.status}
+          value={
+            filters.status === NO_STATUS_FILTER
+              ? []
+              : filters.status?.split(",").filter(Boolean) ?? null
+          }
           options={statuses.map((value) => ({
             value,
             label: PAYMENT_STATUS_LABELS[value] ?? value,
-            group: value === "not_started"
-              ? "Por iniciar"
-              : value === "pending"
-                ? "En curso"
-                : "Completados",
+            group: PAYMENT_STATUS_GROUPS.find((group) =>
+              (group.statuses as readonly string[]).includes(value),
+            )?.label ?? "Otros",
+            color: PAYMENT_STATUS_DOT_COLORS[value],
           }))}
-          onChange={(value) => set("status", value)}
+          onChange={(value) =>
+            set(
+              "status",
+              value === null
+                ? undefined
+                : value.length
+                  ? value.join(",")
+                  : NO_STATUS_FILTER,
+            )
+          }
           width="w-full"
           allLabel="Todos los estados"
-          allTriggerLabel="Todos los estados"
+          emptySelectionLabel="Ninguno"
           searchable
-          multiple
-          compactSelectionSummary
+          activeMarker
           labelClassName="text-sm font-medium"
         />
       </section>

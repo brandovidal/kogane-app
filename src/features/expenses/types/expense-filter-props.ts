@@ -32,7 +32,16 @@ export type ExpenseFilterFieldsProps = Pick<
   | "statuses"
   | "personInPanel"
   | "searchInPanel"
-> & { panel: boolean; personCounts?: Record<string, number> };
+> & {
+  panel: boolean;
+  personCounts?: Record<string, number>;
+  activeMarkers?: boolean;
+  showIcons?: boolean;
+  fullWidth?: boolean;
+  wrapAdditionalFilters?: boolean;
+  statusAllLabel?: string;
+  sharedOwnLabel?: string;
+};
 
 export interface ActiveExpenseFilterChipsOptions<
   T extends string | string[] = string,

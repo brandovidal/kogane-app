@@ -4,57 +4,22 @@ import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filt
 import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
 import { Button } from "@/ui/button";
 import { SheetDescription, SheetTitle } from "@/ui/sheet";
-import { usePeriod } from "@/shared/stores/period.store";
 import { FixedCostPeriodSelector } from "@/features/fixed-costs/components/header/FixedCostPeriodSelector";
-import { formatDate, getMonthName } from "@/shared/lib/dates";
+import { getMonthName } from "@/shared/lib/dates";
+import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
+import { usePeriod } from "@/shared/stores/period.store";
+import { monthRangeLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
 import { PLATFORM_FILTER_KEYS } from "../../constants/platforms";
 import { SUBSCRIPTION_STATUSES } from "../../constants/subscriptions";
 import { countPlatformFilters } from "../../lib/platform-filters";
 import { PlatformFilterFields } from "./PlatformFilterFields";
-import { PlatformPeriodFilter } from "./PlatformPeriodFilter";
 
 const PLATFORM_SHEET_FILTER_KEYS = PLATFORM_FILTER_KEYS.filter(
   (key) => key !== "q",
 );
 
-function getDuePeriodChip(filters: ExpenseFilterValues) {
-  const from = filters.dueFrom?.slice(0, 10);
-  const to = filters.dueTo?.slice(0, 10);
-  if (!from && !to) return undefined;
-
-  let label: string;
-  if (!from) label = `Cobro hasta ${formatDate(to!)}`;
-  else if (!to) label = `Cobro desde ${formatDate(from)}`;
-  else {
-    const start = new Date(`${from}T12:00:00`);
-    const end = new Date(`${to}T12:00:00`);
-    const isMonth =
-      start.getDate() === 1 &&
-      start.getFullYear() === end.getFullYear() &&
-      start.getMonth() === end.getMonth() &&
-      end.getDate() === new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
-    const isYear =
-      start.getMonth() === 0 &&
-      start.getDate() === 1 &&
-      end.getMonth() === 11 &&
-      end.getDate() === 31 &&
-      start.getFullYear() === end.getFullYear();
-    label = isMonth
-      ? `Cobro en ${getMonthName(start.getMonth() + 1)} ${start.getFullYear()}`
-      : isYear
-        ? `Cobro en ${start.getFullYear()}`
-        : `Cobro: ${formatDate(from)} – ${formatDate(to)}`;
-  }
-
-  return {
-    key: "due-period",
-    label,
-  };
-}
-
-function clearDueRange(filters: ExpenseFilterValues) {
-  return { ...filters, dueFrom: undefined, dueTo: undefined };
-}
+type ViewPeriod = { month?: string; year?: string; desde?: string; hasta?: string };
+const VIEW_PERIOD_KEYS = ["month", "year", "desde", "hasta"] as const;
 
 export function PlatformFilterSheet({
   open,
@@ -75,11 +40,22 @@ export function PlatformFilterSheet({
   totalCount: number;
   personCounts: Record<string, number>;
 }) {
-  const month = usePeriod((state) => state.month);
-  const year = usePeriod((state) => state.year);
-  const setPeriod = usePeriod((state) => state.setPeriod);
-  const count = countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS);
-  const duePeriodChip = getDuePeriodChip(filters);
+  const selectedMonth = usePeriod((state) => state.month);
+  const selectedYear = usePeriod((state) => state.year);
+  const [viewPeriod, setViewPeriod] = useUrlFilters<ViewPeriod>(
+    VIEW_PERIOD_KEYS,
+    { month: String(selectedMonth), year: String(selectedYear) },
+  );
+  const hasPeriod = !!(viewPeriod.month || viewPeriod.year || viewPeriod.desde || viewPeriod.hasta);
+  const count = countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS) + Number(hasPeriod);
+  const monthName = viewPeriod.month
+    ? getMonthName(Number(viewPeriod.month))
+    : undefined;
+  const periodLabel = viewPeriod.desde || viewPeriod.hasta
+    ? monthRangeLabel(viewPeriod.desde, viewPeriod.hasta)
+    : viewPeriod.month && viewPeriod.year
+      ? `${monthName?.charAt(0).toLocaleUpperCase()}${monthName?.slice(1)} ${viewPeriod.year}`
+      : viewPeriod.year ?? "";
 
   return (
     <FilterSheetShell
@@ -103,16 +79,14 @@ export function PlatformFilterSheet({
             Mostrando {resultCount} de {totalCount} plataformas
           </SheetDescription>
           <ActiveExpenseFilterChips
-            fields={PLATFORM_SHEET_FILTER_KEYS.filter(
-              (key) => key !== "dueFrom" && key !== "dueTo",
-            )}
+            fields={PLATFORM_SHEET_FILTER_KEYS}
             value={filters}
             onChange={onFiltersChange}
             me={me}
             maxVisibleItems={3}
             collapsible={false}
             formatFilterLabel={(key, label) =>
-              key === "period" || key === "currency"
+              key === "currency"
                 ? label.replace(/^(Persona|Período|Moneda):\s*/, "")
                 : key === "method"
                   ? label.replace(/^Medio de pago:/, "Cuenta de cobro:")
@@ -120,10 +94,13 @@ export function PlatformFilterSheet({
             }
             tone="brand"
             periodChip={
-              duePeriodChip && {
-                ...duePeriodChip,
-                onRemove: () => onFiltersChange(clearDueRange(filters)),
-              }
+              hasPeriod
+                ? {
+                    key: "view-period",
+                    label: periodLabel,
+                    onRemove: () => setViewPeriod({}),
+                  }
+                : undefined
             }
           />
         </>
@@ -135,7 +112,10 @@ export function PlatformFilterSheet({
             variant="ghost"
             size="sm"
             disabled={count === 0}
-            onClick={() => onFiltersChange({ q: filters.q })}
+            onClick={() => {
+              onFiltersChange({ q: filters.q });
+              setViewPeriod({});
+            }}
           >
             <Trash2 className="size-4" />
             Limpiar todo
@@ -154,15 +134,10 @@ export function PlatformFilterSheet({
       <section className="space-y-2">
         <h3 className="eyebrow">Período de la vista</h3>
         <FixedCostPeriodSelector
-          value={{ month, year }}
-          onChange={({ month: nextMonth, year: nextYear }) =>
-            setPeriod(nextMonth, nextYear)
-          }
-          modes={["month"]}
+          defaultValue={{ month: selectedMonth, year: selectedYear }}
           showPresets={false}
         />
       </section>
-      <PlatformPeriodFilter filters={filters} onFiltersChange={onFiltersChange} />
       <section className="space-y-3">
         <h3 className="eyebrow">Filtros</h3>
         <PlatformFilterFields

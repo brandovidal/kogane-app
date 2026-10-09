@@ -13,6 +13,8 @@ interface ExpensePersonFilterProps {
   width?: string;
   className?: string;
   counts?: Record<string, number>;
+  activeMarker?: boolean;
+  showIcon?: boolean;
 }
 
 /** Shared person filter for the toolbar and the fixed-cost/platform filter sheets. */
@@ -24,6 +26,8 @@ export function ExpensePersonFilter({
   width = "w-full",
   className,
   counts,
+  activeMarker = false,
+  showIcon = true,
 }: ExpensePersonFilterProps) {
   const me = useMe();
   const selectedValue = value
@@ -72,7 +76,7 @@ export function ExpensePersonFilter({
   return (
     <FilterSelect
       label="Persona"
-      icon={UserRound}
+      icon={showIcon ? UserRound : undefined}
       value={selectedValue ?? PERSON_ALL}
       options={optionsWithUnassigned}
       onChange={onChange}
@@ -86,6 +90,7 @@ export function ExpensePersonFilter({
       allTriggerLabel={PERSON_FILTER_LABELS.ALL}
       emptyDescription="Nadie coincide con la búsqueda. Las personas salen de los registros de esta vista."
       labelClassName="text-sm font-medium"
+      activeMarker={activeMarker}
     />
   );
 }

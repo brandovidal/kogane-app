@@ -3,6 +3,8 @@ export type { AppliedFilterChip } from "./AppliedFilterChips";
 export { AppliedFilterChips } from "./AppliedFilterChips";
 export type { FilterSelectOption, FilterSelectProps } from "./FilterSelect";
 export { FilterSelect } from "./FilterSelect";
+export type { MultiSelectOption, MultiSelectProps } from "./MultiSelect";
+export { MultiSelect } from "./MultiSelect";
 export { FilterSheetShell } from "./FilterSheetShell";
 export { MoreFilters, type MoreFiltersProps } from "./MoreFilters";
 export type { SearchFieldProps } from "./SearchField";

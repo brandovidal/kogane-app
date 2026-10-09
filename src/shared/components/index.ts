@@ -23,6 +23,8 @@ export type {
   FilterSelectProps,
 } from "./filters/FilterSelect";
 export { FilterSelect } from "./filters/FilterSelect";
+export type { MultiSelectOption, MultiSelectProps } from "./filters/MultiSelect";
+export { MultiSelect } from "./filters/MultiSelect";
 export { MoreFilters, type MoreFiltersProps } from "./filters/MoreFilters";
 export type { SearchFieldProps } from "./filters/SearchField";
 export { SearchField } from "./filters/SearchField";

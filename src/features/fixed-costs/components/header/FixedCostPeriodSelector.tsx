@@ -34,6 +34,7 @@ type PeriodValue = { month: number; year: number };
 type FixedCostPeriodSelectorProps = {
   value?: PeriodValue;
   onChange?: (value: PeriodValue) => void;
+  defaultValue?: PeriodValue;
   modes?: PeriodMode[];
   showPresets?: boolean;
 };
@@ -49,26 +50,38 @@ const MODES: { value: PeriodMode; label: string }[] = [
 export function FixedCostPeriodSelector({
   value: controlledValue,
   onChange: onControlledChange,
+  defaultValue,
   modes,
   showPresets = true,
 }: FixedCostPeriodSelectorProps = {}) {
   const isControlled = controlledValue != null && onControlledChange != null;
   const currentMonth = getCurrentMonth();
   const currentYear = getCurrentYear();
+  const initialValue = defaultValue ?? {
+    month: currentMonth,
+    year: currentYear,
+  };
   const [urlValues, setUrlValues] = useUrlFilters<PeriodValues>(
     isControlled ? [] : PERIOD_KEYS,
-    { month: String(currentMonth), year: String(currentYear) },
+    { month: String(initialValue.month), year: String(initialValue.year) },
   );
   const values = isControlled
-    ? { month: String(controlledValue.month), year: String(controlledValue.year) }
+    ? {
+        month: String(controlledValue.month),
+        year: String(controlledValue.year),
+      }
     : urlValues;
-  const [{ vista }] = useUrlFilters<{ vista?: string }>(isControlled ? [] : ["vista"]);
+  const [{ vista }] = useUrlFilters<{ vista?: string }>(
+    isControlled ? [] : ["vista"],
+  );
   const view = isFixedCostView(vista) ? vista : "mes";
   const scope = FIXED_COST_VIEW_PERIOD[view];
   const [open, setOpen] = useState(false);
   const derivedMode = useFixedCostPeriodMode(values, scope);
   const mode = isControlled
-    ? (modes?.length === 1 ? modes[0] : "month")
+    ? modes?.length === 1
+      ? modes[0]
+      : "month"
     : derivedMode;
   const availableModes = modes ?? MODES.map((option) => option.value);
   const month = Number(values.month) || currentMonth;
@@ -188,7 +201,9 @@ export function FixedCostPeriodSelector({
               aria-label="Tipo de período"
               className="grid grid-cols-4 gap-1 rounded-lg bg-muted p-1"
             >
-              {MODES.filter((option) => availableModes.includes(option.value)).map((option) => (
+              {MODES.filter((option) =>
+                availableModes.includes(option.value),
+              ).map((option) => (
                 <button
                   key={option.value}
                   type="button"
