@@ -14,24 +14,29 @@ import {
   saveHistory,
   type ChatMessage,
 } from "@/features/messages/lib/chat";
-import { ChatInput, type ChatInputValue } from "./ChatInput";
+import { chatDayLabel, startsNewDay } from "@/features/messages/lib/chat-view";
+import { makeImagePreview } from "@/features/messages/lib/image-preview";
+import {
+  ChatInput,
+  type ChatInputHandle,
+  type ChatInputValue,
+} from "./ChatInput";
+import { ChatEmptyState, type ChatStarter } from "./ChatEmptyState";
 import { MessageBubble } from "./MessageBubble";
-
-const WELCOME: ChatMessage = {
-  id: "welcome",
-  author: "bot",
-  text: "👋 Escríbeme tus gastos, manda una captura de Yape o Plin, o graba una nota de voz. Prueba con <i>almuerzo 25 soles con yape</i> o <i>/ayuda</i>.",
-  createdAt: new Date(0).toISOString(),
-};
 
 // Mensajes (D49, D57): chat with Kogane over HTTP, the same conversation as Telegram (channel web)
 function ChatPageView() {
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<ChatInputHandle>(null);
 
-  useEffect(() => setMessages(loadHistory()), []);
+  useEffect(() => {
+    setMessages(loadHistory());
+    setLoaded(true);
+  }, []);
   useEffect(() => {
     if (messages.length) saveHistory(messages);
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,11 +55,16 @@ function ChatPageView() {
     durationSeconds,
   }: ChatInputValue) => {
     const id = newMessageId();
+    const previewUrl =
+      attachment === "image" && file ? await makeImagePreview(file) : undefined;
     const own: ChatMessage = {
       id,
       author: "user",
       text: text || (attachment === "audio" ? "🎙️" : ""),
       attachment,
+      fileName: attachment === "image" ? file?.name : undefined,
+      previewUrl,
+      durationSeconds,
       createdAt: new Date().toISOString(),
     };
     setMessages((current) => [...current, own]);
@@ -96,6 +106,12 @@ function ChatPageView() {
     }
   };
 
+  const startWith = (starter: ChatStarter) => {
+    if (starter === "text") inputRef.current?.fillText("almuerzo 25 con yape");
+    else if (starter === "capture") inputRef.current?.pickImage();
+    else inputRef.current?.startRecording();
+  };
+
   const reset = () => {
     clearHistory();
     setMessages([]);
@@ -115,26 +131,41 @@ function ChatPageView() {
           <Trash2 className="mr-1 h-3.5 w-3.5" /> Limpiar
         </Button>
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
-        <div className="mx-auto max-w-3xl space-y-3">
-          <MessageBubble message={WELCOME} onPress={press} busy={busy} />
-          {messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              onPress={press}
-              busy={busy}
-            />
-          ))}
-          {busy && (
-            <p className="text-xs text-muted-foreground">
-              Kogane está escribiendo…
-            </p>
-          )}
-          <div ref={endRef} />
-        </div>
+      <div className="flex flex-1 flex-col overflow-y-auto p-4">
+        {loaded && !messages.length ? (
+          <ChatEmptyState onPick={startWith} disabled={busy} />
+        ) : (
+          <div className="mx-auto w-full max-w-[820px] space-y-3">
+            {messages.map((message, index) => (
+              <div key={message.id} className="space-y-3">
+                {startsNewDay(
+                  messages[index - 1]?.createdAt,
+                  message.createdAt,
+                ) && (
+                  <p className="flex justify-center">
+                    <span className="rounded-full bg-foreground/5 px-3 py-0.5 text-xs text-muted-foreground">
+                      {chatDayLabel(message.createdAt)}
+                    </span>
+                  </p>
+                )}
+                <MessageBubble message={message} onPress={press} busy={busy} />
+              </div>
+            ))}
+            {busy && (
+              <p className="text-xs text-muted-foreground">
+                Kogane está escribiendo…
+              </p>
+            )}
+            <div ref={endRef} />
+          </div>
+        )}
       </div>
-      <ChatInput onSend={send} disabled={busy} />
+      <ChatInput
+        ref={inputRef}
+        onSend={send}
+        disabled={busy}
+        showSuggestions={messages.length > 0}
+      />
     </div>
   );
 }

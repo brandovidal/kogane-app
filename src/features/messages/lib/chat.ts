@@ -7,12 +7,16 @@ export interface ChatMessage {
   text: string; // user: plain text; bot: HTML with <b> and <i>
   buttons?: BotReply["buttons"];
   attachment?: "image" | "audio";
+  fileName?: string;
+  previewUrl?: string; // miniatura de la imagen enviada
+  durationSeconds?: number; // nota de voz
   createdAt: string;
   failed?: boolean;
 }
 
 const HISTORY_KEY = "kogane:chat";
 const HISTORY_LIMIT = 200;
+const PREVIEW_LIMIT = 10; // miniaturas guardadas: las más recientes, para no llenar el almacenamiento
 
 export const newMessageId = () => crypto.randomUUID();
 
@@ -67,10 +71,19 @@ export function loadHistory(): ChatMessage[] {
 
 export function saveHistory(messages: ChatMessage[]) {
   try {
-    localStorage.setItem(
-      HISTORY_KEY,
-      JSON.stringify(messages.slice(-HISTORY_LIMIT)),
+    const recent = messages.slice(-HISTORY_LIMIT);
+    const keep = new Set(
+      recent
+        .filter((message) => message.previewUrl)
+        .slice(-PREVIEW_LIMIT)
+        .map((message) => message.id),
     );
+    const stored = recent.map((message) =>
+      message.previewUrl && !keep.has(message.id)
+        ? { ...message, previewUrl: undefined }
+        : message,
+    );
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(stored));
   } catch {
     // private window or full storage: the chat works, it just does not remember
   }

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { duplicateBody, isPaidStatus, nextMonthBody } from "@/features/expenses/lib/expense-actions";
+import {
+  duplicateBody,
+  isPaidStatus,
+  nextMonthBody,
+} from "@/features/expenses/lib/expense-actions";
 
 describe("row actions of the expense tables", () => {
   it("should copy only the columns of the table, with days as YYYY-MM-DD and no ids, totals or chat draft", () => {
@@ -29,7 +33,7 @@ describe("row actions of the expense tables", () => {
     });
   });
 
-  it("should keep the payment month of a card charge and start the copy as \"No iniciado\"", () => {
+  it('should keep the payment month of a card charge and start the copy as "No iniciado"', () => {
     const body = duplicateBody("credit-card-expenses", {
       description: "Falabella",
       amount: 50,
@@ -52,8 +56,14 @@ describe("row actions of the expense tables", () => {
   });
 
   it("should move to the next payment month across the year", () => {
-    expect(nextMonthBody({ paymentMonth: 12, paymentYear: 2026 })).toEqual({ paymentMonth: 1, paymentYear: 2027 });
-    expect(nextMonthBody({ paymentMonth: 9, paymentYear: 2026 })).toEqual({ paymentMonth: 10, paymentYear: 2026 });
+    expect(nextMonthBody({ paymentMonth: 12, paymentYear: 2026 })).toEqual({
+      paymentMonth: 1,
+      paymentYear: 2027,
+    });
+    expect(nextMonthBody({ paymentMonth: 9, paymentYear: 2026 })).toEqual({
+      paymentMonth: 10,
+      paymentYear: 2026,
+    });
   });
 
   it("should only offer Pagado while it is not paid", () => {

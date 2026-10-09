@@ -8,3 +8,12 @@ export {
   saveHistory,
   clearHistory,
 } from "./chat";
+export {
+  matchCommands,
+  formatRecordingTime,
+  chatDayLabel,
+  chatTime,
+  startsNewDay,
+} from "./chat-view";
+export { formatFileSize, waveformBars } from "./chat-view";
+export { parseDraftCard, actionRole, buttonText } from "./draft-card";
