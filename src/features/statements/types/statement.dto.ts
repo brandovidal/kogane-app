@@ -11,4 +11,5 @@ export interface StatementUploadDto {
   paymentMethodId?: string;
   personId?: string;
   savePassword?: boolean;
+  signal?: AbortSignal;
 }

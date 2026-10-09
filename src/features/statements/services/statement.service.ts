@@ -23,6 +23,7 @@ export async function uploadStatement({
   paymentMethodId,
   personId,
   savePassword,
+  signal,
 }: StatementUploadDto): Promise<Statement> {
   const form = new FormData();
   form.set("file", file);
@@ -33,6 +34,7 @@ export async function uploadStatement({
   const response = await apiFetch("/api/v1/statements", {
     method: "POST",
     body: form,
+    signal,
     headers: { accept: "application/json" },
   });
   const body = await response.json().catch(() => ({}));
