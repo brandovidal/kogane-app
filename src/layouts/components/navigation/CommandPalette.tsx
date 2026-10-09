@@ -4,7 +4,7 @@ import { withQuery } from "@/shared/api/query";
 import { cardHref } from "@/features/credit-cards/lib/card-links";
 import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/ui/dialog";
-import { NAV } from "@/shared/constants/navigation";
+import { NAV, OPEN_SEARCH_EVENT } from "@/shared/constants/navigation";
 import { flattenNav } from "@/shared/utils/navigation";
 import { type FlatLink } from "@/shared/types/navigation";
 import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
@@ -27,8 +27,14 @@ function CommandPaletteView() {
         setOpen((current) => !current);
       }
     };
+    // the search button of the menu asks for the palette without knowing about it
+    const onOpen = () => setOpen(true);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener(OPEN_SEARCH_EVENT, onOpen);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener(OPEN_SEARCH_EVENT, onOpen);
+    };
   }, []);
 
   const results = useMemo(() => {

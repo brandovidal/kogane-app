@@ -165,3 +165,6 @@ export const NOTIFICATIONS_LINK = {
   href: "/notificaciones",
   label: "Notificaciones",
 };
+
+/** Event the menu search button dispatches; the command palette (Ctrl+K) listens for it. */
+export const OPEN_SEARCH_EVENT = "kogane:open-search";

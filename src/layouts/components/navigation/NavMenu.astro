@@ -1,7 +1,7 @@
 ---
 // The menu of D41 drawn at build time (D102): groups are <details>, the link of the current page is marked here and the
 // only live piece is the counter of Borrador. Compact mode and remembered groups are CSS and a tiny script (Sidebar)
-import { ChevronDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import {
   DEFAULT_OPEN_GROUPS,
@@ -29,6 +29,16 @@ const linkClass = (active: boolean) =>
   ].join(" ");
 
 const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
+
+// level 2: the active item adds a bar over the guide line of the group (D41 board 5)
+const childClass = (active: boolean) =>
+  [
+    linkClass(active),
+    "relative",
+    active
+      ? "font-semibold text-sidebar-foreground before:absolute before:-left-[9px] before:top-1.5 before:bottom-1.5 before:w-0.5 before:rounded-full before:bg-indigo-300 group-data-[compact=true]/sb:before:hidden"
+      : "",
+  ].join(" ");
 ---
 
 <nav class="nav-menu flex-1 space-y-1 overflow-y-auto p-3">
@@ -71,15 +81,15 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
           data-nav-tooltip-description={entry.description}
           class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}
         >
-          <GroupIcon className="h-4 w-4" />
-          <span class="nav-label flex-1 text-left">{entry.label}</span>
+          <GroupIcon className={`nav-group-icon h-4 w-4${holdsCurrent ? " is-parent" : ""}`} />
+          <span class={`nav-label flex-1 text-left${holdsCurrent ? " text-sidebar-foreground" : ""}`}>{entry.label}</span>
           {/* a closed group keeps the counter of Borrador in sight */}
           {hasDrafts && (
             <span class="nav-summary-badge">
               <DraftCount client:idle />
             </span>
           )}
-          <ChevronDown className="nav-chevron h-4 w-4 transition-transform" />
+          <ChevronRight className="nav-chevron h-4 w-4 transition-transform" />
         </summary>
         <div class="space-y-1 ml-4 border-l border-sidebar-border pl-2 group-data-[compact=true]/sb:ml-0 group-data-[compact=true]/sb:border-0 group-data-[compact=true]/sb:pl-0">
           {entry.children.map((child) => {
@@ -90,7 +100,7 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
                 aria-label={child.label}
                 data-nav-tooltip-label={child.label}
                 data-nav-tooltip-description={child.description}
-                class={linkClass(isCurrent(child))}
+                class={childClass(isCurrent(child))}
                 aria-current={isCurrent(child) ? "page" : undefined}
               >
                 <span class="relative">
@@ -139,7 +149,26 @@ const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
 <style is:global>
   /* the chevron of an open group turns; a closed group shows the counter, an open one shows it on the link */
   .nav-group[open] > summary .nav-chevron {
-    transform: rotate(180deg);
+    transform: rotate(90deg);
+  }
+  /* the parent of the active page keeps its place when the group is closed */
+  .nav-group:not([open]) > summary .nav-group-icon.is-parent {
+    color: var(--color-indigo-300);
+  }
+  /* closed groups show the soft total; an open group shows the solid count on each child */
+  .nav-summary-badge > span,
+  .nav-pill-slot > span {
+    display: inline-block;
+    min-width: 1.25rem;
+    text-align: center;
+  }
+  .nav-summary-badge > span {
+    background: color-mix(in oklab, var(--color-indigo-400) 22%, transparent);
+    color: var(--color-indigo-200);
+  }
+  .nav-pill-slot > span {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-foreground);
   }
   .nav-group[open] > summary .nav-summary-badge {
     display: none;
