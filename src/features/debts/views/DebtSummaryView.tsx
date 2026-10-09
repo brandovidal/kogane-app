@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { PeriodStatusNotice } from "@/shared/components/data-display/PeriodStatusNotice";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
+import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
@@ -50,6 +52,9 @@ export function DebtSummaryView({
     showCollections,
     showDebts,
   });
+  const periodMonth =
+    filters.month && filters.month !== "until" ? Number(filters.month) : null;
+  const periodYear = Number(filters.year ?? year);
   if (summary.isLoading) return null;
   const {
     paymentMethods,
@@ -128,6 +133,14 @@ export function DebtSummaryView({
           <ViewToggle value={view} onChange={setView} />
         </div>
       </div>
+      {periodMonth && (
+        <PeriodStatusNotice
+          month={periodMonth}
+          year={periodYear}
+          billedHint="revisa lo que falta por cobrar y registra los pagos"
+          currentHint="es un borrador: se recalcula con cada movimiento nuevo."
+        />
+      )}
       {showDebts && (
         <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-primary/25 bg-primary/5 px-3 py-2 text-sm">
           {showCollections && (
@@ -152,13 +165,29 @@ export function DebtSummaryView({
       )}
       {(!groups.length && !creditCards.length) ||
       (!showCollections && !showDebts) ? (
-        <EmptyState
-          description={
-            !showCollections && !showDebts
-              ? "Activa Cobros (+), Deudas (−) o ambos en los filtros."
-              : "No hay deudas con saldo para este período"
-          }
-        />
+        !showCollections && !showDebts ? (
+          <EmptyState
+            variant="filters"
+            title="Nada que mostrar"
+            description="Activa Cobros (+), Deudas (−) o ambos en los filtros."
+          />
+        ) : (
+          <EmptyState
+            variant="period"
+            title="Sin movimientos este mes"
+            description="Cuando registres cobros, deudas o tarjetas compartidas, el resumen de cada persona se arma solo."
+            action={
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button asChild size="sm">
+                  <a href="/cobros">Ir a Cobros</a>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <a href="/deudas">Ir a Deudas</a>
+                </Button>
+              </div>
+            }
+          />
+        )
       ) : (
         <Tabs
           value={summaryView}
