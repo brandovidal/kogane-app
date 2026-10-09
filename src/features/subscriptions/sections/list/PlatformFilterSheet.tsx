@@ -8,22 +8,14 @@ import { getMonthName } from "@/shared/lib/dates";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { usePeriod } from "@/shared/stores/period.store";
 import { monthRangeLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
-import { PLATFORM_FILTER_KEYS } from "../../constants/platforms";
+import {
+  PLATFORM_SHEET_FILTER_KEYS,
+  VIEW_PERIOD_KEYS,
+} from "../../constants/platforms";
+import type { ViewPeriod } from "../../types/platform-filter-types";
 import { SUBSCRIPTION_STATUSES } from "../../constants/subscriptions";
 import { countPlatformFilters } from "../../lib/platform-filters";
 import { PlatformFilterFields } from "./PlatformFilterFields";
-
-const PLATFORM_SHEET_FILTER_KEYS = PLATFORM_FILTER_KEYS.filter(
-  (key) => key !== "q",
-);
-
-type ViewPeriod = {
-  month?: string;
-  year?: string;
-  desde?: string;
-  hasta?: string;
-};
-const VIEW_PERIOD_KEYS = ["month", "year", "desde", "hasta"] as const;
 
 export function PlatformFilterSheet({
   open,

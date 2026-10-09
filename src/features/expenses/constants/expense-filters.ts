@@ -44,3 +44,16 @@ export const PRIMARY_PANEL_FILTER_KEYS: readonly ExpenseFilterKey[] = [
   "category",
   "status",
 ];
+
+export const PRIMARY_FIELDS = PRIMARY_PANEL_FILTER_KEYS.filter(
+  (field) => field === "person" || field === "category",
+);
+
+export const ADDITIONAL_FIELDS = PANEL_FILTER_KEYS.filter(
+  (field) =>
+    field !== "category" &&
+    field !== "status" &&
+    field !== "period" &&
+    field !== "month" &&
+    field !== "year",
+);

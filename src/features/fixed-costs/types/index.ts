@@ -8,3 +8,4 @@ export type {
   FixedCostBulkAction,
   FixedCostBulkFailure,
 } from "./fixed-cost-types";
+export type { FixedCostFilterSheetProps } from "./fixed-cost-filter-types";

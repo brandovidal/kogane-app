@@ -9,19 +9,9 @@ import { PAYMENT_METHOD_TYPE_LABELS } from "@/features/settings/constants/paymen
 import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
 import { CURRENCY_FILTER_OPTIONS, SHARED_FILTER_OPTIONS } from "@/features/expenses/constants/expense-filters";
 import { countPlatformFilters } from "../../lib/platform-filters";
+import { PLATFORM_MORE_FILTER_KEYS } from "../../constants/platforms";
 import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
-
-const MORE_FILTER_KEYS: readonly ExpenseFilterKey[] = [
-  "currency",
-  "type",
-  "hasNote",
-  "methodType",
-  "category",
-  "shared",
-  "amountFrom",
-  "amountTo",
-];
 
 export function PlatformFilterFields({
   filters,
@@ -38,7 +28,7 @@ export function PlatformFilterFields({
   const categories = useCategories().data ?? [];
   const set = (key: ExpenseFilterKey, value: string | undefined) =>
     onFiltersChange({ ...filters, [key]: value || undefined });
-  const moreCount = countPlatformFilters(filters, MORE_FILTER_KEYS);
+  const moreCount = countPlatformFilters(filters, PLATFORM_MORE_FILTER_KEYS);
   const amountPrefix = filters.currency === "USD" ? "$" : "S/";
   const accountOptions = methods.map((method) => ({
     value: method.id,

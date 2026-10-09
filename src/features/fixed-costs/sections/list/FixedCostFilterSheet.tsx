@@ -5,24 +5,15 @@ import { Button } from "@/ui/button";
 import { SheetDescription, SheetTitle } from "@/ui/sheet";
 import { Trash2 } from "lucide-react";
 
-import type {
-  ExpenseFilterKey,
-  ExpenseFilterValues,
-} from "@/features/expenses/types/expense-filters";
 import { ExpenseFilterFields } from "@/features/expenses/components/filters/ExpenseFilterFields";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import {
+  ADDITIONAL_FIELDS,
+  PRIMARY_FIELDS,
+} from "@/features/expenses/constants/expense-filters";
+import type { FixedCostFilterSheetProps } from "../../types/fixed-cost-filter-types";
 import { FixedCostPeriodSelector } from "../../components/header/FixedCostPeriodSelector";
 import { FIXED_COST_STATUSES } from "../../constants/statuses";
-
-const PRIMARY_FIELDS: ExpenseFilterKey[] = ["person", "category"];
-const ADDITIONAL_FIELDS: ExpenseFilterKey[] = [
-  "method",
-  "currency",
-  "type",
-  "shared",
-  "dueFrom",
-  "dueTo",
-];
 
 export function FixedCostFilterSheet({
   open,
@@ -35,18 +26,7 @@ export function FixedCostFilterSheet({
   onClear,
   showPeriod,
   personCounts,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  filters: ExpenseFilterValues;
-  onFiltersChange: (filters: ExpenseFilterValues) => void;
-  shown: number;
-  total: number;
-  filterCount: number;
-  onClear: () => void;
-  showPeriod: boolean;
-  personCounts: Record<string, number>;
-}) {
+}: FixedCostFilterSheetProps) {
   const hasSelectedPeriod = !!(filters.month || filters.year);
   const appliedCount = filterCount + (showPeriod && hasSelectedPeriod ? 1 : 0);
   const additionalCount = countActiveExpenseFilters(filters, ADDITIONAL_FIELDS);
