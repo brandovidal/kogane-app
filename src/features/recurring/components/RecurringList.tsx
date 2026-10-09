@@ -472,7 +472,9 @@ function RecurringListView() {
       label: `Estado: ${filters.status === "active" ? "Activa" : "Pausada"}`,
       onRemove: () => setFilters({ ...filters, status: undefined }),
     },
-    filters.person?.split(",").some((person) => person && person !== PERSON_ALL) && {
+    filters.person
+      ?.split(",")
+      .some((person) => person && person !== PERSON_ALL) && {
       key: "person",
       label: `Persona: ${filters.person
         .split(",")
