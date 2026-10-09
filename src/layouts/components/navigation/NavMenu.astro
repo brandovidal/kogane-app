@@ -1,6 +1,4 @@
 ---
-// The menu of D41 drawn at build time (D102): groups are <details>, the link of the current page is marked here and the
-// only live piece is the counter of Borrador. Compact mode and remembered groups are CSS and a tiny script (Sidebar)
 import { ChevronRight } from "lucide-react";
 
 import {
@@ -30,7 +28,6 @@ const linkClass = (active: boolean) =>
 
 const isCurrent = (link: NavLink) => isActivePath(link.href, currentPath);
 
-// level 2: the active item adds a bar over the guide line of the group (D41 board 5)
 const childClass = (active: boolean) =>
   [
     linkClass(active),
@@ -89,7 +86,6 @@ const childClass = (active: boolean) =>
           >
             {entry.label}
           </span>
-          {/* a closed group keeps the counter of Borrador in sight */}
           {hasDrafts && (
             <span class="nav-summary-badge">
               <DraftCount client:idle />
@@ -153,15 +149,12 @@ const childClass = (active: boolean) =>
 </nav>
 
 <style is:global>
-  /* the chevron of an open group turns; a closed group shows the counter, an open one shows it on the link */
   .nav-group[open] > summary .nav-chevron {
     transform: rotate(90deg);
   }
-  /* the parent of the active page keeps its place when the group is closed */
   .nav-group:not([open]) > summary .nav-group-icon.is-parent {
     color: var(--color-indigo-300);
   }
-  /* closed groups show the soft total; an open group shows the solid count on each child */
   .nav-summary-badge > span,
   .nav-pill-slot > span {
     display: inline-block;

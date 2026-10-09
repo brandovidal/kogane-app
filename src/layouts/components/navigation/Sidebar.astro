@@ -1,6 +1,4 @@
 ---
-// Desktop menu (D41, D102): brand, compact mode (icons only, remembered in this browser), the tree and Ctrl+K. Drawn at
-// build time; the small inline script below restores the compact mode and the open groups before the first paint
 import { PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 
 import NavMenu from "@/layouts/components/navigation/NavMenu.astro";
@@ -58,7 +56,7 @@ const { currentPath } = Astro.props;
       type="button"
       data-open-search
       aria-label="Buscar (Ctrl K)"
-      class="flex h-9 w-full items-center gap-2 rounded-lg border border-sidebar-border bg-white/[0.04] px-3 text-sm text-sidebar-foreground/60 outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring"
+      class="flex h-9 w-full items-center gap-2 rounded-lg border border-sidebar-border bg-white/4 px-3 text-sm text-sidebar-foreground/60 outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Search className="size-4" />
       <span class="flex-1 text-left">Buscar</span>
@@ -84,9 +82,7 @@ const { currentPath } = Astro.props;
 
 <script is:inline>
   (function () {
-    // keep in sync with OPEN_SEARCH_EVENT (shared/constants/navigation)
     const COMPACT_KEY = "kogane:sidebar-compact";
-    // v2: the menu of D80 (Registrar); an older saved state would leave it closed
     const GROUPS_KEY = "kogane:nav-open:v2";
     const aside = document.querySelector("[data-sidebar]");
     if (!aside) return;
@@ -105,8 +101,6 @@ const { currentPath } = Astro.props;
         /* not remembered */
       }
     };
-    // Nothing remembered yet: the groups the page opened (Registrar and the one of the page). Otherwise the remembered
-    // ones, plus the group of the current page, which always opens
     const stored = read(GROUPS_KEY);
     let saved = [];
     try {
@@ -129,7 +123,6 @@ const { currentPath } = Astro.props;
             }),
           );
 
-    // A compact menu shows every link (icons only); leaving it brings the remembered groups back
     const apply = function (compact) {
       aside.dataset.compact = compact ? "true" : "false";
       aside

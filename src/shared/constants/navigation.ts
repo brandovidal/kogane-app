@@ -103,7 +103,7 @@ export const NAV: NavEntry[] = [
     label: "Préstamos e inversiones",
     description: "Compromisos, aportes y documentos asociados.",
     icon: "landmark",
-  }, // installments are fixed costs (P27)
+  },
   {
     href: "/calendario",
     label: "Calendario",
@@ -150,7 +150,6 @@ export const NAV: NavEntry[] = [
   },
 ];
 
-// Groups open the first time (nothing remembered yet in this browser)
 export const DEFAULT_OPEN_GROUPS = ["Registrar"];
 
 export const SETTINGS_NAV: NavLink = {
@@ -160,11 +159,9 @@ export const SETTINGS_NAV: NavLink = {
   icon: "settings",
 };
 
-// Reached from the bell of the header (P20), not from the menu; Ctrl+K still finds it
 export const NOTIFICATIONS_LINK = {
   href: "/notificaciones",
   label: "Notificaciones",
 };
 
-/** Event the menu search button dispatches; the command palette (Ctrl+K) listens for it. */
 export const OPEN_SEARCH_EVENT = "kogane:open-search";
