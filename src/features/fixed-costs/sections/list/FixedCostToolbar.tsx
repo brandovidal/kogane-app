@@ -16,6 +16,7 @@ import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filte
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 import type { FixedCost } from "@/shared/api/types";
+import { PERSON_UNASSIGNED } from "@/features/expenses/constants/expense-filters";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
 import {
@@ -62,6 +63,7 @@ export interface FixedCostToolbarProps {
   filterSheetOpen?: boolean;
   onFilterSheetOpenChange?: (open: boolean) => void;
   loading?: boolean;
+  personRecords?: FixedCost[];
   paymentMethodRecords?: Pick<FixedCost, "paymentMethodId">[];
 }
 
@@ -86,6 +88,7 @@ export function FixedCostToolbar({
   filterSheetOpen,
   onFilterSheetOpenChange,
   loading = false,
+  personRecords = [],
   paymentMethodRecords = [],
 }: FixedCostToolbarProps) {
   const isDesktopSettings = useMediaQuery("(min-width: 1024px)");
@@ -100,6 +103,15 @@ export function FixedCostToolbar({
   const filterCount = countActiveExpenseFilters(
     filters,
     FIXED_COST_PANEL_FILTER_KEYS,
+  );
+  const personCounts = useMemo(
+    () =>
+      personRecords.reduce<Record<string, number>>((counts, record) => {
+        const id = record.personId ?? PERSON_UNASSIGNED;
+        counts[id] = (counts[id] ?? 0) + 1;
+        return counts;
+      }, {}),
+    [personRecords],
   );
   const paymentMethodCounts = useMemo(
     () =>
@@ -328,6 +340,7 @@ export function FixedCostToolbar({
         filterCount={filterCount}
         onClear={clearFilters}
         showPeriod={showPeriodInFilters}
+        personCounts={personCounts}
         paymentMethodCounts={paymentMethodCounts}
       />
       {!isDesktopSettings && (
@@ -351,6 +364,7 @@ export function FixedCostToolbar({
           canChangeLayout={canChangeLayout}
           showPeriodInFilters={showPeriodInFilters}
           filterCount={filterCount}
+          personCounts={personCounts}
           paymentMethodCounts={paymentMethodCounts}
           clearFilters={clearFilters}
           hasViewSettings={hasViewSettings}
