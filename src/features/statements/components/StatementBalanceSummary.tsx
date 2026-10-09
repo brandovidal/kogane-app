@@ -1,7 +1,6 @@
 import { CheckCircle2, CircleHelp, XCircle } from "lucide-react";
 import type { Statement } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
-import { formatDate } from "@/shared/lib/dates";
 import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
 import { totalsMatch } from "../lib/statement-view";
 
@@ -22,67 +21,60 @@ export function StatementBalanceSummary({
           guardados.
         </p>
       )}
-      <div className="grid gap-3 xl:grid-cols-2">
-        {statement.balances.map((balance) => {
-          const matches = totalsMatch(balance);
-          const Icon =
-            balance.difference == null
-              ? CircleHelp
-              : matches
-                ? CheckCircle2
-                : XCircle;
-          return (
-            <section
-              key={balance.currency}
-              className="min-w-0 rounded-lg border bg-muted/10 p-3"
-            >
-              <h3 className="mb-3 text-sm font-medium">
-                {CURRENCY_OPTIONS.find(
-                  (item) => item.value === balance.currency,
-                )?.label ?? balance.currency}
-              </h3>
-              <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
-                <div>
-                  <dt className="text-xs text-muted-foreground">
-                    Total del banco
-                  </dt>
-                  <dd className="mt-1 font-semibold tabular-nums">
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full min-w-120 text-sm">
+          <thead className="bg-muted/30 text-xs text-muted-foreground">
+            <tr>
+              <th className="px-3 py-2 text-left font-medium">Moneda</th>
+              <th className="px-3 py-2 text-right font-medium">
+                Total del banco
+              </th>
+              <th className="px-3 py-2 text-right font-medium">
+                Registrado en Kogane
+              </th>
+              <th className="px-3 py-2 text-right font-medium">Diferencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            {statement.balances.map((balance) => {
+              const matches = totalsMatch(balance);
+              const Icon =
+                balance.difference == null
+                  ? CircleHelp
+                  : matches
+                    ? CheckCircle2
+                    : XCircle;
+              return (
+                <tr key={balance.currency} className="border-t">
+                  <td className="px-3 py-2">
+                    {CURRENCY_OPTIONS.find(
+                      (item) => item.value === balance.currency,
+                    )?.label ?? balance.currency}
+                  </td>
+                  <td className="px-3 py-2 text-right font-semibold tabular-nums">
                     {balance.totalDue == null
                       ? "No identificado"
                       : formatCurrency(balance.totalDue, balance.currency)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-muted-foreground">
-                    Registrado en Kogane
-                  </dt>
-                  <dd className="mt-1 font-semibold tabular-nums">
+                  </td>
+                  <td className="px-3 py-2 text-right font-semibold tabular-nums">
                     {formatCurrency(balance.koganeTotal, balance.currency)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-muted-foreground">Diferencia</dt>
-                  <dd
-                    className={`mt-1 flex items-center gap-1 font-semibold tabular-nums ${balance.difference == null ? "text-muted-foreground" : matches ? "text-emerald-600" : "text-amber-600"}`}
+                  </td>
+                  <td
+                    className={`px-3 py-2 text-right font-semibold tabular-nums ${balance.difference == null ? "text-muted-foreground" : matches ? "text-emerald-600" : "text-amber-600"}`}
                   >
-                    <Icon className="size-4 shrink-0" aria-hidden="true" />
-                    {balance.difference == null
-                      ? "—"
-                      : formatCurrency(balance.difference, balance.currency)}
-                  </dd>
-                </div>
-              </dl>
-            </section>
-          );
-        })}
+                    <span className="inline-flex items-center justify-end gap-1">
+                      <Icon className="size-4 shrink-0" aria-hidden="true" />
+                      {balance.difference == null
+                        ? "—"
+                        : formatCurrency(balance.difference, balance.currency)}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Pagar hasta{" "}
-        <span className="font-medium text-foreground">
-          {statement.dueDate ? formatDate(statement.dueDate) : "Sin fecha"}
-        </span>{" "}
-        · Los saldos se comparan en su moneda original.
-      </p>
     </div>
   );
 }
