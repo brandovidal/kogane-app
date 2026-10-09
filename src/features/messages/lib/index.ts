@@ -8,3 +8,10 @@ export {
   saveHistory,
   clearHistory,
 } from "./chat";
+export {
+  matchCommands,
+  formatRecordingTime,
+  chatDayLabel,
+  chatTime,
+  startsNewDay,
+} from "./chat-view";

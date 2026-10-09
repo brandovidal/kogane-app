@@ -14,6 +14,7 @@ import {
   saveHistory,
   type ChatMessage,
 } from "@/features/messages/lib/chat";
+import { chatDayLabel, startsNewDay } from "@/features/messages/lib/chat-view";
 import { ChatInput, type ChatInputValue } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 
@@ -118,13 +119,20 @@ function ChatPageView() {
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         <div className="mx-auto max-w-3xl space-y-3">
           <MessageBubble message={WELCOME} onPress={press} busy={busy} />
-          {messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              onPress={press}
-              busy={busy}
-            />
+          {messages.map((message, index) => (
+            <div key={message.id} className="space-y-3">
+              {startsNewDay(
+                messages[index - 1]?.createdAt,
+                message.createdAt,
+              ) && (
+                <p className="flex justify-center">
+                  <span className="rounded-full border bg-card px-2.5 py-0.5 text-xs text-muted-foreground">
+                    {chatDayLabel(message.createdAt)}
+                  </span>
+                </p>
+              )}
+              <MessageBubble message={message} onPress={press} busy={busy} />
+            </div>
           ))}
           {busy && (
             <p className="text-xs text-muted-foreground">
@@ -134,7 +142,11 @@ function ChatPageView() {
           <div ref={endRef} />
         </div>
       </div>
-      <ChatInput onSend={send} disabled={busy} />
+      <ChatInput
+        onSend={send}
+        disabled={busy}
+        showSuggestions={!messages.some((message) => message.author === "user")}
+      />
     </div>
   );
 }
