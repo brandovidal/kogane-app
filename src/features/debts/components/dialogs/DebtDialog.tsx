@@ -137,14 +137,16 @@ export function DebtDialog({
       onOpenChange={onOpenChange}
       title={
         debt
-          ? "Editar cuota"
+          ? debt.direction === "i_owe"
+            ? "Editar deuda"
+            : "Editar cobro"
           : watch("direction") === "i_owe"
             ? "Nueva deuda (debo)"
             : "Nuevo préstamo (me deben)"
       }
       description={
         debt
-          ? "Modifica los datos del cobro. Si son cuotas, el monto es el de cada cuota."
+          ? `Modifica los datos ${debt.direction === "i_owe" ? "de la deuda" : "del cobro"}. Si son cuotas, el monto es el de cada cuota.`
           : `${watch("direction") === "i_owe" ? "Registra lo que debes" : "Registra lo que alguien te debe"}. Si son cuotas, el monto es el de cada cuota.`
       }
       footer={
