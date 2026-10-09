@@ -81,8 +81,14 @@ const childClass = (active: boolean) =>
           data-nav-tooltip-description={entry.description}
           class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}
         >
-          <GroupIcon className={`nav-group-icon h-4 w-4${holdsCurrent ? " is-parent" : ""}`} />
-          <span class={`nav-label flex-1 text-left${holdsCurrent ? " text-sidebar-foreground" : ""}`}>{entry.label}</span>
+          <GroupIcon
+            className={`nav-group-icon h-4 w-4${holdsCurrent ? " is-parent" : ""}`}
+          />
+          <span
+            class={`nav-label flex-1 text-left${holdsCurrent ? " text-sidebar-foreground" : ""}`}
+          >
+            {entry.label}
+          </span>
           {/* a closed group keeps the counter of Borrador in sight */}
           {hasDrafts && (
             <span class="nav-summary-badge">
