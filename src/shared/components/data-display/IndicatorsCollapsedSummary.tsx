@@ -1,8 +1,23 @@
 import { cn } from "@/shared/utils/cn";
 
+export type IndicatorTone = "neutral" | "pending" | "done" | "danger";
+
+/** Color de estado del valor: pendiente = ámbar, completado = verde, vencido = rojo. */
+export const INDICATOR_TONE_CLASS: Record<IndicatorTone, string> = {
+  neutral: "text-foreground",
+  pending: "text-amber-600 dark:text-amber-300",
+  done: "text-emerald-600 dark:text-emerald-300",
+  danger: "text-red-600 dark:text-red-400",
+};
+
 export interface IndicatorsCollapsedSummaryProps {
   summary: string;
-  metrics: Array<{ label: string; value: string; valueClass?: string }>;
+  metrics: Array<{
+    label: string;
+    value: string;
+    tone?: IndicatorTone;
+    valueClass?: string;
+  }>;
 }
 
 export function IndicatorsCollapsedSummary({
@@ -25,7 +40,8 @@ export function IndicatorsCollapsedSummary({
             </span>
             <span
               className={cn(
-                "truncate font-semibold text-foreground tabular-nums",
+                "truncate font-semibold tabular-nums",
+                INDICATOR_TONE_CLASS[metric.tone ?? "neutral"],
                 metric.valueClass,
               )}
             >

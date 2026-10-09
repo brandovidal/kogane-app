@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Día a día · ajustes de vista</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.k{--background:oklch(0.17 0.014 258);--foreground:oklch(0.975 0.006 255);--border:oklch(0.29 0.016 258);--muted:oklch(0.215 0.015 258);--mf:oklch(0.72 0.02 258);--accent:oklch(0.29 0.016 258);--blue:oklch(0.488 0.243 264.376);--blue-t:oklch(0.72 0.14 264);--red:oklch(0.637 0.237 25.331);--amber:oklch(0.769 0.188 70.08);--r:8px;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--foreground);background:oklch(0.12 0.012 258);width:1440px;height:820px;padding:40px 48px;box-sizing:border-box;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-items:start;overflow:hidden}
+.k *{box-sizing:border-box}
+.k svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.k button{font:inherit;color:inherit;cursor:pointer}
+.col{display:flex;flex-direction:column;gap:12px}
+.cap{font-size:12px;font-weight:600;color:var(--mf);text-transform:uppercase;letter-spacing:.08em}
+.pop{background:var(--background);border:1px solid var(--border);border-radius:12px;box-shadow:0 16px 40px rgb(0 0 0/.5);padding:6px;display:flex;flex-direction:column}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 10px;font-weight:600}
+.ph .x{border:0;background:none;color:var(--mf);display:grid;place-items:center;width:26px;height:26px;border-radius:6px}
+.ph .bk{display:flex;align-items:center;gap:6px}
+.name{display:flex;align-items:center;gap:8px;margin:0 6px 6px;height:36px;padding:0 10px;border:1px solid var(--border);border-radius:var(--r);background:oklch(0.29 0.016 258 / .35)}
+.name svg{color:var(--mf)}
+.mi{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:6px;border:0;background:none;width:100%;text-align:left;font-size:13px}
+.mi>svg:first-child{color:var(--mf)}
+.mi .v{margin-left:auto;color:var(--mf);display:flex;align-items:center;gap:4px;font-size:13px}
+.mi.on{background:var(--accent)}
+.lbl{font-size:11px;color:var(--mf);padding:10px 10px 4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.sep{height:1px;background:var(--border);margin:6px -6px}
+.srch{display:flex;align-items:center;gap:8px;margin:0 6px 4px;height:32px;padding:0 10px;border:1px solid var(--border);border-radius:var(--r);color:var(--mf);font-size:13px}
+.ci{display:flex;align-items:center;gap:8px;height:34px;padding:0 8px;border-radius:6px;font-size:13px}
+.ci .h{color:var(--mf);cursor:grab}
+.ci .t{flex:1}
+.ci .lk{color:var(--mf);font-size:11px}
+.sw{width:32px;height:18px;border-radius:99px;background:var(--blue);position:relative;flex-shrink:0;border:0}
+.sw i{position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff}
+.sw.off{background:var(--accent)}
+.sw.off i{right:auto;left:2px}
+.sw.dis{opacity:.45}
+.ft{display:flex;justify-content:space-between;padding:6px 8px 4px}
+.lk2{border:0;background:none;color:var(--blue-t);font-size:12px;font-weight:500}
+.rule{display:flex;align-items:center;gap:6px;padding:4px 6px}
+.sel{flex:1;height:32px;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:13px;background:oklch(0.29 0.016 258 / .35)}
+.sel svg{color:var(--mf);width:14px;height:14px}
+.sel.sm{flex:0 0 108px}
+.gl{font-size:12px;color:var(--mf);padding:6px 8px 2px}
+.ib{border:0;background:none;color:var(--mf);width:28px;height:28px;display:grid;place-items:center;border-radius:6px}
+.add{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:0;background:none;color:var(--mf);font-size:13px;width:100%}
+.row{display:flex;align-items:center;justify-content:space-between;height:38px;padding:0 10px;font-size:13px}
+.sw-c{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:12px;color:var(--mf)}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:6px;font-size:12px}
+
+/* === Tema Kogane login === */
+.k{--background:#101114;--surface:#101114;--sidebar:#0d0e11;--border:rgb(255 255 255/.1);--accent:rgb(255 255 255/.08);--muted:rgb(255 255 255/.045);--mf:rgb(255 255 255/.55);--faint:rgb(255 255 255/.35);--foreground:#fff;--blue:oklch(0.585 0.233 277.117);--blue-t:oklch(0.87 0.065 274.039);--indigo:oklch(0.785 0.115 274.713);--green:oklch(0.845 0.143 164.978);--amber:oklch(0.879 0.169 91.605);--r:10px;
+background:radial-gradient(ellipse at 20% 20%,rgba(72,94,180,.18),transparent 44%),radial-gradient(ellipse at 90% 85%,rgba(45,150,135,.12),transparent 38%),#090a0c}
+.k .rail{background:var(--sidebar);border-color:var(--border)}
+.k .logo{background:#fff;color:#101114;border-radius:12px}
+.k .top{border-color:var(--border)}
+.k .eb{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgb(199 210 254/.8)}
+.k h1{letter-spacing:-.02em}
+.k .card,.k .kp,.k .tbl,.k .cd,.k .kc,.k .sheet,.k .dlg,.k .menu,.k .pop,.k .pane,.k .frame,.k .empty,.k .hv,.k .props,.k .cuo,.k .file{background:var(--surface);border-color:var(--border)}
+.k .card,.k .kp,.k .tbl,.k .pane,.k .dlg{border-radius:18px}
+.k .card .d,.k .kp .d{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgb(199 210 254/.75)}
+.k .card.sel,.k .kp.sel{border-color:rgb(165 180 252/.45);box-shadow:0 0 0 3px rgb(165 180 252/.12)}
+.k .chk{color:var(--blue-t)}
+.k .inp,.k .sel,.k .c,.k .amt,.k .ta{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .btn.pri,.k .split .btn,.k button.pri,.k .pri{background:#fff;color:#101114;border-color:#fff}
+.k .split .btn:last-child{border-left-color:rgb(16 17 20/.15)}
+.k .cn,.k .bd,.k .sh h2 .c{background:rgb(165 180 252/.16);color:var(--blue-t)}
+.k .gb .c{color:var(--blue-t)}
+.k .tr.h,.k .tr.ft{background:rgb(255 255 255/.025)}
+.k .g1{background:rgb(255 255 255/.03)}
+.k .mini i,.k .prog i[style*="0%"],.k .bar2 i,.k .pg i,.k .q .bar i{background:var(--indigo)}
+.k .tool,.k .tl,.k .seg,.k .pm{background:rgb(255 255 255/.04);border-color:var(--border)}
+.k .ov{background:rgb(5 6 8/.7)}
+</style>
+</helmet>
+<div class="k">
+
+  <!-- 1. Ajustes de vista (estilo Notion) -->
+  <div class="col">
+    <span class="cap">1 · Ajustes de vista</span>
+    <div class="pop" role="menu" aria-label="Ajustes de vista">
+      <div class="ph"><span>Ajustes de vista</span><button class="x" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <label class="name"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Lista</label>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Diseño<span class="v">Tabla <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <button class="mi on" role="menuitem"><svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Columnas visibles<span class="v">7 de 10 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtros<span class="v">4 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="m3 16 4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16"/></svg>Orden<span class="v">2 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/></svg>Agrupar<span class="v">Categoría › Persona <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2-2 3-4 3h-2a2 2 0 0 0-1 4 2 2 0 0 1-3 3z"/></svg>Color condicional<span class="v">1 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15h2M7 11h6M7 7h10"/></svg>Totales del pie<span class="v">Count, Sum <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+      <div class="sep"></div>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Copiar enlace a la vista</button>
+      <button class="mi" role="menuitem"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Guardar como nueva vista</button>
+      <button class="mi" role="menuitem" style="color:var(--mf)"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restablecer vista</button>
+    </div>
+  </div>
+
+  <!-- 2. Columnas visibles -->
+  <div class="col">
+    <span class="cap">2 · Columnas visibles</span>
+    <div class="pop" aria-label="Columnas visibles">
+      <div class="ph"><span class="bk"><button class="x" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>Columnas visibles</span></div>
+      <label class="srch"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar columna...</label>
+      <div class="gl">Visibles en la tabla</div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Descripción</span><span class="lk">Fija</span><span class="sw dis" aria-hidden="true"><i></i></span></div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Fecha</span><button class="sw" role="switch" aria-checked="true" aria-label="Periodo"><i></i></button></div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Monto</span><button class="sw" role="switch" aria-checked="true" aria-label="Monto"><i></i></button></div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Medio de pago</span><button class="sw" role="switch" aria-checked="true" aria-label="Estado"><i></i></button></div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Persona</span><button class="sw" role="switch" aria-checked="true" aria-label="Persona"><i></i></button></div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Categoría</span><button class="sw" role="switch" aria-checked="true" aria-label="Fecha"><i></i></button></div><div class="ci"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Origen</span><button class="sw" role="switch" aria-checked="true" aria-label="Nota"><i></i></button></div><div class="gl">Ocultas</div><div class="ci" style="color:var(--mf)"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Nota</span><button class="sw off" role="switch" aria-checked="false" aria-label="Cuenta"><i></i></button></div><div class="ci" style="color:var(--mf)"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Moneda</span><button class="sw off" role="switch" aria-checked="false" aria-label="Moneda"><i></i></button></div><div class="ci" style="color:var(--mf)"><svg class="h" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><span class="t">Tipo de gasto</span><button class="sw off" role="switch" aria-checked="false" aria-label="Tipo de gasto"><i></i></button></div>
+      <div class="sep"></div>
+      <div class="ft"><button class="lk2">Mostrar todas</button><button class="lk2" style="color:var(--mf)">Ocultar todas</button></div>
+    </div>
+  </div>
+
+  <!-- 3. Agrupar + Orden -->
+  <div class="col">
+    <span class="cap">3 · Agrupar y ordenar</span>
+    <div class="pop" aria-label="Agrupar">
+      <div class="ph"><span class="bk"><button class="x" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>Agrupar</span></div>
+      <div class="gl">Agrupar por</div>
+      <div class="rule"><div class="sel">Categoría <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><button class="ib" aria-label="Quitar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="gl">Luego por</div>
+      <div class="rule"><div class="sel">Persona <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><button class="ib" aria-label="Quitar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="sep"></div>
+      <div class="row">Subtotal por grupo<button class="sw" role="switch" aria-checked="true" aria-label="Subtotal por grupo"><i></i></button></div>
+      <div class="row">Ocultar grupos vacíos<button class="sw" role="switch" aria-checked="true" aria-label="Ocultar grupos vacíos"><i></i></button></div>
+      <div class="row">Grupos contraídos al abrir<button class="sw off" role="switch" aria-checked="false" aria-label="Grupos contraídos al abrir"><i></i></button></div>
+    </div>
+    <div class="pop" aria-label="Orden">
+      <div class="ph"><span class="bk"><button class="x" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>Orden</span></div>
+      <div class="rule"><svg viewBox="0 0 24 24" style="color:var(--mf)"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><div class="sel">Fecha <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><div class="sel sm">Descendente <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><button class="ib" aria-label="Quitar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="rule"><svg viewBox="0 0 24 24" style="color:var(--mf)"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg><div class="sel">Monto <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><div class="sel sm">Descendente <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><button class="ib" aria-label="Quitar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <button class="add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Añadir orden</button>
+    </div>
+  </div>
+
+  <!-- 4. Color condicional + popover de un filtro -->
+  <div class="col">
+    <span class="cap">4 · Color condicional y filtro rápido</span>
+    <div class="pop" aria-label="Color condicional">
+      <div class="ph"><span class="bk"><button class="x" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>Color condicional</span></div>
+      <div class="gl">Colorear la fila cuando</div>
+      <div class="rule"><div class="sel">Monto <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><div class="sel sm">≥ S/ 150 <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+      <div class="rule"><span style="font-size:12px;color:var(--mf);padding:0 4px">y Medio de pago ≠ Efectivo</span><span class="chip" style="background:oklch(0.769 0.188 70.08 / .15);color:var(--amber);margin-left:auto">Ámbar</span></div>
+      <div class="sep"></div>
+      <div class="rule"><div class="sel">Monto <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div><div class="sel sm">≥ S/ 500 <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+      <div class="rule"><span style="font-size:12px;color:var(--mf);padding:0 4px">y Medio de pago ≠ Efectivo</span><span class="chip" style="background:oklch(0.637 0.237 25.331 / .15);color:var(--red);margin-left:auto">Rojo</span></div>
+      <button class="add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Añadir regla</button>
+    </div>
+    <div class="pop" aria-label="Filtro Persona">
+      <div class="ph"><span style="font-size:13px">Persona <span style="color:var(--mf);font-weight:400">es</span></span><button class="x" aria-label="Quitar filtro"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>
+      <label class="srch"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar persona...</label>
+      <button class="mi"><span style="width:16px;height:16px;border-radius:4px;background:var(--blue);display:grid;place-items:center;color:#fff"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke-width:3"><path d="M20 6 9 17l-5-5"/></svg></span>Brando<span class="v">8</span></button>
+      <button class="mi"><span style="width:16px;height:16px;border-radius:4px;border:1px solid var(--mf)"></span>Ana<span class="v">1</span></button>
+      <div class="sep"></div>
+      <button class="add" style="color:var(--blue-t)">Abrir todos los filtros</button>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":820}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
