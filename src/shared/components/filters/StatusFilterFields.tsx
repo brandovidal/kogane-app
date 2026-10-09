@@ -82,7 +82,6 @@ export function StatusFilterFields({
       searchable
       labelClassName={labelClassName}
       multiple={multiple}
-      emptySelectionLabel={emptySelectionLabel}
       showSelectionFooter={multiple}
       presentation={presentation}
     />
