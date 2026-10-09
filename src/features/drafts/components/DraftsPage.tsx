@@ -181,6 +181,12 @@ function DraftsPageView() {
               onClearFilters={() => setFilters(EMPTY_DRAFT_FILTERS)}
               onEdit={setEditing}
             />
+            {value === "failed" && failed.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {failed.length} {failed.length === 1 ? "fallido" : "fallidos"} ·
+                el archivo original se guarda 7 días
+              </p>
+            )}
           </TabsContent>
         ))}
       </Tabs>
