@@ -15,6 +15,7 @@ export {
   draftKeys,
   useDrafts,
   useDraftCount,
+  useDraftTabCounts,
   useCreateDraft,
   useUpdateDraft,
   useSaveDraft,

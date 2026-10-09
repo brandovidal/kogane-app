@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
 import {
@@ -34,6 +34,20 @@ export const useDraftCount = () =>
     queryFn: async () => (await getDrafts("review", 1)).total,
     refetchInterval: 60_000,
   });
+
+// Counters of the three tabs (the list of each tab is loaded on its own)
+const DRAFT_TABS: DraftTab[] = ["review", "failed", "discarded"];
+export const useDraftTabCounts = () => {
+  const results = useQueries({
+    queries: DRAFT_TABS.map((tab) => ({
+      queryKey: [...draftKeys.list(tab), "count"],
+      queryFn: async () => (await getDrafts(tab, 1)).total,
+    })),
+  });
+  return Object.fromEntries(
+    DRAFT_TABS.map((tab, index) => [tab, results[index].data]),
+  ) as Record<DraftTab, number | undefined>;
+};
 
 // A saved draft is a new record: every table and the summary may change
 const afterSave = [draftKeys.all, ["expenses"], ["summary"], ["debts"]];
