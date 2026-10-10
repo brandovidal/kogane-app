@@ -24,3 +24,5 @@ export type { RecordListToolbarProps } from "./RecordListToolbar";
 export { RecordListToolbar } from "./RecordListToolbar";
 export { BulkActionsToolbar } from "./BulkActionsToolbar";
 export type { BulkActionsToolbarProps } from "./BulkActionsToolbar";
+export type { RowColorRulesMenuProps } from "./RowColorRulesMenu";
+export { RowColorRulesMenu } from "./RowColorRulesMenu";

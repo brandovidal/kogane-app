@@ -29,6 +29,7 @@ export interface FixedCostResultsSectionProps {
   view: ViewMode;
   groupBy: FixedCostGroupBy;
   dataTable: ReturnType<typeof useFixedCostTable>;
+  rowClassName?: (cost: FixedCost) => string | undefined;
   loading: boolean;
   error: boolean;
   pending: boolean;
@@ -60,6 +61,7 @@ export function FixedCostResultsSection({
   view,
   groupBy,
   dataTable,
+  rowClassName,
   loading,
   error,
   pending,
@@ -139,6 +141,7 @@ export function FixedCostResultsSection({
       <DataTableComplex
         table={dataTable.table}
         className="fixed-costs-table"
+        rowClassName={rowClassName}
         calculationStorageKey={items.length ? "fixed-costs" : undefined}
         calculationDefaults={{ description: "count", amount: "sum" }}
         pagination={items.length > 0}
