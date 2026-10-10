@@ -36,6 +36,9 @@ export function ShareEditor({
 }: ShareEditorProps) {
   const shares: ExpenseShare[] = value?.shares ?? [];
   const { parts, own } = shareParts(total ?? 0, shares);
+  // Everyone's part plus yours; more than the total means the split is over-assigned
+  const assigned =
+    parts.reduce((sum, part) => sum + part.amount, 0) + Math.max(own, 0);
   const update = (next: ExpenseShare[]) =>
     onChange(next.length ? { shares: next } : null);
   const setShare = (index: number, share: ExpenseShare) =>
@@ -56,11 +59,11 @@ export function ShareEditor({
           <Plus className="mr-1 h-3.5 w-3.5" /> Agregar persona
         </Button>
       </div>
-      {!shares.length && (
-        <p className="text-xs text-muted-foreground">
-          Sin compartir: todo es tuyo.
-        </p>
-      )}
+      <p className="text-xs text-muted-foreground">
+        {shares.length
+          ? "Divide el gasto con otras personas; ellas lo verán en Cobros."
+          : "Sin compartir: todo es tuyo."}
+      </p>
       {shares.map((share, index) => {
         const mode: Mode = share.amount != null ? "amount" : "percent";
         const shown =
@@ -134,6 +137,18 @@ export function ShareEditor({
           </div>
         );
       })}
+      {shares.length > 0 && total ? (
+        <p
+          className={
+            assigned > total + 0.005
+              ? "text-xs font-medium text-destructive"
+              : "text-xs font-medium"
+          }
+        >
+          Total repartido {formatCurrency(assigned, currency)} de{" "}
+          {formatCurrency(total, currency)}
+        </p>
+      ) : null}
       {shares.length > 0 && total ? (
         <p className="text-xs text-muted-foreground">
           Pagas {formatCurrency(total, currency)} · te deben{" "}

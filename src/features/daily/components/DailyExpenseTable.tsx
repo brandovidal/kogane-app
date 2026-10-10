@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, List, Plus } from "lucide-react";
+import { CalendarDays, List, Plus, Tags, UsersRound } from "lucide-react";
 
 import {
   nameById,
@@ -162,6 +162,18 @@ function DailyExpenseTableView() {
           files={{ refType: "expense", refId: e.id }}
           history={{ entity: "exp_daily_expenses", id: e.id }}
           onEdit={() => setEditing(e)}
+          extraItems={[
+            {
+              label: "Cambiar categoría",
+              icon: Tags,
+              onSelect: () => setEditing(e),
+            },
+            {
+              label: "Repartir con otras personas",
+              icon: UsersRound,
+              onSelect: () => setEditing(e),
+            },
+          ]}
           onDuplicate={() =>
             saveExpense.mutate({
               body: duplicateBody(EXPENSE_RESOURCES.daily, e),

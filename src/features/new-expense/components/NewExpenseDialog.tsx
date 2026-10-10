@@ -137,8 +137,8 @@ function NewExpenseDialogView() {
         ¿Tienes una captura, un audio o un texto? Usa{" "}
         <a href="/mensajes" className="text-primary underline">
           Mensajes
-        </a>
-        .
+        </a>{" "}
+        para registrarlo más rápido.
       </p>
     </ResponsiveDialog>
   );
