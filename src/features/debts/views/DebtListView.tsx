@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard, Upload, Wallet } from "lucide-react";
 
 import { useDebts } from "@/features/debts/hooks/debts";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
@@ -12,6 +12,7 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 import { Button } from "@/ui/button";
+import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
 import { Switch } from "@/ui/switch";
 import {
   applyDebtFilters,
@@ -90,6 +91,7 @@ export function DebtListView({
   const [registering, setRegistering] = useState(false);
   const [editingDebt, setEditingDebt] = useState<Debt | undefined>();
   const [creating, setCreating] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const shown = applyDebtFilters(debts, filters, { month, year });
   const checked = shown.filter((debt) => selected.has(debt.id));
@@ -188,6 +190,17 @@ export function DebtListView({
                 onClick={() => setRegistering(true)}
               >
                 <Wallet className="mr-1 h-4 w-4" /> Registrar pago
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-9"
+                onClick={() => setImporting(true)}
+              >
+                <Upload className="mr-1 h-4 w-4" />{" "}
+                {direction === "owed_to_me"
+                  ? "Importar cuotas"
+                  : "Importar deudas"}
               </Button>
               {actions}
             </div>
@@ -345,6 +358,14 @@ export function DebtListView({
         }}
         direction={direction}
         debt={editingDebt}
+      />
+      <ImportListDialog
+        open={importing}
+        onOpenChange={setImporting}
+        target={direction === "owed_to_me" ? "receivables" : "payables"}
+        title={
+          direction === "owed_to_me" ? "Importar cuotas" : "Importar deudas"
+        }
       />
     </div>
   );
