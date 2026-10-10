@@ -37,7 +37,10 @@ import {
 
 const recurringFormSchema = z
   .object({
-    description: z.string().trim().min(1, "Descripción requerida"),
+    description: z
+      .string()
+      .trim()
+      .min(1, "Escribe un nombre para el recurrente"),
     amount: z
       .number({ error: "Monto requerido" })
       .positive("Monto debe ser positivo"),
@@ -158,7 +161,7 @@ export function RecurringDialog({
       title={isEdit ? "Editar recurrente" : "Nuevo recurrente"}
       description={
         isEdit
-          ? `Modifica la plantilla de ${recurring.description}. Los meses ya generados no cambian.`
+          ? `Modifica la plantilla de ${recurring.description}. Los cambios aplican desde el próximo mes; los meses ya generados no se modifican.`
           : "Se repite cada período. Elige dónde registrarlo."
       }
       footer={
@@ -349,11 +352,10 @@ export function RecurringDialog({
         <div className="flex items-center justify-between rounded-lg border p-3">
           <div className="space-y-0.5">
             <p className="text-sm font-medium">
-              Generar automáticamente según la frecuencia
+              Generar automáticamente cada mes
             </p>
             <p className="text-xs text-muted-foreground">
-              Se crea el registro en cada período en el día de cobro que
-              elegiste.
+              Se crea el registro el día de cobro, sin que tengas que hacerlo.
             </p>
           </div>
           <Switch
