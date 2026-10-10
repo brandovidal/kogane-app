@@ -77,3 +77,7 @@ export const updateStatement = (id: string, body: UpdateStatementDto) =>
   unwrap(api.PATCH("/v1/statements/{id}", { params: { path: { id } }, body }));
 export const deleteStatement = (id: string) =>
   unwrap(api.DELETE("/v1/statements/{id}", { params: { path: { id } } }));
+
+// "Ver estado de cuenta": a signed link (10 minutes) to the PDF; url is null when it was not kept
+export const getStatementFile = (id: string) =>
+  unwrap(api.GET("/v1/statements/{id}/file", { params: { path: { id } } }));
