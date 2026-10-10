@@ -9,6 +9,7 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { useDebtSummaryData } from "../hooks/useDebtSummaryData";
+import { usePersonSummaries } from "../hooks/personSummaries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import {
   DEBT_FILTER_KEYS,
@@ -52,6 +53,13 @@ export function DebtSummaryView({
     showCollections,
     showDebts,
   });
+  const personSummaries = usePersonSummaries(
+    summary.selectedMonth,
+    summary.selectedYear,
+  );
+  const summariesByPerson = new Map(
+    (personSummaries.data ?? []).map((item) => [item.personId, item]),
+  );
   const periodMonth =
     filters.month && filters.month !== "until" ? Number(filters.month) : null;
   const periodYear = Number(filters.year ?? year);
@@ -242,6 +250,9 @@ export function DebtSummaryView({
                       reportFilter={reportFilter}
                       showCollections={showCollections}
                       showDebts={showDebts}
+                      month={selectedMonth}
+                      year={selectedYear}
+                      summaries={summariesByPerson}
                     />
                   </div>
                 ) : (
