@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard, MoveRight, Wallet } from "lucide-react";
 
 import { useDebts } from "@/features/debts/hooks/debts";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
@@ -35,6 +35,7 @@ import {
 import { CollapsibleDebtGroup } from "../sections/DebtGroupsSection";
 import { DebtGridSection } from "../sections/DebtGridSection";
 import { DebtDialog } from "../components/dialogs/DebtDialog";
+import { CarryOverDialog } from "../components/dialogs/CarryOverDialog";
 import { RegisterPaymentDialog } from "../components/dialogs/RegisterPaymentDialog";
 import { useDebtGrouping } from "../hooks/useDebtGrouping";
 
@@ -88,6 +89,7 @@ export function DebtListView({
   const [view, setView] = useViewMode("debts", "table");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [registering, setRegistering] = useState(false);
+  const [carryingOver, setCarryingOver] = useState(false);
   const [editingDebt, setEditingDebt] = useState<Debt | undefined>();
   const [creating, setCreating] = useState(false);
 
@@ -181,6 +183,14 @@ export function DebtListView({
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <ReportLinks filter={{ direction, month, year }} />
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-9"
+                onClick={() => setCarryingOver(true)}
+              >
+                <MoveRight className="mr-1 h-4 w-4" /> Arrastrar saldos
+              </Button>
               <Button
                 size="sm"
                 variant="outline"
@@ -335,6 +345,11 @@ export function DebtListView({
         onOpenChange={setRegistering}
         debts={debts}
         period={{ month, year }}
+      />
+      <CarryOverDialog
+        open={carryingOver}
+        onOpenChange={setCarryingOver}
+        direction={direction}
       />
       <DebtDialog
         open={!!editingDebt || creating}
