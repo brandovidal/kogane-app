@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Textarea } from "@/ui/textarea";
+import { CARD_ISSUERS, OTHER_ISSUER } from "../constants/banks";
 import { toast } from "sonner";
 
 interface FormState {
@@ -65,6 +66,11 @@ export function CardEditorDialog({
 }) {
   const [form, setForm] = useState(() => fromCard(card));
   const [submitted, setSubmitted] = useState(false);
+  // A saved issuer outside the list is edited as "Otro"
+  const [customIssuer, setCustomIssuer] = useState(
+    () =>
+      !!card?.bank && !(CARD_ISSUERS as readonly string[]).includes(card.bank),
+  );
   const [savedCardId, setSavedCardId] = useState<string | null>(null);
   const saveMethod = useSavePaymentMethod();
   const saveHolders = useSaveCardHolders();
@@ -222,12 +228,36 @@ export function CardEditorDialog({
           {field(
             "bank",
             "Emisor",
-            <Input
-              id="card-bank"
-              value={form.bank}
-              onChange={(event) => set({ bank: event.target.value })}
-              placeholder="Ej.: Banco Falabella"
-            />,
+            <div className="space-y-2">
+              <Select
+                value={customIssuer ? OTHER_ISSUER : form.bank || undefined}
+                onValueChange={(bank) => {
+                  setCustomIssuer(bank === OTHER_ISSUER);
+                  set({ bank: bank === OTHER_ISSUER ? "" : bank });
+                }}
+              >
+                <SelectTrigger id="card-bank">
+                  <SelectValue placeholder="Selecciona banco" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CARD_ISSUERS.map((issuer) => (
+                    <SelectItem key={issuer} value={issuer}>
+                      {issuer}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={OTHER_ISSUER}>Otro…</SelectItem>
+                </SelectContent>
+              </Select>
+              {customIssuer && (
+                <Input
+                  aria-label="Nombre del emisor"
+                  value={form.bank}
+                  onChange={(event) => set({ bank: event.target.value })}
+                  placeholder="Nombre del banco"
+                  autoFocus
+                />
+              )}
+            </div>,
           )}
           {field(
             "code",
