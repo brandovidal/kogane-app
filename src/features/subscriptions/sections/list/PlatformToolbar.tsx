@@ -13,6 +13,7 @@ import {
   CountedToolbarButton,
   GroupingMenu,
   ViewModeToggle,
+  type RowColorRulesMenuProps,
 } from "@/shared/components/toolbar";
 import {
   PLATFORM_FILTER_KEYS,
@@ -31,6 +32,7 @@ export function PlatformToolbar({
   onViewChange,
   table,
   onOpenFilters,
+  rowColors,
 }: {
   filters: ExpenseFilterValues;
   onFiltersChange: (filters: ExpenseFilterValues) => void;
@@ -40,6 +42,7 @@ export function PlatformToolbar({
   onViewChange: (view: PlatformView) => void;
   table: Table<Subscription>;
   onOpenFilters: () => void;
+  rowColors: RowColorRulesMenuProps;
 }) {
   const [showApplied, setShowApplied] = useState(false);
   const activeFilters = countPlatformFilters(
@@ -133,6 +136,7 @@ export function PlatformToolbar({
             onGroupByChange={onGroupByChange}
             canReset={hasViewSettings}
             onReset={resetView}
+            rowColors={rowColors}
           />
           {(view === "list" || view === "cards") && (
             <>

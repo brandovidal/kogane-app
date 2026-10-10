@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
 import { withQuery } from "@/shared/api/query";
 
 import { useFixedCostActions } from "../hooks/useFixedCostActions";
@@ -25,6 +26,7 @@ import { FixedCostPeriodSelector } from "../components/header/FixedCostPeriodSel
 function FixedCostListPageContent() {
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const list = useFixedCostList();
+  const rowColors = useRowColorRules("fixed-costs");
   const interaction = useFixedCostActions();
   const bulk = useFixedCostBulkActions(list.filtered, list.scopeKey);
   const dataTable = useFixedCostTable({
@@ -96,6 +98,11 @@ function FixedCostListPageContent() {
       loading={list.loading}
       personRecords={list.fixedCosts}
       paymentMethodRecords={list.periodRecords}
+      rowColors={{
+        rules: rowColors.rules,
+        onChange: rowColors.setRules,
+        onReset: rowColors.reset,
+      }}
     />
   );
 
@@ -174,6 +181,7 @@ function FixedCostListPageContent() {
           view={list.view}
           groupBy={list.groupBy}
           dataTable={dataTable}
+          rowClassName={rowColors.rowClassName}
           loading={list.loading}
           error={list.error}
           pending={bulk.pending}

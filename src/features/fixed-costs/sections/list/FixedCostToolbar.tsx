@@ -29,6 +29,7 @@ import {
   GroupingMenu,
   SortMenu,
   ViewModeToggle,
+  type RowColorRulesMenuProps,
 } from "@/shared/components/toolbar";
 import type { ViewMode } from "@/shared/types/data-view";
 import { Button } from "@/ui/button";
@@ -65,6 +66,7 @@ export interface FixedCostToolbarProps {
   loading?: boolean;
   personRecords?: FixedCost[];
   paymentMethodRecords?: Pick<FixedCost, "paymentMethodId">[];
+  rowColors?: RowColorRulesMenuProps;
 }
 
 export function FixedCostToolbar({
@@ -90,6 +92,7 @@ export function FixedCostToolbar({
   loading = false,
   personRecords = [],
   paymentMethodRecords = [],
+  rowColors,
 }: FixedCostToolbarProps) {
   const isDesktopSettings = useMediaQuery("(min-width: 1024px)");
   const [internalSheetOpen, setInternalSheetOpen] = useState(false);
@@ -255,6 +258,7 @@ export function FixedCostToolbar({
               visibleColumnCount={visible}
               filterCount={filterCount}
               onOpenFilters={() => setSheetOpen(true)}
+              rowColors={rowColors}
               canSort={canSort}
               sort={sort}
               sortLabel={sortOption?.label}

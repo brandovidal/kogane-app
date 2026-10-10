@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { withQuery } from "@/shared/api/query";
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
+import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
 import { usePlatformList } from "../hooks/usePlatformList";
 import { usePlatformActions } from "../hooks/usePlatformActions";
 import { usePlatformBulkActions } from "../hooks/usePlatformBulkActions";
@@ -32,6 +33,7 @@ function PlatformListPageContent() {
   const actions = usePlatformActions();
   const bulk = usePlatformBulkActions(list.filtered, list.resetKey);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const rowColors = useRowColorRules("platforms");
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
   const tableState = usePlatformTable({
@@ -97,6 +99,11 @@ function PlatformListPageContent() {
         onViewChange={list.setView}
         table={tableState.table}
         onOpenFilters={() => setFilterSheetOpen(true)}
+        rowColors={{
+          rules: rowColors.rules,
+          onChange: rowColors.setRules,
+          onReset: rowColors.reset,
+        }}
       />
       <PlatformFilterSheet
         open={filterSheetOpen}
@@ -130,6 +137,7 @@ function PlatformListPageContent() {
         onCreate={actions.onCreate}
         onEdit={actions.onOpen}
         actions={actions}
+        rowClassName={rowColors.rowClassName}
       />
       <PlatformDetailPage
         item={openedItem}

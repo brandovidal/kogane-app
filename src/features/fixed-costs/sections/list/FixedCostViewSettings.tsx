@@ -15,8 +15,10 @@ import {
 import { toast } from "sonner";
 import {
   ColumnVisibilityOptions,
+  RowColorRulesMenu,
   ViewSettingsMenu,
   type ColumnVisibilityOption,
+  type RowColorRulesMenuProps,
 } from "@/shared/components/toolbar";
 import type { ViewMode } from "@/shared/types/data-view";
 import {
@@ -57,6 +59,7 @@ export interface FixedCostViewSettingsProps {
   onGroupByChange: (groupBy: FixedCostGroupBy) => void;
   hasViewSettings: boolean;
   onResetView: () => void;
+  rowColors?: RowColorRulesMenuProps;
 }
 
 /** Settings menu composition specific to the Fixed Costs view. */
@@ -80,6 +83,7 @@ export function FixedCostViewSettings({
   onGroupByChange,
   hasViewSettings,
   onResetView,
+  rowColors,
 }: FixedCostViewSettingsProps) {
   return (
     <ViewSettingsMenu open={open} onOpenChange={onOpenChange} trigger={trigger}>
@@ -176,6 +180,7 @@ export function FixedCostViewSettings({
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       )}
+      {rowColors && view === "table" && <RowColorRulesMenu {...rowColors} />}
       {canGroup && (
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="rounded-md py-2">

@@ -11,8 +11,10 @@ import {
 import { toast } from "sonner";
 import {
   ColumnVisibilityOptions,
+  RowColorRulesMenu,
   ViewSettingsMenu,
   type ColumnVisibilityOption,
+  type RowColorRulesMenuProps,
 } from "@/shared/components/toolbar";
 import { Button } from "@/ui/button";
 import {
@@ -39,6 +41,7 @@ export function PlatformViewSettings({
   onGroupByChange,
   canReset,
   onReset,
+  rowColors,
 }: {
   columns: readonly ColumnVisibilityOption[];
   visible: number;
@@ -48,6 +51,7 @@ export function PlatformViewSettings({
   onGroupByChange: (groupBy: Array<"person" | "period">) => void;
   canReset: boolean;
   onReset: () => void;
+  rowColors: RowColorRulesMenuProps;
 }) {
   const copyViewLink = () =>
     void navigator.clipboard
@@ -125,6 +129,7 @@ export function PlatformViewSettings({
           ))}
         </DropdownMenuSubContent>
       </DropdownMenuSub>
+      <RowColorRulesMenu {...rowColors} />
       <DropdownMenuSeparator />
       <DropdownMenuItem disabled>
         <CalendarRange className="size-4" />

@@ -36,6 +36,7 @@ export function PlatformResults({
   onCreate,
   onEdit,
   actions,
+  rowClassName,
 }: {
   items: Subscription[];
   calendarItems: Subscription[];
@@ -53,6 +54,7 @@ export function PlatformResults({
   onCreate: () => void;
   onEdit: (item: Subscription, tab?: "detail" | "files" | "history") => void;
   actions: ReturnType<typeof usePlatformActions>;
+  rowClassName?: (item: Subscription) => string | undefined;
 }) {
   const totalsFooter = (
     <div className="flex flex-wrap items-center gap-x-8 gap-y-1 text-xs text-muted-foreground">
@@ -154,6 +156,7 @@ export function PlatformResults({
       <DataTableComplex
         table={tableState.table}
         className="platform-table"
+        rowClassName={rowClassName}
         footer={totalsFooter}
         pagination={items.length > 0}
         loading={loading}
