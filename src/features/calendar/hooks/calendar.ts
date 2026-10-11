@@ -40,6 +40,7 @@ export const useCommittedInstallments = (months = 3) =>
 
 const PAY_OUTCOME_TEXTS: Record<string, string> = {
   paid: "Pagado",
+  partial: "Pago parcial",
   already_paid: "Ya estaba pagado",
   nothing_to_pay: "No hay nada pendiente de ese pago",
   not_found: "Ya no existe",
