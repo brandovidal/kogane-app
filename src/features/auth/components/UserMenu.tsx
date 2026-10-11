@@ -30,7 +30,7 @@ function UserMenuView() {
   const { data: me } = useMe();
   const logout = useLogout();
   const stop = useStopImpersonation();
-  const [incomeLink, setIncomeLink] = useState("/ingresos");
+  const [incomeLink, setIncomeLink] = useState("/presupuesto?tab=ingresos");
   if (!me) return null;
 
   const initials = me.name

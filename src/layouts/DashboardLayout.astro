@@ -23,7 +23,7 @@ const currentPath = Astro.url.pathname;
 // Views with their own month-based data get a local period control in the page body.
 // Debt and fixed-cost views expose period filters; Ingresos has its own month/year selectors.
 const hasLocalPeriodControl =
-  ["/resumen", "/calendario", "/recurrentes", "/categorias"].some(
+  ["/resumen", "/calendario", "/recurrentes"].some(
     (path) => currentPath === path,
   ) || currentPath.startsWith("/configuracion");
 ---

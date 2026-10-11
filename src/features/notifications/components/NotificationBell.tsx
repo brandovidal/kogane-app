@@ -41,7 +41,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/cobros": "Cobros",
   "/deudas": "Deudas",
   "/resumen-deudas": "Resumen de deudas",
-  "/categorias": "Categorías",
+  "/presupuesto": "Presupuesto",
   "/recurrentes": "Recurrentes",
   "/importacion": "Importación",
 };
