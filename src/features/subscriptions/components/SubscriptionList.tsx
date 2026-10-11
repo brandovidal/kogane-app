@@ -32,6 +32,8 @@ import { GroupedDataView } from "@/shared/components/data-display/GroupedDataVie
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
 import { useViewMode } from "@/shared/hooks/useViewMode";
+import { RowColorRulesButton } from "@/shared/components/toolbar/RowColorRulesButton";
+import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column } from "@/shared/types/data-view";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
@@ -181,6 +183,9 @@ function SubscriptionListView({
     group === "recurring" ? "table" : "cards",
   );
   const [groupBy, setGroupBy] = useState("none");
+  const rowColors = useRowColorRules(
+    group === "recurring" ? "recurring" : "subscriptions",
+  );
 
   const columns: Column<Subscription>[] = [
     {
@@ -493,6 +498,13 @@ function SubscriptionListView({
           }
         />
         <div className="flex items-center gap-2 self-end sm:self-auto">
+          {view === "table" && (
+            <RowColorRulesButton
+              rules={rowColors.rules}
+              onChange={rowColors.setRules}
+              onReset={rowColors.reset}
+            />
+          )}
           <ViewToggle value={view} onChange={setView} />
           <Button size="sm" onClick={newPlatform}>
             <Plus className="mr-1 h-4 w-4" /> {texts.add}
@@ -528,6 +540,12 @@ function SubscriptionListView({
           columns={columns}
           rowKey={(sub) => sub.id}
           view={view}
+          rowClassName={(sub) =>
+            rowColors.rowClassName({
+              dueDate: sub.dueDate,
+              status: sub.paymentStatus,
+            })
+          }
           groupBy={groupBy}
           groupKey={(row, key) => {
             if (key === "person") return row.personId ?? "none";

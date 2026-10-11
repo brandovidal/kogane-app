@@ -223,6 +223,7 @@ export function GroupedDataView<T>({
   calculationStorageKey,
   calculationDefaults,
   tableClassName,
+  rowClassName,
   footer,
   extraCard,
   compactCards,
@@ -270,6 +271,7 @@ export function GroupedDataView<T>({
         calculationStorageKey={calculationStorageKey}
         calculationDefaults={calculationDefaults}
         tableClassName={tableClassName}
+        rowClassName={rowClassName}
         calculationState={calculationState}
         extraCard={extraCard}
         compactCards={compactCards}
@@ -367,6 +369,7 @@ export function GroupedDataView<T>({
                     calculationStorageKey={calculationStorageKey}
                     calculationDefaults={calculationDefaults}
                     tableClassName={tableClassName}
+                    rowClassName={rowClassName}
                     calculationState={calculationState}
                     extraCard={
                       firstGroup ? ((firstGroup = false), extraCard) : undefined
