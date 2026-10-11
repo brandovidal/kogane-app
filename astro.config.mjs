@@ -22,6 +22,7 @@ export default defineConfig({
     '/estados-de-cuenta': '/importacion',
     '/configuracion': '/configuracion/general',
     '/perfil': '/configuracion/perfil',
+    '/configuracion/cuentas-tarjetas': '/configuracion/cuentas-tarjetas/credito',
   },
   adapter,
   env: {

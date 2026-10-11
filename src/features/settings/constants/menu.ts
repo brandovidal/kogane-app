@@ -2,7 +2,7 @@ import { BellRing, Settings, UsersRound, WalletCards } from "lucide-react";
 
 export const SETTINGS_MENU_LINKS = [
   {
-    href: "/configuracion/cuentas-tarjetas",
+    href: "/configuracion/cuentas-tarjetas/credito",
     label: "Cuentas y tarjetas",
     icon: WalletCards,
     adminOnly: false,
