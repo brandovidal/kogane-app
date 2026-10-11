@@ -7,6 +7,11 @@ import { formatDate, formatDayMonth, getMonthName } from "@/shared/lib/dates";
 import { Card, CardContent } from "@/ui/card";
 import type { Direction } from "@/features/debts/lib/debt-filters";
 import { CollectButton } from "./CollectButton";
+import {
+  EMPTY_PERSON_SUMMARY,
+  PersonSummaryControls,
+  type PersonSummaryData,
+} from "./PersonSummaryControls";
 import { DebtReportLinks as ReportLinks } from "./DebtListControls";
 import { Button } from "@/ui/button";
 
@@ -70,7 +75,13 @@ export function PersonDebtSummaryCardList({
   reportFilter,
   showCollections,
   showDebts,
+  month,
+  year,
+  summaries,
 }: {
+  month: number;
+  year: number;
+  summaries: Map<string, PersonSummaryData & { adjustmentTotal: number }>;
   groups: PersonDebtGroup[];
   statementAdjustments: StatementChargeAdjustment[];
   personalExpenses: PersonalDebtSummaryExpense[];
@@ -104,7 +115,10 @@ export function PersonDebtSummaryCardList({
           (sum, item) => sum + item.amount,
           0,
         );
+        const personSummary = summaries.get(group.personId);
+        const adjustmentTotal = personSummary?.adjustmentTotal ?? 0;
         const balanceForPerson =
+          adjustmentTotal +
           totalOwed +
           statementAdjustmentForPerson -
           totalOwe -
@@ -282,33 +296,56 @@ export function PersonDebtSummaryCardList({
         return (
           <Card key={group.personId}>
             <CardContent className="space-y-3 pt-5">
-              <div>
-                <h3 className="font-semibold">{group.name}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {showCollections && (
-                    <span className="text-muted-foreground">
-                      Me debe{" "}
-                      <strong className="font-medium text-amber-300">
-                        {formatCurrency(
-                          totalOwed + statementAdjustmentForPerson,
-                        )}
-                      </strong>
-                    </span>
-                  )}
-                  {showCollections && showDebts && " · "}
-                  {showDebts && (
-                    <span className="text-muted-foreground">
-                      Le debo{" "}
-                      <strong className="font-medium">
-                        {formatCurrency(totalOwe + personalExpenseForPerson)}
-                      </strong>
-                    </span>
-                  )}
-                </p>
-                <p className="text-sm font-semibold text-primary">
-                  {balanceLabel} {formatCurrency(Math.abs(balanceForPerson))}
-                </p>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <h3 className="font-semibold">{group.name}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {showCollections && (
+                      <span className="text-muted-foreground">
+                        Me debe{" "}
+                        <strong className="font-medium text-amber-300">
+                          {formatCurrency(
+                            totalOwed + statementAdjustmentForPerson,
+                          )}
+                        </strong>
+                      </span>
+                    )}
+                    {showCollections && showDebts && " · "}
+                    {showDebts && (
+                      <span className="text-muted-foreground">
+                        Le debo{" "}
+                        <strong className="font-medium">
+                          {formatCurrency(totalOwe + personalExpenseForPerson)}
+                        </strong>
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-sm font-semibold text-primary">
+                    {balanceLabel} {formatCurrency(Math.abs(balanceForPerson))}
+                  </p>
+                </div>
+                <PersonSummaryControls
+                  personId={group.personId}
+                  name={group.name}
+                  month={month}
+                  year={year}
+                  summary={personSummary ?? EMPTY_PERSON_SUMMARY}
+                />
               </div>
+              {(personSummary?.cutoffDate || personSummary?.collectBy) && (
+                <p className="text-xs text-muted-foreground">
+                  {personSummary.cutoffDate &&
+                    `Corte ${formatDayMonth(personSummary.cutoffDate)}`}
+                  {personSummary.cutoffDate && personSummary.collectBy && " · "}
+                  {personSummary.collectBy &&
+                    `Cobrar hasta ${formatDayMonth(personSummary.collectBy)}`}
+                </p>
+              )}
+              {personSummary?.note && (
+                <p className="text-xs italic text-muted-foreground">
+                  {personSummary.note}
+                </p>
+              )}
               <div className="space-y-2">
                 {summaryGroups.map((sourceGroup) =>
                   sourceGroup.collapsible ? (
@@ -411,6 +448,20 @@ export function PersonDebtSummaryCardList({
                     </div>
                   ),
                 )}
+                {personSummary?.adjustments.map((item, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-2 border-t pt-2 text-sm"
+                  >
+                    <span className="truncate">
+                      Ajuste · {item.description}
+                    </span>
+                    <span className="text-right text-xs tabular-nums">
+                      {item.amount < 0 ? "−" : "+"}{" "}
+                      {formatCurrency(Math.abs(item.amount))}
+                    </span>
+                  </div>
+                ))}
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t-2 pt-2 text-sm font-semibold">
                   <span>{balanceLabel}</span>
                   <span className="text-right text-xs font-normal text-muted-foreground">
