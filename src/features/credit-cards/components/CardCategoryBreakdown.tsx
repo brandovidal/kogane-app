@@ -341,10 +341,10 @@ export function CardCategoryBreakdown({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <CardTitle className="text-base">Categorías disponibles</CardTitle>
             <a
-              href="/categorias"
+              href="/presupuesto"
               className="text-sm text-primary hover:underline"
             >
-              Administrar categorías
+              Administrar en Presupuesto
             </a>
           </div>
           <p className="text-sm text-muted-foreground">

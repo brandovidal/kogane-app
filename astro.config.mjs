@@ -22,6 +22,9 @@ export default defineConfig({
     '/estados-de-cuenta': '/importacion',
     '/configuracion': '/configuracion/general',
     '/perfil': '/configuracion/perfil',
+    '/relacion-gastos': '/presupuesto',
+    '/categorias': '/presupuesto',
+    '/ingresos': '/presupuesto?tab=ingresos',
   },
   adapter,
   env: {

@@ -32,8 +32,8 @@ export function BudgetVsActual({
         {!limited.length && (
           <p className="text-sm text-muted-foreground">
             Sin límites por categoría. Ponlos en{" "}
-            <a href="/categorias" className="text-primary underline">
-              Categorías
+            <a href="/presupuesto" className="text-primary underline">
+              Presupuesto
             </a>
             .
           </p>

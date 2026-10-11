@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { BudgetPage } from "@/features/budget/components/BudgetPage";
+---
+
+<DashboardLayout title="Presupuesto">
+  <BudgetPage client:load />
+</DashboardLayout>
