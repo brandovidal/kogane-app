@@ -32,6 +32,7 @@ export interface DataViewProps<T> {
   calculationDefaults?: Record<string, DataTableCalculation>;
   calculationState?: DataTableCalculationState;
   tableClassName?: string;
+  rowClassName?: (row: T) => string | undefined;
   extraCard?: ReactNode; // e.g. the dashed "Nueva plataforma" card
   compactCards?: boolean;
   /** Feature-specific card layout; receives the item while shared grouping/selection stay intact. */
