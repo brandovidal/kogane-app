@@ -101,7 +101,13 @@ function BudgetSwitches() {
 function SettingsPageView() {
   const [tab, setTab] = useTabInUrl();
   const { data: me } = useMe();
-  const isAdmin = me?.role === "admin" || me?.role === "superadmin";
+  // The signed-in user may already be cached in the browser while server
+  // rendering has no query data. Keep the tab list identical through hydration.
+  const [hasHydrated, setHasHydrated] = useState(false);
+  useEffect(() => setHasHydrated(true), []);
+  const isAdmin =
+    hasHydrated && (me?.role === "admin" || me?.role === "superadmin");
+  const activeTab = tab === "usuarios" && !isAdmin ? "presupuesto" : tab;
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const summary = useSummary(month, year).data;
@@ -110,7 +116,10 @@ function SettingsPageView() {
 
   return (
     <div className="max-w-4xl">
-      <Tabs value={tab} onValueChange={(value) => setTab(value as SettingsTab)}>
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setTab(value as SettingsTab)}
+      >
         <TabsList className="flex h-auto flex-wrap">
           {TABS.filter(([key]) => key !== "usuarios" || isAdmin).map(
             ([key, label]) => (

@@ -29,20 +29,16 @@ export const apiFetch: typeof fetch = async (input, init) => {
 
   try {
     const response = await fetch(input, init);
+    // A missing or expired session is still an authentication failure when an
+    // API response omits the expected SESSION_REQUIRED code. Treat every 401
+    // on a protected page as a login redirect; leave login submissions alone.
     if (
       response.status === 401 &&
       !window.location.pathname.startsWith("/entrar")
     ) {
-      const body = (await response
-        .clone()
-        .json()
-        .catch(() => null)) as { code?: string } | null;
-      if (body?.code === "SESSION_REQUIRED") {
-        window.location.replace(
-          loginUrl(`${window.location.pathname}${window.location.search}`),
-        );
-        return response;
-      }
+      const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      window.location.replace(loginUrl(returnTo));
+      return response;
     }
     if (response.status === 503) {
       const body = (await response

@@ -4,6 +4,7 @@ import Sidebar from "@/layouts/components/navigation/Sidebar.astro";
 import MobileNav from "@/layouts/components/navigation/MobileNav.astro";
 import { CommandPalette } from "@/layouts/components/navigation/CommandPalette";
 import { MonthNavigator } from "@/shared/components/navigation/MonthNavigator";
+import { DailyPeriodHeader } from "@/features/daily/components/DailyPeriodHeader";
 import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
 import { UserMenu } from "@/features/auth/components/UserMenu";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
@@ -24,7 +25,6 @@ const currentPath = Astro.url.pathname;
 const hasLocalPeriodControl = [
   "/resumen",
   "/calendario",
-  "/dia-a-dia",
   "/recurrentes",
   "/categorias",
   "/configuracion",
@@ -55,6 +55,7 @@ const hasLocalPeriodControl = [
         </div>
         <div class="flex shrink-0 items-center gap-1 sm:gap-3">
           <slot name="header-actions" />
+          {currentPath === "/dia-a-dia" && <DailyPeriodHeader client:load />}
           <NotificationBell client:idle currentPath={currentPath} />
           <UserMenu client:load />
         </div>

@@ -51,12 +51,12 @@ import type {
 } from "@/features/expenses/types/expense-filters";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { usePeriod } from "@/shared/stores/period.store";
+import { useUrlPeriod } from "@/shared/hooks/useUrlPeriod";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
 
 const FILTERS: ExpenseFilterKey[] = [
-  "person",
   "q",
   "category",
   "method",
@@ -67,6 +67,7 @@ const FILTERS: ExpenseFilterKey[] = [
 
 // Día a día ("gastos sin culpa", exp_daily_expenses): what the bot saves most. New ones come from Nuevo gasto or the chat
 function DailyExpenseTableView() {
+  useUrlPeriod();
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const { data: expenses = [], isLoading } = useExpenses(

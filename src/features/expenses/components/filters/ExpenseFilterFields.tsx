@@ -18,7 +18,6 @@ import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFiel
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import { RecordSearchField } from "@/shared/components/filters/RecordSearchField";
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
-import { PeriodFilterFields } from "@/shared/components/filters/PeriodFilterFields";
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { cn } from "@/shared/utils/cn";
@@ -56,18 +55,6 @@ export function ExpenseFilterFields({
     const has = (key: ExpenseFilterKey) => keys.includes(key);
     return (
       <>
-        {(has("month") || has("year")) && (
-          <div className={panel ? "col-span-2" : undefined}>
-            <PeriodFilterFields
-              month={value.month}
-              year={value.year}
-              showMonth={has("month")}
-              showYear={has("year")}
-              onMonthChange={(next) => set("month", next)}
-              onYearChange={(next) => set("year", next)}
-            />
-          </div>
-        )}
         {personInPanel && has("person") && (
           <PersonFilterFields
             value={value.person}
