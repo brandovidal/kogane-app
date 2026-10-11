@@ -23,6 +23,11 @@
 	},
 	// Worker "kogane-app-dev" (rama dev): se selecciona con CLOUDFLARE_ENV=dev en las variables de build
 	"env": {
+		"previews": {
+			"vars": {
+				"API_URL": "https://kogane-api-qa.up.railway.app"
+			}
+		},
 		"dev": {
 			"name": "kogane-app-dev",
 			"vars": {
