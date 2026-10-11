@@ -75,7 +75,6 @@ export const useLogout = () => useApiMutation(logout, { invalidate: [] });
 export const useUpdateProfile = () =>
   useApiMutation((body: UpdateProfileDto) => updateProfile(body), {
     invalidate: [authKeys.me],
-    success: "Perfil guardado",
   });
 
 export const useChangePassword = () =>

@@ -81,7 +81,11 @@ function SettingsPageView({
     hasHydrated && (me?.role === "admin" || me?.role === "superadmin");
 
   return (
-    <SettingsShell section={section} isAdmin={isAdmin}>
+    <SettingsShell
+      section={section}
+      isAdmin={isAdmin}
+      wide={section === "perfil"}
+    >
       {section === "perfil" && <ProfilePage />}
       {section === "general" && <GeneralSection />}
       {section === "notificaciones" && <NotificationSettingsCard />}

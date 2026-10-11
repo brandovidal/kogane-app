@@ -29,10 +29,12 @@ function readState(): NavState {
 export function SettingsShell({
   section,
   isAdmin,
+  wide = false,
   children,
 }: {
   section: SettingsSection;
   isAdmin: boolean;
+  wide?: boolean;
   children: ReactNode;
 }) {
   const [state, setState] = useState<NavState>({ rail: false, folded: [] });
@@ -120,7 +122,9 @@ export function SettingsShell({
           })}
         </div>
       </nav>
-      <div className="min-w-0 max-w-4xl flex-1">{children}</div>
+      <div className={`min-w-0 flex-1 ${wide ? "w-full" : "max-w-4xl"}`}>
+        {children}
+      </div>
     </div>
   );
 }

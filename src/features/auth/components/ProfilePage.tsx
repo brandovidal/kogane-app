@@ -1,146 +1,88 @@
-import { useEffect, useState } from "react";
-import { ExternalLink, KeyRound, Send } from "lucide-react";
+import { useEffect, useState, type SubmitEvent } from "react";
+import { toast } from "sonner";
 
 import { googleLinkUrl } from "@/features/auth/services/google.service";
 import {
   useAuthConfig,
-  useChangePassword,
   useMe,
-  useTelegramLink,
-  useUnlinkTelegram,
   useUpdateProfile,
 } from "@/features/auth/hooks/auth";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
-import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
+import { ProfileAccountCard } from "./profile/ProfileAccountCard";
+import { ProfileAppSettingsCard } from "./profile/ProfileAppSettingsCard";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
-import { AUTH_ROLE_LABELS } from "../constants/roles";
+  ProfilePersonalDataCard,
+  type ProfileDraft,
+  validateProfileDraft,
+} from "./profile/ProfilePersonalDataCard";
+import { ProfilePasswordCard } from "./profile/ProfilePasswordCard";
+import { ProfileTelegramCard } from "./profile/ProfileTelegramCard";
 
-// Perfil (P23): who I am, my password and the Telegram chat linked to my account (D85)
-// Name, nickname, mobile and DNI. The DNI is never shown whole (D94): empty keeps the saved one, "Quitar" deletes it
-function ProfileForm({
-  me,
-}: {
-  me: NonNullable<ReturnType<typeof useMe>["data"]>;
-}) {
-  const update = useUpdateProfile();
-  const [name, setName] = useState(me.name);
-  const [nickname, setNickname] = useState(me.nickname ?? "");
-  const [phone, setPhone] = useState(me.phone ?? "");
-  const [documentNumber, setDocumentNumber] = useState("");
-  const [clearDocument, setClearDocument] = useState(false);
-
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-    update.mutate(
-      {
-        name: name.trim(),
-        nickname: nickname.trim() || null,
-        phone: phone.trim() || null,
-        ...(documentNumber.trim()
-          ? { documentNumber: documentNumber.trim() }
-          : clearDocument
-            ? { documentNumber: null }
-            : {}),
-      },
-      {
-        onSuccess: () => {
-          setDocumentNumber("");
-          setClearDocument(false);
-        },
-      },
-    );
+function makeDraft(
+  user: NonNullable<ReturnType<typeof useMe>["data"]>,
+): ProfileDraft {
+  return {
+    name: user.name,
+    nickname: user.nickname ?? "",
+    phone: user.phone ?? "",
+    documentNumber: "",
+    clearDocument: false,
   };
+}
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Mis datos</CardTitle>
-        <CardDescription>
-          El celular también sirve para entrar. El DNI abre tus estados de
-          cuenta y se copia a tu persona «Yo».
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form className="grid gap-3 sm:grid-cols-2" onSubmit={submit}>
-          <Input
-            aria-label="Nombre"
-            placeholder="Nombre"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <Input
-            aria-label="Apodo"
-            placeholder="Apodo (cómo te saluda la app)"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
-          <Input
-            aria-label="Celular"
-            placeholder="Celular (9 dígitos)"
-            inputMode="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <div className="space-y-1">
-            <Input
-              aria-label="DNI"
-              placeholder={
-                me.documentMasked
-                  ? `DNI (guardado ${me.documentMasked})`
-                  : "DNI (8 dígitos)"
-              }
-              inputMode="numeric"
-              autoComplete="off"
-              value={documentNumber}
-              onChange={(e) => setDocumentNumber(e.target.value)}
-            />
-            {me.documentMasked && !documentNumber && (
-              <button
-                type="button"
-                className="text-xs text-muted-foreground underline"
-                onClick={() => setClearDocument(!clearDocument)}
-              >
-                {clearDocument ? "No quitar" : "Quitar DNI"}
-              </button>
-            )}
-          </div>
-          <div className="sm:col-span-2">
-            <Button type="submit" disabled={!name.trim() || update.isPending}>
-              Guardar
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  );
+function changedFields(draft: ProfileDraft, saved: ProfileDraft) {
+  return [
+    draft.name.trim() !== saved.name.trim(),
+    draft.nickname.trim() !== saved.nickname.trim(),
+    draft.phone !== saved.phone,
+    draft.documentNumber !== saved.documentNumber ||
+      draft.clearDocument !== saved.clearDocument,
+  ].filter(Boolean).length;
 }
 
 function ProfilePageView() {
   const { data: me } = useMe();
   const authConfig = useAuthConfig().data;
-  const changePassword = useChangePassword();
-  const telegramLink = useTelegramLink();
-  const unlink = useUnlinkTelegram();
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const [link, setLink] = useState<{ url: string; expiresAt: string } | null>(
-    null,
+  const update = useUpdateProfile();
+  const [draft, setDraft] = useState<ProfileDraft>(() =>
+    me
+      ? makeDraft(me)
+      : {
+          name: "",
+          nickname: "",
+          phone: "",
+          documentNumber: "",
+          clearDocument: false,
+        },
   );
+  const [savedDraft, setSavedDraft] = useState(draft);
+  const [savedRecently, setSavedRecently] = useState(false);
   const [linkingGoogle, setLinkingGoogle] = useState(false);
   const [googleNotice, setGoogleNotice] = useState<{
     kind: "success" | "error";
     text: string;
   } | null>(null);
+  const userId = me?.id;
+  const userName = me?.name;
+  const userNickname = me?.nickname;
+  const userPhone = me?.phone;
+  const userDocumentMasked = me?.documentMasked;
+
+  useEffect(() => {
+    if (!userId || !userName) return;
+    const next: ProfileDraft = {
+      name: userName,
+      nickname: userNickname ?? "",
+      phone: userPhone ?? "",
+      documentNumber: "",
+      clearDocument: false,
+    };
+    setDraft(next);
+    setSavedDraft(next);
+  }, [userId, userName, userNickname, userPhone, userDocumentMasked]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const result = params.get("google");
@@ -167,7 +109,47 @@ function ProfilePageView() {
     if (result || failure)
       window.history.replaceState(null, "", window.location.pathname);
   }, []);
+
   if (!me) return null;
+
+  const errors = validateProfileDraft(draft);
+  const changeCount = changedFields(draft, savedDraft);
+  const hasChanges = changeCount > 0;
+  const canSave = hasChanges && Object.keys(errors).length === 0;
+  const errorCount = Object.keys(errors).length;
+
+  const discardChanges = () => {
+    setDraft({ ...savedDraft, documentNumber: "", clearDocument: false });
+    setSavedRecently(false);
+  };
+
+  const saveProfile = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canSave || update.isPending) return;
+    update.mutate(
+      {
+        name: draft.name.trim(),
+        nickname: draft.nickname.trim() || null,
+        phone: draft.phone.trim() || null,
+        ...(draft.documentNumber.trim()
+          ? { documentNumber: draft.documentNumber.trim() }
+          : draft.clearDocument
+            ? { documentNumber: null }
+            : {}),
+      },
+      {
+        onSuccess: () => {
+          const next = { ...draft, documentNumber: "", clearDocument: false };
+          setDraft(next);
+          setSavedDraft(next);
+          setSavedRecently(true);
+          toast.success("Datos guardados", {
+            description: "Tu perfil y tu persona «Yo» ya están al día.",
+          });
+        },
+      },
+    );
+  };
 
   const startGoogleLink = async () => {
     setLinkingGoogle(true);
@@ -180,199 +162,75 @@ function ProfilePageView() {
   };
 
   return (
-    <div className="max-w-2xl space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {me.name}{" "}
-            <Badge variant="secondary">
-              {AUTH_ROLE_LABELS[me.role] ?? me.role}
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            {me.email}
-            {me.phone ? ` · ${me.phone}` : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-          <Badge variant="outline">
-            {me.googleLinked ? "Google vinculado" : "Sin Google"}
-          </Badge>
-          <Badge variant="outline">
-            {me.hasPassword ? "Con contraseña" : "Sin contraseña"}
-          </Badge>
-          {!me.googleLinked && authConfig?.google && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="basis-full sm:basis-auto"
-              onClick={startGoogleLink}
-              disabled={linkingGoogle}
-            >
-              <GoogleMark />{" "}
-              {linkingGoogle ? "Abriendo Google…" : "Vincular con Google"}
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-
-      <ProfileForm me={me} />
-
-      {googleNotice && (
-        <p
-          role="status"
-          className={`rounded-md border px-3 py-2 text-sm ${googleNotice.kind === "success" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-destructive/30 bg-destructive/10 text-destructive"}`}
-        >
-          {googleNotice.text}
-        </p>
-      )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Contraseña</CardTitle>
-          <CardDescription>
-            {me.hasPassword
-              ? "Cámbiala cuando quieras."
-              : "Define una para entrar sin Google."}{" "}
-            Mínimo 10 caracteres.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]"
-            onSubmit={(event) => {
-              event.preventDefault();
-              changePassword.mutate(
-                { current: current || undefined, next },
-                { onSuccess: () => (setCurrent(""), setNext("")) },
-              );
+    <div className="w-full space-y-4">
+      <div className="grid min-w-0 items-start gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.9fr)]">
+        <div className="min-w-0 space-y-4">
+          <ProfilePersonalDataCard
+            user={me}
+            draft={draft}
+            errors={errors}
+            hasChanges={hasChanges}
+            changeCount={changeCount}
+            pending={update.isPending}
+            savedRecently={savedRecently}
+            onChange={(next) => {
+              setDraft(next);
+              setSavedRecently(false);
             }}
-          >
-            {me.hasPassword && (
-              <PasswordInput
-                placeholder="Contraseña actual"
-                autoComplete="current-password"
-                value={current}
-                onChange={(e) => setCurrent(e.target.value)}
-              />
-            )}
-            <PasswordInput
-              placeholder="Contraseña nueva"
-              autoComplete="new-password"
-              minLength={10}
-              value={next}
-              onChange={(e) => setNext(e.target.value)}
+            onDiscard={discardChanges}
+            onSubmit={saveProfile}
+          />
+          <ProfileAppSettingsCard />
+        </div>
+
+        <div className="min-w-0 space-y-4">
+          <ProfileAccountCard
+            user={me}
+            googleEnabled={!!authConfig?.google}
+            linkingGoogle={linkingGoogle}
+            googleNotice={googleNotice}
+            onLinkGoogle={startGoogleLink}
+          />
+          <ProfilePasswordCard user={me} />
+          <ProfileTelegramCard user={me} />
+        </div>
+      </div>
+
+      {hasChanges && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur ${errorCount ? "border-destructive/50" : "border-primary/40"}`}
+        >
+          <p className="flex items-center gap-2 text-sm">
+            <span
+              aria-hidden="true"
+              className={`size-2 rounded-full ${errorCount ? "bg-destructive" : "bg-amber-400"}`}
             />
+            {errorCount
+              ? `Corrige ${errorCount} ${errorCount === 1 ? "campo" : "campos"} para guardar`
+              : `Tienes ${changeCount} ${changeCount === 1 ? "cambio" : "cambios"} sin guardar`}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={discardChanges}
+              disabled={update.isPending}
+            >
+              Descartar
+            </Button>
             <Button
               type="submit"
-              disabled={
-                changePassword.isPending ||
-                next.length < 10 ||
-                (me.hasPassword && !current)
-              }
+              form="profile-personal-form"
+              disabled={!canSave || update.isPending}
             >
-              <KeyRound className="mr-1.5 h-4 w-4" /> Guardar
+              {update.isPending ? "Guardando…" : "Guardar cambios"}
             </Button>
-          </form>
-          {me.hasPassword && (
-            <details className="mt-4 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
-              <summary className="cursor-pointer font-medium">
-                ¿Olvidaste tu contraseña actual?
-              </summary>
-              <p className="mt-2 leading-5 text-muted-foreground">
-                Pídele al administrador una nueva invitación para el correo de
-                esta cuenta. Al abrirla podrás definir otra contraseña; Kogane
-                no envía enlaces de recuperación automáticamente.
-              </p>
-            </details>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Telegram</CardTitle>
-          <CardDescription>
-            El bot guarda lo que le mandes en tu cuenta, no en la de otros.{" "}
-            {me.telegramLinked
-              ? "Este chat ya está vinculado."
-              : "Vincula tu chat para usarlo."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={me.telegramLinked ? "outline" : "default"}
-              onClick={() =>
-                telegramLink.mutate(undefined, {
-                  onSuccess: (created) => setLink(created),
-                })
-              }
-              disabled={telegramLink.isPending}
-            >
-              <Send className="mr-1.5 h-4 w-4" />{" "}
-              {me.telegramLinked ? "Vincular otro chat" : "Vincular Telegram"}
-            </Button>
-            {me.telegramLinked && (
-              <Button
-                variant="outline"
-                disabled={unlink.isPending}
-                onClick={() =>
-                  window.confirm("¿Desvincular Telegram de tu cuenta?") &&
-                  unlink.mutate()
-                }
-              >
-                Desvincular
-              </Button>
-            )}
           </div>
-          {link && (
-            <p className="text-sm">
-              <a
-                className="inline-flex items-center gap-1 font-medium underline"
-                href={link.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Abrir el bot con tu código{" "}
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>{" "}
-              <span className="text-muted-foreground">
-                (sirve una vez y vence a las{" "}
-                {new Date(link.expiresAt).toLocaleTimeString("es-PE", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                )
-              </span>
-            </p>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
-  );
-}
-
-function GoogleMark() {
-  return (
-    <svg viewBox="0 0 48 48" aria-hidden="true" className="mr-1.5 h-4 w-4">
-      <path
-        fill="#FFC107"
-        d="M43.6 20.5H42V20H24v8h11.3A12 12 0 1 1 32 15.1l5.7-5.7A20 20 0 1 0 44 24c0-1.2-.1-2.3-.4-3.5Z"
-      />
-      <path
-        fill="#FF3D00"
-        d="m6.3 14.7 6.6 4.8A12 12 0 0 1 32 15.1l5.7-5.7A20 20 0 0 0 6.3 14.7Z"
-      />
-      <path
-        fill="#4CAF50"
-        d="M24 44a20 20 0 0 0 13.5-5.3l-6.2-5.2A12 12 0 0 1 12.8 28l-6.5 5A20 20 0 0 0 24 44Z"
-      />
-      <path
-        fill="#1976D2"
-        d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.2A20 20 0 0 0 44 24c0-1.2-.1-2.3-.4-3.5Z"
-      />
-    </svg>
   );
 }
 
