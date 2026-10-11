@@ -33,7 +33,14 @@ import { useMe } from "@/shared/api/hooks/catalogs";
 import { RecurringDialog } from "./RecurringDialog";
 import { Button } from "@/ui/button";
 import { Switch } from "@/ui/switch";
-import { CalendarPlus, Copy, Download, Plus, Trash2 } from "lucide-react";
+import {
+  CalendarPlus,
+  Copy,
+  Download,
+  Plus,
+  SquareArrowOutUpRight,
+  Trash2,
+} from "lucide-react";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { BulkActionsToolbar } from "@/shared/components/toolbar/BulkActionsToolbar";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
@@ -360,6 +367,21 @@ function RecurringListView() {
           label={item.description}
           files={{ refType: "expense", refId: item.id }}
           history={{ entity: "exp_recurring_expenses", id: item.id }}
+          extraItems={[
+            {
+              label: "Ver en origen",
+              icon: SquareArrowOutUpRight,
+              note: originLabel(item.targetType),
+              onSelect: () =>
+                window.location.assign(
+                  item.targetType === "fixed_cost"
+                    ? "/costos-fijos"
+                    : item.targetType === "subscription"
+                      ? "/plataformas"
+                      : "/tarjetas",
+                ),
+            },
+          ]}
           onEdit={() => {
             setEditing(item);
             setDialogOpen(true);

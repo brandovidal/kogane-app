@@ -58,6 +58,8 @@ export interface RowActionsProps {
     onSelect: () => void;
     /** Short note under the label; when set the item is disabled */
     hint?: string;
+    /** Short note under the label; the item stays enabled */
+    note?: string;
   }[];
 }
 
@@ -119,19 +121,27 @@ export function RowActions({
               <Copy /> Duplicar
             </DropdownMenuItem>
           )}
-          {extraItems?.map(({ label: text, icon: Icon, onSelect, hint }) => (
-            <DropdownMenuItem key={text} onSelect={onSelect} disabled={!!hint}>
-              <Icon />
-              {hint ? (
-                <span className="flex flex-col">
-                  {text}
-                  <span className="text-xs text-muted-foreground">{hint}</span>
-                </span>
-              ) : (
-                text
-              )}
-            </DropdownMenuItem>
-          ))}
+          {extraItems?.map(
+            ({ label: text, icon: Icon, onSelect, hint, note }) => (
+              <DropdownMenuItem
+                key={text}
+                onSelect={onSelect}
+                disabled={!!hint}
+              >
+                <Icon />
+                {hint || note ? (
+                  <span className="flex flex-col">
+                    {text}
+                    <span className="text-xs text-muted-foreground">
+                      {hint ?? note}
+                    </span>
+                  </span>
+                ) : (
+                  text
+                )}
+              </DropdownMenuItem>
+            ),
+          )}
           {status &&
             !isPaidStatus(status.value) &&
             status.options.includes("paid") && (
