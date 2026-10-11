@@ -8,7 +8,7 @@ export { PaymentMethodIcon } from "./PaymentMethodIcon";
 export type { PaymentMethodIconProps } from "./PaymentMethodIcon";
 export { PaymentMethodLabel } from "./PaymentMethodLabel";
 export type { PaymentMethodLabelProps } from "./PaymentMethodLabel";
-export { PeopleTable } from "./PeopleTable";
+export { PeoplePage } from "./PeoplePage";
 export { PersonSelect } from "./PersonSelect";
 export { SettingsPage } from "./SettingsPage";
 export { SettingsMenuItems } from "./SettingsMenuItems";

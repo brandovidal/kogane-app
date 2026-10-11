@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { SettingsPage } from "@/features/settings/components/SettingsPage";
+---
+
+<DashboardLayout title="Notificaciones">
+  <SettingsPage section="notificaciones" client:load />
+</DashboardLayout>

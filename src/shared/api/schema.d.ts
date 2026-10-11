@@ -1313,7 +1313,8 @@ export interface paths {
     delete?: never;
     options?: never;
     head?: never;
-    patch?: never;
+    /** Edit your own profile: name, nickname, mobile and DNI (409 PHONE_TAKEN) */
+    patch: operations["AuthController_updateProfile_v1"];
     trace?: never;
   };
   "/v1/auth/impersonation/stop": {
@@ -3617,6 +3618,7 @@ export interface components {
         isDefault: boolean;
         /** @description Masked: only the last 3 characters (D94) */
         documentNumber: string | null;
+        appearsIn: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
       }[];
     };
     CreatePersonDto: {
@@ -3625,6 +3627,8 @@ export interface components {
       isDefault?: boolean;
       isActive?: boolean;
       documentNumber?: string | null;
+      /** @description Pages where the person can be picked; Cobros y deudas lists everyone and Día a día is always the user */
+      appearsIn?: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
     };
     PersonResponseDto: {
       /** @enum {boolean} */
@@ -3644,6 +3648,7 @@ export interface components {
         isDefault: boolean;
         /** @description Masked: only the last 3 characters (D94) */
         documentNumber: string | null;
+        appearsIn: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
       };
     };
     UpdatePersonDto: {
@@ -3652,6 +3657,8 @@ export interface components {
       isDefault?: boolean;
       isActive?: boolean;
       documentNumber?: string | null;
+      /** @description Pages where the person can be picked; Cobros y deudas lists everyone and Día a día is always the user */
+      appearsIn?: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
     };
     CardHolderListResponseDto: {
       /** @enum {boolean} */
@@ -4916,6 +4923,9 @@ export interface components {
         name: string;
         email: string;
         phone: string | null;
+        nickname: string | null;
+        /** @description Only the last 3 digits (D94) */
+        documentMasked: string | null;
         /** @enum {string} */
         role: "superadmin" | "admin" | "member";
         /** @enum {string} */
@@ -5060,6 +5070,15 @@ export interface components {
         /** @description The invitation went out by email too */
         emailed: boolean;
       };
+    };
+    UpdateProfileDto: {
+      name?: string;
+      /** @description How the app greets them; null clears it */
+      nickname?: string | null;
+      /** @description Mobile (9 digits in Peru); also signs in with the password; empty or null clears it */
+      phone?: string | null;
+      /** @description DNI: goes to their Yo (D94), never back in the clear */
+      documentNumber?: string | null;
     };
     UpdateUserDto: {
       /** @enum {string} */
@@ -6471,7 +6490,10 @@ export interface operations {
   };
   PeopleController_findAll_v1: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description Only the people who can be picked on that page (the owner always) */
+        module?: "fixed_costs" | "platforms" | "cards" | "recurring";
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -7797,6 +7819,29 @@ export interface operations {
       cookie?: never;
     };
     requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionUserResponseDto"];
+        };
+      };
+    };
+  };
+  AuthController_updateProfile_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateProfileDto"];
+      };
+    };
     responses: {
       200: {
         headers: {

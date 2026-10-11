@@ -171,7 +171,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
                 />
                 Recordar para {cardName ?? "esta tarjeta"}
                 <a
-                  href="/configuracion"
+                  href="/configuracion/personas"
                   className="ml-auto underline-offset-2 hover:underline"
                 >
                   Gestionar en Configuración

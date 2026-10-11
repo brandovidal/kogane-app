@@ -22,7 +22,7 @@ import {
   useCreateStatementRows,
   useUpdateStatementRow,
 } from "@/features/statements/hooks/statements";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import {
   EXPENSE_RESOURCES,
@@ -316,7 +316,8 @@ function RowsTable({
             {selected.size} seleccionadas · Asignar a
           </span>
           <div className="w-48">
-            <PersonSelect
+            <PersonPicker
+              module="cards"
               value={assignTo}
               onChange={setAssignTo}
               placeholder="Elige la persona"
@@ -468,7 +469,8 @@ export function StatementDetail({
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex max-w-sm items-center gap-2 text-sm">
             <span className="shrink-0 text-muted-foreground">Persona</span>
-            <PersonSelect
+            <PersonPicker
+              module="cards"
               value={statement.personId}
               onChange={(personId) =>
                 personId && assignPerson.mutate({ id: statement.id, personId })

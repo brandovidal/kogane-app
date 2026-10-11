@@ -97,7 +97,7 @@ function UserMenuView() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="min-h-9">
-            <a href="/perfil">
+            <a href="/configuracion/perfil">
               <User /> Perfil
             </a>
           </DropdownMenuItem>
@@ -121,7 +121,7 @@ function UserMenuView() {
               onSelect={() =>
                 stop.mutate(undefined, {
                   onSuccess: () =>
-                    window.location.replace("/configuracion?tab=usuarios"),
+                    window.location.replace("/configuracion/usuarios"),
                 })
               }
             >

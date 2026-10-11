@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { FormField } from "@/shared/components/forms/FormField";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
@@ -166,13 +166,8 @@ export function FixedCostGeneralSection() {
             icon={UserRound}
             error={errors.personId?.message}
           >
-            <PersonFilterFields
-              multiple={false}
-              presentation="popover"
-              labelClassName="sr-only"
-              emptySelectionLabel="Selecciona persona"
-              includeUnassigned={false}
-              useMeAlias={false}
+            <PersonPicker
+              module="fixed_costs"
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })

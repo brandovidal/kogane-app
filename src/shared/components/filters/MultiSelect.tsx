@@ -62,6 +62,8 @@ export interface MultiSelectProps {
   multiple?: boolean;
   allowEmptySelection?: boolean;
   showSelectionFooter?: boolean;
+  /** An action under the list (e.g. "Nueva persona"); `close` closes the popover first. */
+  footerAction?: (close: () => void) => ReactNode;
 }
 
 function SelectionMark({
@@ -121,6 +123,7 @@ export function MultiSelect({
   multiple = true,
   allowEmptySelection = false,
   showSelectionFooter = true,
+  footerAction,
 }: MultiSelectProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -517,6 +520,9 @@ export function MultiSelect({
           })
         )}
       </div>
+      {footerAction && (
+        <div className="border-t p-1">{footerAction(() => setOpen(false))}</div>
+      )}
       {allowEmptySelection && !multiple && (
         <button
           type="button"

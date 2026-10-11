@@ -2,7 +2,7 @@ import { CurrencySelect } from "@/shared/components/forms/CurrencySelect";
 import type { CurrencyCode } from "@/shared/constants/currency";
 import { useEffect, useMemo, useState } from "react";
 import { useCardCheck } from "@/features/debts/hooks/debts";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Checkbox } from "@/ui/checkbox";
@@ -208,7 +208,8 @@ export function StatementTotalCard({
                   como deuda ni cobro.
                 </p>
               </div>
-              <PersonSelect
+              <PersonPicker
+                module="cards"
                 value={visualAssigneeId}
                 onChange={setVisualAssigneeId}
                 placeholder="Selecciona persona"

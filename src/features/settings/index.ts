@@ -12,7 +12,7 @@ export {
   PAYMENT_METHOD_ICONS,
   PAYMENT_METHOD_TYPE_LABELS,
 } from "./constants/payment-methods";
-export { PeopleTable } from "./components/PeopleTable";
+export { PeoplePage } from "./components/PeoplePage";
 export { PersonSelect } from "./components/PersonSelect";
 export { SettingsPage } from "./components/SettingsPage";
 export { SettingsMenuItems } from "./components/SettingsMenuItems";
