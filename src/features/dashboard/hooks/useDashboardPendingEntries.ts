@@ -20,15 +20,11 @@ export function useDashboardPendingEntries(
   summary: Summary | undefined,
   month: number,
   year: number,
+  onlySelectedMonth: boolean,
 ) {
-  const fixedCostsQuery = useExpenses(EXPENSE_RESOURCES.fixedCost, {
-    month,
-    year,
-  });
-  const cardExpensesQuery = useExpenses(EXPENSE_RESOURCES.creditCard, {
-    month,
-    year,
-  });
+  const period = onlySelectedMonth ? { month, year } : undefined;
+  const fixedCostsQuery = useExpenses(EXPENSE_RESOURCES.fixedCost, period);
+  const cardExpensesQuery = useExpenses(EXPENSE_RESOURCES.creditCard, period);
   const debtsQuery = useDebts();
   const personSummaries = usePersonSummaries(month, year).data;
   const cards = useCreditCards().data ?? EMPTY_CARDS;
@@ -64,7 +60,20 @@ export function useDashboardPendingEntries(
       );
       if (!expenses.length) return [];
       const dueDay = card.paymentDueDay ?? 0;
-      const due = dueDay > 0 ? new Date(year, month - 1, dueDay) : null;
+      const now = today ?? new Date();
+      const todayStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+      );
+      let due: Date | null =
+        dueDay > 0
+          ? onlySelectedMonth
+            ? new Date(year, month - 1, dueDay)
+            : new Date(now.getFullYear(), now.getMonth(), dueDay)
+          : null;
+      if (due && !onlySelectedMonth && due < todayStart)
+        due = new Date(now.getFullYear(), now.getMonth() + 1, dueDay);
       const dueDate = due
         ? `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, "0")}-${String(due.getDate()).padStart(2, "0")}`
         : null;
@@ -91,7 +100,8 @@ export function useDashboardPendingEntries(
     const debtItems: PendingEntry[] = debts
       .filter(
         (debt) =>
-          debt.paymentYear * 12 + debt.paymentMonth <= periodIndex &&
+          (!onlySelectedMonth ||
+            debt.paymentYear * 12 + debt.paymentMonth === periodIndex) &&
           debt.status !== "paid" &&
           debt.status !== "cashback",
       )
@@ -113,35 +123,36 @@ export function useDashboardPendingEntries(
           action: collect ? "Cobrar" : "Pagar",
         };
       });
-    const paidCardItems: PendingEntry[] = previousPeriod
-      ? cards.flatMap((card) => {
-          const total = cardExpenses
-            .filter(
-              (expense) =>
-                expense.paymentMethodId === card.id &&
-                expense.paymentStatus === "paid",
-            )
-            .reduce(
-              (sum, expense) => sum + (expense.amountInPen ?? expense.amount),
-              0,
-            );
-          return total > 0
-            ? [
-                {
-                  id: `card-paid-${card.id}`,
-                  kind: "card" as const,
-                  title: `${card.name} · tarjeta pagada`,
-                  detail: "Pago registrado en este período",
-                  amount: total,
-                  dueDate: null,
-                  paid: true,
-                  href: "/tarjetas",
-                  action: "Ver tarjeta",
-                },
-              ]
-            : [];
-        })
-      : [];
+    const paidCardItems: PendingEntry[] =
+      onlySelectedMonth && previousPeriod
+        ? cards.flatMap((card) => {
+            const total = cardExpenses
+              .filter(
+                (expense) =>
+                  expense.paymentMethodId === card.id &&
+                  expense.paymentStatus === "paid",
+              )
+              .reduce(
+                (sum, expense) => sum + (expense.amountInPen ?? expense.amount),
+                0,
+              );
+            return total > 0
+              ? [
+                  {
+                    id: `card-paid-${card.id}`,
+                    kind: "card" as const,
+                    title: `${card.name} · tarjeta pagada`,
+                    detail: "Pago registrado en este período",
+                    amount: total,
+                    dueDate: null,
+                    paid: true,
+                    href: "/tarjetas",
+                    action: "Ver tarjeta",
+                  },
+                ]
+              : [];
+          })
+        : [];
     const reviewItems: PendingEntry[] = [];
     if (summary?.budget?.isProposal)
       reviewItems.push({
@@ -219,6 +230,8 @@ export function useDashboardPendingEntries(
     summary?.budget,
     draftCount,
     personSummaries,
+    onlySelectedMonth,
+    today,
   ]);
 
   return { entries, today, draftCount };

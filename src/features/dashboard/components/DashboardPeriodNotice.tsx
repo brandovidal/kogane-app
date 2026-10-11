@@ -28,7 +28,7 @@ export function DashboardPeriodNotice() {
         : "Consulta los movimientos del período seleccionado.";
   const className = isBilled
     ? "flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-muted-foreground"
-    : "flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 text-sm text-muted-foreground";
+    : "flex items-center gap-2 rounded-xl border border-primary/30 bg-gradient-to-r from-primary/15 via-primary/8 to-transparent px-4 py-3 text-sm text-muted-foreground";
 
   return (
     <div className={className}>

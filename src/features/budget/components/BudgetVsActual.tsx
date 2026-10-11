@@ -1,8 +1,14 @@
-import { AlertTriangle, OctagonAlert } from "lucide-react";
+import { AlertTriangle, ArrowRight, OctagonAlert } from "lucide-react";
 
 import type { Summary } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/ui/card";
 
 import {
   STATUS_BAR,
@@ -24,9 +30,19 @@ export function BudgetVsActual({
   );
 
   return (
-    <Card>
+    <Card className={compact ? "h-full" : undefined}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base">Presupuesto vs real</CardTitle>
+        {compact && (
+          <CardAction>
+            <a
+              href="/presupuesto"
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            >
+              Categorías <ArrowRight className="size-3" />
+            </a>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="space-y-3">
         {!limited.length && (

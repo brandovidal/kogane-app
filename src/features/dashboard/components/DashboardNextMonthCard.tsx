@@ -4,6 +4,7 @@ import { getMonthName } from "@/shared/lib/dates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { Skeleton } from "@/ui/skeleton";
+import { Progress } from "@/ui/progress";
 import { useNextMonthForecast } from "../hooks/useNextMonthForecast";
 
 export function DashboardNextMonthCard({
@@ -48,22 +49,21 @@ export function DashboardNextMonthCard({
           </div>
         ) : (
           <>
-            <div>
-              <div className="mb-1.5 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+            <div className="space-y-1.5">
+              <Progress
+                value={Math.min(percent ?? 0, 100)}
+                aria-label="Porcentaje del sueldo comprometido"
+                className="bg-muted [&_[data-slot=progress-indicator]]:bg-primary"
+              />
+              <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span>
                   {percent == null
                     ? "Registra tu sueldo para ver el compromiso"
-                    : `${percent}% del sueldo ya comprometido`}
+                    : `${percent}% del sueldo comprometido`}
                 </span>
-                <span className="font-medium tabular-nums text-foreground">
+                <span className="shrink-0 font-medium tabular-nums text-foreground">
                   {formatCurrency(forecast.committed)}
                 </span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className={`h-full rounded-full ${percent != null && percent >= 100 ? "bg-amber-500" : "bg-primary"}`}
-                  style={{ width: `${Math.min(percent ?? 0, 100)}%` }}
-                />
               </div>
             </div>
             <dl className="space-y-2 text-sm">

@@ -35,13 +35,16 @@ export function BillingCycleCard({
   const visibleCards = mounted ? cards : [];
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-sm">
           <CreditCard className="h-4 w-4" /> Tarjetas de crédito
         </CardTitle>
         <CardAction>
-          <a href="/tarjetas" className="text-xs text-primary hover:underline">
+          <a
+            href="/tarjetas"
+            className="text-xs text-violet-400 hover:underline"
+          >
             Ver tarjetas
           </a>
         </CardAction>

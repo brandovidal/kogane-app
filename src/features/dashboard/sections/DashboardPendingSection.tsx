@@ -16,7 +16,13 @@ export function DashboardPendingSection({
   year: number;
   onRegisterPayment: (tab: DashboardPaymentTab) => void;
 }) {
-  const { entries, today } = useDashboardPendingEntries(summary, month, year);
+  const [onlySelectedMonth, setOnlySelectedMonth] = useState(true);
+  const { entries, today } = useDashboardPendingEntries(
+    summary,
+    month,
+    year,
+    onlySelectedMonth,
+  );
   const setPeriod = usePeriod((state) => state.setPeriod);
   const [isBilled, setIsBilled] = useState(false);
 
@@ -35,6 +41,8 @@ export function DashboardPendingSection({
       month={month}
       year={year}
       isBilled={isBilled}
+      onlySelectedMonth={onlySelectedMonth}
+      onOnlySelectedMonthChange={setOnlySelectedMonth}
       onGoToPreviousMonth={() =>
         setPeriod(month === 1 ? 12 : month - 1, month === 1 ? year - 1 : year)
       }

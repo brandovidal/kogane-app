@@ -49,16 +49,16 @@ export function BudgetDonut({
             Sin gastos en este mes
           </p>
         ) : (
-          <div className="grid items-center gap-4 md:grid-cols-[240px_1fr]">
-            <div className="relative h-60">
+          <div className="grid min-w-0 items-center gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+            <div className="relative mx-auto h-56 w-full max-w-[240px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={slices}
                     dataKey="value"
                     nameKey="name"
-                    innerRadius={72}
-                    outerRadius={108}
+                    innerRadius={66}
+                    outerRadius={100}
                     paddingAngle={1}
                     stroke="var(--card)"
                     strokeWidth={2}
@@ -105,24 +105,24 @@ export function BudgetDonut({
                 )}
               </div>
             </div>
-            <ul className="space-y-1.5 text-sm">
+            <ul className="min-w-0 space-y-1 text-xs">
               {slices.map((slice) => (
                 <li key={slice.key}>
                   <button
                     type="button"
                     disabled={mode !== "categories"}
                     onClick={() => setSelected(slice)}
-                    className="flex w-full items-center justify-between gap-2 rounded px-1 py-0.5 text-left hover:bg-muted/50 disabled:hover:bg-transparent"
+                    className="flex w-full items-center justify-between gap-1.5 rounded px-1 py-1 text-left hover:bg-muted/50 disabled:hover:bg-transparent"
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex min-w-0 items-center gap-1.5">
                       <span
                         className="h-2.5 w-2.5 shrink-0 rounded-sm"
                         style={{ backgroundColor: slice.fill }}
                         aria-hidden
                       />
-                      {slice.name}
+                      <span className="truncate">{slice.name}</span>
                     </span>
-                    <span className="tabular-nums text-muted-foreground">
+                    <span className="shrink-0 text-right tabular-nums text-muted-foreground">
                       {formatCurrency(slice.value)} ·{" "}
                       {summary?.spentPen
                         ? Math.round((slice.value / summary.spentPen) * 100)

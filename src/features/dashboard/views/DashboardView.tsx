@@ -31,7 +31,7 @@ export function DashboardView({
 
       <section
         aria-label="Presupuesto y próximos compromisos"
-        className="grid items-stretch gap-4 xl:grid-cols-3"
+        className="grid auto-rows-fr items-stretch gap-4 xl:grid-cols-3"
       >
         <BudgetVsActual summary={summary} compact />
         <DashboardNextMonthCard month={month} year={year} />
