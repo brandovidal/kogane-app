@@ -52,7 +52,13 @@ export interface RowActionsProps {
   onOpenFiles?: () => void;
   onOpenHistory?: () => void;
   /** Row-specific shortcuts shown after Duplicar (e.g. Cambiar categoría) */
-  extraItems?: { label: string; icon: ComponentType; onSelect: () => void }[];
+  extraItems?: {
+    label: string;
+    icon: ComponentType;
+    onSelect: () => void;
+    /** Short note under the label; when set the item is disabled */
+    hint?: string;
+  }[];
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
@@ -113,9 +119,17 @@ export function RowActions({
               <Copy /> Duplicar
             </DropdownMenuItem>
           )}
-          {extraItems?.map(({ label: text, icon: Icon, onSelect }) => (
-            <DropdownMenuItem key={text} onSelect={onSelect}>
-              <Icon /> {text}
+          {extraItems?.map(({ label: text, icon: Icon, onSelect, hint }) => (
+            <DropdownMenuItem key={text} onSelect={onSelect} disabled={!!hint}>
+              <Icon />
+              {hint ? (
+                <span className="flex flex-col">
+                  {text}
+                  <span className="text-xs text-muted-foreground">{hint}</span>
+                </span>
+              ) : (
+                text
+              )}
             </DropdownMenuItem>
           ))}
           {status &&
