@@ -27,6 +27,8 @@ export interface DailyResultsSectionProps {
   today: Date | null;
   onEdit: (expense: DailyExpense) => void;
   onNewExpense: () => void;
+  selected: Set<string>;
+  onSelectedChange: (selected: Set<string>) => void;
 }
 
 export function DailyResultsSection({
@@ -47,6 +49,8 @@ export function DailyResultsSection({
   today,
   onEdit,
   onNewExpense,
+  selected,
+  onSelectedChange,
 }: DailyResultsSectionProps) {
   if (loading) return null;
 
@@ -96,6 +100,8 @@ export function DailyResultsSection({
       view={view}
       groupBy={layout === "day" ? "day" : groupBy}
       hideEmptyGroups={hideEmptyGroups}
+      selected={selected}
+      onSelectedChange={onSelectedChange}
       knownGroups={(field) =>
         field === "person"
           ? personIds

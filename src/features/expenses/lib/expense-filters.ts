@@ -37,6 +37,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
   me?: string,
 ): T[] {
   const q = filters.q?.trim() ? fold(filters.q.trim()) : null;
+  const origins = filters.origin?.split(",").filter(Boolean) ?? [];
   const selectedPeople = filters.person
     ?.split(",")
     .filter((person) => person && person !== PERSON_ALL)
@@ -67,6 +68,8 @@ export function applyExpenseFilters<T extends FilterableExpense>(
         [record.description, record.merchant, record.notes].some(
           (text) => text && fold(text).includes(q),
         )) &&
+      (!origins.length ||
+        origins.includes(record.draftId ? "message" : "manual")) &&
       (!categories.length || categories.includes(record.categoryId ?? "")) &&
       (!methods.length || methods.includes(record.paymentMethodId ?? "")) &&
       (!currencies.length || currencies.includes(record.currency ?? "")) &&
@@ -110,6 +113,7 @@ export function countActiveExpenseFilters(
 ) {
   return fields.filter((key) => {
     const value = filters[key];
+    if (key === "amountTo") return false;
     if (value == null || value === "") return false;
     if (key === "q") return !!value.trim();
     // Person selections are serialized as comma-separated ids. Count the

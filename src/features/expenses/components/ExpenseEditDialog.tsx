@@ -8,6 +8,8 @@ import {
   CircleCheck,
   CreditCard,
   FileText,
+  MessageSquareText,
+  Pencil,
   Tags,
   UserRound,
 } from "lucide-react";
@@ -33,6 +35,7 @@ import {
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { Badge } from "@/ui/badge";
 import {
   Select,
   SelectContent,
@@ -189,6 +192,8 @@ export function ExpenseEditDialog({
   });
 
   const shared = (expense?.othersShare ?? 0) > 0;
+  const originMessage = !!expense?.draftId;
+  const OriginIcon = originMessage ? MessageSquareText : Pencil;
 
   return (
     <ResponsiveDialog
@@ -200,6 +205,14 @@ export function ExpenseEditDialog({
         shared
           ? "Es un gasto compartido: el reparto se cambia desde el bot con /editar."
           : "Modifica los datos del gasto"
+      }
+      headerActions={
+        expense ? (
+          <Badge variant="secondary" className="shrink-0 gap-1.5">
+            <OriginIcon aria-hidden="true" className="size-3.5" />
+            Origen: {originMessage ? "Mensaje" : "Manual"}
+          </Badge>
+        ) : undefined
       }
       footer={
         <>

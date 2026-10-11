@@ -72,6 +72,12 @@ export function useActiveExpenseFilterChips<
 
   const labels: Partial<Record<ExpenseFilterKey, string>> = {
     q: value.q?.trim() ? `Buscar: ${value.q.trim()}` : undefined,
+    origin: value.origin
+      ? `Origen: ${value.origin
+          .split(",")
+          .map((origin) => (origin === "message" ? "Mensaje" : "Manual"))
+          .join(", ")}`
+      : undefined,
     month: value.month
       ? `Mes: ${getMonthName(Number(value.month))}`
       : undefined,

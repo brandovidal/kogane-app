@@ -17,7 +17,7 @@ import { useUrlPeriod } from "@/shared/hooks/useUrlPeriod";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { usePeriod } from "@/shared/stores/period.store";
 
-import { DAILY_FILTERS } from "../constants/daily";
+import { DAILY_FILTERS, type DailySort } from "../constants/daily";
 import type { DailyLayout } from "../types/daily-types";
 
 export function useDailyList() {
@@ -37,18 +37,30 @@ export function useDailyList() {
   const [view, setView] = useViewMode("daily", "table");
   const [groupBy, setGroupBy] = useState("none");
   const [layout, setLayout] = useState<DailyLayout>("list");
+  const [sort, setSort] = useState<DailySort>("date-desc");
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [today, setToday] = useState<Date | null>(null);
   const [hideEmpty, setHideEmpty] = useHideEmptyGroups("daily");
 
   useEffect(() => setToday(new Date()), []);
 
-  const sorted = useMemo(
-    () =>
-      applyExpenseFilters(expenses, filters, me).sort((left, right) =>
-        right.spentAt.localeCompare(left.spentAt),
-      ),
-    [expenses, filters, me],
-  );
+  const selectionScope = `${layout}:${groupBy}:${JSON.stringify(filters)}`;
+  useEffect(() => setSelected(new Set()), [selectionScope]);
+
+  const sorted = useMemo(() => {
+    const direction = sort.endsWith("asc") ? 1 : -1;
+    return applyExpenseFilters(expenses, filters, me).sort((left, right) => {
+      if (sort.startsWith("date"))
+        return direction * left.spentAt.localeCompare(right.spentAt);
+      if (sort.startsWith("amount"))
+        return (
+          direction *
+          ((left.amountInPen ?? left.amount) -
+            (right.amountInPen ?? right.amount))
+        );
+      return left.description.localeCompare(right.description);
+    });
+  }, [expenses, filters, me, sort]);
 
   return {
     month,
@@ -67,8 +79,12 @@ export function useDailyList() {
     setView,
     groupBy,
     setGroupBy,
+    sort,
+    setSort,
     layout,
     setLayout,
+    selected,
+    setSelected,
     today,
     hideEmpty,
     setHideEmpty,

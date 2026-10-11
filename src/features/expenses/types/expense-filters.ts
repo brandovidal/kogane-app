@@ -12,6 +12,8 @@ type SharedFilterSelection =
 export interface ExpenseFilterValues {
   person?: string; // Comma-separated person ids; PERSON_ME and PERSON_UNASSIGNED are special values.
   q?: string;
+  /** Daily-expense origin inferred from its source draft. */
+  origin?: "manual" | "message";
   category?: string;
   method?: string; // Comma-separated payment method ids; no value means all active methods.
   currency?: string;
@@ -34,6 +36,7 @@ export type ExpenseFilterKey = keyof ExpenseFilterValues;
 
 export interface FilterableExpense {
   description: string;
+  draftId?: string | null;
   personId?: string | null;
   merchant?: string | null;
   notes?: string | null;

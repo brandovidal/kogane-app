@@ -1,10 +1,11 @@
 import {
   CalendarDays,
   ChevronDown,
-  List,
   ListOrdered,
   Plus,
+  Table2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import type { DailyLayout } from "../../types/daily-types";
 import { DAILY_LAYOUTS } from "../../constants/daily";
@@ -22,7 +23,7 @@ import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { cn } from "@/shared/utils/cn";
 
 const layoutIcons = {
-  list: List,
+  list: Table2,
   day: ListOrdered,
   calendar: CalendarDays,
 } as const;
@@ -65,6 +66,21 @@ export function DailyViewBar({
             </button>
           );
         })}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          title="Más vistas: próximamente"
+          aria-label="Más vistas, próximamente"
+          className="shrink-0 rounded-sm border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
+          onClick={() =>
+            toast.info(
+              "La creación de vistas personalizadas estará disponible próximamente.",
+            )
+          }
+        >
+          <Plus className="size-4" />
+        </Button>
       </div>
 
       <div className="flex shrink-0 items-center justify-end gap-2">

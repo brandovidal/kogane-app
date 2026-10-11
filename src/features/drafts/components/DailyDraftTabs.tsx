@@ -19,15 +19,21 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import type { DraftFields } from "../hooks/drafts";
 import { ShareEditor } from "./ShareEditor";
+import { PendingAttachmentsPanel } from "@/features/attachments/components/PendingAttachmentsPanel";
+import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 
 export function DailyDraftTabs({
   value,
   onChange,
   missingFields = [],
+  files,
+  onFilesChange,
 }: {
   value: DraftFields;
   onChange: (value: DraftFields) => void;
   missingFields?: string[];
+  files: PendingAttachmentUpload[];
+  onFilesChange: (files: PendingAttachmentUpload[]) => void;
 }) {
   const [tab, setTab] = useState("general");
   const set = <K extends keyof DraftFields>(key: K, next: DraftFields[K]) =>
@@ -197,11 +203,22 @@ export function DailyDraftTabs({
             </FormField>
           </div>
           <div className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
-            Para guardar una captura, audio o comprobante, puedes enviarlo desde{" "}
-            <Button asChild variant="link" className="h-auto p-0">
-              <a href="/mensajes">Mensajes</a>
-            </Button>
-            .
+            <h3 className="mb-2 font-medium text-foreground">Archivos</h3>
+            <p className="mb-3">Boleta, captura de Yape u otro comprobante</p>
+            <PendingAttachmentsPanel
+              files={files}
+              onChange={onFilesChange}
+              dropzone
+              kind="boleta"
+              showKindSelect={false}
+            />
+            <p className="mt-3">
+              ¿Tienes una captura, un audio o un texto? Usa{" "}
+              <Button asChild variant="link" className="h-auto p-0">
+                <a href="/mensajes">Mensajes</a>
+              </Button>{" "}
+              para registrarlo más rápido.
+            </p>
           </div>
         </section>
       </TabsContent>

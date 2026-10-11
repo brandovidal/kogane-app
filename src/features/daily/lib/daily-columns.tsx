@@ -1,4 +1,4 @@
-import { MessageSquareText, Tags, UsersRound } from "lucide-react";
+import { MessageSquareText, Pencil, Tags, UsersRound } from "lucide-react";
 
 import type { Category, DailyExpense } from "@/shared/api/types";
 import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay";
@@ -32,20 +32,11 @@ export function createDailyExpenseColumns({
 }: DailyExpenseColumnOptions): Column<DailyExpense>[] {
   return [
     {
-      key: "date",
-      header: "Fecha",
-      cell: (expense) => (
-        <span className="text-sm text-muted-foreground">
-          {formatDate(expense.spentAt)}
-        </span>
-      ),
-    },
-    {
       key: "description",
       header: "Descripción",
       role: "title",
       cell: (expense) => (
-        <div>
+        <div className="min-w-0">
           <span className="font-medium">{expense.description}</span>
           {expense.expenseType === "guilty_pleasure" && (
             <Badge variant="secondary" className="ml-2 text-xs">
@@ -56,6 +47,38 @@ export function createDailyExpenseColumns({
             <p className="text-xs text-muted-foreground">{expense.merchant}</p>
           )}
         </div>
+      ),
+      cardCell: (expense) => (
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-semibold text-muted-foreground">
+            {expense.description.trim().charAt(0).toLocaleUpperCase() || "?"}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate font-medium">
+              {expense.description}
+              {expense.expenseType === "guilty_pleasure" && (
+                <Badge
+                  variant="secondary"
+                  className="ml-2 align-middle text-xs"
+                >
+                  {EXPENSE_TYPE_LABELS.guilty_pleasure}
+                </Badge>
+              )}
+            </span>
+            <span className="block truncate text-xs text-muted-foreground">
+              {expense.merchant || "Sin comercio"}
+            </span>
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "date",
+      header: "Fecha",
+      cell: (expense) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(expense.spentAt)}
+        </span>
       ),
     },
     {
@@ -103,6 +126,23 @@ export function createDailyExpenseColumns({
       cell: (expense) => (
         <span className="text-sm">{personName(expense.personId)}</span>
       ),
+    },
+    {
+      key: "origin",
+      header: "Origen",
+      cell: (expense) => {
+        const message = !!expense.draftId;
+        const Icon = message ? MessageSquareText : Pencil;
+        return (
+          <Badge
+            variant="outline"
+            className="gap-1.5 text-xs text-muted-foreground"
+          >
+            <Icon className="size-3" />
+            {message ? "Mensaje" : "Manual"}
+          </Badge>
+        );
+      },
     },
     {
       key: "actions",

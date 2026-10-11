@@ -77,7 +77,9 @@ export function DataView<T>({
                         }
                       />
                     )}
-                    <div className="min-w-0 flex-1">{title?.cell(item)}</div>
+                    <div className="min-w-0 flex-1">
+                      {title?.cardCell?.(item) ?? title?.cell(item)}
+                    </div>
                     {actions && (
                       <div className="shrink-0">{actions.cell(item)}</div>
                     )}
@@ -90,7 +92,7 @@ export function DataView<T>({
                           : "text-lg"
                       }
                     >
-                      {amount.cell(item)}
+                      {amount.cardCell?.(item) ?? amount.cell(item)}
                     </div>
                   )}
                   <dl
@@ -115,7 +117,7 @@ export function DataView<T>({
                               : "min-w-0 text-right"
                           }
                         >
-                          {column.cell(item)}
+                          {column.cardCell?.(item) ?? column.cell(item)}
                         </dd>
                       </div>
                     ))}

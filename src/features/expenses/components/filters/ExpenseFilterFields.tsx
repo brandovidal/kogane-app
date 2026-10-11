@@ -1,4 +1,5 @@
 import {
+  Banknote,
   CalendarRange,
   CircleCheck,
   Coins,
@@ -6,6 +7,7 @@ import {
   Tags,
   UsersRound,
   WalletCards,
+  Waypoints,
 } from "lucide-react";
 import { BillingPeriodFilterFields } from "@/features/subscriptions/components/BillingPeriodFilterFields";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
@@ -20,6 +22,8 @@ import { RecordSearchField } from "@/shared/components/filters/RecordSearchField
 import { MoreFilters } from "@/shared/components/filters/MoreFilters";
 import { DatePicker } from "@/shared/components/forms/DatePicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
+import { Input } from "@/ui/input";
+import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { cn } from "@/shared/utils/cn";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
@@ -150,6 +154,21 @@ export function ExpenseFilterFields({
             activeMarker={activeMarkers}
           />
         )}
+        {has("origin") && (
+          <FilterSelect
+            label="Origen"
+            icon={showIcons ? Waypoints : undefined}
+            value={value.origin}
+            onChange={(next) => set("origin", next)}
+            options={[
+              { value: "manual", label: "Manual" },
+              { value: "message", label: "Mensaje" },
+            ]}
+            width={width}
+            labelClassName="text-sm font-medium"
+            activeMarker={activeMarkers}
+          />
+        )}
         {has("hasNote") && (
           <NoteFilterFields
             label="Con nota"
@@ -206,6 +225,47 @@ export function ExpenseFilterFields({
               )}
             </div>
           </div>
+        )}
+        {has("amountFrom") && (
+          <section
+            className={
+              panel
+                ? "col-span-2 space-y-2 rounded-lg border p-3"
+                : "space-y-2 rounded-lg border p-3"
+            }
+          >
+            <h3 className="text-sm font-medium">
+              <FieldLabel icon={showIcons ? Banknote : undefined}>
+                Monto
+              </FieldLabel>
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="space-y-1.5 text-xs text-muted-foreground">
+                Desde
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={value.amountFrom ?? ""}
+                  placeholder="Sin mínimo"
+                  onChange={(event) => set("amountFrom", event.target.value)}
+                />
+              </label>
+              {has("amountTo") && (
+                <label className="space-y-1.5 text-xs text-muted-foreground">
+                  Hasta
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={value.amountTo ?? ""}
+                    placeholder="Sin límite"
+                    onChange={(event) => set("amountTo", event.target.value)}
+                  />
+                </label>
+              )}
+            </div>
+          </section>
         )}
       </>
     );

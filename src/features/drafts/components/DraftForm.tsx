@@ -33,12 +33,15 @@ import {
 import { FixedCostDraftTabs } from "./FixedCostDraftTabs";
 import { ShareEditor } from "./ShareEditor";
 import { DailyDraftTabs } from "./DailyDraftTabs";
+import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 
 interface DraftFormProps {
   value: DraftFields;
   onChange: (value: DraftFields) => void;
   missingFields?: string[];
   showDestinationField?: boolean;
+  files?: PendingAttachmentUpload[];
+  onFilesChange?: (files: PendingAttachmentUpload[]) => void;
 }
 
 // The fields of one expense for any destination (D40); the missing ones come from kogane-api (missingFields)
@@ -62,6 +65,8 @@ export function DraftForm({
   onChange,
   missingFields = [],
   showDestinationField = true,
+  files = [],
+  onFilesChange,
 }: DraftFormProps) {
   const set = <K extends keyof DraftFields>(
     key: K,
@@ -115,6 +120,8 @@ export function DraftForm({
           value={value}
           onChange={onChange}
           missingFields={missingFields}
+          files={files}
+          onFilesChange={onFilesChange ?? (() => undefined)}
         />
       ) : (
         <div className="space-y-4">

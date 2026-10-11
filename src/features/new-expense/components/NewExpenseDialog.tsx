@@ -24,6 +24,9 @@ import { Button } from "@/ui/button";
 import { installmentError } from "@/features/expenses/lib/installments";
 import { FIELDS_BY_DESTINATION } from "@/features/drafts/lib/draft-form";
 import { usePeriod } from "@/shared/stores/period.store";
+import { useUploadAttachment } from "@/features/attachments/hooks/attachments";
+import { ATTACHMENT_MAX_MB } from "@/features/attachments/constants/attachments";
+import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 import { getMonthName } from "@/shared/lib/dates";
 import {
   Select,
@@ -67,15 +70,54 @@ function NewExpenseDialogView() {
   const [missing, setMissing] = useState<string[]>([]);
   const createDraft = useCreateDraft();
   const saveDraft = useSaveDraft({ quiet: true });
+  const uploadAttachment = useUploadAttachment({ quiet: true });
+  const [pendingAttachments, setPendingAttachments] = useState<
+    PendingAttachmentUpload[]
+  >([]);
+  const [savedRecordId, setSavedRecordId] = useState<string>();
 
   useEffect(() => {
     if (open) {
       setFields({ ...emptyDraftFields(), ...preset });
       setMissing([]);
+      setPendingAttachments([]);
+      setSavedRecordId(undefined);
     }
   }, [open, preset]);
 
   const save = async () => {
+    if (savedRecordId) {
+      const results = await Promise.allSettled(
+        pendingAttachments.map((pending) =>
+          uploadAttachment.mutateAsync({
+            file: pending.file,
+            refType: "expense",
+            refId: savedRecordId,
+            kind: pending.kind,
+          }),
+        ),
+      );
+      const failed = pendingAttachments.filter(
+        (_, index) => results[index]?.status === "rejected",
+      );
+      setPendingAttachments(failed);
+      if (failed.length) {
+        toast.error(
+          "El gasto ya se creó, pero algunos archivos no se subieron. Puedes reintentarlo.",
+        );
+        return;
+      }
+      toast.success("Gasto y archivos guardados");
+      close();
+      return;
+    }
+    const oversized = pendingAttachments.some(
+      ({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024,
+    );
+    if (oversized) {
+      toast.error(`Cada archivo debe pesar ${ATTACHMENT_MAX_MB} MB o menos.`);
+      return;
+    }
     const rules = FIELDS_BY_DESTINATION[fields.destination ?? "daily"];
     const quotaError = rules?.installment
       ? installmentError(fields.installment)
@@ -98,7 +140,32 @@ function NewExpenseDialogView() {
         });
         return;
       }
-      if (draft) await saveDraft.mutateAsync(draft.id);
+      if (draft) {
+        const saved = await saveDraft.mutateAsync(draft.id);
+        if (pendingAttachments.length) {
+          setSavedRecordId(saved.recordId);
+          const results = await Promise.allSettled(
+            pendingAttachments.map((pending) =>
+              uploadAttachment.mutateAsync({
+                file: pending.file,
+                refType: "expense",
+                refId: saved.recordId,
+                kind: pending.kind,
+              }),
+            ),
+          );
+          const failed = pendingAttachments.filter(
+            (_, index) => results[index]?.status === "rejected",
+          );
+          setPendingAttachments(failed);
+          if (failed.length) {
+            toast.error(
+              "El gasto ya se creó, pero algunos archivos no se subieron. Puedes reintentarlo.",
+            );
+            return;
+          }
+        }
+      }
       const cardCode = (id: string | null | undefined) =>
         cards.find((card) => card.id === id)?.code ?? undefined;
       const label =
@@ -118,7 +185,8 @@ function NewExpenseDialogView() {
     }
   };
 
-  const busy = createDraft.isPending || saveDraft.isPending;
+  const busy =
+    createDraft.isPending || saveDraft.isPending || uploadAttachment.isPending;
 
   return (
     <ResponsiveDialog
@@ -169,7 +237,13 @@ function NewExpenseDialogView() {
               ) : (
                 <Plus aria-hidden="true" />
               )}
-              {busy ? "Creando..." : "Crear"}
+              {busy
+                ? savedRecordId
+                  ? "Subiendo archivos..."
+                  : "Creando..."
+                : savedRecordId
+                  ? "Reintentar archivos"
+                  : "Crear"}
             </Button>
           </div>
         </div>
@@ -189,6 +263,8 @@ function NewExpenseDialogView() {
           onChange={setFields}
           missingFields={missing}
           showDestinationField={false}
+          files={pendingAttachments}
+          onFilesChange={setPendingAttachments}
         />
       </div>
     </ResponsiveDialog>
