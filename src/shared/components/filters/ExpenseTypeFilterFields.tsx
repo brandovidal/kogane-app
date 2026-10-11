@@ -5,7 +5,7 @@ import {
   type ShortFilterFieldsProps,
 } from "./ShortFilterFields";
 
-type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
+type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel"> & {
   allLabel?: string;
 };
 
@@ -17,6 +17,7 @@ const options = Object.entries(EXPENSE_TYPE_LABELS).map(([value, label]) => ({
 
 export function ExpenseTypeFilterFields({
   allLabel = "Todos los tipos",
+  mode = "multi",
   icon = ListFilter,
   ...props
 }: Props) {
@@ -25,7 +26,7 @@ export function ExpenseTypeFilterFields({
       {...props}
       icon={icon}
       options={options}
-      mode="multi"
+      mode={mode}
       allLabel={allLabel}
     />
   );

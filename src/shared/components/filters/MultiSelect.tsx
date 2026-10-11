@@ -157,11 +157,10 @@ export function MultiSelect({
     multiple &&
     options.length > 0 &&
     options.every((option) => selected.has(option.value));
-  const noFilter =
-    multiple && (value === null || (emptyValueMeansAll && value.length === 0));
-  const allChecked = noFilter || allSelected;
+  const noFilter = multiple && (value === null || value.length === 0);
+  const allChecked = (noFilter && emptyValueMeansAll) || allSelected;
   const isSelected = (optionValue: string) =>
-    selected.has(optionValue) || noFilter;
+    selected.has(optionValue) || (noFilter && emptyValueMeansAll);
   const active = !noFilter && !allSelected;
   const selectedNames = selectedValues.map(
     (value) => options.find((option) => option.value === value)?.label ?? value,
@@ -173,15 +172,15 @@ export function MultiSelect({
       items.every((item) => selected.has(item.value)),
   );
   const summaryAccessibleText =
-    noFilter || allSelected
+    allChecked
       ? allLabel
-      : selectedValues.length === 0
+      : noFilter || selectedValues.length === 0
         ? emptySelectionLabel
         : `${selectedValues.length} seleccionadas`;
   const summary =
-    noFilter || allSelected ? (
+    allChecked ? (
       allLabel
-    ) : selectedValues.length === 0 ? (
+    ) : noFilter || selectedValues.length === 0 ? (
       emptySelectionLabel
     ) : summaryMode === "person" ? (
       selectedValues.length === 1 ? (
@@ -263,7 +262,7 @@ export function MultiSelect({
 
   const updateSelection = (next: string[]) => {
     if (multiple && options.length > 0 && next.length === options.length) {
-      onChange(emptyValueMeansAll ? [] : null);
+      onChange(emptyValueMeansAll ? [] : next);
       return;
     }
     onChange(next);
@@ -308,7 +307,7 @@ export function MultiSelect({
       updateSelection(options.map((option) => option.value));
       return;
     }
-    onChange(allChecked ? [] : null);
+    onChange(allChecked ? null : options.map((option) => option.value));
   };
 
   const resetSelection = () => onChange(emptyValueMeansAll ? [] : null);

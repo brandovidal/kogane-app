@@ -5,7 +5,7 @@ import {
   type ShortFilterFieldsProps,
 } from "./ShortFilterFields";
 
-type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
+type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel"> & {
   allLabel?: string;
   ownLabel?: string;
 };
@@ -13,6 +13,7 @@ type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
 export function SharedFilterFields({
   allLabel = "Todos",
   ownLabel = "No compartidos",
+  mode = "single",
   icon = UsersRound,
   ...props
 }: Props) {
@@ -24,7 +25,7 @@ export function SharedFilterFields({
       {...props}
       icon={icon}
       options={sharedOptions}
-      mode="single"
+      mode={mode}
       allLabel={allLabel}
     />
   );

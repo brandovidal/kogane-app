@@ -4,7 +4,7 @@ import {
   type ShortFilterFieldsProps,
 } from "./ShortFilterFields";
 
-type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
+type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel"> & {
   allLabel?: string;
 };
 
@@ -15,6 +15,7 @@ const options = [
 
 export function NoteFilterFields({
   allLabel = "Todas",
+  mode = "single",
   icon = FileText,
   ...props
 }: Props) {
@@ -23,7 +24,7 @@ export function NoteFilterFields({
       {...props}
       icon={icon}
       options={options}
-      mode="single"
+      mode={mode}
       allLabel={allLabel}
     />
   );

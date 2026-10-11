@@ -6,10 +6,7 @@ import {
   type ShortFilterFieldsProps,
 } from "@/shared/components/filters/ShortFilterFields";
 
-type Props = Omit<
-  ShortFilterFieldsProps,
-  "options" | "mode" | "allLabel" | "icon"
-> & {
+type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel" | "icon"> & {
   allLabel?: string;
   icon?: ShortFilterFieldsProps["icon"];
   showIcon?: boolean;
@@ -19,6 +16,7 @@ export function BillingPeriodFilterFields({
   label = "Período de cobro",
   allLabel = "Todos los períodos",
   icon,
+  mode = "multi",
   showIcon = true,
   ...props
 }: Props) {
@@ -41,7 +39,7 @@ export function BillingPeriodFilterFields({
       label={label}
       icon={showIcon ? (icon ?? CalendarClock) : undefined}
       options={options}
-      mode="multi"
+      mode={mode}
       allLabel={allLabel}
     />
   );

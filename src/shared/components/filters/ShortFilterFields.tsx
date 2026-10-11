@@ -25,6 +25,7 @@ export interface ShortFilterFieldsProps {
   containerClassName?: string;
   triggerClassName?: string;
   allLabel?: string;
+  emptySelectionLabel?: string;
   activeMarker?: boolean;
 }
 
@@ -40,6 +41,7 @@ export function ShortFilterFields({
   containerClassName,
   triggerClassName,
   allLabel = "Todos",
+  emptySelectionLabel = "Sin filtro",
   activeMarker = false,
 }: ShortFilterFieldsProps) {
   const [open, setOpen] = useState(false);
@@ -54,16 +56,22 @@ export function ShortFilterFields({
   const singleOption = !isMulti
     ? options.find((option) => option.value === value)
     : undefined;
-  const active = isMulti ? selected.length > 0 : Boolean(singleOption);
+  const allSelected =
+    isMulti && options.length > 0 && selectedOptions.length === options.length;
+  const active = isMulti
+    ? selected.length > 0 && !allSelected
+    : Boolean(singleOption);
   const triggerSummary = isMulti
-    ? selectedOptions.length === 0
+    ? allSelected
       ? allLabel
-      : selectedOptions.length > 3
-        ? `${selectedOptions.length} seleccionados`
-        : selectedOptions.map((option) => option.label).join(", ")
+      : selectedOptions.length === 0
+        ? emptySelectionLabel
+        : selectedOptions.length > 3
+          ? `${selectedOptions.length} seleccionados`
+          : selectedOptions.map((option) => option.label).join(", ")
     : (singleOption?.label ?? allLabel);
-  const allSelected = isMulti && selected.length === 0;
-  const allPartial = isMulti && selected.length > 0;
+  const allPartial =
+    isMulti && selected.length > 0 && selectedOptions.length < options.length;
   const selectedCount = isMulti ? selectedOptions.length : Number(active);
 
   const toggle = (optionValue: string) => {
@@ -78,7 +86,7 @@ export function ShortFilterFields({
       return;
     }
     const next = [...selected, optionValue];
-    onChange(next.length === options.length ? undefined : next.join(","));
+    onChange(next.join(","));
   };
 
   const renderMark = (checked: boolean, partial = false) => (
@@ -147,7 +155,13 @@ export function ShortFilterFields({
                 <button
                   type="button"
                   aria-pressed={allSelected}
-                  onClick={() => onChange(undefined)}
+                  onClick={() =>
+                    onChange(
+                      allSelected
+                        ? undefined
+                        : options.map((option) => option.value).join(","),
+                    )
+                  }
                   className="flex min-h-9 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-accent"
                 >
                   {renderMark(allSelected, allPartial)}

@@ -105,7 +105,7 @@ export function PaymentMethodFilterFields({
           Las cuentas activas salen de los medios de pago configurados.
         </>
       )}
-      emptyValueMeansAll={multiple}
+      emptyValueMeansAll={false}
       multiple={multiple}
       allowEmptySelection={allowEmptySelection}
       showSelectionFooter={multiple}

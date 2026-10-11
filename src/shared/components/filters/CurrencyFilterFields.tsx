@@ -5,7 +5,7 @@ import {
   type ShortFilterFieldsProps,
 } from "./ShortFilterFields";
 
-type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
+type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel"> & {
   allLabel?: string;
 };
 
@@ -20,6 +20,7 @@ const options = CURRENCY_OPTIONS.map((option) => ({
 
 export function CurrencyFilterFields({
   allLabel = "Todas las monedas",
+  mode = "multi",
   icon = Coins,
   ...props
 }: Props) {
@@ -28,7 +29,7 @@ export function CurrencyFilterFields({
       {...props}
       icon={icon}
       options={options}
-      mode="multi"
+      mode={mode}
       allLabel={allLabel}
     />
   );

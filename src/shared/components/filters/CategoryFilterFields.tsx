@@ -35,7 +35,7 @@ export function CategoryFilterFields({
   presentation = "responsive-sheet",
   counts,
   multiple = true,
-  emptySelectionLabel = "Ninguna categoría",
+  emptySelectionLabel = "Sin filtro",
   allowEmptySelection = false,
   triggerClassName,
 }: CategoryFilterFieldsProps) {
@@ -101,7 +101,7 @@ export function CategoryFilterFields({
           Las categorías salen de las categorías configuradas.
         </>
       )}
-      emptyValueMeansAll={multiple}
+      emptyValueMeansAll={false}
       multiple={multiple}
       allowEmptySelection={allowEmptySelection}
       showSelectionFooter={multiple}

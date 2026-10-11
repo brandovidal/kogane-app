@@ -8,7 +8,7 @@ import {
   type ShortFilterFieldsProps,
 } from "./ShortFilterFields";
 
-type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
+type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel"> & {
   allLabel?: string;
 };
 
@@ -27,13 +27,14 @@ const options = PAYMENT_METHOD_TYPE_ORDER.map((value) => {
 
 export function PaymentMethodTypeFilterFields({
   allLabel = "Todos los medios",
+  mode = "multi",
   ...props
 }: Props) {
   return (
     <ShortFilterFields
       {...props}
       options={options}
-      mode="multi"
+      mode={mode}
       allLabel={allLabel}
     />
   );

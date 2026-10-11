@@ -76,7 +76,6 @@ export function PersonFilter({
             Las personas salen de los registros de esta vista.
           </>
         )}
-        emptyValueMeansAll
         highlightMatches
         summaryMode="person"
         presentation={presentation}
