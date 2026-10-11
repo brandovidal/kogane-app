@@ -3,14 +3,18 @@ import type {
   AcceptInviteDto,
   ChangePasswordDto,
   CreateInviteDto,
+  ForgotPasswordDto,
   LoginDto,
+  ResetPasswordDto,
   UpdateUserDto,
 } from "../types/auth.dto";
 export type {
   AcceptInviteDto,
   ChangePasswordDto,
   CreateInviteDto,
+  ForgotPasswordDto,
   LoginDto,
+  ResetPasswordDto,
   UpdateUserDto,
 } from "../types/auth.dto";
 
@@ -22,6 +26,10 @@ export const login = (body: LoginDto) =>
   unwrap(api.POST("/v1/auth/login", { body }));
 export const acceptInvite = (body: AcceptInviteDto) =>
   unwrap(api.POST("/v1/auth/accept-invite", { body }));
+export const forgotPassword = (body: ForgotPasswordDto) =>
+  unwrap(api.POST("/v1/auth/forgot-password", { body }));
+export const resetPassword = (body: ResetPasswordDto) =>
+  unwrap(api.POST("/v1/auth/reset-password", { body }));
 export const logout = () => unwrap(api.POST("/v1/auth/logout"));
 export const changePassword = (body: ChangePasswordDto) =>
   unwrap(api.POST("/v1/auth/password", { body }));

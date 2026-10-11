@@ -17,6 +17,10 @@ import {
   useInvitePreview,
   useLogin,
 } from "@/features/auth/hooks/auth";
+import {
+  ForgotPasswordPanel,
+  ResetPasswordForm,
+} from "@/features/auth/components/PasswordRecovery";
 import { withQuery } from "@/shared/api/query";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { safeReturnPath } from "@/shared/lib/auth-redirect";
@@ -35,6 +39,7 @@ function params() {
   const query = new URLSearchParams(window.location.search);
   return {
     invite: query.get("invitacion"),
+    resetToken: query.get("restablecer"),
     error: query.get("error"),
     returnTo: safeReturnPath(query.get("volver")),
   };
@@ -68,6 +73,7 @@ function LoginPageView() {
   const generatedInvite = useRef(false);
 
   const invite = url?.invite ?? null;
+  const resetToken = url?.resetToken ?? null;
   const returnTo = url?.returnTo ?? "/";
   const done = () => window.location.replace(returnTo);
   const error =
@@ -81,8 +87,11 @@ function LoginPageView() {
     }
   };
 
-  const invalidInvite = Boolean(url && invite && preview.isError);
-  const inviteEmail = invite && preview.data ? preview.data.email : null;
+  const invalidInvite = Boolean(
+    url && invite && !resetToken && preview.isError,
+  );
+  const inviteEmail =
+    invite && !resetToken && preview.data ? preview.data.email : null;
 
   useEffect(() => {
     if (!inviteEmail || generatedInvite.current) return;
@@ -163,12 +172,18 @@ function LoginPageView() {
                   Bienvenido
                 </p>
                 <CardTitle className="text-3xl font-semibold tracking-tight">
-                  {inviteEmail ? "Te invitaron a Kogane" : "Entrar a Kogane"}
+                  {resetToken
+                    ? "Elige otra contraseña"
+                    : inviteEmail
+                      ? "Te invitaron a Kogane"
+                      : "Entrar a Kogane"}
                 </CardTitle>
                 <p className="text-sm leading-6 text-white/55">
-                  {inviteEmail
-                    ? `Completa tu acceso para ${inviteEmail}.`
-                    : "Ingresa a tu cuenta para ver tus finanzas."}
+                  {resetToken
+                    ? "El enlace vence a los 60 minutos y solo sirve una vez."
+                    : inviteEmail
+                      ? `Completa tu acceso para ${inviteEmail}.`
+                      : "Ingresa a tu cuenta para ver tus finanzas."}
                 </p>
               </CardHeader>
               <CardContent className="space-y-5 p-0">
@@ -189,7 +204,7 @@ function LoginPageView() {
                   </p>
                 )}
 
-                {!invalidInvite && (
+                {!invalidInvite && !resetToken && (
                   <Button
                     type="button"
                     variant="outline"
@@ -223,19 +238,24 @@ function LoginPageView() {
                     <ArrowUpRight className="ml-auto h-4 w-4 text-white/45" />
                   </Button>
                 )}
-                {!invalidInvite && (
+                {!invalidInvite && !resetToken && (
                   <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-white/35">
                     <span className="h-px flex-1 bg-white/10" />o con contraseña
                     <span className="h-px flex-1 bg-white/10" />
                   </div>
                 )}
-                {config && !config.google && !invalidInvite && (
+                {config && !config.google && !invalidInvite && !resetToken && (
                   <p className="-mt-3 text-center text-xs text-amber-200/75">
                     Google no está configurado para este entorno.
                   </p>
                 )}
 
-                {inviteEmail ? (
+                {resetToken ? (
+                  <ResetPasswordForm
+                    token={resetToken}
+                    onDone={() => window.location.replace("/entrar")}
+                  />
+                ) : inviteEmail ? (
                   <form
                     className="space-y-3"
                     onSubmit={(event) => {
@@ -377,18 +397,11 @@ function LoginPageView() {
                   </form>
                 ) : null}
 
-                {!inviteEmail && !invalidInvite && (
-                  <details className="group rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2.5 text-sm">
-                    <summary className="cursor-pointer list-none font-medium text-white/75 marker:hidden">
-                      ¿Olvidaste tu contraseña?
-                    </summary>
-                    <p className="mt-2 leading-5 text-white/50">
-                      Pídele al administrador de Kogane una nueva invitación
-                      para el correo de tu cuenta. Abre el enlace para elegir
-                      otra contraseña. Por seguridad, Kogane no envía enlaces de
-                      recuperación por correo automáticamente.
-                    </p>
-                  </details>
+                {!inviteEmail && !invalidInvite && !resetToken && (
+                  <ForgotPasswordPanel
+                    mailEnabled={Boolean(config?.mail)}
+                    initialEmail={identifier}
+                  />
                 )}
 
                 <p className="pt-1 text-center text-xs leading-5 text-white/45">
