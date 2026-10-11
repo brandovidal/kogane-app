@@ -9,6 +9,7 @@ import { usePlatformTable } from "../hooks/usePlatformTable";
 import { PlatformPeriodSelector } from "../components/header/PlatformPeriodSelector";
 import { SubscriptionDialog } from "../components/SubscriptionDialog";
 import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
+import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
 import { PlatformViewBar } from "../sections/list/PlatformViewBar";
 import { PlatformOverview } from "../sections/list/PlatformOverview";
 import { PlatformToolbar } from "../sections/list/PlatformToolbar";
@@ -33,6 +34,7 @@ function PlatformListPageContent() {
   const actions = usePlatformActions();
   const bulk = usePlatformBulkActions(list.filtered, list.resetKey);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
   const rowColors = useRowColorRules("platforms");
   const [todayKey, setTodayKey] = useState("");
   useEffect(() => setTodayKey(localTodayKey()), []);
@@ -83,6 +85,7 @@ function PlatformListPageContent() {
         view={list.view}
         onViewChange={list.setView}
         onCreate={actions.onCreate}
+        onImport={() => setImporting(true)}
         exportItems={exportData.items}
       />
       <PlatformOverview
@@ -172,6 +175,12 @@ function PlatformListPageContent() {
           onClose={() => actions.setMoving(null)}
         />
       )}
+      <ImportListDialog
+        open={importing}
+        onOpenChange={setImporting}
+        target="platforms"
+        title="Importar plataformas"
+      />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { CardStatementPassword } from "./CardStatementPassword";
 import { useEffect, useState } from "react";
 import {
   useCardHolders,
@@ -404,6 +405,12 @@ export function CardEditorDialog({
             onChange={(event) => set({ comment: event.target.value })}
             placeholder="Agrega una nota sobre esta tarjeta"
           />,
+        )}
+        {card && (
+          <CardStatementPassword
+            cardId={card.id}
+            hasPassword={Boolean(card.hasStatementPassword)}
+          />
         )}
       </div>
     </ResponsiveDialog>

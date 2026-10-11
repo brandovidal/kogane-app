@@ -1,3 +1,4 @@
+import { ViewStatementFileButton } from "./ViewStatementFileButton";
 import { StatementBalanceSummary } from "./StatementBalanceSummary";
 import { StatementPaymentSummary } from "./StatementPaymentSummary";
 import { StatementBalanceHistory } from "./StatementBalanceHistory";
@@ -490,16 +491,14 @@ export function StatementDetail({
               placeholder="Elige la tarjeta"
             />
           </div>
-          {onChangeFile && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto"
-              onClick={onChangeFile}
-            >
-              <Replace className="size-4" /> Cambiar archivo
-            </Button>
-          )}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <ViewStatementFileButton statementId={statement.id} />
+            {onChangeFile && (
+              <Button variant="outline" size="sm" onClick={onChangeFile}>
+                <Replace className="size-4" /> Cambiar archivo
+              </Button>
+            )}
+          </div>
         </div>
         <StatementBalanceSummary statement={statement} />
       </CardHeader>

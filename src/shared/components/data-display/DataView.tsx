@@ -13,6 +13,7 @@ export function DataView<T>({
   calculationStorageKey,
   calculationDefaults,
   tableClassName,
+  rowClassName,
   calculationState,
   extraCard,
   compactCards = false,
@@ -140,6 +141,7 @@ export function DataView<T>({
       calculationStorageKey={calculationStorageKey}
       calculationDefaults={calculationDefaults}
       tableClassName={tableClassName}
+      rowClassName={rowClassName}
       calculationState={calculationState}
       selected={selected}
       onSelectedChange={onSelectedChange}

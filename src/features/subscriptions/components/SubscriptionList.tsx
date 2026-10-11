@@ -26,12 +26,17 @@ import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay"
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, SquareArrowOutUpRight } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
 import { useViewMode } from "@/shared/hooks/useViewMode";
+import { useHideEmptyGroups } from "@/shared/hooks/useHideEmptyGroups";
+import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
+import { useCsvExport } from "@/shared/hooks/useCsvExport";
+import { RowColorRulesButton } from "@/shared/components/toolbar/RowColorRulesButton";
+import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { type Column } from "@/shared/types/data-view";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
@@ -142,7 +147,8 @@ function SubscriptionListView({
       kind: group === "recurring" ? "service" : null,
     });
   };
-  const personName = nameById(usePeople().data);
+  const people = usePeople().data ?? [];
+  const personName = nameById(people);
   const deleteSubscription = useDeleteExpense(EXPENSE_RESOURCES.subscription);
   const saveSubscription = useSaveExpense(EXPENSE_RESOURCES.subscription);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -181,6 +187,35 @@ function SubscriptionListView({
     group === "recurring" ? "table" : "cards",
   );
   const [groupBy, setGroupBy] = useState("none");
+  const [hideEmpty, setHideEmpty] = useHideEmptyGroups(
+    group === "recurring" ? "recurring" : "subscriptions",
+  );
+  const csv = useCsvExport({
+    filename: `recurrentes-${selectedYear}-${String(selectedMonth).padStart(2, "0")}`,
+    headers: [
+      "Recurrente",
+      "Origen",
+      "Monto",
+      "Moneda",
+      "Frecuencia",
+      "Persona",
+      "Fecha de cobro",
+      "Estado",
+    ],
+    rows: current.map((sub) => [
+      sub.description,
+      sub.kind === "platform" ? "Plataformas" : "Costos fijos",
+      sub.amount,
+      sub.currency,
+      PERIOD_LABELS[sub.period] ?? sub.period,
+      personName(sub.personId),
+      sub.dueDate ? sub.dueDate.slice(0, 10) : "",
+      sub.paymentStatus,
+    ]),
+  });
+  const rowColors = useRowColorRules(
+    group === "recurring" ? "recurring" : "subscriptions",
+  );
 
   const columns: Column<Subscription>[] = [
     {
@@ -315,6 +350,23 @@ function SubscriptionListView({
           label={sub.description}
           files={{ refType: "expense", refId: sub.id }}
           history={{ entity: "exp_subscriptions", id: sub.id }}
+          extraItems={
+            group === "recurring"
+              ? [
+                  {
+                    label: "Ver en origen",
+                    icon: SquareArrowOutUpRight,
+                    note: `${sub.kind === "platform" ? "Plataformas" : "Costos fijos"} · ${sub.description}`,
+                    onSelect: () =>
+                      window.location.assign(
+                        sub.kind === "platform"
+                          ? "/plataformas"
+                          : "/costos-fijos",
+                      ),
+                  },
+                ]
+              : undefined
+          }
           onEdit={() => {
             setEditingSub(sub);
             setDialogOpen(true);
@@ -478,6 +530,8 @@ function SubscriptionListView({
           total={all.length}
           groupBy={groupBy}
           onGroupByChange={setGroupBy}
+          hideEmptyGroups={hideEmpty}
+          onHideEmptyGroupsChange={setHideEmpty}
           groupByOptions={
             group === "recurring"
               ? [
@@ -493,6 +547,16 @@ function SubscriptionListView({
           }
         />
         <div className="flex items-center gap-2 self-end sm:self-auto">
+          {group === "recurring" && (
+            <ExportMenu items={csv.items} label="Exportar" />
+          )}
+          {view === "table" && (
+            <RowColorRulesButton
+              rules={rowColors.rules}
+              onChange={rowColors.setRules}
+              onReset={rowColors.reset}
+            />
+          )}
           <ViewToggle value={view} onChange={setView} />
           <Button size="sm" onClick={newPlatform}>
             <Plus className="mr-1 h-4 w-4" /> {texts.add}
@@ -528,6 +592,24 @@ function SubscriptionListView({
           columns={columns}
           rowKey={(sub) => sub.id}
           view={view}
+          hideEmptyGroups={hideEmpty}
+          knownGroups={(field) =>
+            field === "person"
+              ? people.map((person) => person.id)
+              : field === "status"
+                ? SUBSCRIPTION_STATUSES
+                : field === "currency"
+                  ? ["PEN", "USD"]
+                  : field === "period"
+                    ? Object.keys(PERIOD_LABELS)
+                    : undefined
+          }
+          rowClassName={(sub) =>
+            rowColors.rowClassName({
+              dueDate: sub.dueDate,
+              status: sub.paymentStatus,
+            })
+          }
           groupBy={groupBy}
           groupKey={(row, key) => {
             if (key === "person") return row.personId ?? "none";

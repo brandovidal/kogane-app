@@ -2,3 +2,4 @@
 export { RecurringDialog } from "./RecurringDialog";
 export { RecurringList } from "./RecurringList";
 export { RecurringPage } from "./RecurringPage";
+export { FromSeriesDialog } from "./FromSeriesDialog";

@@ -47,3 +47,7 @@ export interface ImportDetailViewProps {
 export interface ImportRowStatusBadgeProps {
   status: ImportRowStatus;
 }
+
+import type { Schemas } from "@/shared/api/client";
+
+export type ListImportResult = Schemas["ListImportResponseDto"]["data"];

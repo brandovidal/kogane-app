@@ -36,11 +36,13 @@ export function PlatformViewBar({
   view,
   onViewChange,
   onCreate,
+  onImport,
   exportItems,
 }: {
   view: PlatformView;
   onViewChange: (view: PlatformView) => void;
   onCreate: () => void;
+  onImport: () => void;
   exportItems: ExportMenuItem[];
 }) {
   const menuItems: ExportMenuItem[] = [
@@ -48,7 +50,7 @@ export function PlatformViewBar({
     {
       label: "Importar plataformas…",
       icon: <Upload className="size-4" />,
-      href: "/importacion",
+      onSelect: onImport,
     },
     {
       label: "Copiar enlace a la vista",

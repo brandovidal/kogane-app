@@ -2,3 +2,4 @@
 export { DebtDialog } from "./DebtDialog";
 export { DebtPaymentDialog } from "./DebtPaymentDialog";
 export { RegisterPaymentDialog } from "./RegisterPaymentDialog";
+export { CarryOverDialog } from "./CarryOverDialog";

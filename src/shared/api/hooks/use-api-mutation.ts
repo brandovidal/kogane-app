@@ -50,6 +50,8 @@ const MESSAGES: Record<string, string> = {
   USER_DISABLED: "Esta cuenta está desactivada.",
   INVITE_INVALID: "La invitación venció o ya se usó: pide otra.",
   NOT_INVITED: "Ese correo no tiene invitación: pídele una a un administrador.",
+  RESET_LINK_INVALID:
+    "El enlace venció o ya se usó: pide uno nuevo desde «¿Olvidaste tu contraseña?».",
   WEAK_PASSWORD: "La contraseña es muy corta: usa al menos 10 caracteres.",
   LINK_CODE_INVALID: "El código de vinculación venció: genera uno nuevo.",
   FORBIDDEN_ROLE: "No tienes permiso para hacer esto.",

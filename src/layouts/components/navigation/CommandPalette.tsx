@@ -9,6 +9,44 @@ import { flattenNav } from "@/shared/utils/navigation";
 import { type FlatLink } from "@/shared/types/navigation";
 import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
 import { normalize } from "@/shared/lib/text";
+import { periodStore } from "@/shared/stores/period.store";
+import { getCurrentMonth, getCurrentYear } from "@/shared/lib/dates";
+
+const RECENT_KEY = "kogane:recent-links";
+const MAX_RECENT = 4;
+
+type PaletteItem = FlatLink & { section?: string; run?: () => void };
+
+const readRecent = (): string[] => {
+  try {
+    const parsed: unknown = JSON.parse(
+      localStorage.getItem(RECENT_KEY) ?? "[]",
+    );
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
+};
+
+const rememberLink = (href: string) => {
+  try {
+    const next = [href, ...readRecent().filter((item) => item !== href)];
+    localStorage.setItem(RECENT_KEY, JSON.stringify(next.slice(0, MAX_RECENT)));
+  } catch {
+    // not remembered
+  }
+};
+
+// "Ir a hoy": the month on screen goes back to the current one
+const GO_TO_TODAY: PaletteItem = {
+  href: "#hoy",
+  label: "Ir a hoy",
+  group: "Período",
+  run: () =>
+    periodStore.getState().setPeriod(getCurrentMonth(), getCurrentYear()),
+};
 
 // Ctrl+K (or ⌘K): jump to any screen or card by typing part of its name (D41)
 function CommandPaletteView() {
@@ -37,24 +75,47 @@ function CommandPaletteView() {
     };
   }, []);
 
-  const results = useMemo(() => {
+  // Read when it opens: the palette stays mounted between uses
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    if (open) setRecent(readRecent());
+  }, [open]);
+
+  const results = useMemo<PaletteItem[]>(() => {
     const links = flattenNav(NAV, cards);
     const term = normalize(query);
-    return term
-      ? links.filter((link) =>
-          normalize(`${link.group ?? ""} ${link.label}`).includes(term),
-        )
-      : links;
-  }, [cards, query]);
+    if (term)
+      return [...links, GO_TO_TODAY].filter((link) =>
+        normalize(`${link.group ?? ""} ${link.label}`).includes(term),
+      );
+    // Without a search: what was opened lately, the actions, then every screen
+    const recents = recent
+      .map((href) => links.find((link) => link.href === href))
+      .filter((link): link is FlatLink => Boolean(link && !link.action));
+    const actions = [...links.filter((link) => link.action), GO_TO_TODAY];
+    const rest = links.filter(
+      (link) => !link.action && !recents.includes(link),
+    );
+    return [
+      ...recents.map((link) => ({ ...link, section: "Recientes" })),
+      ...actions.map((link) => ({ ...link, section: "Acciones" })),
+      ...rest.map((link) => ({ ...link, section: "Ir a" })),
+    ];
+  }, [cards, query, recent]);
 
   useEffect(() => setSelected(0), [query, open]);
 
   // Ctrl/⌘ + ↵ (or Ctrl/⌘ + click) opens the screen in a new tab (board HdrBusqueda)
-  const go = (link: FlatLink, newTab = false) => {
+  const go = (link: PaletteItem, newTab = false) => {
     setOpen(false);
-    if (link.action === "new-expense") newExpenseStore.getState().openWith();
-    else if (newTab) window.open(link.href, "_blank", "noopener");
-    else window.location.href = link.href;
+    if (link.run) link.run();
+    else if (link.action === "new-expense")
+      newExpenseStore.getState().openWith();
+    else {
+      rememberLink(link.href);
+      if (newTab) window.open(link.href, "_blank", "noopener");
+      else window.location.href = link.href;
+    }
   };
 
   return (
@@ -92,7 +153,12 @@ function CommandPaletteView() {
         </div>
         <ul className="max-h-80 overflow-y-auto p-1">
           {results.map((link, index) => (
-            <li key={link.href}>
+            <li key={`${link.section ?? ""}:${link.href}`}>
+              {link.section && link.section !== results[index - 1]?.section && (
+                <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {link.section}
+                </p>
+              )}
               <button
                 type="button"
                 onMouseEnter={() => setSelected(index)}

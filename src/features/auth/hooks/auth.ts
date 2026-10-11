@@ -6,6 +6,7 @@ import {
   changePassword,
   createInvite,
   createTelegramLink,
+  forgotPassword,
   getAuthConfig,
   getInvitePreview,
   getMe,
@@ -13,6 +14,7 @@ import {
   impersonate,
   login,
   logout,
+  resetPassword,
   revokeInvite,
   stopImpersonation,
   unlinkTelegram,
@@ -20,7 +22,9 @@ import {
   type AcceptInviteDto,
   type ChangePasswordDto,
   type CreateInviteDto,
+  type ForgotPasswordDto,
   type LoginDto,
+  type ResetPasswordDto,
   type UpdateUserDto,
 } from "../services/auth.service";
 
@@ -119,4 +123,16 @@ export const useImpersonate = () =>
 export const useStopImpersonation = () =>
   useApiMutation(stopImpersonation, {
     invalidate: [],
+  });
+
+// "¿Olvidaste tu contraseña?": the answer is the same whether the email exists or not
+export const useForgotPassword = () =>
+  useApiMutation((body: ForgotPasswordDto) => forgotPassword(body), {
+    invalidate: [],
+  });
+
+export const useResetPassword = () =>
+  useApiMutation((body: ResetPasswordDto) => resetPassword(body), {
+    invalidate: [authKeys.me],
+    success: "Contraseña cambiada: ya puedes entrar",
   });

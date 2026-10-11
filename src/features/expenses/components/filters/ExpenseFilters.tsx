@@ -28,6 +28,8 @@ export function ExpenseFilters({
   groupBy,
   onGroupByChange,
   groupByOptions,
+  hideEmptyGroups,
+  onHideEmptyGroupsChange,
   personInPanel = false,
   installmentsInPanel = false,
   description,
@@ -141,6 +143,14 @@ export function ExpenseFilters({
           value={groupBy ?? "none"}
           onChange={onGroupByChange}
           options={groupByOptions}
+          hideEmpty={
+            onHideEmptyGroupsChange
+              ? {
+                  checked: hideEmptyGroups ?? true,
+                  onChange: onHideEmptyGroupsChange,
+                }
+              : undefined
+          }
         />
       )}
       {rightActions}

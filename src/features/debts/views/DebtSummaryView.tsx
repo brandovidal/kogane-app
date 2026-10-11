@@ -9,6 +9,7 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { useDebtSummaryData } from "../hooks/useDebtSummaryData";
+import { usePersonSummaries } from "../hooks/personSummaries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import {
   DEBT_FILTER_KEYS,
@@ -22,6 +23,7 @@ import {
 import { DebtMovementTypeSheet } from "../sections/DebtMovementTypeSheet";
 import { StatementMinimumSection } from "../sections/StatementMinimumSection";
 import { PersonDebtSummaryCardList } from "../sections/PersonDebtSummaryCardList";
+import { DebtSummaryMenu } from "../sections/DebtSummaryMenu";
 import { DebtSummaryMonthlyTable } from "../sections/DebtSummaryMonthlyTable";
 import { CardMinimumCoverageSection } from "../sections/CardMinimumCoverageSection";
 
@@ -52,6 +54,13 @@ export function DebtSummaryView({
     showCollections,
     showDebts,
   });
+  const personSummaries = usePersonSummaries(
+    summary.selectedMonth,
+    summary.selectedYear,
+  );
+  const summariesByPerson = new Map(
+    (personSummaries.data ?? []).map((item) => [item.personId, item]),
+  );
   const periodMonth =
     filters.month && filters.month !== "until" ? Number(filters.month) : null;
   const periodYear = Number(filters.year ?? year);
@@ -129,7 +138,18 @@ export function DebtSummaryView({
             },
           }}
         />
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <DebtSummaryMenu
+            rows={visibleGroups.map((group) => ({
+              personId: group.personId,
+              name: group.name,
+              total: group.total,
+              records: group.debts.length,
+            }))}
+            statusOf={(personId) => summariesByPerson.get(personId)?.status}
+            month={selectedMonth}
+            year={selectedYear}
+          />
           <ViewToggle value={view} onChange={setView} />
         </div>
       </div>
@@ -242,6 +262,9 @@ export function DebtSummaryView({
                       reportFilter={reportFilter}
                       showCollections={showCollections}
                       showDebts={showDebts}
+                      month={selectedMonth}
+                      year={selectedYear}
+                      summaries={summariesByPerson}
                     />
                   </div>
                 ) : (
