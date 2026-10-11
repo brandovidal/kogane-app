@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { SettingsPage } from "@/features/settings/components/SettingsPage";
+---
+
+<DashboardLayout title="Cuentas y tarjetas">
+  <SettingsPage section="cuentas-tarjetas" client:load />
+</DashboardLayout>

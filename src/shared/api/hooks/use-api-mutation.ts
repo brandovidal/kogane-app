@@ -45,6 +45,7 @@ const MESSAGES: Record<string, string> = {
     "No se puede mover todavía: revisa la categoría o termina la edición abierta en el bot.",
   PAYMENT_METHOD_INCOMPLETE:
     "A la tarjeta le faltan datos: una de crédito necesita código, cierre y pago; una de débito, su banco.",
+  PHONE_TAKEN: "Ese celular ya está registrado en otra cuenta.",
   INVALID_CREDENTIALS: "Correo, celular o contraseña incorrectos.",
   TOO_MANY_ATTEMPTS: "Demasiados intentos fallidos: espera unos minutos.",
   USER_DISABLED: "Esta cuenta está desactivada.",

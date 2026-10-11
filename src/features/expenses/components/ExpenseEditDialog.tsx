@@ -20,7 +20,7 @@ import {
 } from "@/shared/api/types";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
@@ -358,13 +358,8 @@ export function ExpenseEditDialog({
             <label className="text-sm font-medium">
               <FieldLabel icon={UserRound}>Persona *</FieldLabel>
             </label>
-            <PersonFilterFields
-              multiple={false}
-              presentation="popover"
-              labelClassName="sr-only"
-              emptySelectionLabel="Selecciona persona"
-              includeUnassigned={false}
-              useMeAlias={false}
+            <PersonPicker
+              module={isCard ? "cards" : undefined}
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })

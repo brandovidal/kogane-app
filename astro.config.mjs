@@ -18,7 +18,11 @@ export default defineConfig({
   output: 'static',
   server: { port: 4000 },
   integrations: [react()],
-  redirects: { '/estados-de-cuenta': '/importacion' },
+  redirects: {
+    '/estados-de-cuenta': '/importacion',
+    '/configuracion': '/configuracion/general',
+    '/perfil': '/configuracion/perfil',
+  },
   adapter,
   env: {
     schema: {

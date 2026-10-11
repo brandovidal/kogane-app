@@ -11,7 +11,8 @@ import {
 } from "@/ui/select";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import type { PersonModule } from "@/features/settings/constants";
 import { FormField as Field } from "@/shared/components/forms/FormField";
 import type { DraftFields } from "@/features/drafts/hooks/drafts";
 import {
@@ -41,6 +42,21 @@ interface DraftFormProps {
 }
 
 // The fields of one expense for any destination (D40); the missing ones come from kogane-api (missingFields)
+function personModuleOf(value: DraftFields): PersonModule | undefined {
+  switch (value.destination) {
+    case "fixed_cost":
+      return "fixed_costs";
+    case "subscription":
+      return (value.kind ?? "platform") === "platform"
+        ? "platforms"
+        : "recurring";
+    case "credit_card":
+      return "cards";
+    default:
+      return undefined;
+  }
+}
+
 export function DraftForm({
   value,
   onChange,
@@ -178,7 +194,8 @@ export function DraftForm({
               missing={missing("personId")}
               error={missing("personId") ? "Elige para quién es" : undefined}
             >
-              <PersonSelect
+              <PersonPicker
+                module={personModuleOf(value)}
                 value={value.personId}
                 onChange={(id) => set("personId", id)}
               />

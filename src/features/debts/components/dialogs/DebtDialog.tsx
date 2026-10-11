@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import {
@@ -194,7 +194,7 @@ export function DebtDialog({
                 : "Quién te debe"}{" "}
               *
             </label>
-            <PersonSelect
+            <PersonPicker
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })

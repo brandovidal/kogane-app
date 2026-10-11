@@ -18,6 +18,7 @@ import {
   revokeInvite,
   stopImpersonation,
   unlinkTelegram,
+  updateProfile,
   updateUser,
   type AcceptInviteDto,
   type ChangePasswordDto,
@@ -25,6 +26,7 @@ import {
   type ForgotPasswordDto,
   type LoginDto,
   type ResetPasswordDto,
+  type UpdateProfileDto,
   type UpdateUserDto,
 } from "../services/auth.service";
 
@@ -69,6 +71,12 @@ export const useAcceptInvite = () =>
   });
 
 export const useLogout = () => useApiMutation(logout, { invalidate: [] });
+
+export const useUpdateProfile = () =>
+  useApiMutation((body: UpdateProfileDto) => updateProfile(body), {
+    invalidate: [authKeys.me],
+    success: "Perfil guardado",
+  });
 
 export const useChangePassword = () =>
   useApiMutation((body: ChangePasswordDto) => changePassword(body), {

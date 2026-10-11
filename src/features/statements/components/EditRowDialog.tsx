@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import type { StatementRow } from "@/shared/api/types";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { Button } from "@/ui/button";
 import {
   Dialog,
@@ -72,7 +72,11 @@ export function EditRowDialog({
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Persona</label>
-            <PersonSelect value={personId} onChange={setPersonId} />
+            <PersonPicker
+              module="cards"
+              value={personId}
+              onChange={setPersonId}
+            />
             <p className="text-xs text-muted-foreground">
               Al guardar, la persona se actualiza también en el gasto de Kogane
               si ya estaba vinculado.

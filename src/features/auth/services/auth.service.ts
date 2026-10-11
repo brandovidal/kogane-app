@@ -6,6 +6,7 @@ import type {
   ForgotPasswordDto,
   LoginDto,
   ResetPasswordDto,
+  UpdateProfileDto,
   UpdateUserDto,
 } from "../types/auth.dto";
 export type {
@@ -15,6 +16,7 @@ export type {
   ForgotPasswordDto,
   LoginDto,
   ResetPasswordDto,
+  UpdateProfileDto,
   UpdateUserDto,
 } from "../types/auth.dto";
 
@@ -31,6 +33,8 @@ export const forgotPassword = (body: ForgotPasswordDto) =>
 export const resetPassword = (body: ResetPasswordDto) =>
   unwrap(api.POST("/v1/auth/reset-password", { body }));
 export const logout = () => unwrap(api.POST("/v1/auth/logout"));
+export const updateProfile = (body: UpdateProfileDto) =>
+  unwrap(api.PATCH("/v1/auth/me", { body }));
 export const changePassword = (body: ChangePasswordDto) =>
   unwrap(api.POST("/v1/auth/password", { body }));
 export const createTelegramLink = () =>

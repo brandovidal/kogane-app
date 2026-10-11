@@ -6,7 +6,7 @@ import {
   useSaveCardHolders,
   useMe,
 } from "@/shared/api/hooks/catalogs";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -98,7 +98,8 @@ export function CardHoldersDialog({
               <label className="text-xs text-muted-foreground">
                 {holder.role === "titular" ? "Titular" : "Adicional"}
               </label>
-              <PersonSelect
+              <PersonPicker
+                module="cards"
                 value={holder.personId}
                 onChange={(personId) => set(index, { personId })}
               />

@@ -7,7 +7,7 @@ import { ShareEditor } from "@/features/drafts/components/ShareEditor";
 import type { DraftFields } from "@/features/drafts/hooks/drafts";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
@@ -310,7 +310,8 @@ export function RecurringDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Persona *</label>
-            <PersonSelect
+            <PersonPicker
+              module="recurring"
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })

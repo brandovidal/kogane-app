@@ -8,11 +8,13 @@ import {
   useMe,
   useTelegramLink,
   useUnlinkTelegram,
+  useUpdateProfile,
 } from "@/features/auth/hooks/auth";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
+import { Input } from "@/ui/input";
 import {
   Card,
   CardContent,
@@ -24,6 +26,105 @@ import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 import { AUTH_ROLE_LABELS } from "../constants/roles";
 
 // Perfil (P23): who I am, my password and the Telegram chat linked to my account (D85)
+// Name, nickname, mobile and DNI. The DNI is never shown whole (D94): empty keeps the saved one, "Quitar" deletes it
+function ProfileForm({
+  me,
+}: {
+  me: NonNullable<ReturnType<typeof useMe>["data"]>;
+}) {
+  const update = useUpdateProfile();
+  const [name, setName] = useState(me.name);
+  const [nickname, setNickname] = useState(me.nickname ?? "");
+  const [phone, setPhone] = useState(me.phone ?? "");
+  const [documentNumber, setDocumentNumber] = useState("");
+  const [clearDocument, setClearDocument] = useState(false);
+
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    update.mutate(
+      {
+        name: name.trim(),
+        nickname: nickname.trim() || null,
+        phone: phone.trim() || null,
+        ...(documentNumber.trim()
+          ? { documentNumber: documentNumber.trim() }
+          : clearDocument
+            ? { documentNumber: null }
+            : {}),
+      },
+      {
+        onSuccess: () => {
+          setDocumentNumber("");
+          setClearDocument(false);
+        },
+      },
+    );
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Mis datos</CardTitle>
+        <CardDescription>
+          El celular también sirve para entrar. El DNI abre tus estados de
+          cuenta y se copia a tu persona «Yo».
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form className="grid gap-3 sm:grid-cols-2" onSubmit={submit}>
+          <Input
+            aria-label="Nombre"
+            placeholder="Nombre"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            aria-label="Apodo"
+            placeholder="Apodo (cómo te saluda la app)"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+          />
+          <Input
+            aria-label="Celular"
+            placeholder="Celular (9 dígitos)"
+            inputMode="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <div className="space-y-1">
+            <Input
+              aria-label="DNI"
+              placeholder={
+                me.documentMasked
+                  ? `DNI (guardado ${me.documentMasked})`
+                  : "DNI (8 dígitos)"
+              }
+              inputMode="numeric"
+              autoComplete="off"
+              value={documentNumber}
+              onChange={(e) => setDocumentNumber(e.target.value)}
+            />
+            {me.documentMasked && !documentNumber && (
+              <button
+                type="button"
+                className="text-xs text-muted-foreground underline"
+                onClick={() => setClearDocument(!clearDocument)}
+              >
+                {clearDocument ? "No quitar" : "Quitar DNI"}
+              </button>
+            )}
+          </div>
+          <div className="sm:col-span-2">
+            <Button type="submit" disabled={!name.trim() || update.isPending}>
+              Guardar
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
 function ProfilePageView() {
   const { data: me } = useMe();
   const authConfig = useAuthConfig().data;
@@ -114,6 +215,8 @@ function ProfilePageView() {
           )}
         </CardContent>
       </Card>
+
+      <ProfileForm me={me} />
 
       {googleNotice && (
         <p

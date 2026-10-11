@@ -12,7 +12,7 @@ import type { DraftFields } from "../hooks/drafts";
 import type { DraftFormSectionProps } from "../types/draft-form";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { FormField } from "@/shared/components/forms/FormField";
 import {
@@ -147,7 +147,8 @@ export function FixedCostDraftGeneralSection({
             icon={UserRound}
             missing={missing("personId")}
           >
-            <PersonSelect
+            <PersonPicker
+              module="fixed_costs"
               value={value.personId}
               onChange={(id) => set("personId", id)}
             />

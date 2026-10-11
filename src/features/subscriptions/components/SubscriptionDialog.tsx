@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -89,6 +89,11 @@ export function SubscriptionDialog({
   const month = usePeriod((s) => s.month);
   const year = usePeriod((s) => s.year);
   const isEdit = !!subscription;
+  const personModule = (
+    subscription ? subscription.kind === "platform" : platformMode
+  )
+    ? "platforms"
+    : "recurring";
 
   const {
     register,
@@ -286,13 +291,8 @@ export function SubscriptionDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Persona *</label>
-            <PersonFilterFields
-              multiple={false}
-              presentation="popover"
-              labelClassName="sr-only"
-              emptySelectionLabel="Selecciona persona"
-              includeUnassigned={false}
-              useMeAlias={false}
+            <PersonPicker
+              module={personModule}
               value={watch("personId")}
               onChange={(id) =>
                 setValue("personId", id ?? "", { shouldValidate: true })

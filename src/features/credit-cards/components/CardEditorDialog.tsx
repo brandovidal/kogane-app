@@ -7,7 +7,7 @@ import {
   useSavePaymentMethod,
 } from "@/shared/api/hooks/catalogs";
 import type { PaymentMethod } from "@/shared/api/types";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Archive } from "lucide-react";
 import { Button } from "@/ui/button";
@@ -339,7 +339,8 @@ export function CardEditorDialog({
             "personId",
             "Persona *",
             <div id="card-personId">
-              <PersonSelect
+              <PersonPicker
+                module="cards"
                 value={form.personId || null}
                 onChange={(personId) => set({ personId: personId ?? "" })}
               />
