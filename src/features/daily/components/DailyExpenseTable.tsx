@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, List, Plus, Tags, UsersRound } from "lucide-react";
+import {
+  CalendarDays,
+  List,
+  MessageSquareText,
+  Plus,
+  Upload,
+  Tags,
+  UsersRound,
+} from "lucide-react";
 
 import {
   nameById,
@@ -25,6 +33,8 @@ import { DailyCalendar } from "./DailyCalendar";
 import { DailyIndicators } from "./DailyIndicators";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
+import { OriginMessageDialog } from "@/features/drafts/components/OriginMessageDialog";
+import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
@@ -67,6 +77,8 @@ function DailyExpenseTableView() {
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.daily);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.daily);
   const [editing, setEditing] = useState<DailyExpense | undefined>();
+  const [importing, setImporting] = useState(false);
+  const [origin, setOrigin] = useState<DailyExpense | undefined>();
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("daily", "table");
@@ -173,6 +185,12 @@ function DailyExpenseTableView() {
               icon: UsersRound,
               onSelect: () => setEditing(e),
             },
+            {
+              label: "Ver mensaje de origen",
+              icon: MessageSquareText,
+              hint: e.draftId ? undefined : "Registrado a mano",
+              onSelect: () => e.draftId && setOrigin(e),
+            },
           ]}
           onDuplicate={() =>
             saveExpense.mutate({
@@ -230,6 +248,13 @@ function DailyExpenseTableView() {
             </Button>
           </div>
           {layout === "list" && <ViewToggle value={view} onChange={setView} />}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setImporting(true)}
+          >
+            <Upload aria-hidden="true" /> Importar lista
+          </Button>
           <Button
             size="sm"
             onClick={() => openNewExpense({ destination: "daily" })}
@@ -299,6 +324,21 @@ function DailyExpenseTableView() {
           }
         />
       )}
+
+      {origin?.draftId && (
+        <OriginMessageDialog
+          draftId={origin.draftId}
+          title={origin.description}
+          onClose={() => setOrigin(undefined)}
+        />
+      )}
+
+      <ImportListDialog
+        open={importing}
+        onOpenChange={setImporting}
+        target="daily-expenses"
+        title="Importar gastos del día a día"
+      />
 
       <ExpenseEditDialog
         open={!!editing}
