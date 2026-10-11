@@ -458,6 +458,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/v1/notifications/collect": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cobrar por Mensajes: send now the cobros notices of a month (one per person), once per person and day */
+    post: operations["NotificationsController_collect_v1"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/notifications/remind-debts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Recordar pago: one reminder per person for the selected debts; paid ones are left out */
+    post: operations["NotificationsController_remindDebts_v1"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/v1/reminders": {
     parameters: {
       query?: never;
@@ -518,8 +552,8 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Mark a calendar event paid: card statement, fixed cost, subscription or debt installment */
-    post: operations["CalendarController_pay_v1"];
+    /** Pay a calendar event: card statement (total, minimum or in parts), fixed cost, subscription or debt installment, with day, medio, cuenta de salida and note */
+    post: operations["CalendarController_payEvent_v1"];
     delete?: never;
     options?: never;
     head?: never;
@@ -729,6 +763,41 @@ export interface paths {
     options?: never;
     head?: never;
     patch: operations["PaymentMethodsController_update_v1"];
+    trace?: never;
+  };
+  "/v1/accounts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Accounts payments leave from, active ones first */
+    get: operations["AccountsController_findAll_v1"];
+    put?: never;
+    /** Create an account; a bank account needs its bank */
+    post: operations["AccountsController_create_v1"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/accounts/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Deactivate an account (payments keep pointing to it) */
+    delete: operations["AccountsController_deactivate_v1"];
+    options?: never;
+    head?: never;
+    patch: operations["AccountsController_update_v1"];
     trace?: never;
   };
   "/v1/categories": {
@@ -1709,40 +1778,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/v1/notifications/collect": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Cobrar por Mensajes: send now the cobros notices of a month (one per person), once per person and day */
-    post: operations["NotificationsController_collect_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/remind-debts": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Recordar pago: one reminder per person for the selected debts; paid ones are left out */
-    post: operations["NotificationsController_remindDebts_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2610,6 +2645,17 @@ export interface components {
         };
       };
     };
+    CollectNowDto: {
+      month: number;
+      year: number;
+      /** @description The installments of the months before, not the ones of this month */
+      late?: boolean;
+      /** @description Only these people; every person with a balance when empty */
+      personIds?: string[];
+    };
+    RemindDebtsDto: {
+      ids: string[];
+    };
     RemindersResponseDto: {
       /** @enum {boolean} */
       success: true;
@@ -2736,6 +2782,26 @@ export interface components {
       /** @enum {string} */
       refType: "card_statement" | "fixed_cost" | "subscription" | "debt";
       refId: string;
+      /** @description Card statement or debt: what is paid now (less than what is left leaves the rest open). Fixed cost or subscription: the real amount, which replaces the registered one */
+      amount?: number;
+      /**
+       * @description Card statement only: total, minimum or partial; by default total, or partial when amount is less
+       * @enum {string}
+       */
+      kind?: "total" | "minimum" | "partial";
+      /**
+       * Format: date
+       * @description Day of the payment (yyyy-mm-dd); today by default
+       */
+      paidAt?: string;
+      /**
+       * @description Medio de pago: transfer, cash, wallet, debit_card or other
+       * @enum {string}
+       */
+      method?: "transfer" | "cash" | "wallet" | "debit_card" | "other";
+      /** @description Cuenta de salida: an active account of /v1/accounts */
+      accountId?: string;
+      note?: string;
     };
     PayEventResponseDto: {
       /** @enum {boolean} */
@@ -2745,7 +2811,10 @@ export interface components {
       message: string;
       data: {
         /** @enum {string} */
-        outcome: "paid" | "already_paid" | "nothing_to_pay" | "not_found";
+        outcome:
+          "paid" | "already_paid" | "nothing_to_pay" | "not_found" | "partial";
+        /** @description The payment registered; null when nothing was paid */
+        paymentId: string | null;
       };
     };
     ExpenseRecordListResponseDto: {
@@ -3801,6 +3870,70 @@ export interface components {
       creditLimit?: number | null;
       comment?: string | null;
       color?: string | null;
+    };
+    AccountListResponseDto: {
+      /** @enum {boolean} */
+      success: true;
+      code: string;
+      status: number;
+      message: string;
+      data: {
+        id: string;
+        /** Format: date-time */
+        createdAt: string;
+        /** Format: date-time */
+        updatedAt: string;
+        name: string;
+        /** @enum {string} */
+        type: "bank_account" | "wallet" | "cash";
+        bank: string | null;
+        /** @enum {string} */
+        currency: "PEN" | "USD";
+        color: string | null;
+        isActive: boolean;
+      }[];
+    };
+    CreateAccountDto: {
+      name: string;
+      /** @enum {string} */
+      type: "bank_account" | "wallet" | "cash";
+      bank?: string | null;
+      /** @enum {string} */
+      currency?: "PEN" | "USD";
+      color?: string | null;
+      isActive?: boolean;
+    };
+    AccountResponseDto: {
+      /** @enum {boolean} */
+      success: true;
+      code: string;
+      status: number;
+      message: string;
+      data: {
+        id: string;
+        /** Format: date-time */
+        createdAt: string;
+        /** Format: date-time */
+        updatedAt: string;
+        name: string;
+        /** @enum {string} */
+        type: "bank_account" | "wallet" | "cash";
+        bank: string | null;
+        /** @enum {string} */
+        currency: "PEN" | "USD";
+        color: string | null;
+        isActive: boolean;
+      };
+    };
+    UpdateAccountDto: {
+      name?: string;
+      /** @enum {string} */
+      type?: "bank_account" | "wallet" | "cash";
+      bank?: string | null;
+      /** @enum {string} */
+      currency?: "PEN" | "USD";
+      color?: string | null;
+      isActive?: boolean;
     };
     CategoryListResponseDto: {
       /** @enum {boolean} */
@@ -4942,6 +5075,15 @@ export interface components {
         } | null;
       };
     };
+    UpdateProfileDto: {
+      name?: string;
+      /** @description How the app greets them; null clears it */
+      nickname?: string | null;
+      /** @description Mobile (9 digits in Peru); also signs in with the password; empty or null clears it */
+      phone?: string | null;
+      /** @description DNI: goes to their Yo (D94), never back in the clear */
+      documentNumber?: string | null;
+    };
     InvitePreviewResponseDto: {
       /** @enum {boolean} */
       success: true;
@@ -5010,6 +5152,9 @@ export interface components {
           name: string;
           email: string;
           phone: string | null;
+          nickname: string | null;
+          /** @description Only the last 3 digits (D94) */
+          documentMasked: string | null;
           /** @enum {string} */
           role: "superadmin" | "admin" | "member";
           /** @enum {string} */
@@ -5071,15 +5216,6 @@ export interface components {
         emailed: boolean;
       };
     };
-    UpdateProfileDto: {
-      name?: string;
-      /** @description How the app greets them; null clears it */
-      nickname?: string | null;
-      /** @description Mobile (9 digits in Peru); also signs in with the password; empty or null clears it */
-      phone?: string | null;
-      /** @description DNI: goes to their Yo (D94), never back in the clear */
-      documentNumber?: string | null;
-    };
     UpdateUserDto: {
       /** @enum {string} */
       role?: "admin" | "member";
@@ -5105,6 +5241,9 @@ export interface components {
           name: string;
           email: string;
           phone: string | null;
+          nickname: string | null;
+          /** @description Only the last 3 digits (D94) */
+          documentMasked: string | null;
           /** @enum {string} */
           role: "superadmin" | "admin" | "member";
           /** @enum {string} */
@@ -5286,17 +5425,6 @@ export interface components {
         groups: number;
         budgets: number;
       };
-    };
-    CollectNowDto: {
-      month: number;
-      year: number;
-      /** @description The installments of the months before, not the ones of this month */
-      late?: boolean;
-      /** @description Only these people; every person with a balance when empty */
-      personIds?: string[];
-    };
-    RemindDebtsDto: {
-      ids: string[];
     };
   };
   responses: never;
@@ -6157,6 +6285,52 @@ export interface operations {
       };
     };
   };
+  NotificationsController_collect_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CollectNowDto"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["JobResultResponseDto"];
+        };
+      };
+    };
+  };
+  NotificationsController_remindDebts_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RemindDebtsDto"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["JobResultResponseDto"];
+        };
+      };
+    };
+  };
   RemindersController_list_v1: {
     parameters: {
       query?: {
@@ -6221,7 +6395,7 @@ export interface operations {
       };
     };
   };
-  CalendarController_pay_v1: {
+  CalendarController_payEvent_v1: {
     parameters: {
       query?: never;
       header?: never;
@@ -6734,6 +6908,94 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PaymentMethodResponseDto"];
+        };
+      };
+    };
+  };
+  AccountsController_findAll_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountListResponseDto"];
+        };
+      };
+    };
+  };
+  AccountsController_create_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateAccountDto"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountResponseDto"];
+        };
+      };
+    };
+  };
+  AccountsController_deactivate_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountResponseDto"];
+        };
+      };
+    };
+  };
+  AccountsController_update_v1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateAccountDto"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountResponseDto"];
         };
       };
     };
@@ -8395,52 +8657,6 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ApplyImportResponseDto"];
-        };
-      };
-    };
-  };
-  NotificationsController_collect_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CollectNowDto"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["JobResultResponseDto"];
-        };
-      };
-    };
-  };
-  NotificationsController_remindDebts_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RemindDebtsDto"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["JobResultResponseDto"];
         };
       };
     };
