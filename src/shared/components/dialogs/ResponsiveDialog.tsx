@@ -24,6 +24,7 @@ export interface ResponsiveDialogProps {
   title: string;
   icon?: ReactNode;
   description?: string;
+  headerActions?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
   contentClassName?: string;
@@ -36,6 +37,7 @@ export function ResponsiveDialog({
   title,
   icon,
   description,
+  headerActions,
   children,
   footer,
   contentClassName,
@@ -53,14 +55,22 @@ export function ResponsiveDialog({
           )}
           overlayClassName={overlayClassName}
         >
-          <DialogHeader>
-            <DialogTitle className={cn(icon && "flex items-center gap-2")}>
-              {icon}
-              {title}
-            </DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
+          <DialogHeader
+            className={cn(
+              headerActions &&
+                "flex-row items-start justify-between pr-8 text-left",
             )}
+          >
+            <div className="min-w-0 space-y-2">
+              <DialogTitle className={cn(icon && "flex items-center gap-2")}>
+                {icon}
+                {title}
+              </DialogTitle>
+              {description && (
+                <DialogDescription>{description}</DialogDescription>
+              )}
+            </div>
+            {headerActions}
           </DialogHeader>
           {children}
           {footer && <DialogFooter>{footer}</DialogFooter>}
@@ -78,12 +88,20 @@ export function ResponsiveDialog({
           contentClassName,
         )}
       >
-        <SheetHeader>
-          <SheetTitle className={cn(icon && "flex items-center gap-2")}>
-            {icon}
-            {title}
-          </SheetTitle>
-          {description && <SheetDescription>{description}</SheetDescription>}
+        <SheetHeader
+          className={cn(
+            headerActions &&
+              "flex-row items-start justify-between pr-8 text-left",
+          )}
+        >
+          <div className="min-w-0 space-y-1.5">
+            <SheetTitle className={cn(icon && "flex items-center gap-2")}>
+              {icon}
+              {title}
+            </SheetTitle>
+            {description && <SheetDescription>{description}</SheetDescription>}
+          </div>
+          {headerActions}
         </SheetHeader>
         <div className="px-4">{children}</div>
         {footer && <SheetFooter>{footer}</SheetFooter>}

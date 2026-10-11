@@ -5,12 +5,14 @@ export interface ViewToggleProps {
   view?: "table" | "cards";
   value?: "table" | "cards";
   onChange: (view: "table" | "cards") => void;
+  showLabels?: boolean;
 }
 
 export function ViewToggle({
   view: viewProp,
   value,
   onChange,
+  showLabels = false,
 }: ViewToggleProps) {
   const view = value ?? viewProp ?? "table";
   const option = (
@@ -22,13 +24,14 @@ export function ViewToggle({
       type="button"
       variant={view === mode ? "secondary" : "ghost"}
       size="sm"
-      className="h-7 px-2"
+      className={showLabels ? "h-7 gap-1.5 px-2.5" : "h-7 px-2"}
       aria-pressed={view === mode}
       aria-label={label}
       title={label}
       onClick={() => onChange(mode)}
     >
       <Icon className="h-4 w-4" />
+      {showLabels && <span>{label}</span>}
     </Button>
   );
   return (

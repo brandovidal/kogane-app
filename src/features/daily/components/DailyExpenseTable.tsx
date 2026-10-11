@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   CalendarDays,
+  ChevronDown,
   List,
+  ListOrdered,
   MessageSquareText,
   Plus,
   Upload,
@@ -55,6 +57,14 @@ import { useUrlPeriod } from "@/shared/hooks/useUrlPeriod";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/ui/dropdown-menu";
+import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
+import { cn } from "@/shared/utils/cn";
 
 const FILTERS: ExpenseFilterKey[] = [
   "q",
@@ -89,7 +99,7 @@ function DailyExpenseTableView() {
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTERS);
   const [view, setView] = useViewMode("daily", "table");
   const [groupBy, setGroupBy] = useState("none");
-  const [layout, setLayout] = useState<"list" | "calendar">("list");
+  const [layout, setLayout] = useState<"list" | "day" | "calendar">("list");
   // Hoy/Ayer depend on the browser clock: only after mount, so the server HTML matches
   const [today, setToday] = useState<Date | null>(null);
   useEffect(() => setToday(new Date()), []);
@@ -231,69 +241,126 @@ function DailyExpenseTableView() {
     ]),
   });
 
+  const grouping = layout === "day" ? "day" : groupBy;
+  const exportItems = [
+    ...csv.items,
+    {
+      label: "Importar lista",
+      icon: <Upload aria-hidden="true" />,
+      onSelect: () => setImporting(true),
+    },
+  ];
+
   if (isLoading) return null;
 
   return (
     <div className="space-y-4">
-      <DailyIndicators expenses={sorted} month={month} year={year} />
-
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <ExpenseFilters
-          fields={FILTERS}
-          value={filters}
-          onChange={setFilters}
-          shown={sorted.length}
-          total={expenses.length}
-          groupBy={groupBy}
-          onGroupByChange={setGroupBy}
-          hideEmptyGroups={hideEmpty}
-          onHideEmptyGroupsChange={setHideEmpty}
-          groupByOptions={[
-            { value: "day", label: "Por día" },
-            { value: "person", label: "Por persona" },
-            { value: "category", label: "Por categoría" },
-          ]}
-        />
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <div
-            role="group"
-            aria-label="Vista de gastos"
-            className="inline-flex rounded-md border p-0.5"
-          >
-            <Button
-              size="sm"
-              variant={layout === "list" ? "secondary" : "ghost"}
-              aria-pressed={layout === "list"}
-              onClick={() => setLayout("list")}
+        <div
+          role="tablist"
+          aria-label="Vistas de Día a día"
+          className="flex min-w-0 items-center gap-1 overflow-x-auto"
+        >
+          {(
+            [
+              ["list", "Lista", List],
+              ["day", "Por día", ListOrdered],
+              ["calendar", "Calendario", CalendarDays],
+            ] as const
+          ).map(([value, label, Icon]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={layout === value}
+              onClick={() => setLayout(value)}
+              className={cn(
+                "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                layout === value &&
+                  "bg-accent text-foreground ring-1 ring-border/70",
+              )}
             >
-              <List aria-hidden="true" /> Lista
-            </Button>
+              <Icon className="size-4" />
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="flex shrink-0 items-center justify-end gap-2">
+          <ExportMenu items={exportItems} label="Más opciones" iconOnly />
+          <div className="inline-flex items-center">
             <Button
+              type="button"
               size="sm"
-              variant={layout === "calendar" ? "secondary" : "ghost"}
-              aria-pressed={layout === "calendar"}
-              onClick={() => setLayout("calendar")}
+              className="h-9 gap-1 rounded-l-sm rounded-r-none px-4"
+              onClick={() => openNewExpense({ destination: "daily" })}
             >
-              <CalendarDays aria-hidden="true" /> Calendario
+              <Plus className="size-4" /> Nuevo gasto
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  size="icon"
+                  className="h-9 w-9 rounded-l-none rounded-r-sm border-l"
+                  aria-label="Elegir tipo de gasto"
+                >
+                  <ChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-48">
+                {(
+                  [
+                    "daily",
+                    "credit_card",
+                    "fixed_cost",
+                    "subscription",
+                    "receivable",
+                    "payable",
+                  ] as const
+                ).map((destination) => (
+                  <DropdownMenuItem
+                    key={destination}
+                    onSelect={() => openNewExpense({ destination })}
+                  >
+                    {DESTINATION_LABELS[destination]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          {layout === "list" && <ViewToggle value={view} onChange={setView} />}
-          <ExportMenu items={csv.items} label="Exportar" />
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setImporting(true)}
-          >
-            <Upload aria-hidden="true" /> Importar lista
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => openNewExpense({ destination: "daily" })}
-          >
-            <Plus className="mr-1 h-4 w-4" /> Nuevo gasto
-          </Button>
         </div>
       </div>
+
+      <DailyIndicators expenses={sorted} month={month} year={year} />
+
+      <ExpenseFilters
+        fields={FILTERS}
+        value={filters}
+        onChange={setFilters}
+        shown={sorted.length}
+        total={expenses.length}
+        groupBy={grouping}
+        onGroupByChange={(next) => {
+          setGroupBy(next);
+          if (layout === "day") setLayout("list");
+        }}
+        hideEmptyGroups={hideEmpty}
+        onHideEmptyGroupsChange={setHideEmpty}
+        groupByOptions={
+          layout === "calendar"
+            ? undefined
+            : [
+                { value: "day", label: "Por día" },
+                { value: "person", label: "Por persona" },
+                { value: "category", label: "Por categoría" },
+              ]
+        }
+        rightActions={
+          layout === "calendar" ? undefined : (
+            <ViewToggle value={view} onChange={setView} showLabels />
+          )
+        }
+      />
 
       {sorted.length === 0 ? (
         expenses.length ? (
@@ -336,7 +403,7 @@ function DailyExpenseTableView() {
           columns={columns}
           rowKey={(e) => e.id}
           view={view}
-          groupBy={groupBy}
+          groupBy={grouping}
           hideEmptyGroups={hideEmpty}
           knownGroups={(field) =>
             field === "person"

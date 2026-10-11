@@ -31,11 +31,13 @@ import {
 } from "@/features/drafts/lib/draft-form";
 import { FixedCostDraftTabs } from "./FixedCostDraftTabs";
 import { ShareEditor } from "./ShareEditor";
+import { DailyDraftTabs } from "./DailyDraftTabs";
 
 interface DraftFormProps {
   value: DraftFields;
   onChange: (value: DraftFields) => void;
   missingFields?: string[];
+  showDestinationField?: boolean;
 }
 
 // The fields of one expense for any destination (D40); the missing ones come from kogane-api (missingFields)
@@ -43,6 +45,7 @@ export function DraftForm({
   value,
   onChange,
   missingFields = [],
+  showDestinationField = true,
 }: DraftFormProps) {
   const set = <K extends keyof DraftFields>(
     key: K,
@@ -55,35 +58,44 @@ export function DraftForm({
   const isDebt =
     value.destination === "receivable" || value.destination === "payable";
   const isFixedCost = value.destination === "fixed_cost";
+  const isDaily = value.destination === "daily";
 
   return (
     <div className="space-y-4">
-      <Field
-        label="Registrar en"
-        icon={ArrowRightLeft}
-        missing={missing("destination")}
-      >
-        <Select
-          value={value.destination ?? ""}
-          onValueChange={(v) =>
-            set("destination", v as DraftFields["destination"])
-          }
+      {showDestinationField && (
+        <Field
+          label="Registrar en"
+          icon={ArrowRightLeft}
+          missing={missing("destination")}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Elige dónde va" />
-          </SelectTrigger>
-          <SelectContent>
-            {FORM_DESTINATIONS.map((destination) => (
-              <SelectItem key={destination} value={destination}>
-                {DESTINATION_LABELS[destination]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
+          <Select
+            value={value.destination ?? ""}
+            onValueChange={(v) =>
+              set("destination", v as DraftFields["destination"])
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Elige dónde va" />
+            </SelectTrigger>
+            <SelectContent>
+              {FORM_DESTINATIONS.map((destination) => (
+                <SelectItem key={destination} value={destination}>
+                  {DESTINATION_LABELS[destination]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+      )}
 
       {isFixedCost ? (
         <FixedCostDraftTabs
+          value={value}
+          onChange={onChange}
+          missingFields={missingFields}
+        />
+      ) : isDaily ? (
+        <DailyDraftTabs
           value={value}
           onChange={onChange}
           missingFields={missingFields}

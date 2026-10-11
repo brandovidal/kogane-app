@@ -1,11 +1,12 @@
 import { cardHref } from "@/features/credit-cards/lib/card-links";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LoaderCircle, ReceiptText, Save } from "lucide-react";
+import { LoaderCircle, Plus, ReceiptText } from "lucide-react";
 
 import { DraftForm } from "@/features/drafts/components/DraftForm";
 import {
   emptyDraftFields,
+  FORM_DESTINATIONS,
   toDraftBody,
 } from "@/features/drafts/lib/draft-form";
 import { ApiError } from "@/shared/api/client";
@@ -22,6 +23,15 @@ import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { Button } from "@/ui/button";
 import { installmentError } from "@/features/expenses/lib/installments";
 import { FIELDS_BY_DESTINATION } from "@/features/drafts/lib/draft-form";
+import { usePeriod } from "@/shared/stores/period.store";
+import { getMonthName } from "@/shared/lib/dates";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 
 // Where each destination is listed, for "Ver" after saving
 function pageOf(
@@ -51,6 +61,8 @@ function NewExpenseDialogView() {
   const preset = useNewExpense((state) => state.preset);
   const close = useNewExpense((state) => state.close);
   const cards = useCreditCards().data ?? [];
+  const month = usePeriod((state) => state.month);
+  const year = usePeriod((state) => state.year);
   const [fields, setFields] = useState<DraftFields>(emptyDraftFields);
   const [missing, setMissing] = useState<string[]>([]);
   const createDraft = useCreateDraft();
@@ -114,32 +126,71 @@ function NewExpenseDialogView() {
       onOpenChange={(value) => !value && close()}
       title="Nuevo gasto"
       icon={<ReceiptText aria-hidden="true" className="size-4 text-primary" />}
-      description="Pagas tú; si lo compartes, agrega el reparto."
-      contentClassName="sm:max-w-2xl max-h-[92vh]"
+      description={`${getMonthName(month)} ${year} · se registrará en este período`}
+      headerActions={
+        <Select
+          value={fields.destination ?? "daily"}
+          onValueChange={(destination) =>
+            setFields({
+              ...fields,
+              destination: destination as DraftFields["destination"],
+            })
+          }
+        >
+          <SelectTrigger
+            aria-label="Destino del gasto"
+            className="h-9 w-[170px] shrink-0 rounded-full"
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent align="end">
+            {FORM_DESTINATIONS.map((destination) => (
+              <SelectItem key={destination} value={destination}>
+                {DESTINATION_LABELS[destination]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      }
+      contentClassName="sm:max-w-5xl max-h-[92vh]"
       footer={
-        <>
-          <Button variant="outline" onClick={close}>
-            Cancelar
-          </Button>
-          <Button onClick={save} disabled={busy}>
-            {busy ? (
-              <LoaderCircle aria-hidden="true" className="animate-spin" />
-            ) : (
-              <Save aria-hidden="true" />
-            )}
-            {busy ? "Guardando..." : "Guardar"}
-          </Button>
-        </>
+        <div className="flex w-full items-center justify-between gap-3">
+          <p className="hidden text-xs text-muted-foreground sm:block">
+            <kbd className="rounded border px-1.5 py-0.5">⌘</kbd>{" "}
+            <kbd className="rounded border px-1.5 py-0.5">Enter</kbd> para crear
+          </p>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={close}>
+              Cancelar
+            </Button>
+            <Button onClick={save} disabled={busy}>
+              {busy ? (
+                <LoaderCircle aria-hidden="true" className="animate-spin" />
+              ) : (
+                <Plus aria-hidden="true" />
+              )}
+              {busy ? "Creando..." : "Crear"}
+            </Button>
+          </div>
+        </div>
       }
     >
-      <DraftForm value={fields} onChange={setFields} missingFields={missing} />
-      <p className="pt-2 text-xs text-muted-foreground">
-        ¿Tienes una captura, un audio o un texto? Usa{" "}
-        <a href="/mensajes" className="text-primary underline">
-          Mensajes
-        </a>{" "}
-        para registrarlo más rápido.
-      </p>
+      <div
+        onKeyDown={(event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+            event.preventDefault();
+            void save();
+          }
+        }}
+      >
+        <DraftForm
+          key={open ? "open" : "closed"}
+          value={fields}
+          onChange={setFields}
+          missingFields={missing}
+          showDestinationField={false}
+        />
+      </div>
     </ResponsiveDialog>
   );
 }
