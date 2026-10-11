@@ -28,5 +28,3 @@ export const HISTORY_ACTION_STYLES = {
   HistoryEntry["action"],
   { icon: typeof Plus; className: string }
 >;
-
-export const HISTORY_INITIAL_VISIBLE_COUNT = 10;

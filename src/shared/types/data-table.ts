@@ -24,7 +24,7 @@ declare module "@tanstack/react-table" {
 }
 
 /** Zero-based pageIndex; an API adapter can translate it to a one-based page. */
-export interface DataTableQuery {
+interface DataTableQuery {
   pagination: PaginationState;
   sorting: SortingState;
   columnFilters: ColumnFiltersState;

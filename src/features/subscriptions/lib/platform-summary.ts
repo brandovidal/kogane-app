@@ -15,8 +15,7 @@ export type PlatformCurrencyTotals = Partial<Record<"PEN" | "USD", number>>;
 /** Amount shown on the platform itself, in the currency charged by the provider. */
 export const platformNativeAmount = (platform: Subscription) => platform.amount;
 
-export const platformAmount = (platform: Subscription) =>
-  paidAndOwn(platform).paid;
+const platformAmount = (platform: Subscription) => paidAndOwn(platform).paid;
 
 export const monthlyEquivalent = (platform: Subscription) =>
   platformNativeAmount(platform) / monthsByPeriod[platform.period];

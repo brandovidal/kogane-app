@@ -14,7 +14,7 @@ import {
   type UpdateRowDto,
 } from "../services/statement.service";
 
-export const statementKeys = {
+const statementKeys = {
   all: ["statements"] as const,
   list: ["statements", "list"] as const,
   detail: (id: string) => ["statements", "detail", id] as const,
@@ -41,8 +41,6 @@ export const useStatement = (id: string | null) =>
     queryFn: () => getStatement(id!),
     enabled: !!id,
   });
-
-export type { StatementUploadInput } from "../services/statement.service";
 
 // Multipart through the /api proxy: the PDF, and the password or the card only when the first try asked for them.
 // The errors come back to the form (STATEMENT_PASSWORD, STATEMENT_UNREADABLE) instead of a toast

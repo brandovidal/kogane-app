@@ -3,11 +3,10 @@ import type {
   SHARED_FILTER,
 } from "../constants/expense-filters";
 
-export type InstallmentFilterValue =
+type InstallmentFilterValue =
   (typeof INSTALLMENT_FILTER)[keyof typeof INSTALLMENT_FILTER];
-export type SharedFilterValue =
-  (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
-export type SharedFilterSelection =
+type SharedFilterValue = (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
+type SharedFilterSelection =
   SharedFilterValue | `${SharedFilterValue},${SharedFilterValue}`;
 
 export interface ExpenseFilterValues {

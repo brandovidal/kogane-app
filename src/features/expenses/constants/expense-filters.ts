@@ -1,8 +1,4 @@
-import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
-import {
-  SHARED_FILTER,
-  SHARED_FILTER_OPTIONS,
-} from "@/shared/constants/expense-filters";
+import { SHARED_FILTER } from "@/shared/constants/expense-filters";
 import {
   PERSON_ALL,
   PERSON_FILTER_LABELS,
@@ -18,8 +14,7 @@ export const INSTALLMENT_FILTER_OPTIONS = [
   { value: INSTALLMENT_FILTER.WITH, label: "Con cuota" },
   { value: INSTALLMENT_FILTER.WITHOUT, label: "Sin cuota" },
 ];
-export { SHARED_FILTER, SHARED_FILTER_OPTIONS };
-export const CURRENCY_FILTER_OPTIONS = [...CURRENCY_OPTIONS];
+export { SHARED_FILTER };
 
 export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = [
   "category",

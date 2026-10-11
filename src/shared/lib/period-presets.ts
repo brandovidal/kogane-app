@@ -1,20 +1,9 @@
 export type PeriodPresetId = "this-month" | "last-month" | "this-year";
 
-export interface PeriodPreset {
-  id: PeriodPresetId;
-  label: string;
-}
-
 export interface PeriodPresetValue {
   month: string | undefined;
   year: string;
 }
-
-export const PERIOD_PRESETS: readonly PeriodPreset[] = [
-  { id: "this-month", label: "Este mes" },
-  { id: "last-month", label: "Mes pasado" },
-  { id: "this-year", label: "Este año" },
-];
 
 export function resolvePeriodPreset(
   id: PeriodPresetId,

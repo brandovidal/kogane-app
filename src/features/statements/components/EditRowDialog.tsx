@@ -13,7 +13,7 @@ import {
 } from "@/ui/dialog";
 import { Input } from "@/ui/input";
 
-export interface RowChanges {
+interface RowChanges {
   label: string | null;
   personId?: string | null; // only when it changed
 }

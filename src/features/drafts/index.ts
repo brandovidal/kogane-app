@@ -12,7 +12,6 @@ export { ShareEditor } from "./components/ShareEditor";
 export { DESTINATION_LABELS } from "./constants/destinations";
 export type { DraftTab, DraftFields } from "./hooks/drafts";
 export {
-  draftKeys,
   useDrafts,
   useDraftCount,
   useDraftTabCounts,

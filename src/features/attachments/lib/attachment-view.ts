@@ -1,7 +1,5 @@
 import { formatAttachmentSize } from "./attachment-size";
 
-export type AttachmentKindFilter = "all" | string;
-
 interface SizedFile {
   kind: string;
   sizeBytes: number | null;

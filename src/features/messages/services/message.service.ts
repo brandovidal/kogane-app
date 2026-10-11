@@ -3,11 +3,7 @@ import type {
   ConversationResult,
   OutgoingMessageDto,
 } from "../types/message.dto";
-export type {
-  BotReply,
-  ConversationResult,
-  OutgoingMessageDto as OutgoingMessage,
-} from "../types/message.dto";
+export type { BotReply, ConversationResult } from "../types/message.dto";
 
 export async function sendMessage({
   messageId,

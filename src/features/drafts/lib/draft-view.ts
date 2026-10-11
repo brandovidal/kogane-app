@@ -5,7 +5,7 @@ export interface DraftLike {
 
 export type DraftState = "ready" | "incomplete";
 
-export const DRAFT_FIELD_LABELS: Record<string, string> = {
+const DRAFT_FIELD_LABELS: Record<string, string> = {
   destination: "Destino",
   description: "Descripción",
   amount: "Monto",

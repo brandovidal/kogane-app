@@ -3,7 +3,6 @@ export {
   ENTITY_LABELS,
   SOURCE_LABELS,
   ACTION_LABELS,
-  FIELD_LABELS,
   fieldLabel,
   formatValue,
   describeChanges,

@@ -12,7 +12,7 @@ export interface IncomeFormDraft extends MonthlyPeriod {
   notes: string;
 }
 
-export const incomeFormSchema = z.object({
+const incomeFormSchema = z.object({
   description: z.string().trim().min(1, "Ingresa una descripción."),
   amount: z
     .number({ error: "Ingresa un monto válido." })
@@ -56,5 +56,3 @@ export function parseIncomeForm(draft: IncomeFormDraft) {
     notes: draft.notes.trim() || null,
   });
 }
-
-export type IncomeFormValues = z.infer<typeof incomeFormSchema>;

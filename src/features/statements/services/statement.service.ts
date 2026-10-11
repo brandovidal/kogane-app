@@ -8,7 +8,6 @@ import type {
 } from "../types/statement.dto";
 export type {
   AssignRowsDto,
-  StatementUploadDto as StatementUploadInput,
   UpdateRowDto,
   UpdateStatementDto,
 } from "../types/statement.dto";

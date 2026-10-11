@@ -14,11 +14,7 @@ import type {
 } from "../types/expense-filters";
 
 // Compatibility exports for existing consumers; definitions live in constants/types.
-export {
-  PERSON_ALL,
-  PERSON_ME,
-  PANEL_FILTER_KEYS,
-} from "../constants/expense-filters";
+export { PERSON_ALL, PERSON_ME } from "../constants/expense-filters";
 export type {
   ExpenseFilterValues,
   ExpenseFilterKey,

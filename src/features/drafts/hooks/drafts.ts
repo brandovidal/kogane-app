@@ -15,7 +15,7 @@ import {
 export type { DraftTab } from "../services/draft.service";
 export type DraftFields = DraftFieldsDto;
 
-export const draftKeys = {
+const draftKeys = {
   all: ["drafts"] as const,
   list: (tab: DraftTab) => ["drafts", "list", tab] as const,
 };

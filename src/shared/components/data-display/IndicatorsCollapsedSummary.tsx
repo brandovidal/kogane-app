@@ -1,9 +1,9 @@
 import { cn } from "@/shared/utils/cn";
 
-export type IndicatorTone = "neutral" | "pending" | "done" | "danger";
+type IndicatorTone = "neutral" | "pending" | "done" | "danger";
 
 /** Color de estado del valor: pendiente = ámbar, completado = verde, vencido = rojo. */
-export const INDICATOR_TONE_CLASS: Record<IndicatorTone, string> = {
+const INDICATOR_TONE_CLASS: Record<IndicatorTone, string> = {
   neutral: "text-foreground",
   pending: "text-amber-600 dark:text-amber-300",
   done: "text-emerald-600 dark:text-emerald-300",

@@ -9,7 +9,6 @@ export {
   COMMITMENT_STATUS_LABELS,
 } from "./constants/commitments";
 export {
-  commitmentKeys,
   useCommitments,
   useCommitment,
   useCreateCommitment,

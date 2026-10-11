@@ -458,7 +458,7 @@ export function DebtGridSection({
   );
 }
 
-export function ResetDebtDialog({
+function ResetDebtDialog({
   debt,
   onClose,
 }: {

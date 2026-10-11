@@ -2,13 +2,12 @@
 export { HistoryDialog } from "./components/HistoryDialog";
 export { HistoryPanel } from "./components/HistoryPanel";
 export { HistoryTimeline } from "./components/HistoryTimeline";
-export { historyKeys, useHistory, useRecordHistory } from "./hooks/history";
+export { useHistory, useRecordHistory } from "./hooks/history";
 export type { HistoryFilter } from "./hooks/history";
 export {
   ENTITY_LABELS,
   SOURCE_LABELS,
   ACTION_LABELS,
-  FIELD_LABELS,
   fieldLabel,
   formatValue,
   describeChanges,
@@ -23,7 +22,6 @@ export { groupHistoryByDay, formatHistoryTime } from "./lib/history-timeline";
 export {
   HISTORY_SOURCE_ICONS,
   HISTORY_ACTION_STYLES,
-  HISTORY_INITIAL_VISIBLE_COUNT,
 } from "./constants/history-ui";
 export type {
   HistoryDayGroup,

@@ -8,7 +8,6 @@ export {
   useCreditCards,
   useAccounts,
   useSaveAccount,
-  useDeactivateAccount,
   useSavePerson,
   useSavePaymentMethod,
   useSaveCategory,

@@ -1,9 +1,8 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
-export type { Direction, DebtFilterValues, PaymentKind } from "./debt-filters";
+export type { Direction, DebtFilterValues } from "./debt-filters";
 export {
   DEBT_FILTER_KEYS,
   DEBT_STATE_LABELS,
-  PAYMENT_KIND_LABELS,
   debtBadgeStatus,
   isSharedDebt,
   applyDebtFilters,

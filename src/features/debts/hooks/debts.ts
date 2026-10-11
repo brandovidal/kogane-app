@@ -20,7 +20,7 @@ import {
   type UpdateDebtDto,
 } from "../services/debt.service";
 
-export const debtKeys = {
+const debtKeys = {
   all: ["debts"] as const,
   list: (filter: DebtFilter) => ["debts", "list", filter] as const,
   cardCheck: (query: CardCheckQuery) => ["debts", "card-check", query] as const,

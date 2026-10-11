@@ -4,8 +4,6 @@ import { expenseKeys } from "./expense-keys";
 import { saveExpense } from "../services/expense.service";
 import type { ExpenseInputDto } from "../services/dto/expense.dto";
 
-export type { ExpenseInputDto as ExpenseInput } from "../services/dto/expense.dto";
-
 const invalidateFor = (resource: ExpenseResource) => [
   expenseKeys.resource(resource),
   ["summary"],

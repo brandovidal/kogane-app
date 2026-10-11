@@ -34,8 +34,6 @@ export const useAttachments = (
   });
 
 export type AttachmentUpload = AttachmentUploadDto;
-export type { AttachmentUploadDto } from "../services/attachment.service";
-
 // Multipart through the /api proxy (≤ 15 MB, images and documents)
 export function useUploadAttachment({
   quiet = false,

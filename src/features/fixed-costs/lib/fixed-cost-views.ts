@@ -116,8 +116,6 @@ export const FIXED_COST_SORTS = [
   },
 ] as const;
 
-export type FixedCostSort = (typeof FIXED_COST_SORTS)[number]["value"];
-
 export const findFixedCostSort = (value: string | undefined) =>
   FIXED_COST_SORTS.find((sort) => sort.value === value);
 

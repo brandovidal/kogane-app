@@ -26,11 +26,7 @@ export {
   useDeleteExpense,
   useMoveSeries,
 } from "./hooks/expenses";
-export type {
-  SubscriptionGroup,
-  ExpenseInput,
-  MoveSeries,
-} from "./hooks/expenses";
+export type { SubscriptionGroup, MoveSeries } from "./hooks/expenses";
 export {
   duplicateBody,
   nextMonthBody,
@@ -42,9 +38,6 @@ export type {
   ExpenseFilterValues,
   ExpenseFilterKey,
   FilterableExpense,
-  InstallmentFilterValue,
-  SharedFilterValue,
-  SharedFilterSelection,
 } from "./types/expense-filters";
 export * from "./constants";
 export {

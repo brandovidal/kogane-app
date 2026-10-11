@@ -8,15 +8,9 @@ export type {
   ExpenseFilterValues,
   ExpenseFilterKey,
   FilterableExpense,
-  InstallmentFilterValue,
-  SharedFilterValue,
-  SharedFilterSelection,
 } from "./expense-filters";
 export type {
-  ExpenseBodyDto,
   ExpenseInputDto as ExpenseInput,
-  ExpenseListItem,
   ExpenseListQuery,
-  ExpensePatchDto,
   MoveSeriesDto,
 } from "../services/dto/expense.dto";

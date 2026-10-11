@@ -42,7 +42,6 @@ export { ImportRowStatusBadge } from "./components/ImportRowStatusBadge";
 export { StatementPreview } from "./components/StatementPreview";
 export { ImportRowsTab } from "./sections/ImportRowsTab";
 export { ImportSummaryTab } from "./sections/ImportSummaryTab";
-export { ImportsPageView } from "./views/ImportsPageView";
 export { NotionImportDetailView } from "./views/NotionImportDetailView";
 export type {
   ImportUploadCardProps,

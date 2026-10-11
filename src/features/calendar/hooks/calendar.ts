@@ -9,7 +9,7 @@ import {
   type PayEventDto,
 } from "../services/calendar.service";
 
-export const calendarKeys = {
+const calendarKeys = {
   all: ["calendar"] as const,
   events: (from: string, to: string) =>
     ["calendar", "events", from, to] as const,

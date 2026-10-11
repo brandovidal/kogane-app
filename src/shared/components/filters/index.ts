@@ -3,10 +3,7 @@ export type { AppliedFilterChip } from "./AppliedFilterChips";
 export { AppliedFilterChips } from "./AppliedFilterChips";
 export type { FilterSelectOption, FilterSelectProps } from "./FilterSelect";
 export { FilterSelect } from "./FilterSelect";
-export type {
-  ShortFilterOption,
-  ShortFilterFieldsProps,
-} from "./ShortFilterFields";
+export type { ShortFilterFieldsProps } from "./ShortFilterFields";
 export { ShortFilterFields } from "./ShortFilterFields";
 export { CurrencyFilterFields } from "./CurrencyFilterFields";
 export { ExpenseTypeFilterFields } from "./ExpenseTypeFilterFields";

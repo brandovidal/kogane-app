@@ -6,7 +6,6 @@ export {
   toDraftBody,
 } from "./draft-form";
 export {
-  DRAFT_FIELD_LABELS,
   draftState,
   missingLabels,
   readyDrafts,

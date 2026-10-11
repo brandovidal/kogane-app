@@ -6,7 +6,7 @@ import {
   type HistoryFilter,
 } from "../services/history.service";
 
-export const historyKeys = {
+const historyKeys = {
   all: ["history"] as const,
   list: (filter: HistoryFilter) => ["history", "list", filter] as const,
   record: (entity: string, id: string, page = 1) =>
