@@ -10,6 +10,7 @@ export type {
   FilterableExpense,
   InstallmentFilterValue,
   SharedFilterValue,
+  SharedFilterSelection,
 } from "./expense-filters";
 export type {
   ExpenseBodyDto,

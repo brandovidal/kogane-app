@@ -126,7 +126,12 @@ export function useActiveExpenseFilterChips<
       ? `Tipo: ${labelsFor(value.type, EXPENSE_TYPE_LABELS)}`
       : undefined,
     shared: value.shared
-      ? `Compartidos: ${value.shared === SHARED_FILTER.SHARED ? "Sí" : "No"}`
+      ? `Compartidos: ${value.shared
+          .split(",")
+          .map((selection) =>
+            selection === SHARED_FILTER.SHARED ? "Sí" : "No",
+          )
+          .join(", ")}`
       : undefined,
     period: value.period
       ? `Período: ${labelsFor(value.period, SUBSCRIPTION_PERIOD_LABELS)}`

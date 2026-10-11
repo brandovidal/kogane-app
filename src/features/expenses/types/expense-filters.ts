@@ -7,6 +7,8 @@ export type InstallmentFilterValue =
   (typeof INSTALLMENT_FILTER)[keyof typeof INSTALLMENT_FILTER];
 export type SharedFilterValue =
   (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
+export type SharedFilterSelection =
+  SharedFilterValue | `${SharedFilterValue},${SharedFilterValue}`;
 
 export interface ExpenseFilterValues {
   person?: string; // Comma-separated person ids; PERSON_ME and PERSON_UNASSIGNED are special values.
@@ -18,7 +20,7 @@ export interface ExpenseFilterValues {
   status?: string;
   period?: string;
   installments?: InstallmentFilterValue;
-  shared?: SharedFilterValue;
+  shared?: SharedFilterSelection;
   dueFrom?: string;
   dueTo?: string;
   hasNote?: "yes" | "no";

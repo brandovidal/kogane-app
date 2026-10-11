@@ -55,6 +55,7 @@ export function applyExpenseFilters<T extends FilterableExpense>(
   const currencies = filters.currency?.split(",").filter(Boolean) ?? [];
   const expenseTypes = filters.type?.split(",").filter(Boolean) ?? [];
   const periods = filters.period?.split(",").filter(Boolean) ?? [];
+  const shared = filters.shared?.split(",").filter(Boolean) ?? [];
   return records.filter((record) => {
     const amount = filters.currency
       ? record.amount
@@ -91,9 +92,12 @@ export function applyExpenseFilters<T extends FilterableExpense>(
       (!filters.installments ||
         hasInstallments(record.installment) ===
           (filters.installments === INSTALLMENT_FILTER.WITH)) &&
-      (!filters.shared ||
-        (record.othersShare ?? 0) > 0 ===
-          (filters.shared === SHARED_FILTER.SHARED)) &&
+      (!shared.length ||
+        shared.includes(
+          (record.othersShare ?? 0) > 0
+            ? SHARED_FILTER.SHARED
+            : SHARED_FILTER.OWN,
+        )) &&
       (!(dueFrom || dueTo) || !!record.dueDate) &&
       (!dueFrom || (record.dueDate?.slice(0, 10) ?? "") >= dueFrom) &&
       (!dueTo || (record.dueDate?.slice(0, 10) ?? "") <= dueTo)

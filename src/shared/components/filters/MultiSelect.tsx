@@ -171,94 +171,88 @@ export function MultiSelect({
       items.length === selectedValues.length &&
       items.every((item) => selected.has(item.value)),
   );
-  const summaryAccessibleText =
-    allChecked
-      ? allLabel
-      : noFilter || selectedValues.length === 0
-        ? emptySelectionLabel
-        : `${selectedValues.length} seleccionadas`;
-  const summary =
-    allChecked ? (
-      allLabel
-    ) : noFilter || selectedValues.length === 0 ? (
-      emptySelectionLabel
-    ) : summaryMode === "person" ? (
-      selectedValues.length === 1 ? (
-        (selectedNames[0] ?? selectedValues[0])
-      ) : selectedValues.length <= 3 ? (
-        <>
-          <span className="truncate">
-            {selectedNames.slice(0, 3).join(", ")}
-          </span>
-          <span className="shrink-0 font-semibold text-brand">
-            {selectedValues.length}
-          </span>
-        </>
-      ) : (
-        `${selectedValues.length} seleccionadas`
-      )
-    ) : summaryMode === "payment-method" ? (
-      completeSelectedGroup ? (
-        <>
-          <span className="truncate">{completeSelectedGroup[0]}</span>
-          <span className="shrink-0 font-semibold text-brand">
-            {selectedValues.length}
-          </span>
-        </>
-      ) : selectedValues.length === 1 ? (
-        (selectedNames[0] ?? selectedValues[0])
-      ) : selectedValues.length <= 3 ? (
-        <>
-          <span className="truncate">{selectedNames.join(", ")}</span>
-          <span className="shrink-0 font-semibold text-brand">
-            {selectedValues.length}
-          </span>
-        </>
-      ) : (
-        `${selectedValues.length} cuentas`
-      )
-    ) : summaryMode === "category" ? (
-      completeSelectedGroup ? (
-        <>
-          <span className="truncate">{completeSelectedGroup[0]}</span>
-          <span className="shrink-0 font-semibold text-brand">
-            {selectedValues.length}
-          </span>
-        </>
-      ) : selectedValues.length === 1 ? (
-        (selectedNames[0] ?? selectedValues[0])
-      ) : selectedValues.length <= 3 ? (
-        <>
-          <span className="truncate">{selectedNames.join(", ")}</span>
-          <span className="shrink-0 font-semibold text-brand">
-            {selectedValues.length}
-          </span>
-        </>
-      ) : (
-        <>
-          <span className="truncate">
-            {selectedNames.slice(0, 2).join(", ")}
-          </span>
-          <span className="shrink-0 font-semibold text-brand">
-            +{selectedValues.length - 2} {selectedValues.length}
-          </span>
-        </>
-      )
-    ) : summaryMode === "chip" ? (
-      selectedValues.length === 1 ? (
-        (options.find((option) => option.value === selectedValues[0])?.label ??
-        selectedValues[0])
-      ) : (
-        `${options.find((option) => option.value === selectedValues[0])?.label ?? selectedValues[0]} +${selectedValues.length - 1}`
-      )
-    ) : selectedValues.length < 3 ? (
-      options
-        .filter((option) => selected.has(option.value))
-        .map((option) => option.label)
-        .join(", ")
+  const summaryAccessibleText = allChecked
+    ? allLabel
+    : noFilter || selectedValues.length === 0
+      ? emptySelectionLabel
+      : `${selectedValues.length} seleccionadas`;
+  const summary = allChecked ? (
+    allLabel
+  ) : noFilter || selectedValues.length === 0 ? (
+    emptySelectionLabel
+  ) : summaryMode === "person" ? (
+    selectedValues.length === 1 ? (
+      (selectedNames[0] ?? selectedValues[0])
+    ) : selectedValues.length <= 3 ? (
+      <>
+        <span className="truncate">{selectedNames.slice(0, 3).join(", ")}</span>
+        <span className="shrink-0 font-semibold text-brand">
+          {selectedValues.length}
+        </span>
+      </>
     ) : (
-      `${selectedValues.length} seleccionados`
-    );
+      `${selectedValues.length} seleccionadas`
+    )
+  ) : summaryMode === "payment-method" ? (
+    completeSelectedGroup ? (
+      <>
+        <span className="truncate">{completeSelectedGroup[0]}</span>
+        <span className="shrink-0 font-semibold text-brand">
+          {selectedValues.length}
+        </span>
+      </>
+    ) : selectedValues.length === 1 ? (
+      (selectedNames[0] ?? selectedValues[0])
+    ) : selectedValues.length <= 3 ? (
+      <>
+        <span className="truncate">{selectedNames.join(", ")}</span>
+        <span className="shrink-0 font-semibold text-brand">
+          {selectedValues.length}
+        </span>
+      </>
+    ) : (
+      `${selectedValues.length} cuentas`
+    )
+  ) : summaryMode === "category" ? (
+    completeSelectedGroup ? (
+      <>
+        <span className="truncate">{completeSelectedGroup[0]}</span>
+        <span className="shrink-0 font-semibold text-brand">
+          {selectedValues.length}
+        </span>
+      </>
+    ) : selectedValues.length === 1 ? (
+      (selectedNames[0] ?? selectedValues[0])
+    ) : selectedValues.length <= 3 ? (
+      <>
+        <span className="truncate">{selectedNames.join(", ")}</span>
+        <span className="shrink-0 font-semibold text-brand">
+          {selectedValues.length}
+        </span>
+      </>
+    ) : (
+      <>
+        <span className="truncate">{selectedNames.slice(0, 2).join(", ")}</span>
+        <span className="shrink-0 font-semibold text-brand">
+          +{selectedValues.length - 2} {selectedValues.length}
+        </span>
+      </>
+    )
+  ) : summaryMode === "chip" ? (
+    selectedValues.length === 1 ? (
+      (options.find((option) => option.value === selectedValues[0])?.label ??
+      selectedValues[0])
+    ) : (
+      `${options.find((option) => option.value === selectedValues[0])?.label ?? selectedValues[0]} +${selectedValues.length - 1}`
+    )
+  ) : selectedValues.length < 3 ? (
+    options
+      .filter((option) => selected.has(option.value))
+      .map((option) => option.label)
+      .join(", ")
+  ) : (
+    `${selectedValues.length} seleccionados`
+  );
 
   const updateSelection = (next: string[]) => {
     if (multiple && options.length > 0 && next.length === options.length) {

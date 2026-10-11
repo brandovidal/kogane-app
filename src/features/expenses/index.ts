@@ -44,6 +44,7 @@ export type {
   FilterableExpense,
   InstallmentFilterValue,
   SharedFilterValue,
+  SharedFilterSelection,
 } from "./types/expense-filters";
 export * from "./constants";
 export {

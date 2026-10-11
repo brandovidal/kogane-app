@@ -13,7 +13,7 @@ type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel"> & {
 export function SharedFilterFields({
   allLabel = "Todos",
   ownLabel = "No compartidos",
-  mode = "single",
+  mode = "multi",
   icon = UsersRound,
   ...props
 }: Props) {
