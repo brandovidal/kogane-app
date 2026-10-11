@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Plus } from "lucide-react";
+import { Gauge, Pencil, Plus } from "lucide-react";
 
 import { BudgetGroupDialog } from "@/features/budget-groups/components/BudgetGroupDialog";
 import { useBudgetGroupSummaries } from "@/features/budget-groups/hooks/useBudgetGroupSummaries";
@@ -95,7 +95,7 @@ export function BudgetOverview() {
   const categoryRow = (category: OverviewCategory) => (
     <div
       key={category.id}
-      className="grid grid-cols-[minmax(0,1.4fr)_110px_110px_minmax(0,1fr)_40px] items-center gap-3 border-t px-4 py-2.5 text-sm"
+      className="grid grid-cols-[minmax(0,1.4fr)_110px_110px_minmax(0,1fr)_72px] items-center gap-3 border-t px-4 py-2.5 text-sm"
     >
       <span className="flex min-w-0 items-center gap-2">
         <CategoryIcon icon={category.icon} color={category.color} size="sm" />
@@ -118,15 +118,28 @@ export function BudgetOverview() {
         )}
       </span>
       <UsageBar category={category} />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7"
-        aria-label={`Límite de ${category.name}`}
-        onClick={() => setLimitOf(category)}
-      >
-        <Pencil className="h-3.5 w-3.5" />
-      </Button>
+      <span className="flex justify-end gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          aria-label={`Editar ${category.name}`}
+          onClick={() =>
+            setCategoryDialog({ open: true, category: categoryOf(category.id) })
+          }
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          aria-label={`Límite de ${category.name}`}
+          onClick={() => setLimitOf(category)}
+        >
+          <Gauge className="h-3.5 w-3.5" />
+        </Button>
+      </span>
     </div>
   );
 

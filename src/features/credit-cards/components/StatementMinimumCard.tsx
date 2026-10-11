@@ -48,6 +48,8 @@ export function StatementMinimumCard({
         ]),
       ),
     );
+    // reset only when another statement is read, not on every refetch of the same one
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [check?.statementId, check?.currency]);
 
   const expensePeople = new Map(
