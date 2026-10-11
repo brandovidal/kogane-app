@@ -158,6 +158,20 @@ export function DashboardPeriodHeader() {
               );
             })}
           </div>
+          <div className="flex justify-end border-t pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={isCurrent}
+              onClick={() => {
+                setPeriod(getCurrentMonth(), getCurrentYear());
+                setOpen(false);
+              }}
+            >
+              Ir a hoy
+            </Button>
+          </div>
         </PopoverContent>
       </Popover>
       <Button

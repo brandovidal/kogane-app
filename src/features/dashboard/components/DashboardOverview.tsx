@@ -15,10 +15,24 @@ import { EXPENSE_RESOURCES } from "@/shared/api/types";
 import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { useDebts } from "@/features/debts/hooks/debts";
 import { useDraftCount } from "@/features/drafts/hooks/drafts";
+import { usePersonSummaries } from "@/features/debts/hooks/personSummaries";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
+import { getMonthName } from "@/shared/lib/dates";
+import { pluralize } from "@/features/dashboard/lib/pending-groups";
 import { Badge } from "@/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+
+// "Arrastrada de septiembre": the installment belongs to an earlier month than the one on screen
+function carriedFrom(
+  debt: { paymentMonth: number; paymentYear: number },
+  month: number,
+  year: number,
+) {
+  return debt.paymentYear * 12 + debt.paymentMonth < year * 12 + month
+    ? ` · Arrastrada de ${getMonthName(debt.paymentMonth).toLowerCase()}`
+    : "";
+}
 
 export function DashboardOverview({
   summary,
@@ -40,6 +54,7 @@ export function DashboardOverview({
     year,
   });
   const debtsQuery = useDebts();
+  const personSummaries = usePersonSummaries(month, year).data;
   const cards = useCreditCards().data ?? [];
   const draftCount = useDraftCount().data ?? 0;
   const openNewExpense = useNewExpense((state) => state.openWith);
@@ -106,7 +121,7 @@ export function DashboardOverview({
           id: `debt-${debt.id}`,
           kind: collect ? ("collect" as const) : ("debt" as const),
           title: debt.description,
-          detail: `${collect ? "Cobro" : "Deuda"} · ${debt.person.name}${debt.installment ? ` · ${debt.installment}` : ""}`,
+          detail: `${collect ? "Cobro" : "Deuda"} · ${debt.person.name}${debt.installment ? ` · ${debt.installment}` : ""}${carriedFrom(debt, month, year)}`,
           amount: debt.balance,
           dueDate: debt.dueDate,
           person: debt.person.name,
@@ -159,6 +174,44 @@ export function DashboardOverview({
         action: "Revisar",
       });
     }
+    // The month's cobros whose person summary is still a draft (the current month only: a billed one is already closed)
+    if (!previousPeriod && personSummaries) {
+      const statusOf = new Map(
+        personSummaries.map((item) => [item.personId, item]),
+      );
+      const owed = new Map<string, number>();
+      for (const debt of debts) {
+        if (
+          debt.direction !== "owed_to_me" ||
+          debt.paymentMonth !== month ||
+          debt.paymentYear !== year ||
+          debt.balance <= 0
+        )
+          continue;
+        owed.set(
+          debt.person.id,
+          (owed.get(debt.person.id) ?? 0) + debt.balance,
+        );
+      }
+      const drafts = [...owed.entries()].filter(
+        ([personId]) => (statusOf.get(personId)?.status ?? "draft") === "draft",
+      );
+      if (drafts.length)
+        reviewItems.push({
+          id: "person-summaries-draft",
+          kind: "review",
+          title: `Resumen de ${getMonthName(month).toLowerCase()} en borrador`,
+          detail: `${pluralize(drafts.length, "persona", "personas")} · pasa a En progreso al cerrar el mes`,
+          amount: drafts.reduce(
+            (sum, [personId, balance]) =>
+              sum + balance + (statusOf.get(personId)?.adjustmentTotal ?? 0),
+            0,
+          ),
+          dueDate: null,
+          href: "/resumen-deudas",
+          action: "Revisar",
+        });
+    }
     if (draftCount > 0) {
       reviewItems.push({
         id: "drafts",
@@ -187,6 +240,7 @@ export function DashboardOverview({
     year,
     summary?.budget,
     draftCount,
+    personSummaries,
   ]);
 
   const visibleDraftCount = today ? draftCount : 0;
