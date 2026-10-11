@@ -3,6 +3,7 @@ import type {
   CardCheckQuery,
   CreateDebtDto,
   DebtBulkDto,
+  DebtCarryOverDto,
   DebtPaymentDto,
   DebtQuery,
   UpdateDebtDto,
@@ -11,6 +12,7 @@ export type {
   CardCheckQuery,
   CreateDebtDto,
   DebtBulkDto,
+  DebtCarryOverDto,
   DebtPaymentDto,
   DebtQuery,
   UpdateDebtDto,
@@ -32,5 +34,7 @@ export const addDebtPayment = (id: string, body: DebtPaymentDto) =>
   unwrap(
     api.POST("/v1/debts/{id}/payments", { params: { path: { id } }, body }),
   );
+export const carryOverDebts = (body: DebtCarryOverDto) =>
+  unwrap(api.POST("/v1/debts/carry-over", { body }));
 export const bulkDebts = (body: DebtBulkDto) =>
   unwrap(api.POST("/v1/debts/bulk", { body }));

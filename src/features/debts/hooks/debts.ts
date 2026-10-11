@@ -4,6 +4,7 @@ import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
 import {
   addDebtPayment,
   bulkDebts,
+  carryOverDebts,
   createDebt,
   deleteDebt,
   getCardCheck,
@@ -13,6 +14,7 @@ import {
   type CardCheckQuery,
   type CreateDebtDto,
   type DebtBulkDto,
+  type DebtCarryOverDto,
   type DebtPaymentDto,
   type DebtQuery,
   type UpdateDebtDto,
@@ -115,3 +117,28 @@ export const useBulkDebts = () =>
       return `${BULK_MESSAGES[result.action]}: ${result.affected}${skipped}`;
     },
   });
+
+// "Arrastrar saldos pendientes": what would move (dry run, for the confirmation)
+export const useCarryOverPreview = (
+  query: Omit<DebtCarryOverDto, "dryRun">,
+  enabled: boolean,
+) =>
+  useQuery({
+    queryKey: ["debts", "carry-over", query] as const,
+    queryFn: () => carryOverDebts({ ...query, dryRun: true }),
+    enabled,
+    staleTime: 0,
+  });
+
+export const useCarryOverDebts = () =>
+  useApiMutation(
+    (body: Omit<DebtCarryOverDto, "dryRun">) =>
+      carryOverDebts({ ...body, dryRun: false }),
+    {
+      invalidate,
+      success: (result) =>
+        result.affected === 1
+          ? "1 saldo pendiente pasó al mes en curso"
+          : `${result.affected} saldos pendientes pasaron al mes en curso`,
+    },
+  );
