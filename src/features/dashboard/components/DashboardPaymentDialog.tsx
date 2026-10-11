@@ -386,16 +386,39 @@ export function DashboardPaymentDialog({
             );
           })}
         </Tabs>
-        <div className="flex items-center justify-between rounded-xl border px-4 py-3 text-sm">
-          <span className="text-muted-foreground">
-            {selectedEvents.length} seleccionados
-          </span>
-          <span className="font-semibold tabular-nums">
-            Total a registrar{" "}
-            <span className="ml-2 text-foreground">
-              {formatCurrency(total)}
+        <div className="space-y-2 rounded-xl border px-4 py-3 text-sm">
+          {selectedEvents.length > 0 && (
+            <ul className="max-h-28 space-y-1.5 overflow-y-auto">
+              {selectedEvents.map((event) => (
+                <li
+                  key={eventKey(event)}
+                  className="flex items-center justify-between gap-3"
+                >
+                  <span className="truncate text-muted-foreground">
+                    {eventLabel(event)}
+                  </span>
+                  <span className="tabular-nums">
+                    {event.amount == null
+                      ? "—"
+                      : formatCurrency(event.amount, event.currency)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div
+            className={`flex items-center justify-between font-semibold tabular-nums ${selectedEvents.length ? "border-t pt-2" : ""}`}
+          >
+            <span>
+              Total a registrar
+              {!selectedEvents.length && (
+                <span className="ml-2 font-normal text-muted-foreground">
+                  0 seleccionados
+                </span>
+              )}
             </span>
-          </span>
+            <span>{formatCurrency(total)}</span>
+          </div>
         </div>
         <p className="text-xs text-muted-foreground">
           Los pagos se aplican al saldo completo de cada elemento seleccionado.
