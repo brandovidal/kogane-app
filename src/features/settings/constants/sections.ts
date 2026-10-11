@@ -57,5 +57,32 @@ export const SETTINGS_NAV_GROUPS: {
   },
 ];
 
+export type CardsAccountsTab = "credito" | "debito" | "cuentas-salida";
+
+export const CARDS_ACCOUNTS_TABS: {
+  key: CardsAccountsTab;
+  label: string;
+  href: string;
+}[] = [
+  {
+    key: "credito",
+    label: "Tarjetas de crédito",
+    href: "/configuracion/cuentas-tarjetas/credito",
+  },
+  {
+    key: "debito",
+    label: "Débito y billeteras",
+    href: "/configuracion/cuentas-tarjetas/debito",
+  },
+  {
+    key: "cuentas-salida",
+    label: "Cuentas de salida",
+    href: "/configuracion/cuentas-tarjetas/cuentas-salida",
+  },
+];
+
+// Cuentas y tarjetas opens its first subtab
 export const settingsHref = (section: SettingsSection) =>
-  `/configuracion/${section}`;
+  section === "cuentas-tarjetas"
+    ? CARDS_ACCOUNTS_TABS[0].href
+    : `/configuracion/${section}`;

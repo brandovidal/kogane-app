@@ -4,10 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { ArrowUpRight, PieChart, Palette } from "lucide-react";
 import { AccountsTable } from "./AccountsTable";
+import { CardsAccountsTabs } from "./CardsAccountsTabs";
+import { OutputAccountsPanel } from "./OutputAccountsPanel";
 import { PeoplePage } from "./PeoplePage";
 import { SettingsShell } from "./SettingsShell";
 import { ProfilePage } from "@/features/auth/components/ProfilePage";
-import type { SettingsSection } from "../constants/sections";
+import type { CardsAccountsTab, SettingsSection } from "../constants/sections";
 import { NotificationSettingsCard } from "./NotificationSettingsCard";
 import { UsersPanel } from "@/features/auth/components/UsersPanel";
 import { HistoryPanel } from "@/features/history/components/HistoryPanel";
@@ -64,7 +66,13 @@ function GeneralSection() {
 }
 
 // Income editing lives in Ingresos; the budget configuration stays in General.
-function SettingsPageView({ section }: { section: SettingsSection }) {
+function SettingsPageView({
+  section,
+  tab = "credito",
+}: {
+  section: SettingsSection;
+  tab?: CardsAccountsTab;
+}) {
   const { data: me } = useMe();
   // The signed-in user may already be cached in the browser while server rendering has no query data
   const [hasHydrated, setHasHydrated] = useState(false);
@@ -77,7 +85,14 @@ function SettingsPageView({ section }: { section: SettingsSection }) {
       {section === "perfil" && <ProfilePage />}
       {section === "general" && <GeneralSection />}
       {section === "notificaciones" && <NotificationSettingsCard />}
-      {section === "cuentas-tarjetas" && <AccountsTable />}
+      {section === "cuentas-tarjetas" && (
+        <div className="space-y-4">
+          <CardsAccountsTabs active={tab} />
+          {tab === "credito" && <AccountsTable scope="credit" />}
+          {tab === "debito" && <AccountsTable scope="other" />}
+          {tab === "cuentas-salida" && <OutputAccountsPanel />}
+        </div>
+      )}
       {section === "personas" && <PeoplePage />}
       {section === "historial" && <HistoryPanel />}
       {section === "usuarios" && isAdmin && <UsersPanel />}
