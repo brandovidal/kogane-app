@@ -7,6 +7,7 @@ import {
 } from "@/features/auth/hooks/auth";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 
 const fieldClass =
   "h-12 border-white/10 bg-white/[0.04] text-white placeholder:text-white/35";
@@ -95,9 +96,8 @@ export function ResetPasswordForm({
         reset.mutate({ token, password }, { onSuccess: onDone });
       }}
     >
-      <Input
+      <PasswordInput
         className={fieldClass}
-        type="password"
         placeholder="Nueva contraseña (10 caracteres o más)"
         autoComplete="new-password"
         minLength={10}
@@ -105,9 +105,8 @@ export function ResetPasswordForm({
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Input
+      <PasswordInput
         className={fieldClass}
-        type="password"
         placeholder="Repite la contraseña"
         autoComplete="new-password"
         required

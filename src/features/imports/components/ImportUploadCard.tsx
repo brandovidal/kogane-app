@@ -3,7 +3,7 @@ import { AlertCircle, FileUp, Lock, ShieldCheck } from "lucide-react";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
+import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 import { Switch } from "@/ui/switch";
 import { cn } from "@/shared/utils/cn";
 import { uploadErrorText } from "@/features/statements/lib/statement-view";
@@ -148,9 +148,8 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
                 >
                   Contraseña
                 </label>
-                <Input
+                <PasswordInput
                   id="statement-password"
-                  type="password"
                   autoFocus
                   placeholder="Contraseña del PDF"
                   autoComplete="off"
