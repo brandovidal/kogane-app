@@ -2,13 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "./use-api-mutation";
 import {
+  deactivateAccount,
   deleteBudgetGroup,
   deleteCategory,
+  getAccounts,
   getBudgetGroups,
   getCardHolders,
   getCategories,
   getPaymentMethods,
   getPeople,
+  saveAccount,
   saveBudgetGroup,
   saveCardHolders,
   saveCategory,
@@ -16,6 +19,7 @@ import {
   deactivatePaymentMethod,
   savePerson,
   type CardHoldersDto,
+  type CreateAccountDto,
   type CreateBudgetGroupDto,
   type CreateCategoryDto,
   type CreatePaymentMethodDto,
@@ -27,6 +31,7 @@ const CATALOG_STALE_MS = 5 * 60_000;
 
 export const catalogKeys = {
   people: ["catalogs", "people"] as const,
+  accounts: ["catalogs", "accounts"] as const,
   paymentMethods: ["catalogs", "payment-methods"] as const,
   categories: ["catalogs", "categories"] as const,
   budgetGroups: ["catalogs", "budget-groups"] as const,
@@ -148,3 +153,24 @@ export const useSaveCardHolders = () =>
       success: "Titular y adicionales guardados",
     },
   );
+
+// Cuentas de salida (active ones first); `activeOnly` for the selects of a payment
+export const useAccounts = (activeOnly = false) =>
+  useQuery({
+    queryKey: catalogKeys.accounts,
+    queryFn: getAccounts,
+    staleTime: CATALOG_STALE_MS,
+    select: (rows) => (activeOnly ? rows.filter((row) => row.isActive) : rows),
+  });
+
+export const useSaveAccount = () =>
+  useApiMutation(
+    (input: CreateAccountDto & { id?: string }) => saveAccount(input),
+    { invalidate: [catalogKeys.accounts], success: "Cuenta guardada" },
+  );
+
+export const useDeactivateAccount = () =>
+  useApiMutation((id: string) => deactivateAccount(id), {
+    invalidate: [catalogKeys.accounts],
+    success: "Cuenta archivada",
+  });

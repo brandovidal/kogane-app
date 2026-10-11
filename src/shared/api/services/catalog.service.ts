@@ -1,6 +1,7 @@
 import { api, unwrap } from "../client";
 import type {
   CardHoldersDto,
+  CreateAccountDto,
   CreateBudgetGroupDto,
   CreateCategoryDto,
   CreatePaymentMethodDto,
@@ -8,6 +9,7 @@ import type {
 } from "../types/catalog.dto";
 export type {
   CardHoldersDto,
+  CreateAccountDto,
   CreateBudgetGroupDto,
   CreateCategoryDto,
   CreatePaymentMethodDto,
@@ -85,3 +87,17 @@ export const saveCardHolders = (
       body: { holders },
     }),
   );
+
+// Cuentas de salida: where a payment left from. DELETE only deactivates them (payments keep pointing to them)
+export const getAccounts = () => unwrap(api.GET("/v1/accounts"));
+
+export const saveAccount = ({
+  id,
+  ...body
+}: CreateAccountDto & { id?: string }) =>
+  id
+    ? unwrap(api.PATCH("/v1/accounts/{id}", { params: { path: { id } }, body }))
+    : unwrap(api.POST("/v1/accounts", { body }));
+
+export const deactivateAccount = (id: string) =>
+  unwrap(api.DELETE("/v1/accounts/{id}", { params: { path: { id } } }));

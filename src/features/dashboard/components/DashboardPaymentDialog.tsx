@@ -27,6 +27,16 @@ import { usePeriod } from "@/shared/stores/period.store";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
+import {
+  buildPayBody,
+  emptyPayAmount,
+  emptyPayDetails,
+  payAmountError,
+  type PayAmount,
+  type PayDetails,
+} from "@/features/calendar/lib/payment-details";
+import { PaymentDetailsFields } from "./PaymentDetailsFields";
+import { localTodayKey } from "@/shared/lib/dates";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
 type PaymentTab = "card" | "fixed" | "collect" | "debt";
@@ -92,6 +102,10 @@ export function DashboardPaymentDialog({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [selectionInitialized, setSelectionInitialized] = useState(false);
+  const [details, setDetails] = useState<PayDetails>(() =>
+    emptyPayDetails(localTodayKey()),
+  );
+  const [singleAmount, setSingleAmount] = useState<PayAmount>(emptyPayAmount());
 
   const fixedCostEvents = useMemo<PaymentCalendarEvent[]>(
     () =>
@@ -188,6 +202,8 @@ export function DashboardPaymentDialog({
     setTab(initialTab);
     setSelected(new Set());
     setSelectionInitialized(false);
+    setDetails(emptyPayDetails(localTodayKey()));
+    setSingleAmount(emptyPayAmount());
   }, [open, initialTab]);
 
   useEffect(() => {
@@ -227,20 +243,31 @@ export function DashboardPaymentDialog({
     });
   };
 
+  // A different amount (or total / minimum / partial) only makes sense for one element
+  const single = selectedEvents.length === 1 ? singleAmount : null;
+  const amountError = payAmountError(
+    { refType: selectedEvents[0]?.refType ?? "" },
+    single,
+  );
+
   const submit = async () => {
-    if (!selectedEvents.length || submitting) return;
+    if (!selectedEvents.length || submitting || amountError) return;
     setSubmitting(true);
     const results = await Promise.allSettled(
       selectedEvents.map((event) =>
-        payEvent.mutateAsync({
-          refType: event.refType as
-            "card_statement" | "fixed_cost" | "subscription" | "debt",
-          refId: event.refId!,
-        }),
+        payEvent.mutateAsync(
+          buildPayBody(
+            { refType: event.refType!, refId: event.refId! },
+            details,
+            single,
+          ),
+        ),
       ),
     );
     const paid = results.filter(
-      (result) => result.status === "fulfilled" && result.value === "Pagado",
+      (result) =>
+        result.status === "fulfilled" &&
+        (result.value === "Pagado" || result.value === "Pago parcial"),
     ).length;
     const failed =
       results.length -
@@ -276,7 +303,7 @@ export function DashboardPaymentDialog({
           </Button>
           <Button
             onClick={submit}
-            disabled={!selectedEvents.length || submitting}
+            disabled={!selectedEvents.length || submitting || !!amountError}
           >
             <Check className="mr-2 size-4" />
             Registrar {selectedEvents.length}{" "}
@@ -420,8 +447,20 @@ export function DashboardPaymentDialog({
             <span>{formatCurrency(total)}</span>
           </div>
         </div>
+        {selectedEvents.length > 0 && (
+          <PaymentDetailsFields
+            details={details}
+            onDetails={setDetails}
+            single={single}
+            onSingle={setSingleAmount}
+            isCardStatement={selectedEvents[0]?.refType === "card_statement"}
+            error={amountError}
+          />
+        )}
         <p className="text-xs text-muted-foreground">
-          Los pagos se aplican al saldo completo de cada elemento seleccionado.
+          {single
+            ? "Deja el monto vacío para pagar el saldo completo."
+            : "Con varios elementos se paga el saldo completo de cada uno; elige uno solo para indicar otro monto."}
         </p>
       </div>
     </ResponsiveDialog>
