@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Plus, SlidersHorizontal, Trash2 } from "lucide-react";
+import { History, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
+
+import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 
 import {
   useSavePersonSummary,
@@ -25,6 +27,8 @@ export const PERSON_SUMMARY_STATUS_LABELS: Record<PersonSummaryStatus, string> =
   { draft: "Borrador", in_progress: "En progreso", paid: "Pagado" };
 
 export interface PersonSummaryData {
+  /** Row of the month; the history of the cortes hangs from it */
+  id?: string;
   status: PersonSummaryStatus;
   cutoffDate: string | null;
   collectBy: string | null;
@@ -130,6 +134,7 @@ function PersonSummaryDialog({
   summary: PersonSummaryData;
 }) {
   const save = useSavePersonSummary();
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [cutoffDate, setCutoffDate] = useState("");
   const [collectBy, setCollectBy] = useState("");
   const [note, setNote] = useState("");
@@ -165,6 +170,16 @@ function PersonSummaryDialog({
       description="Fecha de corte, fecha límite de cobro, nota y ajustes manuales de este mes."
       footer={
         <>
+          {summary.id && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="sm:mr-auto"
+              onClick={() => setHistoryOpen(true)}
+            >
+              <History className="mr-1 size-4" /> Historial de cortes
+            </Button>
+          )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
@@ -272,6 +287,14 @@ function PersonSummaryDialog({
           </p>
         </div>
       </div>
+      {historyOpen && summary.id && (
+        <HistoryDialog
+          title={`corte de ${name}`}
+          entity="exp_person_summaries"
+          id={summary.id}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
     </ResponsiveDialog>
   );
 }

@@ -1,4 +1,5 @@
 import {
+  BellRing,
   Copy,
   Download,
   MoreHorizontal,
@@ -8,6 +9,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { useCollectNow } from "@/features/notifications/hooks/notifications";
 import { useSetPersonSummariesStatus } from "../hooks/personSummaries";
 import {
   PERSON_SUMMARY_STATUS_LABELS,
@@ -45,6 +47,8 @@ export function DebtSummaryMenu({
 }) {
   const queryClient = useQueryClient();
   const setStatus = useSetPersonSummariesStatus();
+  const collect = useCollectNow();
+  const withBalance = rows.filter((row) => row.total > 0);
   const drafts = rows.filter(
     (row) =>
       (statusOf(row.personId) ?? EMPTY_PERSON_SUMMARY.status) === "draft",
@@ -105,6 +109,26 @@ export function DebtSummaryMenu({
               {drafts.length
                 ? `Congela montos de ${drafts.length} ${drafts.length === 1 ? "persona" : "personas"} en borrador`
                 : "No hay personas en borrador"}
+            </span>
+          </span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={!withBalance.length || collect.isPending}
+          onSelect={() =>
+            collect.mutate({
+              month,
+              year,
+              personIds: withBalance.map((row) => row.personId),
+            })
+          }
+        >
+          <BellRing />
+          <span className="flex flex-col">
+            Cobrar a todos por Mensajes
+            <span className="text-xs text-muted-foreground">
+              {withBalance.length
+                ? `Un aviso por persona con saldo (${withBalance.length}), listo para reenviar`
+                : "Nadie tiene saldo este mes"}
             </span>
           </span>
         </DropdownMenuItem>

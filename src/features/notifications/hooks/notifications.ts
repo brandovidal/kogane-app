@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
 import {
+  collectNow,
   getNotificationHistory,
   getNotificationSettings,
   getRecentNotifications,
@@ -9,8 +10,11 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
   markNotificationUnread,
+  remindDebts,
   updateNotificationSettings,
+  type CollectNowDto,
   type NotificationHistoryQuery,
+  type RemindDebtsDto,
   type UpdateNotificationSettingsDto,
 } from "../services/notification.service";
 
@@ -77,3 +81,25 @@ export const useUpdateNotificationSettings = () =>
     (body: UpdateNotificationSettingsDto) => updateNotificationSettings(body),
     { invalidate: [notificationKeys.settings], success: "Avisos guardados" },
   );
+
+const refreshBell = [notificationKeys.all];
+
+// "Cobrar a todos por Mensajes": the notices already sent today are not repeated, so the toast says how many are new
+export const useCollectNow = () =>
+  useApiMutation((body: CollectNowDto) => collectNow(body), {
+    invalidate: refreshBell,
+    success: (result) =>
+      result.notifications
+        ? `${result.notifications} ${result.notifications === 1 ? "cobro enviado" : "cobros enviados"} a Mensajes`
+        : "No hay cobros nuevos: ya se enviaron hoy o nadie tiene saldo",
+  });
+
+// "Recordar pago": the paid ones are left out by the API
+export const useRemindDebts = () =>
+  useApiMutation((body: RemindDebtsDto) => remindDebts(body), {
+    invalidate: refreshBell,
+    success: (result) =>
+      result.notifications
+        ? `${result.notifications} ${result.notifications === 1 ? "recordatorio enviado" : "recordatorios enviados"} a Mensajes`
+        : "Sin recordatorios nuevos: ya se enviaron hoy o están pagadas",
+  });
