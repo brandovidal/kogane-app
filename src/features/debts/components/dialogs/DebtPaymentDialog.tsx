@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { useAddDebtPayment } from "@/features/debts/hooks/debts";
+import { useUploadAttachment } from "@/features/attachments/hooks";
+import { PendingAttachmentsPanel } from "@/features/attachments/components/PendingAttachmentsPanel";
+import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
+import { toast } from "sonner";
 import type { Debt } from "@/shared/api/types";
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
 import { PaymentMethodLabel } from "@/features/settings/components/PaymentMethodLabel";
@@ -35,6 +39,8 @@ export function DebtPaymentDialog({
   onOpenChange,
 }: DebtPaymentDialogProps) {
   const addPayment = useAddDebtPayment();
+  const uploadAttachment = useUploadAttachment({ quiet: true });
+  const [proof, setProof] = useState<PendingAttachmentUpload[]>([]);
   const [amount, setAmount] = useState("");
   const [paidAt, setPaidAt] = useState(toIsoDate(new Date()));
   const [kind, setKind] = useState<PaymentKind>("payment");
@@ -54,6 +60,7 @@ export function DebtPaymentDialog({
       setKind("payment");
       setScope("total");
       setMethodId(null);
+      setProof([]);
     }
   }, [debt]);
 
@@ -95,7 +102,27 @@ export function DebtPaymentDialog({
           paymentMethodId: methodId,
         },
       },
-      { onSuccess: () => onOpenChange(false) },
+      {
+        onSuccess: async (payment) => {
+          onOpenChange(false);
+          // The Comprobante hangs from the payment just created (refType debt_payment)
+          const [file] = proof;
+          if (!file) return;
+          try {
+            await uploadAttachment.mutateAsync({
+              file: file.file,
+              refType: "debt_payment",
+              refId: payment.paymentId,
+              kind: file.kind,
+            });
+            toast.success("Comprobante adjuntado");
+          } catch {
+            toast.error(
+              "El pago se guardó, pero no se pudo subir el comprobante. Puedes adjuntarlo después.",
+            );
+          }
+        },
+      },
     );
   };
 
@@ -250,6 +277,18 @@ export function DebtPaymentDialog({
               </p>
             )}
           </div>
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">Comprobante</label>
+          <PendingAttachmentsPanel
+            files={proof}
+            onChange={(next) => setProof(next.slice(-1))}
+            kind="recibo"
+            showKindSelect={false}
+          />
+          <p className="text-xs text-muted-foreground">
+            Adjunta una captura o comprobante (opcional).
+          </p>
         </div>
         {debt && (
           <PaymentBalancePreview
