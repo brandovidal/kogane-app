@@ -1,12 +1,11 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { apiFetch, api, ApiError, unwrap } from "./client";
 export type { Schemas } from "./client";
-export { queryClient, withQuery } from "./query";
+export { withQuery } from "./query";
 export type {
   PaymentMethod,
   Category,
   BudgetGroup,
-  ExpenseRecord,
   DailyExpense,
   FixedCost,
   Subscription,
@@ -25,12 +24,10 @@ export type {
   StatementSummary,
   ImportBatch,
   ImportDetail,
-  ImportRows,
   ImportRow,
   ImportTab,
   ImportRowStatus,
   Commitment,
-  CommitmentDetail,
   CommitmentInstallment,
   Contribution,
   Attachment,

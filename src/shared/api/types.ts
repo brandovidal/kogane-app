@@ -10,7 +10,7 @@ export type PaymentMethod = DataOf<"PaymentMethodResponseDto">;
 export type Category = DataOf<"CategoryResponseDto">;
 export type BudgetGroup = DataOf<"BudgetGroupResponseDto">;
 
-export type ExpenseRecord = DataOf<"ExpenseRecordResponseDto">;
+type ExpenseRecord = DataOf<"ExpenseRecordResponseDto">;
 export type DailyExpense = Extract<ExpenseRecord, { spentAt: string }>;
 export type FixedCost = Extract<
   ExpenseRecord,
@@ -60,7 +60,7 @@ export type StatementRow = Statement["rows"][number];
 export type StatementSummary = DataOf<"StatementListResponseDto">[number];
 export type ImportBatch = DataOf<"ImportListResponseDto">[number];
 export type ImportDetail = DataOf<"ImportDetailResponseDto">;
-export type ImportRows = DataOf<"ImportRowsResponseDto">;
+type ImportRows = DataOf<"ImportRowsResponseDto">;
 export type ImportRow = ImportRows["items"][number];
 export type ImportTab = NonNullable<
   NonNullable<
@@ -71,7 +71,7 @@ export type ImportRowStatus = ImportRow["status"];
 
 // Loans, investments and their files (P27)
 export type Commitment = DataOf<"CommitmentListResponseDto">[number];
-export type CommitmentDetail = DataOf<"CommitmentDetailResponseDto">;
+type CommitmentDetail = DataOf<"CommitmentDetailResponseDto">;
 export type CommitmentInstallment = CommitmentDetail["installments"][number];
 export type Contribution = DataOf<"ContributionResponseDto">;
 export type Attachment = DataOf<"AttachmentListResponseDto">[number];

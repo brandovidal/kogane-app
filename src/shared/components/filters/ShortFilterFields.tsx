@@ -5,7 +5,7 @@ import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
 import { cn } from "@/shared/utils/cn";
 
-export interface ShortFilterOption {
+interface ShortFilterOption {
   value: string;
   label: string;
   decoration?: ReactNode;

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 
-export type EmptyStateVariant = "empty" | "period" | "filters" | "search";
+type EmptyStateVariant = "empty" | "period" | "filters" | "search";
 
 const VARIANT_ICON: Record<EmptyStateVariant, LucideIcon> = {
   empty: InboxIcon,

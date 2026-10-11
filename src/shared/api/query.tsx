@@ -4,7 +4,7 @@ import { ApiError } from "./client";
 import type { ComponentType } from "react";
 
 // One client for every island of the page (each Astro island is its own React tree, D56)
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,

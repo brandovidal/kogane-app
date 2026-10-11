@@ -17,7 +17,7 @@ import {
   type UpdateCommitmentDto,
 } from "../services/commitment.service";
 
-export const commitmentKeys = {
+const commitmentKeys = {
   all: ["commitments"] as const,
   list: (filter: CommitmentFilter) => ["commitments", "list", filter] as const,
   detail: (id: string) => ["commitments", "detail", id] as const,

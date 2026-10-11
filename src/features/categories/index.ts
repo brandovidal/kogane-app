@@ -3,7 +3,6 @@ export { CategoryDialog } from "./components/CategoryDialog";
 export {
   CATEGORY_ICON_OPTIONS,
   normalizeCategoryIconName,
-  getCategoryIcon,
   matchesCategoryIcon,
 } from "./lib/category-icons";
 export { CategoryIcon } from "./components/CategoryIcon";
@@ -20,4 +19,3 @@ export {
   useSaveCategoryBudget,
   useDeleteCategoryBudget,
 } from "./hooks/category-budgets";
-export type { CategoryIconOption } from "./lib/category-icons";

@@ -9,7 +9,7 @@ import { ImportRecents } from "../components/ImportRecents";
 import { NotionImportDetailView } from "./NotionImportDetailView";
 import { StatementPreview } from "../components/StatementPreview";
 
-export function ImportsPageView() {
+function ImportsPageView() {
   const { history, current, source, id, setSelected, startNew } =
     useImportsPage();
   const [showHistory, setShowHistory] = useState(false);

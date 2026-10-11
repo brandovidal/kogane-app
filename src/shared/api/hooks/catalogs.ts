@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "./use-api-mutation";
 import {
-  deactivateAccount,
   deleteBudgetGroup,
   deleteCategory,
   getAccounts,
@@ -168,9 +167,3 @@ export const useSaveAccount = () =>
     (input: CreateAccountDto & { id?: string }) => saveAccount(input),
     { invalidate: [catalogKeys.accounts], success: "Cuenta guardada" },
   );
-
-export const useDeactivateAccount = () =>
-  useApiMutation((id: string) => deactivateAccount(id), {
-    invalidate: [catalogKeys.accounts],
-    success: "Cuenta archivada",
-  });

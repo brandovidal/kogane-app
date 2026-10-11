@@ -1,6 +1,6 @@
 import type { Debt } from "@/shared/api/types";
 
-export type CurrencyTotals = Partial<Record<"PEN" | "USD", number>>;
+type CurrencyTotals = Partial<Record<"PEN" | "USD", number>>;
 
 const key = (currency: string): "PEN" | "USD" =>
   currency === "USD" ? "USD" : "PEN";

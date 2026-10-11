@@ -6,8 +6,6 @@ import {
   normalizeCategoryIconName,
 } from "@/shared/lib/category-icons";
 
-export { CATEGORY_ICON_OPTIONS } from "@/shared/lib/category-icons";
-
 const sizeClasses = {
   xs: "size-5 rounded [&>svg]:size-3",
   sm: "size-6 rounded-md [&>svg]:size-3.5",

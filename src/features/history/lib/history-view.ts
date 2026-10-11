@@ -43,7 +43,7 @@ export const ACTION_LABELS: Record<string, string> = {
   restore: "Restaurado",
 };
 
-export const FIELD_LABELS: Record<string, string> = {
+const FIELD_LABELS: Record<string, string> = {
   description: "Descripción",
   name: "Nombre",
   amount: "Monto",
@@ -263,7 +263,7 @@ export function historyFooter({
   return `${total} ${total === 1 ? "cambio" : "cambios"} · más recientes primero`;
 }
 
-export const HISTORY_VALUE_PREVIEW_CHARS = 120;
+const HISTORY_VALUE_PREVIEW_CHARS = 120;
 
 // «Ver completo» (board 14i): un valor largo se corta y se puede expandir
 export const isLongValue = (text: string, max = HISTORY_VALUE_PREVIEW_CHARS) =>

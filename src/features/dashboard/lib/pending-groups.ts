@@ -1,5 +1,5 @@
 export type PendingFilter = "all" | "soon" | "late";
-export type PendingKind = "card" | "fixed" | "debt" | "collect" | "review";
+type PendingKind = "card" | "fixed" | "debt" | "collect" | "review";
 export type PendingSection = "pay" | "collect" | "review";
 
 export interface PendingEntry {
@@ -17,11 +17,11 @@ export interface PendingEntry {
   action: string;
 }
 
-export const SOON_DAYS = 7;
+const SOON_DAYS = 7;
 /** Most items a filtered list shows before "Ver los N". */
-export const FILTERED_LIMIT = 6;
+const FILTERED_LIMIT = 6;
 
-export const SECTION_OF: Record<PendingKind, PendingSection> = {
+const SECTION_OF: Record<PendingKind, PendingSection> = {
   card: "pay",
   fixed: "pay",
   debt: "pay",
@@ -29,7 +29,7 @@ export const SECTION_OF: Record<PendingKind, PendingSection> = {
   review: "review",
 };
 
-export const KIND_LABELS: Record<PendingKind, string> = {
+const KIND_LABELS: Record<PendingKind, string> = {
   card: "Tarjetas",
   fixed: "Costos fijos",
   debt: "Deudas",
@@ -38,7 +38,7 @@ export const KIND_LABELS: Record<PendingKind, string> = {
 };
 
 /** Days from `today` to `date` (negative = overdue); null without date. */
-export function daysUntil(date: string | null, today: Date): number | null {
+function daysUntil(date: string | null, today: Date): number | null {
   if (!date) return null;
   const due = new Date(`${date.slice(0, 10)}T00:00:00`);
   const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -50,7 +50,7 @@ export function isLate(entry: PendingEntry, today: Date): boolean {
   return !entry.paid && days != null && days < 0;
 }
 
-export function isSoon(entry: PendingEntry, today: Date): boolean {
+function isSoon(entry: PendingEntry, today: Date): boolean {
   const days = daysUntil(entry.dueDate, today);
   return !entry.paid && days != null && days >= 0 && days <= SOON_DAYS;
 }

@@ -18,7 +18,7 @@ import {
   type UpdateNotificationSettingsDto,
 } from "../services/notification.service";
 
-export const notificationKeys = {
+const notificationKeys = {
   all: ["notifications"] as const,
   recent: ["notifications", "recent"] as const,
   unread: ["notifications", "unread"] as const,

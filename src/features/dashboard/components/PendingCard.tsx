@@ -22,7 +22,7 @@ import {
   type PendingGroup,
 } from "@/features/dashboard/lib/pending-groups";
 
-export type PaymentTab = "card" | "fixed" | "collect" | "debt";
+type PaymentTab = "card" | "fixed" | "collect" | "debt";
 
 interface PendingCardProps {
   entries: PendingEntry[];

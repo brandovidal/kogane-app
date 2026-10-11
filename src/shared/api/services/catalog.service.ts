@@ -98,6 +98,3 @@ export const saveAccount = ({
   id
     ? unwrap(api.PATCH("/v1/accounts/{id}", { params: { path: { id } }, body }))
     : unwrap(api.POST("/v1/accounts", { body }));
-
-export const deactivateAccount = (id: string) =>
-  unwrap(api.DELETE("/v1/accounts/{id}", { params: { path: { id } } }));

@@ -11,7 +11,7 @@ import {
 import type { Schemas } from "@/shared/api/client";
 
 // Presupuesto (P19, D78): extra incomes of the month; they add to the salary in the surplus (D65)
-export const budgetKeys = {
+const budgetKeys = {
   incomes: (month: number, year: number) => ["incomes", month, year] as const,
 };
 

@@ -5,7 +5,7 @@ export { CardMinimumCoverageSection } from "./CardMinimumCoverageSection";
 export { CollectButton } from "./CollectButton";
 export { DebtBulkBar } from "./DebtBulkBar";
 export { DebtDetailOverviewSection } from "./DebtDetailOverviewSection";
-export { DebtGridSection, ResetDebtDialog } from "./DebtGridSection";
+export { DebtGridSection } from "./DebtGridSection";
 export { CollapsibleDebtGroup } from "./DebtGroupsSection";
 export {
   DebtFilterSheet,

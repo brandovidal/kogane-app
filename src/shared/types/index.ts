@@ -1,7 +1,7 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export type { MonthlyPeriod } from "./period";
 export type { ThemePreference, ResolvedTheme } from "./theme";
-export type { CatalogSelectProps, CatalogOption } from "./catalog-select";
+export type { CatalogSelectProps } from "./catalog-select";
 export type { CsvExportData } from "./csv-export";
 export type { ViewMode, Column, DataViewProps } from "./data-view";
 export type { DataViewSummary } from "./data-view";
@@ -19,7 +19,6 @@ export type {
 } from "./navigation";
 export type {
   UseDataTableOptions,
-  DataTableQuery,
   DataTableBasicProps,
   DataTableComplexProps,
 } from "./data-table";

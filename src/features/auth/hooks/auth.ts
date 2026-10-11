@@ -30,7 +30,7 @@ import {
   type UpdateUserDto,
 } from "../services/auth.service";
 
-export const authKeys = {
+const authKeys = {
   me: ["auth", "me"] as const,
   config: ["auth", "config"] as const,
   users: ["auth", "users"] as const,

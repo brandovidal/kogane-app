@@ -50,14 +50,6 @@ export const DEBT_STATE_LABELS: Record<
   upcoming: "Por venir",
 };
 
-export type PaymentKind = "payment" | "partial" | "prepaid" | "cashback";
-export const PAYMENT_KIND_LABELS: Record<PaymentKind, string> = {
-  payment: "Pago",
-  partial: "Abono",
-  prepaid: "Amortizado",
-  cashback: "Cashback",
-};
-
 export const debtBadgeStatus = (status: string) =>
   status === "pending" ? "not_started" : status;
 

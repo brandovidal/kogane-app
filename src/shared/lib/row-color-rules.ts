@@ -12,7 +12,7 @@ export const ROW_COLOR_LABELS: Record<RowColor, string> = {
 };
 
 /** Tailwind classes of each color, soft enough to keep the text readable in both themes. */
-export const ROW_COLOR_CLASSES: Record<RowColor, string> = {
+const ROW_COLOR_CLASSES: Record<RowColor, string> = {
   amber: "bg-amber-500/10 hover:bg-amber-500/15",
   red: "bg-red-500/10 hover:bg-red-500/15",
   green: "bg-emerald-500/10 hover:bg-emerald-500/15",
@@ -73,7 +73,7 @@ export function daysUntil(
   return dayNumber(dueDate) - dayNumber(today);
 }
 
-export function ruleMatches(
+function ruleMatches(
   rule: RowColorRule,
   subject: RowColorSubject,
   today: string,

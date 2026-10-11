@@ -11,7 +11,7 @@ import {
   type UpdateBudgetSettingsDto,
 } from "../services/budget.service";
 
-export const summaryKeys = {
+const summaryKeys = {
   month: (month: number, year: number) => ["summary", month, year] as const,
 };
 

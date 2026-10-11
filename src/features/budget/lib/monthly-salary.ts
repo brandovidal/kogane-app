@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { PERIOD_YEAR_MIN, PERIOD_YEAR_MAX } from "@/shared/constants/period";
 
-export type { MonthlyPeriod as SalaryPeriod } from "@/shared/types/period";
 export { periodFromParams as salaryPeriodFromUrl } from "@/shared/lib/period";
 
 export const monthlySalarySchema = z.object({

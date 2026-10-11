@@ -5,7 +5,6 @@ export { ProfilePage } from "./components/ProfilePage";
 export { UserMenu } from "./components/UserMenu";
 export { UsersPanel } from "./components/UsersPanel";
 export {
-  authKeys,
   useMe,
   useAuthConfig,
   useInvitePreview,
