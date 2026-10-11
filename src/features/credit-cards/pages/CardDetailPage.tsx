@@ -46,7 +46,8 @@ import { CardSummaryPanel } from "../components/CardSummaryPanel";
 import { tabFromSearch } from "../lib/card-links";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChartPie, LayoutGrid, List, Wallet } from "lucide-react";
+import { ChartPie, CheckCheck, LayoutGrid, List, Wallet } from "lucide-react";
+import { CardReviewBar } from "../components/CardReviewBar";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import {
   duplicateBody,
@@ -383,6 +384,21 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
       ),
     },
     {
+      key: "reviewed",
+      header: "Revisado",
+      cell: (exp) =>
+        exp.reviewedAt ? (
+          <span
+            className="inline-flex items-center gap-1 text-xs text-emerald-400"
+            title={`Revisado el ${formatDate(exp.reviewedAt)}`}
+          >
+            <CheckCheck className="size-3.5" aria-hidden="true" /> Sí
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">—</span>
+        ),
+    },
+    {
       key: "actions",
       header: "",
       role: "actions",
@@ -563,6 +579,17 @@ function CreditCardDetailView({ cardCode }: CreditCardDetailProps) {
             onViewChange={setView}
             columns={columnVisibilityOptions}
             onResetView={resetView}
+          />
+
+          <CardReviewBar
+            selectedIds={[...selectedExpenses]}
+            reviewedCount={
+              cardExpenses.filter(
+                (expense) =>
+                  selectedExpenses.has(expense.id) && expense.reviewedAt,
+              ).length
+            }
+            onDone={() => setSelectedExpenses(new Set())}
           />
 
           {cardExpenses.length === 0 ? (
