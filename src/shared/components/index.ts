@@ -63,7 +63,6 @@ export {
   MonthYearPicker,
   type MonthYearPickerProps,
 } from "./navigation/MonthYearPicker";
-export { ThemeToggle } from "./theme/ThemeToggle";
 export { ThemeMenuItems } from "./theme/ThemeMenuItems";
 export type { CountedToolbarButtonProps } from "./toolbar/CountedToolbarButton";
 export { CountedToolbarButton } from "./toolbar/CountedToolbarButton";

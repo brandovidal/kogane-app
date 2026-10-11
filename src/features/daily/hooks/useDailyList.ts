@@ -25,7 +25,7 @@ export function useDailyList() {
   const month = usePeriod((state) => state.month);
   const year = usePeriod((state) => state.year);
   const query = useExpenses(EXPENSE_RESOURCES.daily, { month, year });
-  const expenses = query.data ?? [];
+  const expenses = useMemo(() => query.data ?? [], [query.data]);
   const people = usePeople().data ?? [];
   const categories = useCategories().data ?? [];
   const personName = nameById(people);

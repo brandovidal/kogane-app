@@ -85,14 +85,17 @@ export function DashboardPaymentDialog({
   const year = usePeriod((state) => state.year);
   const { from, to } = gridRange(month, year);
   const calendarQuery = useCalendar(from, to);
-  const events = calendarQuery.data ?? [];
+  const events = useMemo(() => calendarQuery.data ?? [], [calendarQuery.data]);
   const cardExpenses =
     useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
   const fixedCostsQuery = useExpenses(EXPENSE_RESOURCES.fixedCost, {
     month,
     year,
   });
-  const fixedCosts = fixedCostsQuery.data ?? [];
+  const fixedCosts = useMemo(
+    () => fixedCostsQuery.data ?? [],
+    [fixedCostsQuery.data],
+  );
   const subscriptions =
     useExpenses(EXPENSE_RESOURCES.subscription, { month, year }).data ?? [];
   const cards = useCreditCards().data ?? [];

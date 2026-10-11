@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Palette, Shapes, Tags } from "lucide-react";
@@ -7,7 +7,11 @@ import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { z } from "zod";
-import { useSaveCategory } from "@/shared/api/hooks/catalogs";
+import {
+  useDeleteCategory,
+  useSaveCategory,
+} from "@/shared/api/hooks/catalogs";
+import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import type { Category } from "@/shared/api/types";
 import { CategoryIconPicker } from "@/features/categories/components/CategoryIconPicker";
 
@@ -31,6 +35,8 @@ export function CategoryDialog({
   category,
 }: CategoryDialogProps) {
   const saveCategory = useSaveCategory();
+  const deleteCategory = useDeleteCategory();
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const isEdit = !!category;
 
   const {
@@ -96,6 +102,15 @@ export function CategoryDialog({
       }
       footer={
         <>
+          {category && !category.isDefault && (
+            <Button
+              variant="ghost"
+              className="mr-auto text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              Eliminar
+            </Button>
+          )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
@@ -159,6 +174,24 @@ export function CategoryDialog({
           </div>
         </div>
       </form>
+      {category && (
+        <DeleteConfirmationDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title={`Eliminar ${category.name}`}
+          description="Si tiene gastos o límites asociados, el servidor no la elimina."
+          pending={deleteCategory.isPending}
+          onConfirm={() =>
+            deleteCategory.mutate(category.id, {
+              onSuccess: () => {
+                setConfirmDelete(false);
+                onOpenChange(false);
+              },
+              onError: () => setConfirmDelete(false),
+            })
+          }
+        />
+      )}
     </ResponsiveDialog>
   );
 }

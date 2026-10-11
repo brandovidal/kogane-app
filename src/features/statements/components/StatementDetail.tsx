@@ -2,7 +2,7 @@ import { ViewStatementFileButton } from "./ViewStatementFileButton";
 import { StatementBalanceSummary } from "./StatementBalanceSummary";
 import { StatementPaymentSummary } from "./StatementPaymentSummary";
 import { StatementBalanceHistory } from "./StatementBalanceHistory";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   CheckCircle2,
@@ -111,12 +111,14 @@ function RowsTable({
   );
   const allChecked =
     selectable.length > 0 && selectable.every((row) => selected.has(row.id));
-  const toggle = (id: string, on: boolean) => {
-    const next = new Set(selected);
-    if (on) next.add(id);
-    else next.delete(id);
-    setSelected(next);
-  };
+  const toggle = useCallback((id: string, on: boolean) => {
+    setSelected((current) => {
+      const next = new Set(current);
+      if (on) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }, []);
   const assign = () =>
     assignRows.mutate(
       { id: statementId, rowIds: [...selected], personId: assignTo },
@@ -298,6 +300,7 @@ function RowsTable({
       selected,
       statementId,
       statementPersonId,
+      toggle,
       update,
     ],
   );

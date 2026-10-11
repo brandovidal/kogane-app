@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
@@ -7,8 +7,10 @@ import { Input } from "@/ui/input";
 import { z } from "zod";
 import {
   useBudgetGroups,
+  useDeleteBudgetGroup,
   useSaveBudgetGroup,
 } from "@/shared/api/hooks/catalogs";
+import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import type { BudgetGroup } from "@/shared/api/types";
 
 const budgetGroupFormSchema = z.object({
@@ -33,6 +35,8 @@ export function BudgetGroupDialog({
   const saveBudgetGroup = useSaveBudgetGroup();
   const groups = useBudgetGroups().data ?? [];
   const isEdit = !!group;
+  const deleteBudgetGroup = useDeleteBudgetGroup();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const {
     register,
@@ -86,6 +90,15 @@ export function BudgetGroupDialog({
       }
       footer={
         <>
+          {group && (
+            <Button
+              variant="ghost"
+              className="mr-auto text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              Eliminar
+            </Button>
+          )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
@@ -138,6 +151,24 @@ export function BudgetGroupDialog({
           </div>
         </div>
       </form>
+      {group && (
+        <DeleteConfirmationDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title={`Eliminar ${group.name}`}
+          description="Un grupo con categorías no se puede eliminar: muévelas antes."
+          pending={deleteBudgetGroup.isPending}
+          onConfirm={() =>
+            deleteBudgetGroup.mutate(group.id, {
+              onSuccess: () => {
+                setConfirmDelete(false);
+                onOpenChange(false);
+              },
+              onError: () => setConfirmDelete(false),
+            })
+          }
+        />
+      )}
     </ResponsiveDialog>
   );
 }

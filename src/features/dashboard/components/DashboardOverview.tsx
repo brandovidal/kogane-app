@@ -55,14 +55,21 @@ export function DashboardOverview({
   });
   const debtsQuery = useDebts();
   const personSummaries = usePersonSummaries(month, year).data;
-  const cards = useCreditCards().data ?? [];
+  const cardsData = useCreditCards().data;
+  const cards = useMemo(() => cardsData ?? [], [cardsData]);
   const draftCount = useDraftCount().data ?? 0;
   const openNewExpense = useNewExpense((state) => state.openWith);
   const [today, setToday] = useState<Date | null>(null);
   useEffect(() => setToday(new Date()), []);
-  const fixedCosts = fixedCostsQuery.data ?? [];
-  const cardExpenses = cardExpensesQuery.data ?? [];
-  const debts = debtsQuery.data ?? [];
+  const fixedCosts = useMemo(
+    () => fixedCostsQuery.data ?? [],
+    [fixedCostsQuery.data],
+  );
+  const cardExpenses = useMemo(
+    () => cardExpensesQuery.data ?? [],
+    [cardExpensesQuery.data],
+  );
+  const debts = useMemo(() => debtsQuery.data ?? [], [debtsQuery.data]);
 
   const items = useMemo<PendingEntry[]>(() => {
     const open = (status: string) =>
