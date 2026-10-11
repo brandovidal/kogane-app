@@ -4,6 +4,7 @@ import {
   Copy,
   CreditCard,
   HandCoins,
+  BellRing,
   MoreHorizontal,
   RotateCcw,
   Trash2,
@@ -12,7 +13,11 @@ import {
   X,
 } from "lucide-react";
 
+import { toast } from "sonner";
+
+import { BulkReceiptDialog } from "@/features/debts/components/dialogs/BulkReceiptDialog";
 import { useBulkDebts, type DebtBulk } from "@/features/debts/hooks/debts";
+import { useRemindDebts } from "@/features/notifications/hooks/notifications";
 import type { Debt } from "@/shared/api/types";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
@@ -60,6 +65,8 @@ export function DebtBulkBar({
   onDone: () => void;
 }) {
   const bulk = useBulkDebts();
+  const remind = useRemindDebts();
+  const [receiptIds, setReceiptIds] = useState<string[] | null>(null);
   const period = usePeriod((s) => s);
   const [asking, setAsking] = useState<Asking>(null);
   const [amount, setAmount] = useState("");
@@ -76,240 +83,271 @@ export function DebtBulkBar({
   const run = (body: Omit<DebtBulk, "ids">) =>
     bulk.mutate(
       { ids, ...body },
-      { onSuccess: () => (setAsking(null), onDone()) },
+      {
+        onSuccess: (result) => {
+          setAsking(null);
+          onDone();
+          // pay · prepaid · cashback · partial create payments: offer to attach their Comprobante
+          if (result.paymentIds.length)
+            toast("¿Tienes el comprobante?", {
+              description: `Se adjunta a los ${result.paymentIds.length} pagos registrados.`,
+              action: {
+                label: "Adjuntar",
+                onClick: () => setReceiptIds(result.paymentIds),
+              },
+              duration: 12000,
+            });
+        },
+      },
     );
 
-  if (!selected.length) return null;
+  const receiptDialog = (
+    <BulkReceiptDialog
+      paymentIds={receiptIds}
+      onClose={() => setReceiptIds(null)}
+    />
+  );
+
+  if (!selected.length) return receiptDialog;
 
   return (
-    <div className="sticky top-2 z-20 flex flex-wrap items-center gap-2 rounded-lg border bg-background/95 p-2 shadow-sm backdrop-blur">
-      <span className="px-2 text-sm font-medium">
-        {selected.length} seleccionadas · saldo {formatCurrency(balance)}
-      </span>
-      <Button
-        size="sm"
-        onClick={() => run({ action: "pay" })}
-        disabled={bulk.isPending || balance <= 0}
-      >
-        <HandCoins className="mr-1 h-4 w-4" /> Pagar
-      </Button>
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => (setAmount(""), setAsking("partial"))}
-        disabled={balance <= 0}
-      >
-        <Wallet className="mr-1 h-4 w-4" /> Abonar…
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="outline" aria-label="Más acciones">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-52">
-          <DropdownMenuItem
-            onSelect={() => run({ action: "prepaid" })}
-            disabled={balance <= 0}
-          >
-            <Undo2 /> Amortizar
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => run({ action: "cashback" })}
-            disabled={balance <= 0}
-          >
-            <RotateCcw /> Cashback
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setAsking("clone")}>
-            <Copy /> Clonar a…
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setAsking("card")}>
-            <CreditCard /> Asignar tarjeta…
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setAsking("reset")}
-            disabled={!withPayments}
-          >
-            <Ban /> Volver a No iniciado
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            onSelect={() => setAsking("delete")}
-          >
-            <Trash2 /> Borrar…
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={onDone}
-        aria-label="Quitar selección"
-      >
-        <X className="h-4 w-4" />
-      </Button>
+    <>
+      {receiptDialog}
+      <div className="sticky top-2 z-20 flex flex-wrap items-center gap-2 rounded-lg border bg-background/95 p-2 shadow-sm backdrop-blur">
+        <span className="px-2 text-sm font-medium">
+          {selected.length} seleccionadas · saldo {formatCurrency(balance)}
+        </span>
+        <Button
+          size="sm"
+          onClick={() => run({ action: "pay" })}
+          disabled={bulk.isPending || balance <= 0}
+        >
+          <HandCoins className="mr-1 h-4 w-4" /> Pagar
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => (setAmount(""), setAsking("partial"))}
+          disabled={balance <= 0}
+        >
+          <Wallet className="mr-1 h-4 w-4" /> Abonar…
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" variant="outline" aria-label="Más acciones">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuItem
+              onSelect={() => run({ action: "prepaid" })}
+              disabled={balance <= 0}
+            >
+              <Undo2 /> Amortizar
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => run({ action: "cashback" })}
+              disabled={balance <= 0}
+            >
+              <RotateCcw /> Cashback
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => remind.mutate({ ids })}
+              disabled={remind.isPending}
+            >
+              <BellRing /> Recordar pago
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setAsking("clone")}>
+              <Copy /> Clonar a…
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setAsking("card")}>
+              <CreditCard /> Asignar tarjeta…
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => setAsking("reset")}
+              disabled={!withPayments}
+            >
+              <Ban /> Volver a No iniciado
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={() => setAsking("delete")}
+            >
+              <Trash2 /> Borrar…
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={onDone}
+          aria-label="Quitar selección"
+        >
+          <X className="h-4 w-4" />
+        </Button>
 
-      <ResponsiveDialog
-        open={asking === "partial"}
-        onOpenChange={(open) => !open && setAsking(null)}
-        title="Abonar"
-        description={`Se reparte entre las ${selected.length} seleccionadas, primero las más antiguas.`}
-        footer={
-          <Button
-            onClick={() =>
-              run({ action: "partial", amount: Number(amount), paidAt })
-            }
-            disabled={!(Number(amount) > 0) || bulk.isPending}
-          >
-            Abonar
-          </Button>
-        }
-      >
-        <div className="grid grid-cols-2 gap-3 py-2">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Monto</label>
+        <ResponsiveDialog
+          open={asking === "partial"}
+          onOpenChange={(open) => !open && setAsking(null)}
+          title="Abonar"
+          description={`Se reparte entre las ${selected.length} seleccionadas, primero las más antiguas.`}
+          footer={
+            <Button
+              onClick={() =>
+                run({ action: "partial", amount: Number(amount), paidAt })
+              }
+              disabled={!(Number(amount) > 0) || bulk.isPending}
+            >
+              Abonar
+            </Button>
+          }
+        >
+          <div className="grid grid-cols-2 gap-3 py-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Monto</label>
+              <Input
+                type="number"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground">
+                Saldo: {formatCurrency(balance)}
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Fecha</label>
+              <Input
+                type="date"
+                value={paidAt}
+                onChange={(e) => setPaidAt(e.target.value)}
+              />
+            </div>
+          </div>
+        </ResponsiveDialog>
+
+        <ResponsiveDialog
+          open={asking === "clone"}
+          onOpenChange={(open) => !open && setAsking(null)}
+          title="Clonar a otro mes"
+          description="Se crea una copia de cada una, sin abonos, en el mes elegido."
+          footer={
+            <Button
+              onClick={() => run({ action: "clone", ...target })}
+              disabled={bulk.isPending}
+            >
+              Clonar {selected.length}
+            </Button>
+          }
+        >
+          <div className="grid grid-cols-2 gap-3 py-2">
+            <Select
+              value={String(target.month)}
+              onValueChange={(month) =>
+                setTarget({ ...target, month: Number(month) })
+              }
+            >
+              <SelectTrigger aria-label="Mes">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {MONTHS.map((month) => (
+                  <SelectItem key={month} value={String(month)}>
+                    {getMonthName(month)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Input
               type="number"
-              step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              autoFocus
-            />
-            <p className="text-xs text-muted-foreground">
-              Saldo: {formatCurrency(balance)}
-            </p>
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Fecha</label>
-            <Input
-              type="date"
-              value={paidAt}
-              onChange={(e) => setPaidAt(e.target.value)}
+              aria-label="Año"
+              value={target.year}
+              onChange={(e) =>
+                setTarget({ ...target, year: Number(e.target.value) })
+              }
             />
           </div>
-        </div>
-      </ResponsiveDialog>
+        </ResponsiveDialog>
 
-      <ResponsiveDialog
-        open={asking === "clone"}
-        onOpenChange={(open) => !open && setAsking(null)}
-        title="Clonar a otro mes"
-        description="Se crea una copia de cada una, sin abonos, en el mes elegido."
-        footer={
-          <Button
-            onClick={() => run({ action: "clone", ...target })}
-            disabled={bulk.isPending}
-          >
-            Clonar {selected.length}
-          </Button>
-        }
-      >
-        <div className="grid grid-cols-2 gap-3 py-2">
-          <Select
-            value={String(target.month)}
-            onValueChange={(month) =>
-              setTarget({ ...target, month: Number(month) })
-            }
-          >
-            <SelectTrigger aria-label="Mes">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {MONTHS.map((month) => (
-                <SelectItem key={month} value={String(month)}>
-                  {getMonthName(month)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Input
-            type="number"
-            aria-label="Año"
-            value={target.year}
-            onChange={(e) =>
-              setTarget({ ...target, year: Number(e.target.value) })
-            }
-          />
-        </div>
-      </ResponsiveDialog>
+        <ResponsiveDialog
+          open={asking === "card"}
+          onOpenChange={(open) => !open && setAsking(null)}
+          title="Asignar tarjeta"
+          description="La tarjeta con que se hizo el consumo: Cobros la contrasta con su estado de cuenta."
+          footer={
+            <Button
+              onClick={() => run({ action: "card", paymentMethodId: cardId })}
+              disabled={bulk.isPending}
+            >
+              Asignar
+            </Button>
+          }
+        >
+          <div className="py-2">
+            <PaymentMethodSelect
+              allowEmpty
+              value={cardId}
+              onChange={setCardId}
+              placeholder="Sin tarjeta"
+            />
+          </div>
+        </ResponsiveDialog>
 
-      <ResponsiveDialog
-        open={asking === "card"}
-        onOpenChange={(open) => !open && setAsking(null)}
-        title="Asignar tarjeta"
-        description="La tarjeta con que se hizo el consumo: Cobros la contrasta con su estado de cuenta."
-        footer={
-          <Button
-            onClick={() => run({ action: "card", paymentMethodId: cardId })}
-            disabled={bulk.isPending}
-          >
-            Asignar
-          </Button>
-        }
-      >
-        <div className="py-2">
-          <PaymentMethodSelect
-            allowEmpty
-            value={cardId}
-            onChange={setCardId}
-            placeholder="Sin tarjeta"
-          />
-        </div>
-      </ResponsiveDialog>
+        <AlertDialog
+          open={asking === "reset"}
+          onOpenChange={(open) => !open && setAsking(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Volver a No iniciado?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Se borran los abonos de las {withPayments} seleccionadas que
+                tienen alguno; el saldo vuelve al total.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={() => run({ action: "reset" })}>
+                Volver a No iniciado
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
-      <AlertDialog
-        open={asking === "reset"}
-        onOpenChange={(open) => !open && setAsking(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Volver a No iniciado?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se borran los abonos de las {withPayments} seleccionadas que
-              tienen alguno; el saldo vuelve al total.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => run({ action: "reset" })}>
-              Volver a No iniciado
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={asking === "delete"}
-        onOpenChange={(open) => !open && setAsking(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              ¿Borrar {selected.length} cuotas?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              No se puede deshacer.
-              {withPayments > 0 &&
-                ` ${withPayments} tienen abonos: se dejan salvo que elijas borrarlas también.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            {withPayments > 0 && (
-              <Button
-                variant="destructive"
-                onClick={() => run({ action: "delete", force: true })}
-              >
-                Borrar todas
-              </Button>
-            )}
-            <AlertDialogAction onClick={() => run({ action: "delete" })}>
-              {withPayments > 0 ? "Borrar las sin abonos" : "Borrar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        <AlertDialog
+          open={asking === "delete"}
+          onOpenChange={(open) => !open && setAsking(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                ¿Borrar {selected.length} cuotas?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                No se puede deshacer.
+                {withPayments > 0 &&
+                  ` ${withPayments} tienen abonos: se dejan salvo que elijas borrarlas también.`}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              {withPayments > 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={() => run({ action: "delete", force: true })}
+                >
+                  Borrar todas
+                </Button>
+              )}
+              <AlertDialogAction onClick={() => run({ action: "delete" })}>
+                {withPayments > 0 ? "Borrar las sin abonos" : "Borrar"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </>
   );
 }

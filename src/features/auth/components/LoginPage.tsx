@@ -3,8 +3,6 @@ import {
   ArrowUpRight,
   Copy,
   Dices,
-  Eye,
-  EyeOff,
   KeyRound,
   ShieldCheck,
   Sparkles,
@@ -27,6 +25,7 @@ import { safeReturnPath } from "@/shared/lib/auth-redirect";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
+import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 
 const ERRORS: Record<string, string> = {
   no_invitado:
@@ -246,7 +245,7 @@ function LoginPageView() {
                 )}
                 {config && !config.google && !invalidInvite && !resetToken && (
                   <p className="-mt-3 text-center text-xs text-amber-200/75">
-                    Google no está configurado para este entorno.
+                    Próximamente disponible el inicio de sesión con Google
                   </p>
                 )}
 
@@ -278,14 +277,15 @@ function LoginPageView() {
                       onChange={(e) => setName(e.target.value)}
                     />
                     <div className="flex gap-2">
-                      <Input
+                      <PasswordInput
                         className="h-12 min-w-0 border-white/10 bg-white/[0.04] text-white placeholder:text-white/35"
-                        type={showPassword ? "text" : "password"}
                         placeholder="Contraseña (10 caracteres o más)"
                         autoComplete="new-password"
                         minLength={10}
                         required
                         value={password}
+                        visible={showPassword}
+                        onVisibleChange={setShowPassword}
                         onChange={(e) => {
                           setPassword(e.target.value);
                           setGeneratedPassword(false);
@@ -302,29 +302,6 @@ function LoginPageView() {
                         title="Generar otra contraseña"
                       >
                         <Dices className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-12 w-12 shrink-0 border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.09] hover:text-white"
-                        onClick={() => setShowPassword(!showPassword)}
-                        aria-label={
-                          showPassword
-                            ? "Ocultar contraseña"
-                            : "Mostrar contraseña"
-                        }
-                      >
-                        <span className="sr-only">
-                          {showPassword
-                            ? "Ocultar contraseña"
-                            : "Mostrar contraseña"}
-                        </span>
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
                       </Button>
                       <Button
                         type="button"
@@ -376,9 +353,8 @@ function LoginPageView() {
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                     />
-                    <Input
+                    <PasswordInput
                       className="h-12 border-white/10 bg-white/[0.04] text-white placeholder:text-white/35"
-                      type="password"
                       placeholder="Contraseña"
                       autoComplete="current-password"
                       required

@@ -20,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/ui/card";
-import { Input } from "@/ui/input";
+import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 import { AUTH_ROLE_LABELS } from "../constants/roles";
 
 // Perfil (P23): who I am, my password and the Telegram chat linked to my account (D85)
@@ -146,16 +146,14 @@ function ProfilePageView() {
             }}
           >
             {me.hasPassword && (
-              <Input
-                type="password"
+              <PasswordInput
                 placeholder="Contraseña actual"
                 autoComplete="current-password"
                 value={current}
                 onChange={(e) => setCurrent(e.target.value)}
               />
             )}
-            <Input
-              type="password"
+            <PasswordInput
               placeholder="Contraseña nueva"
               autoComplete="new-password"
               minLength={10}

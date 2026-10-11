@@ -7,3 +7,5 @@ export type { FieldLabelProps } from "./FieldLabel";
 export { FieldLabel } from "./FieldLabel";
 export type { FormFieldProps } from "./FormField";
 export { FormField } from "./FormField";
+export type { PasswordInputProps } from "./PasswordInput";
+export { PasswordInput } from "./PasswordInput";

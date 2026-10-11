@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 
 import { useSaveStatementPassword } from "../hooks/statementPassword";
 import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
+import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 
 // "Contraseña del PDF" of a card: statements of this card open with it, so uploading them never asks again
 export function CardStatementPassword({
@@ -15,7 +15,6 @@ export function CardStatementPassword({
 }) {
   const save = useSaveStatementPassword();
   const [password, setPassword] = useState("");
-  const [visible, setVisible] = useState(false);
 
   return (
     <div className="space-y-1.5">
@@ -26,9 +25,8 @@ export function CardStatementPassword({
         <LockKeyhole className="size-4" /> Contraseña del estado de cuenta
       </label>
       <div className="flex gap-2">
-        <Input
+        <PasswordInput
           id="card-statement-password"
-          type={visible ? "text" : "password"}
           autoComplete="off"
           placeholder={
             hasPassword ? "Guardada (escribe otra para cambiarla)" : "Opcional"
@@ -36,15 +34,6 @@ export function CardStatementPassword({
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
-          onClick={() => setVisible(!visible)}
-        >
-          {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-        </Button>
         <Button
           type="button"
           variant="outline"
