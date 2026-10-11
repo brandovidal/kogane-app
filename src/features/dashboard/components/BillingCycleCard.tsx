@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/ui/card";
 import { Badge } from "@/ui/badge";
 import { formatCurrency } from "@/shared/lib/currency";
 import { CreditCard } from "lucide-react";
-import { type CreditCardSummary } from "@/features/dashboard/services/dashboard.service";
+import type { CreditCardSummary } from "../types/dashboard";
+import { Button } from "@/ui/button";
 
 interface BillingCycleCardProps {
   cards: CreditCardSummary[];
+  onRegisterPayment?: () => void;
 }
 
-export function BillingCycleCard({ cards }: BillingCycleCardProps) {
+export function BillingCycleCard({
+  cards,
+  onRegisterPayment,
+}: BillingCycleCardProps) {
   // Astro's server has no client query cache. A page navigation can retain the
   // browser QueryClient, so cards can already exist on the client's first
   // render even though the server rendered an empty array. Keep the same
@@ -27,9 +38,13 @@ export function BillingCycleCard({ cards }: BillingCycleCardProps) {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-sm">
-          <CreditCard className="h-4 w-4" />
-          Tarjetas de Crédito
+          <CreditCard className="h-4 w-4" /> Tarjetas de crédito
         </CardTitle>
+        <CardAction>
+          <a href="/tarjetas" className="text-xs text-primary hover:underline">
+            Ver tarjetas
+          </a>
+        </CardAction>
       </CardHeader>
       <CardContent className="space-y-1.5 pt-0">
         {visibleCards.map((card) => {
@@ -61,6 +76,16 @@ export function BillingCycleCard({ cards }: BillingCycleCardProps) {
                   <Badge variant="destructive" className="text-xs px-1.5 py-0">
                     {daysUntilDue}d
                   </Badge>
+                )}
+                {card.total > 0 && onRegisterPayment && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={onRegisterPayment}
+                  >
+                    Pagar
+                  </Button>
                 )}
               </div>
             </div>

@@ -38,20 +38,20 @@ import {
 import { PaymentDetailsFields } from "./PaymentDetailsFields";
 import { localTodayKey } from "@/shared/lib/dates";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import type { DashboardPaymentTab } from "../types/dashboard";
 
-type PaymentTab = "card" | "fixed" | "collect" | "debt";
 type PaymentCalendarEvent = CalendarEvent & {
   displayDate?: string | null;
   unscheduled?: boolean;
 };
-const TAB_ITEMS: { id: PaymentTab; label: string }[] = [
+const TAB_ITEMS: { id: DashboardPaymentTab; label: string }[] = [
   { id: "card", label: "Tarjeta" },
   { id: "fixed", label: "Costos fijos" },
   { id: "collect", label: "Cobros" },
   { id: "debt", label: "Deudas" },
 ];
 
-function tabOf(event: CalendarEvent): PaymentTab | null {
+function tabOf(event: CalendarEvent): DashboardPaymentTab | null {
   if (event.refType === "card_statement") return "card";
   if (event.refType === "fixed_cost" || event.refType === "subscription")
     return "fixed";
@@ -79,7 +79,7 @@ export function DashboardPaymentDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialTab?: PaymentTab;
+  initialTab?: DashboardPaymentTab;
 }) {
   const month = usePeriod((state) => state.month);
   const year = usePeriod((state) => state.year);
@@ -101,7 +101,7 @@ export function DashboardPaymentDialog({
   const cards = useCreditCards().data ?? [];
   const categories = useCategories().data ?? [];
   const payEvent = usePayCalendarEvent();
-  const [tab, setTab] = useState<PaymentTab>("card");
+  const [tab, setTab] = useState<DashboardPaymentTab>("card");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [selectionInitialized, setSelectionInitialized] = useState(false);
@@ -318,7 +318,7 @@ export function DashboardPaymentDialog({
       <div className="space-y-4 py-2">
         <Tabs
           value={tab}
-          onValueChange={(value) => setTab(value as PaymentTab)}
+          onValueChange={(value) => setTab(value as DashboardPaymentTab)}
         >
           <TabsList className="grid h-auto w-full grid-cols-4">
             {TAB_ITEMS.map((item) => (

@@ -3,6 +3,8 @@ import { Bell, ChevronDown, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDayMonth, getMonthName } from "@/shared/lib/dates";
 import { cn } from "@/shared/utils/cn";
+import type { DashboardPaymentTab } from "../types/dashboard";
+import { DashboardPendingSummary } from "./DashboardPendingSummary";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
@@ -22,8 +24,6 @@ import {
   type PendingGroup,
 } from "@/features/dashboard/lib/pending-groups";
 
-type PaymentTab = "card" | "fixed" | "collect" | "debt";
-
 interface PendingCardProps {
   entries: PendingEntry[];
   today: Date;
@@ -33,13 +33,13 @@ interface PendingCardProps {
   isBilled: boolean;
   /** Month right before the selected one, to offer it in the empty state. */
   onGoToPreviousMonth: () => void;
-  onRegisterPayment: (tab: PaymentTab) => void;
+  onRegisterPayment: (tab: DashboardPaymentTab) => void;
 }
 
 const money = (value: number | null, sign: "-" | "+" | "") =>
   value == null ? "—" : `${sign ? `${sign} ` : ""}${formatCurrency(value)}`;
 
-function tabOf(entry: PendingEntry): PaymentTab {
+function tabOf(entry: PendingEntry): DashboardPaymentTab {
   if (entry.kind === "card") return "card";
   if (entry.kind === "debt") return "debt";
   if (entry.kind === "collect") return "collect";
@@ -53,7 +53,7 @@ function EntryRow({
 }: {
   entry: PendingEntry;
   today: Date;
-  onRegisterPayment: (tab: PaymentTab) => void;
+  onRegisterPayment: (tab: DashboardPaymentTab) => void;
 }) {
   const label = entry.paid ? null : dueLabel(entry.dueDate, today);
   const late = isLate(entry, today);
@@ -153,7 +153,7 @@ function PayGroup({
 }: {
   group: PendingGroup;
   today: Date;
-  onRegisterPayment: (tab: PaymentTab) => void;
+  onRegisterPayment: (tab: DashboardPaymentTab) => void;
 }) {
   const [open, setOpen] = useState(false);
   const next = dueLabel(group.nextDueDate, today);
@@ -207,7 +207,7 @@ function CollectGroups({
 }: {
   entries: PendingEntry[];
   today: Date;
-  onRegisterPayment: (tab: PaymentTab) => void;
+  onRegisterPayment: (tab: DashboardPaymentTab) => void;
 }) {
   const [open, setOpen] = useState(false);
   const people = groupByPerson(entries, today);
@@ -356,6 +356,13 @@ export function PendingCard({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {counts.all > 0 && (
+          <DashboardPendingSummary
+            pay={pay}
+            collect={collect}
+            review={review}
+          />
+        )}
         {counts.all === 0 && paidEntries.length === 0 ? (
           <div className="flex min-h-40 flex-col items-center justify-center gap-1 text-center">
             <span className="mb-2 flex size-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">

@@ -1,16 +1,8 @@
 import type { CreditCardExpense, PaymentMethod } from "@/shared/api/types";
+import type { CreditCardSummary } from "../types/dashboard";
 
 // Inicio: the budget comes from /v1/summary (BudgetKpis, BudgetDonut, BudgetVsActual, SurplusTrend, D78); here only
 // the cards of the month, for the billing cycle card
-
-export interface CreditCardSummary {
-  code: string;
-  name: string;
-  color: string | null;
-  total: number;
-  billingCloseDay: number;
-  paymentDueDay: number;
-}
 
 const penOf = (item: { amount: number; amountInPen: number | null }) =>
   item.amountInPen ?? item.amount;

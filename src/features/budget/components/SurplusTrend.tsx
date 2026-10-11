@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -16,7 +17,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 
 // Excedente por mes (D78): polarity, so positive and negative months get their own color around a zero line
 export function SurplusTrend({ month, year }: { month: number; year: number }) {
-  const history = useSummaryHistory(month, year).data ?? [];
+  const [range, setRange] = useState<3 | 6 | 12 | "year">(6);
+  const months = range === "year" ? month : range;
+  const history = useSummaryHistory(month, year, months).data ?? [];
   const data = history.map((item) => ({
     name: `${getMonthName(item.month).slice(0, 3)} ${String(item.year).slice(2)}`,
     positive: item.surplus != null && item.surplus >= 0 ? item.surplus : 0,
@@ -27,8 +30,25 @@ export function SurplusTrend({ month, year }: { month: number; year: number }) {
 
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="flex flex-row items-center justify-between gap-3 pb-2">
         <CardTitle className="text-base">Excedente por mes</CardTitle>
+        <div
+          className="flex rounded-lg border bg-muted/40 p-0.5"
+          role="group"
+          aria-label="Período del gráfico"
+        >
+          {([3, 6, 12, "year"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={range === option}
+              onClick={() => setRange(option)}
+              className={`rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${range === option ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              {option === "year" ? "Año" : `${option} m`}
+            </button>
+          ))}
+        </div>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={240}>

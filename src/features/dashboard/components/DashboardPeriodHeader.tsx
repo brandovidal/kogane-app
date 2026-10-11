@@ -72,10 +72,7 @@ export function DashboardPeriodHeader() {
           )}
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </PopoverTrigger>
-        <PopoverContent
-          align="end"
-          className="w-[22rem] space-y-3 rounded-xl p-3"
-        >
+        <PopoverContent align="end" className="w-88 space-y-3 rounded-xl p-3">
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
