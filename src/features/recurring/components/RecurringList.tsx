@@ -16,6 +16,7 @@ import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/Ind
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { NameAvatar } from "@/shared/components/data-display/NameAvatar";
 import { ViewModeToggle } from "@/shared/components/toolbar/ViewModeToggle";
+import { useHideEmptyGroups } from "@/shared/hooks/useHideEmptyGroups";
 import { GroupingMenu } from "@/shared/components/toolbar/GroupingMenu";
 import { FilterSelect } from "@/shared/components/filters/FilterSelect";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
@@ -133,7 +134,9 @@ function RecurringListView() {
   const { data: recurring = [], isLoading } = useExpenses(
     EXPENSE_RESOURCES.recurring,
   );
-  const personName = nameById(usePeople().data);
+  const people = usePeople().data ?? [];
+  const personName = nameById(people);
+  const [hideEmpty, setHideEmpty] = useHideEmptyGroups("recurring-templates");
   const me = useMe();
   const saveRecurring = useSaveExpense(EXPENSE_RESOURCES.recurring);
   const deleteRecurring = useDeleteExpense(EXPENSE_RESOURCES.recurring);
@@ -673,6 +676,7 @@ function RecurringListView() {
                 multiple
                 ordered
                 maxSelected={2}
+                hideEmpty={{ checked: hideEmpty, onChange: setHideEmpty }}
               />
               <RecurringViewSettings
                 trigger={
@@ -761,6 +765,20 @@ function RecurringListView() {
           rowKey={(item) => item.id}
           view={view}
           groupBy={groupBy}
+          hideEmptyGroups={hideEmpty}
+          knownGroups={(field) =>
+            field === "origin"
+              ? ["fixed_cost", "subscription", "credit_card"]
+              : field === "person"
+                ? [...people.map((person) => person.id), "none"]
+                : field === "currency"
+                  ? ["PEN", "USD"]
+                  : field === "active"
+                    ? ["active", "paused"]
+                    : field === "period"
+                      ? Object.keys(SUBSCRIPTION_PERIOD_LABELS)
+                      : undefined
+          }
           groupKey={(item, field) => {
             if (field === "origin") return item.targetType;
             if (field === "person") return item.personId ?? "none";

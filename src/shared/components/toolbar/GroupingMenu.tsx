@@ -6,6 +6,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
@@ -22,6 +23,8 @@ export interface GroupingMenuProps<
   trigger?: ReactElement;
   align?: "start" | "center" | "end";
   className?: string;
+  /** "Ocultar grupos vacíos": shown only while a grouping is active */
+  hideEmpty?: { checked: boolean; onChange: (checked: boolean) => void };
 }
 
 export function GroupingMenu<T extends string | readonly string[]>({
@@ -35,6 +38,7 @@ export function GroupingMenu<T extends string | readonly string[]>({
   trigger,
   align = "end",
   className = "w-48",
+  hideEmpty,
 }: GroupingMenuProps<T>) {
   const selected: string[] = Array.isArray(value)
     ? value.map(String)
@@ -100,6 +104,18 @@ export function GroupingMenu<T extends string | readonly string[]>({
             )}
           </DropdownMenuCheckboxItem>
         ))}
+        {hideEmpty && count > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuCheckboxItem
+              checked={hideEmpty.checked}
+              onSelect={(event) => event.preventDefault()}
+              onCheckedChange={hideEmpty.onChange}
+            >
+              Ocultar grupos vacíos
+            </DropdownMenuCheckboxItem>
+          </>
+        )}
         {multiple && maxSelected && maxSelected > 1 && options.length > 1 && (
           <p className="px-2 pt-1.5 pb-1 text-xs text-muted-foreground">
             Puedes combinar hasta {maxSelected} niveles, por ejemplo{" "}

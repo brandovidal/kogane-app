@@ -32,6 +32,7 @@ import { GroupedDataView } from "@/shared/components/data-display/GroupedDataVie
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
 import { useViewMode } from "@/shared/hooks/useViewMode";
+import { useHideEmptyGroups } from "@/shared/hooks/useHideEmptyGroups";
 import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { RowColorRulesButton } from "@/shared/components/toolbar/RowColorRulesButton";
@@ -146,7 +147,8 @@ function SubscriptionListView({
       kind: group === "recurring" ? "service" : null,
     });
   };
-  const personName = nameById(usePeople().data);
+  const people = usePeople().data ?? [];
+  const personName = nameById(people);
   const deleteSubscription = useDeleteExpense(EXPENSE_RESOURCES.subscription);
   const saveSubscription = useSaveExpense(EXPENSE_RESOURCES.subscription);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -185,6 +187,9 @@ function SubscriptionListView({
     group === "recurring" ? "table" : "cards",
   );
   const [groupBy, setGroupBy] = useState("none");
+  const [hideEmpty, setHideEmpty] = useHideEmptyGroups(
+    group === "recurring" ? "recurring" : "subscriptions",
+  );
   const csv = useCsvExport({
     filename: `recurrentes-${selectedYear}-${String(selectedMonth).padStart(2, "0")}`,
     headers: [
@@ -525,6 +530,8 @@ function SubscriptionListView({
           total={all.length}
           groupBy={groupBy}
           onGroupByChange={setGroupBy}
+          hideEmptyGroups={hideEmpty}
+          onHideEmptyGroupsChange={setHideEmpty}
           groupByOptions={
             group === "recurring"
               ? [
@@ -585,6 +592,18 @@ function SubscriptionListView({
           columns={columns}
           rowKey={(sub) => sub.id}
           view={view}
+          hideEmptyGroups={hideEmpty}
+          knownGroups={(field) =>
+            field === "person"
+              ? people.map((person) => person.id)
+              : field === "status"
+                ? SUBSCRIPTION_STATUSES
+                : field === "currency"
+                  ? ["PEN", "USD"]
+                  : field === "period"
+                    ? Object.keys(PERIOD_LABELS)
+                    : undefined
+          }
           rowClassName={(sub) =>
             rowColors.rowClassName({
               dueDate: sub.dueDate,

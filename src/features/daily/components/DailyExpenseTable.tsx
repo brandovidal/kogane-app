@@ -35,6 +35,7 @@ import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
 import { OriginMessageDialog } from "@/features/drafts/components/OriginMessageDialog";
 import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
+import { useHideEmptyGroups } from "@/shared/hooks/useHideEmptyGroups";
 import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { RowActions } from "@/features/expenses/components/RowActions";
@@ -72,13 +73,15 @@ function DailyExpenseTableView() {
     EXPENSE_RESOURCES.daily,
     { month, year },
   );
-  const personName = nameById(usePeople().data);
+  const people = usePeople().data ?? [];
+  const personName = nameById(people);
   const methodName = nameById(usePaymentMethods().data);
   const categories = useCategories().data ?? [];
   const categoryName = nameById(categories);
   const deleteExpense = useDeleteExpense(EXPENSE_RESOURCES.daily);
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.daily);
   const [editing, setEditing] = useState<DailyExpense | undefined>();
+  const [hideEmpty, setHideEmpty] = useHideEmptyGroups("daily");
   const [importing, setImporting] = useState(false);
   const [origin, setOrigin] = useState<DailyExpense | undefined>();
   const openNewExpense = useNewExpense((state) => state.openWith);
@@ -242,6 +245,8 @@ function DailyExpenseTableView() {
           total={expenses.length}
           groupBy={groupBy}
           onGroupByChange={setGroupBy}
+          hideEmptyGroups={hideEmpty}
+          onHideEmptyGroupsChange={setHideEmpty}
           groupByOptions={[
             { value: "day", label: "Por día" },
             { value: "person", label: "Por persona" },
@@ -331,6 +336,14 @@ function DailyExpenseTableView() {
           rowKey={(e) => e.id}
           view={view}
           groupBy={groupBy}
+          hideEmptyGroups={hideEmpty}
+          knownGroups={(field) =>
+            field === "person"
+              ? people.map((person) => person.id)
+              : field === "category"
+                ? categories.map((category) => category.id)
+                : undefined
+          }
           groupKey={(e, key) =>
             key === "day"
               ? dayKey(e.spentAt)

@@ -200,7 +200,12 @@ function GroupSection<T>({
           {heading}
         </h2>
       )}
-      {(!collapsible || open) && children(visibleRows, paginationFooter)}
+      {(!collapsible || open) &&
+        (rows.length === 0 ? (
+          <p className="px-2 text-sm text-muted-foreground">Sin registros</p>
+        ) : (
+          children(visibleRows, paginationFooter)
+        ))}
     </section>
   );
 }
@@ -220,6 +225,8 @@ export function GroupedDataView<T>({
   initialOpenPrimaryGroups = 1,
   paginatePrimaryGroups = false,
   comparePrimaryGroups,
+  knownGroups,
+  hideEmptyGroups = true,
   calculationStorageKey,
   calculationDefaults,
   tableClassName,
@@ -246,6 +253,10 @@ export function GroupedDataView<T>({
   initialOpenPrimaryGroups?: number;
   paginatePrimaryGroups?: boolean;
   comparePrimaryGroups?: (left: T[], right: T[]) => number;
+  /** Every possible group of a field (statuses, people, currencies…); undefined for open-ended fields */
+  knownGroups?: (field: string) => string[] | undefined;
+  /** Without it, the groups of `knownGroups` that have no rows are shown too */
+  hideEmptyGroups?: boolean;
 }) {
   const calculationState = useDataTableCalculations(
     calculationStorageKey,
@@ -287,6 +298,9 @@ export function GroupedDataView<T>({
   const renderGroups = (rows: T[], depth: number): ReactNode => {
     const field = fields[depth];
     const groups = new Map<string, T[]>();
+    if (!hideEmptyGroups) {
+      knownGroups?.(field)?.forEach((key) => groups.set(key, []));
+    }
     rows.forEach((item) => {
       const key = groupKey(item, field);
       groups.set(key, [...(groups.get(key) ?? []), item]);
@@ -319,7 +333,9 @@ export function GroupedDataView<T>({
               summary={summary?.label}
               details={groupDetailsFor?.(groupedRows, key, field)}
               collapsible={collapsible}
-              initiallyOpen={groupIndex < initialOpenPrimaryGroups}
+              initiallyOpen={
+                groupedRows.length > 0 && groupIndex < initialOpenPrimaryGroups
+              }
               primary={depth === primaryGroupDepth}
               rows={groupedRows}
               paginate={paginatePrimaryGroups && depth === 0}

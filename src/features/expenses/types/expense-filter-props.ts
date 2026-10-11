@@ -11,6 +11,8 @@ export interface ExpenseFiltersProps {
   groupBy?: string;
   onGroupByChange?: (value: string) => void;
   groupByOptions?: { value: string; label: string }[];
+  hideEmptyGroups?: boolean;
+  onHideEmptyGroupsChange?: (hide: boolean) => void;
   personInPanel?: boolean;
   description?: string;
   countLabel?: string;
