@@ -8,8 +8,8 @@ export {
 } from "./lib/category-icons";
 export { CategoryIcon } from "./components/CategoryIcon";
 export { CategoryIconPicker } from "./components/CategoryIconPicker";
+export { CategoryLimitDialog } from "./components/CategoryLimitDialog";
 export { CategoryLabel } from "./components/CategoryLabel";
-export { CategoryManager } from "./components/CategoryManager";
 export { CategorySelect } from "./components/CategorySelect";
 export type {
   CategoryBudgetLine,

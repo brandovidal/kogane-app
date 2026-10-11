@@ -12,7 +12,7 @@ describe("menu", () => {
       "Importación",
       "Borrador",
     ]);
-    expect(links.map((link) => link.href)).toContain("/ingresos");
+    expect(links.map((link) => link.href)).toContain("/presupuesto");
   });
 
   it("should list every link, with the cards under Tarjetas only for Ctrl+K (the menu has one entry, D97)", () => {

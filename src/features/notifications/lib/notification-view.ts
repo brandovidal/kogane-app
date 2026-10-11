@@ -24,7 +24,7 @@ const LINK_BY_REF: Record<string, string> = {
   credit_card_expense: "/tarjetas",
   daily_expense: "/dia-a-dia",
   debt: "/cobros", // debt notices are what others owe (due, late)
-  category: "/categorias",
+  category: "/presupuesto",
   statement: "/importacion",
 };
 
@@ -32,7 +32,7 @@ const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {
   due: "/calendario",
   card_close: "/calendario",
   recurring: "/recurrentes",
-  budget: "/categorias",
+  budget: "/presupuesto",
   collect: "/cobros",
 };
 

@@ -111,29 +111,10 @@ export const NAV: NavEntry[] = [
     icon: "calendar",
   },
   {
+    href: "/presupuesto",
     label: "Presupuesto",
-    description: "Configura ingresos, categorías y distribución de gastos.",
+    description: "Sueldo, grupos, límites por categoría e ingresos.",
     icon: "pie-chart",
-    children: [
-      {
-        href: "/relacion-gastos",
-        label: "Grupos",
-        description: "Distribución del presupuesto y gasto real por grupo.",
-        icon: "pie-chart",
-      },
-      {
-        href: "/categorias",
-        label: "Categorías",
-        description: "Clasifica gastos y define sus límites.",
-        icon: "tags",
-      },
-      {
-        href: "/ingresos",
-        label: "Ingresos",
-        description: "Sueldo mensual e ingresos extra de cada período.",
-        icon: "wallet",
-      },
-    ],
   },
   {
     label: "Reportes",
