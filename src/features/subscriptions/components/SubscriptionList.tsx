@@ -26,12 +26,14 @@ import { CurrencyDisplay } from "@/features/expenses/components/CurrencyDisplay"
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, SquareArrowOutUpRight } from "lucide-react";
 import { SubscriptionDialog } from "./SubscriptionDialog";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { IndicatorsDisclosure } from "@/shared/components/data-display/IndicatorsDisclosure";
 import { IndicatorsCollapsedSummary } from "@/shared/components/data-display/IndicatorsCollapsedSummary";
 import { useViewMode } from "@/shared/hooks/useViewMode";
+import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
+import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { RowColorRulesButton } from "@/shared/components/toolbar/RowColorRulesButton";
 import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
@@ -183,6 +185,29 @@ function SubscriptionListView({
     group === "recurring" ? "table" : "cards",
   );
   const [groupBy, setGroupBy] = useState("none");
+  const csv = useCsvExport({
+    filename: `recurrentes-${selectedYear}-${String(selectedMonth).padStart(2, "0")}`,
+    headers: [
+      "Recurrente",
+      "Origen",
+      "Monto",
+      "Moneda",
+      "Frecuencia",
+      "Persona",
+      "Fecha de cobro",
+      "Estado",
+    ],
+    rows: current.map((sub) => [
+      sub.description,
+      sub.kind === "platform" ? "Plataformas" : "Costos fijos",
+      sub.amount,
+      sub.currency,
+      PERIOD_LABELS[sub.period] ?? sub.period,
+      personName(sub.personId),
+      sub.dueDate ? sub.dueDate.slice(0, 10) : "",
+      sub.paymentStatus,
+    ]),
+  });
   const rowColors = useRowColorRules(
     group === "recurring" ? "recurring" : "subscriptions",
   );
@@ -320,6 +345,23 @@ function SubscriptionListView({
           label={sub.description}
           files={{ refType: "expense", refId: sub.id }}
           history={{ entity: "exp_subscriptions", id: sub.id }}
+          extraItems={
+            group === "recurring"
+              ? [
+                  {
+                    label: "Ver en origen",
+                    icon: SquareArrowOutUpRight,
+                    note: `${sub.kind === "platform" ? "Plataformas" : "Costos fijos"} · ${sub.description}`,
+                    onSelect: () =>
+                      window.location.assign(
+                        sub.kind === "platform"
+                          ? "/plataformas"
+                          : "/costos-fijos",
+                      ),
+                  },
+                ]
+              : undefined
+          }
           onEdit={() => {
             setEditingSub(sub);
             setDialogOpen(true);
@@ -498,6 +540,9 @@ function SubscriptionListView({
           }
         />
         <div className="flex items-center gap-2 self-end sm:self-auto">
+          {group === "recurring" && (
+            <ExportMenu items={csv.items} label="Exportar" />
+          )}
           {view === "table" && (
             <RowColorRulesButton
               rules={rowColors.rules}

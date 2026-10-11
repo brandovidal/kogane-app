@@ -35,6 +35,8 @@ import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
 import { OriginMessageDialog } from "@/features/drafts/components/OriginMessageDialog";
 import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
+import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
+import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { RowActions } from "@/features/expenses/components/RowActions";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
@@ -203,6 +205,28 @@ function DailyExpenseTableView() {
     },
   ];
 
+  const csv = useCsvExport({
+    filename: `dia-a-dia-${year}-${String(month).padStart(2, "0")}`,
+    headers: [
+      "Descripción",
+      "Fecha",
+      "Monto",
+      "Moneda",
+      "Medio de pago",
+      "Persona",
+      "Categoría",
+    ],
+    rows: sorted.map((e) => [
+      e.description,
+      e.spentAt.slice(0, 10),
+      e.amount,
+      e.currency,
+      methodName(e.paymentMethodId),
+      personName(e.personId),
+      categoryName(e.categoryId),
+    ]),
+  });
+
   if (isLoading) return null;
 
   return (
@@ -248,6 +272,7 @@ function DailyExpenseTableView() {
             </Button>
           </div>
           {layout === "list" && <ViewToggle value={view} onChange={setView} />}
+          <ExportMenu items={csv.items} label="Exportar" />
           <Button
             size="sm"
             variant="outline"
