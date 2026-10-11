@@ -11,6 +11,8 @@ export {
   useMarkAllNotificationsRead,
   useNotificationSettings,
   useUpdateNotificationSettings,
+  useCollectNow,
+  useRemindDebts,
 } from "./hooks/notifications";
 export {
   NOTIFICATION_KIND_LABELS,

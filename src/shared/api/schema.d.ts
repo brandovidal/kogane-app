@@ -1708,6 +1708,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/notifications/collect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cobrar por Mensajes: send now the cobros notices of a month (one per person), once per person and day */
+        post: operations["NotificationsController_collect_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/remind-debts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recordar pago: one reminder per person for the selected debts; paid ones are left out */
+        post: operations["NotificationsController_remindDebts_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1968,6 +2002,8 @@ export interface components {
                 excess: number;
                 /** @description Debts left out: already paid, or with payments on delete without force */
                 skipped: string[];
+                /** @description The payments created (pay, prepaid, cashback, partial): attach a Comprobante to each with refType debt_payment */
+                paymentIds: string[];
             };
         };
         DebtDetailResponseDto: {
@@ -4934,6 +4970,17 @@ export interface components {
                 groups: number;
                 budgets: number;
             };
+        };
+        CollectNowDto: {
+            month: number;
+            year: number;
+            /** @description The installments of the months before, not the ones of this month */
+            late?: boolean;
+            /** @description Only these people; every person with a balance when empty */
+            personIds?: string[];
+        };
+        RemindDebtsDto: {
+            ids: string[];
         };
     };
     responses: never;
@@ -7939,6 +7986,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApplyImportResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_collect_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectNowDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResultResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_remindDebts_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemindDebtsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResultResponseDto"];
                 };
             };
         };

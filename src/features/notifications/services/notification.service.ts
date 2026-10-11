@@ -1,10 +1,14 @@
 import { api, unwrap } from "@/shared/api/client";
 import type {
+  CollectNowDto,
   NotificationHistoryQuery,
+  RemindDebtsDto,
   UpdateNotificationSettingsDto,
 } from "../types/notification.dto";
 export type {
+  CollectNowDto,
   NotificationHistoryQuery,
+  RemindDebtsDto,
   UpdateNotificationSettingsDto,
 } from "../types/notification.dto";
 
@@ -36,3 +40,11 @@ export const getNotificationSettings = () =>
 export const updateNotificationSettings = (
   body: UpdateNotificationSettingsDto,
 ) => unwrap(api.PUT("/v1/notifications/settings", { body }));
+
+// Cobrar por Mensajes: the cobros notices of a month, one per person and day
+export const collectNow = (body: CollectNowDto) =>
+  unwrap(api.POST("/v1/notifications/collect", { body }));
+
+// Recordar pago: one reminder per person for the selected debts
+export const remindDebts = (body: RemindDebtsDto) =>
+  unwrap(api.POST("/v1/notifications/remind-debts", { body }));

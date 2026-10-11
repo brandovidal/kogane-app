@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import {
+  BellRing,
   ChevronRight,
   Eye,
   HandCoins,
@@ -11,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useDeleteDebt, useBulkDebts } from "@/features/debts/hooks/debts";
+import { useRemindDebts } from "@/features/notifications/hooks/notifications";
 import type { Debt } from "@/shared/api/types";
 import { DataView } from "@/shared/components/data-display/DataView";
 import { type Column, type ViewMode } from "@/shared/types/data-view";
@@ -75,6 +77,7 @@ export function DebtGridSection({
   const [deleting, setDeleting] = useState<Debt | null>(null);
   const [resetting, setResetting] = useState<Debt | null>(null);
   const [historyOf, setHistoryOf] = useState<Debt | null>(null);
+  const remind = useRemindDebts();
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const columns: Column<Debt>[] = [
     {
@@ -190,6 +193,12 @@ export function DebtGridSection({
                 <RotateCcw /> Corregir estado
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem
+              onSelect={() => remind.mutate({ ids: [debt.id] })}
+              disabled={debt.balance <= 0 || remind.isPending}
+            >
+              <BellRing /> Recordar pago
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setHistoryOf(debt)}>
               <History /> Historial
             </DropdownMenuItem>
