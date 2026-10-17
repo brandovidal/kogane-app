@@ -17,6 +17,7 @@ const adapter = isProduction
 // https://astro.build/config
 export default defineConfig({
   output: "static",
+  session: false,
   server: { port: 4000 },
   integrations: [react()],
   redirects: {
