@@ -1,12 +1,15 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { AUTH_ROLE, AUTH_ROLE_LABELS } from './constants/roles'
+export type { AuthDeviceKind, AuthDeviceSession, RevokedSessionsDto } from './types/auth.dto'
 export { LoginPage } from './components/LoginPage'
-export { ProfilePage } from './components/ProfilePage'
 export { UserMenu } from './components/UserMenu'
 export { UsersPanel } from './components/UsersPanel'
 export {
   useMe,
   useAuthConfig,
+  useDeviceSessions,
+  useRevokeDeviceSession,
+  useRevokeOtherDeviceSessions,
   useInvitePreview,
   useLogin,
   useAcceptInvite,

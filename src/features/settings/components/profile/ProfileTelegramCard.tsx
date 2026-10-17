@@ -3,7 +3,8 @@ import { Check, ExternalLink, Send } from 'lucide-react'
 import { useTelegramLink, useUnlinkTelegram, type useMe } from '@/features/auth/hooks/auth'
 import { Badge } from '@/ui/badge'
 import { Button } from '@/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
+import { CardContent } from '@/ui/card'
+import { ProfileAccentCard, ProfileAccentHeader } from './ProfileAccentCard'
 
 export function ProfileTelegramCard({ user }: { user: NonNullable<ReturnType<typeof useMe>['data']> }) {
   const telegramLink = useTelegramLink()
@@ -11,15 +12,14 @@ export function ProfileTelegramCard({ user }: { user: NonNullable<ReturnType<typ
   const [link, setLink] = useState<{ url: string; expiresAt: string } | null>(null)
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base">Telegram</CardTitle>
-        <CardDescription>
-          El bot guarda lo que le mandes en tu cuenta, no en la de otros.{' '}
-          {user.telegramLinked ? 'Este chat ya está vinculado.' : 'Vincula tu chat para usarlo.'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <ProfileAccentCard tone="telegram">
+      <ProfileAccentHeader
+        tone="telegram"
+        icon={Send}
+        title="Telegram"
+        description={`El bot guarda lo que le mandes en tu cuenta, no en la de otros. ${user.telegramLinked ? 'Este chat ya está vinculado.' : 'Vincula tu chat para usarlo.'}`}
+      />
+      <CardContent className="space-y-3 px-5 pt-0 pb-5">
         {user.telegramLinked && (
           <Badge className="bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/15">
             <Check aria-hidden="true" className="size-3.5" /> Chat vinculado
@@ -76,6 +76,6 @@ export function ProfileTelegramCard({ user }: { user: NonNullable<ReturnType<typ
           </p>
         )}
       </CardContent>
-    </Card>
+    </ProfileAccentCard>
   )
 }

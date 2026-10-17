@@ -8,6 +8,7 @@ import {
   createTelegramLink,
   forgotPassword,
   getAuthConfig,
+  getDeviceSessions,
   getInvitePreview,
   getMe,
   getUsers,
@@ -15,6 +16,8 @@ import {
   login,
   logout,
   resetPassword,
+  revokeDeviceSession,
+  revokeOtherDeviceSessions,
   revokeInvite,
   stopImpersonation,
   unlinkTelegram,
@@ -28,12 +31,14 @@ import {
   type ResetPasswordDto,
   type UpdateProfileDto,
   type UpdateUserDto,
+  type RevokedSessionsDto,
 } from '../services/auth.service'
 
 const authKeys = {
   me: ['auth', 'me'] as const,
   config: ['auth', 'config'] as const,
   users: ['auth', 'users'] as const,
+  sessions: ['auth', 'sessions'] as const,
 }
 
 // Who is signed in; without a session the client already sent the browser to Entrar (401 SESSION_REQUIRED)
@@ -50,6 +55,25 @@ export const useAuthConfig = () =>
     queryKey: authKeys.config,
     queryFn: getAuthConfig,
     staleTime: Infinity,
+  })
+
+export const useDeviceSessions = () =>
+  useQuery({
+    queryKey: authKeys.sessions,
+    queryFn: getDeviceSessions,
+    staleTime: 30_000,
+  })
+
+export const useRevokeDeviceSession = () =>
+  useApiMutation((id: string) => revokeDeviceSession(id), {
+    invalidate: [authKeys.sessions],
+    success: 'Sesión cerrada',
+  })
+
+export const useRevokeOtherDeviceSessions = () =>
+  useApiMutation(revokeOtherDeviceSessions, {
+    invalidate: [authKeys.sessions],
+    success: (result: RevokedSessionsDto) => `${result.revoked} ${result.revoked === 1 ? 'sesión cerrada' : 'sesiones cerradas'}`,
   })
 
 export const useInvitePreview = (token: string | null) =>

@@ -1,9 +1,10 @@
 import { useState, type SubmitEvent } from 'react'
-import { Eye, EyeOff, LockKeyhole } from 'lucide-react'
+import { Eye, EyeOff, LockKeyhole, UserRound } from 'lucide-react'
 import type { useMe } from '@/features/auth/hooks/auth'
 import { Button } from '@/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
+import { CardContent } from '@/ui/card'
 import { Input } from '@/ui/input'
+import { ProfileAccentCard, ProfileAccentHeader } from './ProfileAccentCard'
 
 export interface ProfileDraft {
   name: string
@@ -70,12 +71,14 @@ export function ProfilePersonalDataCard({
   const nameErrorId = 'profile-name-error'
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base">Datos personales</CardTitle>
-        <CardDescription>Con estos datos te identifica Kogane en repartos, cobros y estados de cuenta.</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <ProfileAccentCard tone="personal">
+      <ProfileAccentHeader
+        tone="personal"
+        icon={UserRound}
+        title="Datos personales"
+        description="Con estos datos te identifica Kogane en repartos, cobros y estados de cuenta."
+      />
+      <CardContent className="px-5 pt-0 pb-5">
         <form id="profile-personal-form" className="space-y-5" onSubmit={onSubmit} noValidate>
           <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -98,7 +101,7 @@ export function ProfilePersonalDataCard({
                 Apodo
               </label>
               <Input id="profile-nickname" value={draft.nickname} onChange={(event) => onChange({ ...draft, nickname: event.target.value })} />
-              <p className="text-xs text-muted-foreground">Así te nombra el bot y apareces en los repartos.</p>
+              <p className="text-xs text-muted-foreground">Así te nombra el bot.</p>
             </div>
 
             <div className="space-y-1.5">
@@ -153,14 +156,12 @@ export function ProfilePersonalDataCard({
                   {draft.clearDocument ? 'Conservar DNI' : 'Quitar DNI'}
                 </button>
               )}
-              <p className="text-xs text-muted-foreground">
-                Abre tus estados de cuenta en PDF y se copia a tu persona «Yo». Se guarda completo y se muestra oculto.
-              </p>
+              <p className="text-xs text-muted-foreground">Abre tus estados de cuenta en PDF.</p>
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="profile-phone" className="text-sm font-medium">
-                Celular
+              <label htmlFor="profile-phone" className="flex items-center justify-between gap-2 text-sm font-medium">
+                Celular <span className="text-[11px] font-semibold text-amber-400">Verificación · Próximamente</span>
               </label>
               <div className="flex h-10 overflow-hidden rounded-lg border border-input bg-muted/40 focus-within:ring-2 focus-within:ring-ring">
                 <span className="inline-flex shrink-0 items-center border-r border-input px-3 text-sm text-muted-foreground">+51</span>
@@ -182,12 +183,12 @@ export function ProfilePersonalDataCard({
                 />
               </div>
               <FieldError id={phoneErrorId}>{errors.phone}</FieldError>
-              <p className="text-xs text-muted-foreground">También sirve para entrar a Kogane.</p>
+              <p className="text-xs text-muted-foreground">También sirve para entrar.</p>
             </div>
 
             <div className="space-y-1.5 sm:col-span-2">
-              <label htmlFor="profile-email" className="text-sm font-medium">
-                Correo
+              <label htmlFor="profile-email" className="flex items-center justify-between gap-2 text-sm font-medium">
+                Correo <span className="text-[11px] font-semibold text-amber-400">Verificación · Próximamente</span>
               </label>
               <div className="relative">
                 <Input id="profile-email" value={user.email} readOnly aria-readonly="true" className="pr-10 text-muted-foreground" />
@@ -213,6 +214,6 @@ export function ProfilePersonalDataCard({
           {hasChanges && <span className="sr-only">{changeCount} cambios sin guardar.</span>}
         </form>
       </CardContent>
-    </Card>
+    </ProfileAccentCard>
   )
 }

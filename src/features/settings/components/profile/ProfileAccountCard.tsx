@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
 import { Link2, ShieldCheck } from 'lucide-react'
 import type { useMe } from '@/features/auth/hooks/auth'
-import { AUTH_ROLE_LABELS } from '../../constants/roles'
+import { AUTH_ROLE_LABELS } from '@/features/auth/constants/roles'
 import { Badge } from '@/ui/badge'
 import { Button } from '@/ui/button'
-import { Card, CardContent } from '@/ui/card'
+import { CardContent } from '@/ui/card'
+import { ProfileAccentCard, profileIconTone } from './ProfileAccentCard'
 
 export function ProfileAccountCard({
   user,
@@ -29,15 +30,13 @@ export function ProfileAccountCard({
         .join(''),
     [user.name],
   )
-  const signInMethods = user.phone ? 'Correo o celular' : 'Correo'
-
   return (
-    <Card>
+    <ProfileAccentCard tone="account">
       <CardContent className="space-y-4 p-5">
         <div className="flex items-center gap-3">
           <div
             aria-hidden="true"
-            className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary/15 text-lg font-semibold text-primary"
+            className={`flex size-14 shrink-0 items-center justify-center rounded-full text-lg font-semibold ${profileIconTone('account')}`}
           >
             {initials || 'K'}
           </div>
@@ -52,7 +51,9 @@ export function ProfileAccountCard({
 
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline">{user.googleLinked ? 'Google vinculado' : 'Sin Google'}</Badge>
-          <Badge variant="outline">{user.hasPassword ? 'Con contraseña' : 'Sin contraseña'}</Badge>
+          <Badge variant="outline" className={user.hasPassword ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : undefined}>
+            {user.hasPassword ? 'Con contraseña' : 'Sin contraseña'}
+          </Badge>
           {!user.googleLinked && googleEnabled && (
             <Button type="button" variant="outline" size="sm" className="w-full" onClick={onLinkGoogle} disabled={linkingGoogle}>
               <Link2 aria-hidden="true" className="size-4" />
@@ -68,7 +69,18 @@ export function ProfileAccountCard({
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="text-muted-foreground">Entras con</dt>
-            <dd className="text-right">{signInMethods}</dd>
+            <dd className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+              <span className="inline-flex items-center gap-1.5">
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-400" />
+                Correo
+              </span>
+              {user.phone && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-400" />
+                  Celular
+                </span>
+              )}
+            </dd>
           </div>
         </dl>
 
@@ -86,6 +98,6 @@ export function ProfileAccountCard({
           </p>
         )}
       </CardContent>
-    </Card>
+    </ProfileAccentCard>
   )
 }

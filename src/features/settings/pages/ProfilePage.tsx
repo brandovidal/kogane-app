@@ -4,13 +4,13 @@ import { toast } from 'sonner'
 import { googleLinkUrl } from '@/features/auth/services/google.service'
 import { useAuthConfig, useMe, useUpdateProfile } from '@/features/auth/hooks/auth'
 import { errorMessage } from '@/shared/api/hooks/use-api-mutation'
-import { withQuery } from '@/shared/api/query'
 import { Button } from '@/ui/button'
-import { ProfileAccountCard } from './profile/ProfileAccountCard'
-import { ProfileAppSettingsCard } from './profile/ProfileAppSettingsCard'
-import { ProfilePersonalDataCard, type ProfileDraft, validateProfileDraft } from './profile/ProfilePersonalDataCard'
-import { ProfilePasswordCard } from './profile/ProfilePasswordCard'
-import { ProfileTelegramCard } from './profile/ProfileTelegramCard'
+import { ProfileAccountCard } from '../components/profile/ProfileAccountCard'
+import { ProfileAppSettingsCard } from '../components/profile/ProfileAppSettingsCard'
+import { ProfilePersonalDataCard, type ProfileDraft, validateProfileDraft } from '../components/profile/ProfilePersonalDataCard'
+import { ProfilePasswordCard } from '../components/profile/ProfilePasswordCard'
+import { ProfileSessionsCard } from '../components/profile/ProfileSessionsCard'
+import { ProfileTelegramCard } from '../components/profile/ProfileTelegramCard'
 
 function makeDraft(user: NonNullable<ReturnType<typeof useMe>['data']>): ProfileDraft {
   return {
@@ -175,6 +175,7 @@ function ProfilePageView() {
           />
           <ProfilePasswordCard user={me} />
           <ProfileTelegramCard user={me} />
+          <ProfileSessionsCard />
         </div>
       </div>
 
@@ -204,4 +205,4 @@ function ProfilePageView() {
   )
 }
 
-export const ProfilePage = withQuery(ProfilePageView)
+export const ProfilePage = ProfilePageView

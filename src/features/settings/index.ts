@@ -25,5 +25,6 @@ export type { CardForm } from './lib/card-form'
 export { emptyCardForm, cardErrors, cardBody } from './lib/card-form'
 
 export { SettingsPage } from './pages/SettingsPage'
+export { ProfilePage } from './pages/ProfilePage'
 export type { SettingsSection, CardsAccountsTab, SettingsPreferences, SettingsCurrency, SettingsTimeZone } from './types'
 export { GeneralSettingsView } from './views/GeneralSettingsView'

@@ -3,7 +3,8 @@ import { KeyRound } from 'lucide-react'
 import { useChangePassword, type useMe } from '@/features/auth/hooks/auth'
 import { PasswordInput } from '@/shared/components/forms/PasswordInput'
 import { Button } from '@/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
+import { CardContent } from '@/ui/card'
+import { ProfileAccentCard, ProfileAccentHeader } from './ProfileAccentCard'
 
 export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typeof useMe>['data']> }) {
   const changePassword = useChangePassword()
@@ -12,14 +13,14 @@ export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typ
   const valid = next.length >= 10 && (!user.hasPassword || !!current)
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base">Contraseña</CardTitle>
-        <CardDescription>
-          {user.hasPassword ? 'Cámbiala cuando quieras.' : 'Define una para entrar sin Google.'} Mínimo 10 caracteres.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <ProfileAccentCard tone="password">
+      <ProfileAccentHeader
+        tone="password"
+        icon={KeyRound}
+        title="Contraseña"
+        description={`${user.hasPassword ? 'Cámbiala cuando quieras.' : 'Define una para entrar sin Google.'} Mínimo 10 caracteres.`}
+      />
+      <CardContent className="space-y-3 px-5 pt-0 pb-5">
         {user.hasPassword && (
           <PasswordInput
             aria-label="Contraseña actual"
@@ -57,6 +58,6 @@ export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typ
           </details>
         )}
       </CardContent>
-    </Card>
+    </ProfileAccentCard>
   )
 }
