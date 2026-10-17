@@ -2,10 +2,7 @@
   "name": "kogane-app",
   "type": "module",
   "version": "0.0.1",
-  "engines": {
-    "node": ">=22.12.0",
-    "pnpm": ">=10.0.0"
-  },
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
     "dev": "astro dev --mode dev",
     "build": "astro build",
