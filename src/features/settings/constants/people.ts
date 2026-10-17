@@ -1,5 +1,3 @@
-// Pages where a person can be picked (Configuración ▸ Personas). Día a día is always the user and Cobros y deudas lists
-// everyone, so neither is a module; the owner ("Yo") appears in all of them (kogane-api: Person.appearsIn)
 export const PERSON_MODULES = [
   ["fixed_costs", "Costos fijos"],
   ["platforms", "Plataformas"],

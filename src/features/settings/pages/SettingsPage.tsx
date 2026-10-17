@@ -8,33 +8,39 @@ import { PeoplePage } from "../components/people/PeoplePage";
 import { SettingsShell } from "../components/navigation/SettingsShell";
 import { ProfilePage } from "@/features/auth/components/ProfilePage";
 import type { CardsAccountsTab, SettingsSection } from "../types/navigation";
+import { useMe } from "@/features/auth/hooks/auth";
 import { GeneralSettingsView } from "../views/GeneralSettingsView";
 import { UsersPanel } from "@/features/auth/components/UsersPanel";
 import { HistoryPanel } from "@/features/history/components/HistoryPanel";
-import { useMe } from "@/features/auth/hooks/auth";
+import { CARDS_ACCOUNTS_TAB, SETTINGS_SECTION } from "../constants/sections";
 
-function SettingsPageView({ section, tab = "credito" }: { section: SettingsSection; tab?: CardsAccountsTab }) {
+interface SettingsPageViewProps {
+  section: SettingsSection;
+  tab?: CardsAccountsTab;
+}
+
+function SettingsPageView({ section, tab = CARDS_ACCOUNTS_TAB.CREDITO }: SettingsPageViewProps) {
   const { data: me } = useMe();
   const [hasHydrated, setHasHydrated] = useState(false);
   useEffect(() => setHasHydrated(true), []);
   const isAdmin = hasHydrated && (me?.role === "admin" || me?.role === "superadmin");
 
   return (
-    <SettingsShell section={section} isAdmin={isAdmin} wide={section === "perfil"}>
-      {section === "perfil" && <ProfilePage />}
-      {section === "general" && <GeneralSettingsView />}
-      {section === "notificaciones" && <NotificationSettingsCard />}
-      {section === "cuentas-tarjetas" && (
+    <SettingsShell section={section} isAdmin={isAdmin} wide={section === SETTINGS_SECTION.PERFIL}>
+      {section === SETTINGS_SECTION.PERFIL && <ProfilePage />}
+      {section === SETTINGS_SECTION.GENERAL && <GeneralSettingsView />}
+      {section === SETTINGS_SECTION.NOTIFICACIONES && <NotificationSettingsCard />}
+      {section === SETTINGS_SECTION.CUENTAS_TARJETAS && (
         <div className="space-y-4">
           <CardsAccountsTabs active={tab} />
-          {tab === "credito" && <AccountsTable scope="credit" />}
-          {tab === "debito" && <AccountsTable scope="other" />}
-          {tab === "cuentas-salida" && <OutputAccountsPanel />}
+          {tab === CARDS_ACCOUNTS_TAB.CREDITO && <AccountsTable scope="credit" />}
+          {tab === CARDS_ACCOUNTS_TAB.DEBITO && <AccountsTable scope="other" />}
+          {tab === CARDS_ACCOUNTS_TAB.CUENTAS_SALIDA && <OutputAccountsPanel />}
         </div>
       )}
-      {section === "personas" && <PeoplePage />}
-      {section === "historial" && <HistoryPanel />}
-      {section === "usuarios" && isAdmin && <UsersPanel />}
+      {section === SETTINGS_SECTION.PERSONAS && <PeoplePage />}
+      {section === SETTINGS_SECTION.HISTORIAL && <HistoryPanel />}
+      {section === SETTINGS_SECTION.USUARIOS && isAdmin && <UsersPanel />}
     </SettingsShell>
   );
 }

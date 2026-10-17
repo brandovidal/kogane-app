@@ -6,7 +6,6 @@ import { useSettingsNavigation } from "../../hooks/useSettingsNavigation";
 import { SETTINGS_NAV_GROUPS, settingsHref } from "../../constants/sections";
 import type { SettingsSection } from "../../types/navigation";
 
-// Submenu of Configuración: groups fold, the whole menu collapses to an icon rail. Each item is its own route.
 export function SettingsShell({
   section,
   isAdmin,
