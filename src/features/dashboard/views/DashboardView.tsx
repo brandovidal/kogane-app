@@ -29,29 +29,15 @@ export function DashboardView({
       <DashboardPeriodNotice />
       <BudgetKpis summary={summary} month={month} year={year} />
 
-      <section
-        aria-label="Presupuesto y próximos compromisos"
-        className="grid auto-rows-fr items-stretch gap-4 xl:grid-cols-3"
-      >
+      <section aria-label="Presupuesto y próximos compromisos" className="grid auto-rows-fr items-stretch gap-4 xl:grid-cols-3">
         <BudgetVsActual summary={summary} compact />
         <DashboardNextMonthCard month={month} year={year} />
-        <BillingCycleCard
-          cards={creditCards}
-          onRegisterPayment={() => onRegisterPayment("card")}
-        />
+        <BillingCycleCard cards={creditCards} onRegisterPayment={() => onRegisterPayment("card")} />
       </section>
 
-      <DashboardPendingSection
-        summary={summary}
-        month={month}
-        year={year}
-        onRegisterPayment={onRegisterPayment}
-      />
+      <DashboardPendingSection summary={summary} month={month} year={year} onRegisterPayment={onRegisterPayment} />
 
-      <section
-        aria-label="Análisis del mes"
-        className="grid gap-4 xl:grid-cols-2"
-      >
+      <section aria-label="Análisis del mes" className="grid gap-4 xl:grid-cols-2">
         <BudgetDonut summary={summary} month={month} year={year} />
         <SurplusTrend month={month} year={year} />
       </section>

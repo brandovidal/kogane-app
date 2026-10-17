@@ -1,9 +1,6 @@
 import { URL_STATE_CHANGE_EVENT } from "@/shared/constants/url-state";
 
-export function readUrlValues<T extends object>(
-  keys: readonly (keyof T & string)[],
-  defaults: T,
-): T {
+export function readUrlValues<T extends object>(keys: readonly (keyof T & string)[], defaults: T): T {
   const params = new URLSearchParams(window.location.search);
   const values = { ...defaults };
   for (const key of keys) {
@@ -16,11 +13,7 @@ export function readUrlValues<T extends object>(
 }
 
 /** Each owner writes only its keys; unrelated parameters, history state and hash are preserved. */
-export function replaceUrlValues<T extends object>(
-  keys: readonly (keyof T & string)[],
-  values: T,
-  defaults: T = {} as T,
-): void {
+export function replaceUrlValues<T extends object>(keys: readonly (keyof T & string)[], values: T, defaults: T = {} as T): void {
   const url = new URL(window.location.href);
   for (const key of keys) {
     const value = values[key] as string | undefined;
@@ -29,20 +22,11 @@ export function replaceUrlValues<T extends object>(
     else url.searchParams.delete(key);
   }
   if (url.href === window.location.href) return;
-  window.history.replaceState(
-    window.history.state,
-    "",
-    `${url.pathname}${url.search}${url.hash}`,
-  );
+  window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
   window.dispatchEvent(new Event(URL_STATE_CHANGE_EVENT));
 }
 
 export function sameUrlValues<T extends object>(left: T, right: T): boolean {
   const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
-  return [...keys].every((key) =>
-    Object.is(
-      (left as Record<string, unknown>)[key],
-      (right as Record<string, unknown>)[key],
-    ),
-  );
+  return [...keys].every((key) => Object.is((left as Record<string, unknown>)[key], (right as Record<string, unknown>)[key]));
 }

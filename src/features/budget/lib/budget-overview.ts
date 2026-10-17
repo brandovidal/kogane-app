@@ -31,21 +31,14 @@ export interface OverviewTotals {
   percent: number;
 }
 
-const statusOf = (
-  line: CategoryBudgetLine | undefined,
-  spent: number,
-  limit: number | null,
-): LimitStatus => {
+const statusOf = (line: CategoryBudgetLine | undefined, spent: number, limit: number | null): LimitStatus => {
   if (line?.status === "over" || line?.status === "warning") return line.status;
   if (limit != null && limit > 0 && spent > limit) return "over";
   return "ok";
 };
 
 // Groups with their categories: what each spent against the limit it has (limits come from /v1/category-budgets)
-export function buildOverview(
-  summaries: BudgetGroupSummary[],
-  lines: CategoryBudgetLine[],
-): { groups: OverviewGroup[]; totals: OverviewTotals } {
+export function buildOverview(summaries: BudgetGroupSummary[], lines: CategoryBudgetLine[]): { groups: OverviewGroup[]; totals: OverviewTotals } {
   const groups = summaries.map<OverviewGroup>((summary) => ({
     id: summary.group.id,
     name: summary.group.name,

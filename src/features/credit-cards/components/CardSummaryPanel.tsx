@@ -5,8 +5,7 @@ import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { latestMovements, topCategories } from "../lib/card-summary";
 
-const amountOf = (expense: CreditCardExpense) =>
-  expense.amountInPen ?? expense.amount;
+const amountOf = (expense: CreditCardExpense) => expense.amountInPen ?? expense.amount;
 
 /** Per-card summary (Resumen tab): latest movements, next payment and top categories. */
 export function CardSummaryPanel({
@@ -36,11 +35,8 @@ export function CardSummaryPanel({
 }) {
   const recent = latestMovements(expenses);
   const top = topCategories(expenses, categoryName);
-  const balance =
-    statement?.balances.find((item) => item.currency === "PEN") ??
-    statement?.balances[0];
-  const money = (value: number | null | undefined) =>
-    value == null ? "—" : formatCurrency(value, balance?.currency ?? "PEN");
+  const balance = statement?.balances.find((item) => item.currency === "PEN") ?? statement?.balances[0];
+  const money = (value: number | null | undefined) => (value == null ? "—" : formatCurrency(value, balance?.currency ?? "PEN"));
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
@@ -48,9 +44,7 @@ export function CardSummaryPanel({
         <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
           <div>
             <CardTitle className="text-base">Últimos movimientos</CardTitle>
-            <p className="text-xs text-muted-foreground">
-              Los {recent.length || 5} más recientes del ciclo
-            </p>
+            <p className="text-xs text-muted-foreground">Los {recent.length || 5} más recientes del ciclo</p>
           </div>
           <Button variant="ghost" size="sm" onClick={onSeeAll}>
             Ver todos
@@ -60,32 +54,20 @@ export function CardSummaryPanel({
           {recent.length ? (
             <ul className="divide-y">
               {recent.map((expense) => (
-                <li
-                  key={expense.id}
-                  className="flex items-center gap-3 py-2.5 text-sm"
-                >
+                <li key={expense.id} className="flex items-center gap-3 py-2.5 text-sm">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">
-                      {expense.description}
-                    </p>
+                    <p className="truncate font-medium">{expense.description}</p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {expense.processDate
-                        ? formatDate(expense.processDate)
-                        : "—"}{" "}
-                      · {categoryName(expense.categoryId ?? null)} ·{" "}
+                      {expense.processDate ? formatDate(expense.processDate) : "—"} · {categoryName(expense.categoryId ?? null)} ·{" "}
                       {personName(expense.personId)}
                     </p>
                   </div>
-                  <span className="font-semibold tabular-nums">
-                    {formatCurrency(amountOf(expense))}
-                  </span>
+                  <span className="font-semibold tabular-nums">{formatCurrency(amountOf(expense))}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              Sin movimientos en {getMonthName(month).toLowerCase()}.
-            </p>
+            <p className="py-6 text-center text-sm text-muted-foreground">Sin movimientos en {getMonthName(month).toLowerCase()}.</p>
           )}
         </CardContent>
       </Card>
@@ -103,9 +85,7 @@ export function CardSummaryPanel({
             <dl className="space-y-1.5 text-sm">
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Pago total del mes</dt>
-                <dd className="font-semibold tabular-nums">
-                  {money(balance?.totalDue)}
-                </dd>
+                <dd className="font-semibold tabular-nums">{money(balance?.totalDue)}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Pago mínimo</dt>
@@ -138,9 +118,7 @@ export function CardSummaryPanel({
                 {top.map((item) => (
                   <li key={item.id} className="flex justify-between gap-2">
                     <span className="truncate">{item.name}</span>
-                    <span className="font-semibold tabular-nums">
-                      {formatCurrency(item.total)}
-                    </span>
+                    <span className="font-semibold tabular-nums">{formatCurrency(item.total)}</span>
                   </li>
                 ))}
               </ul>

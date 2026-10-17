@@ -4,36 +4,17 @@ import type { IncomeFormController } from "../hooks/useIncomeForm";
 import { FormField } from "@/shared/components/forms/FormField";
 import { CURRENCIES } from "@/shared/constants/finance";
 import { Input } from "@/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "@/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/ui/input-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 export function IncomeGeneralSection({ form }: { form: IncomeFormController }) {
   const id = useId();
   return (
-    <section
-      className="space-y-4 rounded-lg border p-4"
-      aria-labelledby={`${id}-title`}
-    >
+    <section className="space-y-4 rounded-lg border p-4" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`} className="text-sm font-semibold">
         Datos del ingreso
       </h3>
-      <FormField
-        label="Descripción *"
-        icon={FileText}
-        htmlFor={`${id}-description`}
-        error={form.errorFor("description")}
-      >
+      <FormField label="Descripción *" icon={FileText} htmlFor={`${id}-description`} error={form.errorFor("description")}>
         <Input
           id={`${id}-description`}
           required
@@ -46,17 +27,10 @@ export function IncomeGeneralSection({ form }: { form: IncomeFormController }) {
         />
       </FormField>
       <div className="grid grid-cols-[minmax(0,1fr)_6rem] gap-3">
-        <FormField
-          label="Monto *"
-          icon={Banknote}
-          htmlFor={`${id}-amount`}
-          error={form.errorFor("amount")}
-        >
+        <FormField label="Monto *" icon={Banknote} htmlFor={`${id}-amount`} error={form.errorFor("amount")}>
           <InputGroup>
             <InputGroupAddon>
-              <InputGroupText>
-                {form.value.currency === "PEN" ? "S/" : "$"}
-              </InputGroupText>
+              <InputGroupText>{form.value.currency === "PEN" ? "S/" : "$"}</InputGroupText>
             </InputGroupAddon>
             <InputGroupInput
               id={`${id}-amount`}
@@ -76,9 +50,7 @@ export function IncomeGeneralSection({ form }: { form: IncomeFormController }) {
         <FormField label="Moneda" icon={Coins} htmlFor={`${id}-currency`}>
           <Select
             value={form.value.currency}
-            onValueChange={(value) =>
-              form.update("currency", value as typeof form.value.currency)
-            }
+            onValueChange={(value) => form.update("currency", value as typeof form.value.currency)}
             disabled={form.pending}
           >
             <SelectTrigger id={`${id}-currency`} className="w-full">

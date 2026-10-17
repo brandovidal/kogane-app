@@ -4,18 +4,10 @@ import { toast } from "sonner";
 import { LoaderCircle, Plus, ReceiptText } from "lucide-react";
 
 import { DraftForm } from "@/features/drafts/components/DraftForm";
-import {
-  emptyDraftFields,
-  FORM_DESTINATIONS,
-  toDraftBody,
-} from "@/features/drafts/lib/draft-form";
+import { emptyDraftFields, FORM_DESTINATIONS, toDraftBody } from "@/features/drafts/lib/draft-form";
 import { ApiError } from "@/shared/api/client";
 import { useCreditCards } from "@/shared/api/hooks/catalogs";
-import {
-  useCreateDraft,
-  useSaveDraft,
-  type DraftFields,
-} from "@/features/drafts/hooks/drafts";
+import { useCreateDraft, useSaveDraft, type DraftFields } from "@/features/drafts/hooks/drafts";
 import { withQuery } from "@/shared/api/query";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
@@ -28,19 +20,10 @@ import { useUploadAttachment } from "@/features/attachments/hooks/attachments";
 import { ATTACHMENT_MAX_MB } from "@/features/attachments/constants/attachments";
 import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 import { getMonthName } from "@/shared/lib/dates";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 // Where each destination is listed, for "Ver" after saving
-function pageOf(
-  fields: DraftFields,
-  cardCode: (id: string | null | undefined) => string | undefined,
-): string {
+function pageOf(fields: DraftFields, cardCode: (id: string | null | undefined) => string | undefined): string {
   switch (fields.destination) {
     case "fixed_cost":
       return "/costos-fijos";
@@ -71,9 +54,7 @@ function NewExpenseDialogView() {
   const createDraft = useCreateDraft();
   const saveDraft = useSaveDraft({ quiet: true });
   const uploadAttachment = useUploadAttachment({ quiet: true });
-  const [pendingAttachments, setPendingAttachments] = useState<
-    PendingAttachmentUpload[]
-  >([]);
+  const [pendingAttachments, setPendingAttachments] = useState<PendingAttachmentUpload[]>([]);
   const [savedRecordId, setSavedRecordId] = useState<string>();
 
   useEffect(() => {
@@ -97,31 +78,23 @@ function NewExpenseDialogView() {
           }),
         ),
       );
-      const failed = pendingAttachments.filter(
-        (_, index) => results[index]?.status === "rejected",
-      );
+      const failed = pendingAttachments.filter((_, index) => results[index]?.status === "rejected");
       setPendingAttachments(failed);
       if (failed.length) {
-        toast.error(
-          "El gasto ya se creó, pero algunos archivos no se subieron. Puedes reintentarlo.",
-        );
+        toast.error("El gasto ya se creó, pero algunos archivos no se subieron. Puedes reintentarlo.");
         return;
       }
       toast.success("Gasto y archivos guardados");
       close();
       return;
     }
-    const oversized = pendingAttachments.some(
-      ({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024,
-    );
+    const oversized = pendingAttachments.some(({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024);
     if (oversized) {
       toast.error(`Cada archivo debe pesar ${ATTACHMENT_MAX_MB} MB o menos.`);
       return;
     }
     const rules = FIELDS_BY_DESTINATION[fields.destination ?? "daily"];
-    const quotaError = rules?.installment
-      ? installmentError(fields.installment)
-      : undefined;
+    const quotaError = rules?.installment ? installmentError(fields.installment) : undefined;
     if (quotaError) {
       setMissing(["installment"]);
       toast.error(quotaError);
@@ -154,22 +127,16 @@ function NewExpenseDialogView() {
               }),
             ),
           );
-          const failed = pendingAttachments.filter(
-            (_, index) => results[index]?.status === "rejected",
-          );
+          const failed = pendingAttachments.filter((_, index) => results[index]?.status === "rejected");
           setPendingAttachments(failed);
           if (failed.length) {
-            toast.error(
-              "El gasto ya se creó, pero algunos archivos no se subieron. Puedes reintentarlo.",
-            );
+            toast.error("El gasto ya se creó, pero algunos archivos no se subieron. Puedes reintentarlo.");
             return;
           }
         }
       }
-      const cardCode = (id: string | null | undefined) =>
-        cards.find((card) => card.id === id)?.code ?? undefined;
-      const label =
-        DESTINATION_LABELS[fields.destination ?? "daily"] ?? "Gastos";
+      const cardCode = (id: string | null | undefined) => cards.find((card) => card.id === id)?.code ?? undefined;
+      const label = DESTINATION_LABELS[fields.destination ?? "daily"] ?? "Gastos";
       toast.success(`Guardado en ${label}`, {
         action: {
           label: "Ver",
@@ -185,8 +152,7 @@ function NewExpenseDialogView() {
     }
   };
 
-  const busy =
-    createDraft.isPending || saveDraft.isPending || uploadAttachment.isPending;
+  const busy = createDraft.isPending || saveDraft.isPending || uploadAttachment.isPending;
 
   return (
     <ResponsiveDialog
@@ -205,10 +171,7 @@ function NewExpenseDialogView() {
             })
           }
         >
-          <SelectTrigger
-            aria-label="Destino del gasto"
-            className="h-9 w-[170px] shrink-0 rounded-full"
-          >
+          <SelectTrigger aria-label="Destino del gasto" className="h-9 w-[170px] shrink-0 rounded-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent align="end">
@@ -224,26 +187,15 @@ function NewExpenseDialogView() {
       footer={
         <div className="flex w-full items-center justify-between gap-3">
           <p className="hidden text-xs text-muted-foreground sm:block">
-            <kbd className="rounded border px-1.5 py-0.5">⌘</kbd>{" "}
-            <kbd className="rounded border px-1.5 py-0.5">Enter</kbd> para crear
+            <kbd className="rounded border px-1.5 py-0.5">⌘</kbd> <kbd className="rounded border px-1.5 py-0.5">Enter</kbd> para crear
           </p>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={close}>
               Cancelar
             </Button>
             <Button onClick={save} disabled={busy}>
-              {busy ? (
-                <LoaderCircle aria-hidden="true" className="animate-spin" />
-              ) : (
-                <Plus aria-hidden="true" />
-              )}
-              {busy
-                ? savedRecordId
-                  ? "Subiendo archivos..."
-                  : "Creando..."
-                : savedRecordId
-                  ? "Reintentar archivos"
-                  : "Crear"}
+              {busy ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Plus aria-hidden="true" />}
+              {busy ? (savedRecordId ? "Subiendo archivos..." : "Creando...") : savedRecordId ? "Reintentar archivos" : "Crear"}
             </Button>
           </div>
         </div>

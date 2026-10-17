@@ -34,9 +34,7 @@ const { currentPath } = Astro.props;
 
 <script>
   const dialog = document.querySelector<HTMLDialogElement>("[data-nav-drawer]");
-  document
-    .querySelector("[data-nav-open]")
-    ?.addEventListener("click", () => dialog?.showModal());
+  document.querySelector("[data-nav-open]")?.addEventListener("click", () => dialog?.showModal());
   // a tap on the dark side or on a link closes it
   dialog?.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-import {
-  useCardHolders,
-  useSaveCardHolders,
-  useMe,
-} from "@/shared/api/hooks/catalogs";
+import { useCardHolders, useSaveCardHolders, useMe } from "@/shared/api/hooks/catalogs";
 import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
@@ -19,13 +15,7 @@ interface Holder {
 
 // Titular y adicionales de una tarjeta (D116): the statement gives each purchase to them (CMR by the section of each
 // card, Sip by its TIT/ADIC column). The last 4 digits are how the statement prints each card
-export function CardHoldersDialog({
-  card,
-  onClose,
-}: {
-  card: { id: string; name: string };
-  onClose: () => void;
-}) {
+export function CardHoldersDialog({ card, onClose }: { card: { id: string; name: string }; onClose: () => void }) {
   const { data } = useCardHolders(card.id);
   const me = useMe();
   const save = useSaveCardHolders();
@@ -38,24 +28,12 @@ export function CardHoldersDialog({
       role: holder.role,
       last4: holder.last4 ?? "",
     }));
-    setHolders(
-      rows.length
-        ? rows
-        : [{ personId: me ?? null, role: "titular", last4: "" }],
-    );
+    setHolders(rows.length ? rows : [{ personId: me ?? null, role: "titular", last4: "" }]);
   }, [data, me]);
 
-  const set = (index: number, change: Partial<Holder>) =>
-    setHolders(
-      holders.map((holder, at) =>
-        at === index ? { ...holder, ...change } : holder,
-      ),
-    );
+  const set = (index: number, change: Partial<Holder>) => setHolders(holders.map((holder, at) => (at === index ? { ...holder, ...change } : holder)));
   const valid =
-    holders.every(
-      (holder) =>
-        holder.personId && (!holder.last4 || /^\d{4}$/.test(holder.last4)),
-    ) &&
+    holders.every((holder) => holder.personId && (!holder.last4 || /^\d{4}$/.test(holder.last4))) &&
     new Set(holders.map((holder) => holder.personId)).size === holders.length;
 
   const submit = () =>
@@ -90,19 +68,10 @@ export function CardHoldersDialog({
     >
       <div className="space-y-3 py-2">
         {holders.map((holder, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-[1fr_90px_32px] items-end gap-2"
-          >
+          <div key={index} className="grid grid-cols-[1fr_90px_32px] items-end gap-2">
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {holder.role === "titular" ? "Titular" : "Adicional"}
-              </label>
-              <PersonPicker
-                module="cards"
-                value={holder.personId}
-                onChange={(personId) => set(index, { personId })}
-              />
+              <label className="text-xs text-muted-foreground">{holder.role === "titular" ? "Titular" : "Adicional"}</label>
+              <PersonPicker module="cards" value={holder.personId} onChange={(personId) => set(index, { personId })} />
             </div>
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">Últimos 4</label>
@@ -111,20 +80,11 @@ export function CardHoldersDialog({
                 maxLength={4}
                 placeholder="1810"
                 value={holder.last4}
-                onChange={(event) =>
-                  set(index, { last4: event.target.value.replace(/\D/g, "") })
-                }
+                onChange={(event) => set(index, { last4: event.target.value.replace(/\D/g, "") })}
               />
             </div>
             {holder.role === "additional" ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Quitar adicional"
-                onClick={() =>
-                  setHolders(holders.filter((_, at) => at !== index))
-                }
-              >
+              <Button variant="ghost" size="icon" aria-label="Quitar adicional" onClick={() => setHolders(holders.filter((_, at) => at !== index))}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             ) : (
@@ -132,16 +92,7 @@ export function CardHoldersDialog({
             )}
           </div>
         ))}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            setHolders([
-              ...holders,
-              { personId: null, role: "additional", last4: "" },
-            ])
-          }
-        >
+        <Button variant="outline" size="sm" onClick={() => setHolders([...holders, { personId: null, role: "additional", last4: "" }])}>
           <Plus className="mr-1 h-4 w-4" /> Agregar adicional
         </Button>
       </div>

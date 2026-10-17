@@ -10,8 +10,7 @@ export function useImportsPage() {
   const history = historyOf(batches, statements, getMonthName);
   const [selected, setSelected] = useState<string | null>(null);
   // Sin selección se muestra la pantalla de carga (boards I1–I6)
-  const current =
-    selected && history.some((item) => item.key === selected) ? selected : null;
+  const current = selected && history.some((item) => item.key === selected) ? selected : null;
   const [source, id] = (current ?? ":").split(":");
 
   return {

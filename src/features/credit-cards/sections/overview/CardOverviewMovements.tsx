@@ -27,11 +27,7 @@ export function CardOverviewMovements({
   groupBy?: CardOverviewGroupBy[];
   layout?: ViewMode;
 }) {
-  const visible = (
-    installmentsOnly
-      ? expenses.filter((expense) => !!expense.installment)
-      : expenses
-  )
+  const visible = (installmentsOnly ? expenses.filter((expense) => !!expense.installment) : expenses)
     .slice()
     .sort((a, b) => (b.processDate ?? "").localeCompare(a.processDate ?? ""));
   const cardById = new Map(cards.map((card) => [card.id, card]));
@@ -39,11 +35,7 @@ export function CardOverviewMovements({
     return (
       <EmptyState
         title={installmentsOnly ? "Sin cuotas" : "Sin movimientos"}
-        description={
-          installmentsOnly
-            ? "No hay compras en cuotas para este período."
-            : "No hay movimientos con estos filtros."
-        }
+        description={installmentsOnly ? "No hay compras en cuotas para este período." : "No hay movimientos con estos filtros."}
       />
     );
 
@@ -56,28 +48,19 @@ export function CardOverviewMovements({
       cell: (expense) => (
         <div className="min-w-0">
           <span className="font-medium">{expense.description}</span>
-          {expense.notes && (
-            <span className="block truncate text-xs text-muted-foreground">
-              {expense.notes}
-            </span>
-          )}
+          {expense.notes && <span className="block truncate text-xs text-muted-foreground">{expense.notes}</span>}
         </div>
       ),
     },
     {
       key: "card",
       header: "Tarjeta",
-      accessor: (expense) =>
-        cardById.get(expense.paymentMethodId ?? "")?.name ?? "—",
+      accessor: (expense) => cardById.get(expense.paymentMethodId ?? "")?.name ?? "—",
       cell: (expense) => {
         const card = cardById.get(expense.paymentMethodId ?? "");
         return (
           <span className="inline-flex items-center gap-2">
-            <span
-              className="size-4 rounded"
-              style={{ backgroundColor: card?.color ?? "var(--muted)" }}
-              aria-hidden="true"
-            />
+            <span className="size-4 rounded" style={{ backgroundColor: card?.color ?? "var(--muted)" }} aria-hidden="true" />
             {card?.name ?? "—"}
           </span>
         );
@@ -95,12 +78,7 @@ export function CardOverviewMovements({
       role: "amount",
       accessor: (expense) => expense.amountInPen ?? expense.amount,
       cell: (expense) => (
-        <CurrencyDisplay
-          amount={expense.amount}
-          currency={expense.currency}
-          amountInPEN={expense.amountInPen}
-          othersShare={expense.othersShare}
-        />
+        <CurrencyDisplay amount={expense.amount} currency={expense.currency} amountInPEN={expense.amountInPen} othersShare={expense.othersShare} />
       ),
     },
     {
@@ -126,31 +104,22 @@ export function CardOverviewMovements({
       key: "date",
       header: "Fecha",
       accessor: (expense) => expense.processDate ?? "",
-      cell: (expense) =>
-        expense.processDate ? formatDate(expense.processDate) : "—",
+      cell: (expense) => (expense.processDate ? formatDate(expense.processDate) : "—"),
     },
   ];
-  const grouping = [
-    ...(currencyView && !groupBy.includes("currency")
-      ? ["currency" as const]
-      : []),
-    ...groupBy,
-  ];
+  const grouping = [...(currencyView && !groupBy.includes("currency") ? ["currency" as const] : []), ...groupBy];
   const groupKey = (expense: CreditCardExpense, field: string) => {
     if (field === "currency") return expense.currency ?? "PEN";
     if (field === "person") return expense.personId ?? "none";
-    if (field === "installments")
-      return expense.installment ? "installments" : "without-installments";
+    if (field === "installments") return expense.installment ? "installments" : "without-installments";
     const bank = cardById.get(expense.paymentMethodId ?? "")?.bank?.trim();
     return bank || "none";
   };
   const groupLabel = (key: string, field: string) => {
     if (key === "none") return field === "bank" ? "Sin banco" : "Sin asignar";
-    if (field === "currency")
-      return key === "USD" ? "Dólares (USD)" : "Soles (PEN)";
+    if (field === "currency") return key === "USD" ? "Dólares (USD)" : "Soles (PEN)";
     if (field === "person") return personName(key);
-    if (field === "installments")
-      return key === "installments" ? "Con cuotas" : "Sin cuotas";
+    if (field === "installments") return key === "installments" ? "Con cuotas" : "Sin cuotas";
     return key;
   };
   const totals = visible.reduce(
@@ -173,12 +142,7 @@ export function CardOverviewMovements({
             {totals.usd > 0 && <span>{formatCurrency(totals.usd, "USD")}</span>}
           </span>
         ) : (
-          formatCurrency(
-            visible.reduce(
-              (sum, expense) => sum + (expense.amountInPen ?? expense.amount),
-              0,
-            ),
-          )
+          formatCurrency(visible.reduce((sum, expense) => sum + (expense.amountInPen ?? expense.amount), 0))
         )}
       </span>
     </div>

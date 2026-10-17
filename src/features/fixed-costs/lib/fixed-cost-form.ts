@@ -12,9 +12,7 @@ const optionalText = z
 export const fixedCostFormSchema = z
   .object({
     description: z.string().trim().min(1, "Descripción requerida"),
-    amount: z
-      .number({ error: "Monto requerido" })
-      .positive("Monto debe ser positivo"),
+    amount: z.number({ error: "Monto requerido" }).positive("Monto debe ser positivo"),
     currency: z.enum(CURRENCIES),
     exchangeRate: z.number().positive().nullable(),
     expenseType: z.string(),
@@ -43,18 +41,9 @@ export const fixedCostFormSchema = z
 export type FixedCostForm = z.input<typeof fixedCostFormSchema>;
 export type FixedCostValues = z.output<typeof fixedCostFormSchema>;
 
-export const FIXED_COST_SCHEDULE_FIELDS = [
-  "paymentMonth",
-  "paymentYear",
-  "dueDate",
-  "installment",
-  "hasInstallments",
-];
+export const FIXED_COST_SCHEDULE_FIELDS = ["paymentMonth", "paymentYear", "dueDate", "installment", "hasInstallments"];
 
-export function fixedCostFormDefaults(
-  cost: FixedCost | undefined,
-  period: { month: number; year: number },
-): FixedCostForm {
+export function fixedCostFormDefaults(cost: FixedCost | undefined, period: { month: number; year: number }): FixedCostForm {
   return {
     description: cost?.description ?? "",
     amount: cost?.amount ?? 0,
@@ -74,10 +63,7 @@ export function fixedCostFormDefaults(
   };
 }
 
-export function fixedCostSaveBody({
-  hasInstallments,
-  ...data
-}: FixedCostValues) {
+export function fixedCostSaveBody({ hasInstallments, ...data }: FixedCostValues) {
   return {
     ...data,
     installment: hasInstallments ? data.installment : null,

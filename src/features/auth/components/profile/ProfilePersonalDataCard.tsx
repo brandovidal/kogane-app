@@ -2,13 +2,7 @@ import { useState, type SubmitEvent } from "react";
 import { Eye, EyeOff, LockKeyhole } from "lucide-react";
 import type { useMe } from "@/features/auth/hooks/auth";
 import { Button } from "@/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 
 export interface ProfileDraft {
@@ -33,10 +27,7 @@ export function validateProfileDraft(draft: ProfileDraft): ProfileFieldErrors {
   }
   if (draft.documentNumber && !/^\d{8}$/.test(draft.documentNumber)) {
     const remaining = Math.max(8 - draft.documentNumber.length, 0);
-    errors.documentNumber =
-      remaining > 0
-        ? `El DNI tiene 8 dígitos. Faltan ${remaining}.`
-        : "El DNI debe tener 8 dígitos.";
+    errors.documentNumber = remaining > 0 ? `El DNI tiene 8 dígitos. Faltan ${remaining}.` : "El DNI debe tener 8 dígitos.";
   }
   return errors;
 }
@@ -82,18 +73,10 @@ export function ProfilePersonalDataCard({
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="text-base">Datos personales</CardTitle>
-        <CardDescription>
-          Con estos datos te identifica Kogane en repartos, cobros y estados de
-          cuenta.
-        </CardDescription>
+        <CardDescription>Con estos datos te identifica Kogane en repartos, cobros y estados de cuenta.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          id="profile-personal-form"
-          className="space-y-5"
-          onSubmit={onSubmit}
-          noValidate
-        >
+        <form id="profile-personal-form" className="space-y-5" onSubmit={onSubmit} noValidate>
           <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="profile-name" className="text-sm font-medium">
@@ -105,9 +88,7 @@ export function ProfilePersonalDataCard({
                 value={draft.name}
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? nameErrorId : undefined}
-                onChange={(event) =>
-                  onChange({ ...draft, name: event.target.value })
-                }
+                onChange={(event) => onChange({ ...draft, name: event.target.value })}
               />
               <FieldError id={nameErrorId}>{errors.name}</FieldError>
             </div>
@@ -116,16 +97,8 @@ export function ProfilePersonalDataCard({
               <label htmlFor="profile-nickname" className="text-sm font-medium">
                 Apodo
               </label>
-              <Input
-                id="profile-nickname"
-                value={draft.nickname}
-                onChange={(event) =>
-                  onChange({ ...draft, nickname: event.target.value })
-                }
-              />
-              <p className="text-xs text-muted-foreground">
-                Así te nombra el bot y apareces en los repartos.
-              </p>
+              <Input id="profile-nickname" value={draft.nickname} onChange={(event) => onChange({ ...draft, nickname: event.target.value })} />
+              <p className="text-xs text-muted-foreground">Así te nombra el bot y apareces en los repartos.</p>
             </div>
 
             <div className="space-y-1.5">
@@ -133,27 +106,17 @@ export function ProfilePersonalDataCard({
                 Documento
               </label>
               <div className="relative flex h-10 overflow-hidden rounded-lg border border-input bg-muted/40 focus-within:ring-2 focus-within:ring-ring">
-                <span className="inline-flex shrink-0 items-center border-r border-input px-3 text-sm text-muted-foreground">
-                  DNI
-                </span>
+                <span className="inline-flex shrink-0 items-center border-r border-input px-3 text-sm text-muted-foreground">DNI</span>
                 <Input
                   id="profile-document"
                   type={documentVisible ? "text" : "password"}
                   inputMode="numeric"
                   autoComplete="off"
                   maxLength={8}
-                  placeholder={
-                    draft.clearDocument
-                      ? "Se quitará el DNI"
-                      : user.documentMasked
-                        ? `Guardado ${user.documentMasked}`
-                        : "8 dígitos"
-                  }
+                  placeholder={draft.clearDocument ? "Se quitará el DNI" : user.documentMasked ? `Guardado ${user.documentMasked}` : "8 dígitos"}
                   value={draft.documentNumber}
                   aria-invalid={!!errors.documentNumber}
-                  aria-describedby={
-                    errors.documentNumber ? documentErrorId : undefined
-                  }
+                  aria-describedby={errors.documentNumber ? documentErrorId : undefined}
                   className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent pr-10 focus-visible:ring-0"
                   onChange={(event) =>
                     onChange({
@@ -172,16 +135,10 @@ export function ProfilePersonalDataCard({
                   aria-pressed={documentVisible}
                   onClick={() => setDocumentVisible((visible) => !visible)}
                 >
-                  {documentVisible ? (
-                    <EyeOff className="size-4" />
-                  ) : (
-                    <Eye className="size-4" />
-                  )}
+                  {documentVisible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </Button>
               </div>
-              <FieldError id={documentErrorId}>
-                {errors.documentNumber}
-              </FieldError>
+              <FieldError id={documentErrorId}>{errors.documentNumber}</FieldError>
               {user.documentMasked && !draft.documentNumber && (
                 <button
                   type="button"
@@ -197,8 +154,7 @@ export function ProfilePersonalDataCard({
                 </button>
               )}
               <p className="text-xs text-muted-foreground">
-                Abre tus estados de cuenta en PDF y se copia a tu persona «Yo».
-                Se guarda completo y se muestra oculto.
+                Abre tus estados de cuenta en PDF y se copia a tu persona «Yo». Se guarda completo y se muestra oculto.
               </p>
             </div>
 
@@ -207,9 +163,7 @@ export function ProfilePersonalDataCard({
                 Celular
               </label>
               <div className="flex h-10 overflow-hidden rounded-lg border border-input bg-muted/40 focus-within:ring-2 focus-within:ring-ring">
-                <span className="inline-flex shrink-0 items-center border-r border-input px-3 text-sm text-muted-foreground">
-                  +51
-                </span>
+                <span className="inline-flex shrink-0 items-center border-r border-input px-3 text-sm text-muted-foreground">+51</span>
                 <Input
                   id="profile-phone"
                   inputMode="tel"
@@ -228,9 +182,7 @@ export function ProfilePersonalDataCard({
                 />
               </div>
               <FieldError id={phoneErrorId}>{errors.phone}</FieldError>
-              <p className="text-xs text-muted-foreground">
-                También sirve para entrar a Kogane.
-              </p>
+              <p className="text-xs text-muted-foreground">También sirve para entrar a Kogane.</p>
             </div>
 
             <div className="space-y-1.5 sm:col-span-2">
@@ -238,56 +190,27 @@ export function ProfilePersonalDataCard({
                 Correo
               </label>
               <div className="relative">
-                <Input
-                  id="profile-email"
-                  value={user.email}
-                  readOnly
-                  aria-readonly="true"
-                  className="pr-10 text-muted-foreground"
-                />
-                <LockKeyhole
-                  aria-hidden="true"
-                  className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                />
+                <Input id="profile-email" value={user.email} readOnly aria-readonly="true" className="pr-10 text-muted-foreground" />
+                <LockKeyhole aria-hidden="true" className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               </div>
-              <p className="text-xs text-muted-foreground">
-                Lo definió tu invitación. Si necesitas otro, pídeselo a quien
-                administra Kogane.
-              </p>
+              <p className="text-xs text-muted-foreground">Lo definió tu invitación. Si necesitas otro, pídeselo a quien administra Kogane.</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
             <p className="text-xs text-muted-foreground" aria-live="polite">
-              {hasChanges
-                ? "Hay cambios sin guardar"
-                : savedRecently
-                  ? "Guardado hace un momento"
-                  : "Sin cambios"}
+              {hasChanges ? "Hay cambios sin guardar" : savedRecently ? "Guardado hace un momento" : "Sin cambios"}
             </p>
             <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!hasChanges || pending}
-                onClick={onDiscard}
-              >
+              <Button type="button" variant="outline" disabled={!hasChanges || pending} onClick={onDiscard}>
                 Descartar
               </Button>
-              <Button
-                type="submit"
-                form="profile-personal-form"
-                disabled={
-                  !hasChanges || Object.keys(errors).length > 0 || pending
-                }
-              >
+              <Button type="submit" form="profile-personal-form" disabled={!hasChanges || Object.keys(errors).length > 0 || pending}>
                 Guardar cambios
               </Button>
             </div>
           </div>
-          {hasChanges && (
-            <span className="sr-only">{changeCount} cambios sin guardar.</span>
-          )}
+          {hasChanges && <span className="sr-only">{changeCount} cambios sin guardar.</span>}
         </form>
       </CardContent>
     </Card>

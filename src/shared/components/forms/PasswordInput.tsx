@@ -6,24 +6,14 @@ import { cn } from "@/shared/utils/cn";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 
-export interface PasswordInputProps extends Omit<
-  ComponentProps<typeof Input>,
-  "type"
-> {
+export interface PasswordInputProps extends Omit<ComponentProps<typeof Input>, "type"> {
   visible?: boolean;
   defaultVisible?: boolean;
   onVisibleChange?: (visible: boolean) => void;
 }
 
 /** Password input with an accessible control to reveal or mask its value. */
-export function PasswordInput({
-  className,
-  visible,
-  defaultVisible = false,
-  onVisibleChange,
-  disabled,
-  ...props
-}: PasswordInputProps) {
+export function PasswordInput({ className, visible, defaultVisible = false, onVisibleChange, disabled, ...props }: PasswordInputProps) {
   const [internalVisible, setInternalVisible] = useState(defaultVisible);
   const isVisible = visible ?? internalVisible;
 
@@ -35,12 +25,7 @@ export function PasswordInput({
 
   return (
     <div className="relative w-full min-w-0">
-      <Input
-        {...props}
-        type={isVisible ? "text" : "password"}
-        disabled={disabled}
-        className={cn("pr-10", className)}
-      />
+      <Input {...props} type={isVisible ? "text" : "password"} disabled={disabled} className={cn("pr-10", className)} />
       <Button
         type="button"
         variant="ghost"
@@ -51,11 +36,7 @@ export function PasswordInput({
         onClick={toggleVisibility}
         disabled={disabled}
       >
-        {isVisible ? (
-          <EyeOff aria-hidden="true" className="size-4" />
-        ) : (
-          <Eye aria-hidden="true" className="size-4" />
-        )}
+        {isVisible ? <EyeOff aria-hidden="true" className="size-4" /> : <Eye aria-hidden="true" className="size-4" />}
       </Button>
     </div>
   );

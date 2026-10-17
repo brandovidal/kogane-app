@@ -35,9 +35,7 @@ export function FixedCostEmptyMonthView({
   useEffect(() => {
     setSelectedIds(new Set(previousCosts.map((cost) => cost.id)));
   }, [previousCosts]);
-  const selectedCosts = previousCosts.filter((cost) =>
-    selectedIds.has(cost.id),
-  );
+  const selectedCosts = previousCosts.filter((cost) => selectedIds.has(cost.id));
   const toggleSelected = (id: string) =>
     setSelectedIds((current) => {
       const next = new Set(current);
@@ -79,26 +77,15 @@ export function FixedCostEmptyMonthView({
           {view === "table" ? (
             <div className="overflow-hidden rounded-xl border bg-background/50">
               {previousCosts.map((cost) => (
-                <label
-                  key={cost.id}
-                  className="flex min-h-11 cursor-pointer items-center gap-3 border-b px-3 last:border-b-0 hover:bg-muted/35"
-                >
+                <label key={cost.id} className="flex min-h-11 cursor-pointer items-center gap-3 border-b px-3 last:border-b-0 hover:bg-muted/35">
                   <Checkbox
                     checked={selectedIds.has(cost.id)}
                     onCheckedChange={() => toggleSelected(cost.id)}
                     aria-label={`Seleccionar ${cost.description}`}
                   />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                    {cost.description}
-                  </span>
-                  {cost.installment && (
-                    <span className="text-xs text-muted-foreground">
-                      cuota {cost.installment}
-                    </span>
-                  )}
-                  <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
-                    {formatCurrency(cost.amountInPen ?? cost.amount)}
-                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{cost.description}</span>
+                  {cost.installment && <span className="text-xs text-muted-foreground">cuota {cost.installment}</span>}
+                  <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{formatCurrency(cost.amountInPen ?? cost.amount)}</span>
                 </label>
               ))}
             </div>
@@ -115,18 +102,10 @@ export function FixedCostEmptyMonthView({
                     aria-label={`Seleccionar ${cost.description}`}
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">
-                      {cost.description}
-                    </span>
-                    {cost.installment && (
-                      <span className="block text-xs text-muted-foreground">
-                        Cuota {cost.installment}
-                      </span>
-                    )}
+                    <span className="block truncate text-sm font-medium">{cost.description}</span>
+                    {cost.installment && <span className="block text-xs text-muted-foreground">Cuota {cost.installment}</span>}
                   </span>
-                  <span className="shrink-0 text-sm font-medium tabular-nums">
-                    {formatCurrency(cost.amountInPen ?? cost.amount)}
-                  </span>
+                  <span className="shrink-0 text-sm font-medium tabular-nums">{formatCurrency(cost.amountInPen ?? cost.amount)}</span>
                 </label>
               ))}
             </div>
@@ -135,13 +114,8 @@ export function FixedCostEmptyMonthView({
       ) : null}
       <div className="mt-2 flex flex-wrap justify-center gap-2">
         {previousCosts.length > 0 && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onGoTo(previousMonth, previousYear)}
-          >
-            <ChevronLeft className="size-4" /> Ver{" "}
-            {getMonthName(previousMonth).toLowerCase()}
+          <Button type="button" variant="outline" onClick={() => onGoTo(previousMonth, previousYear)}>
+            <ChevronLeft className="size-4" /> Ver {getMonthName(previousMonth).toLowerCase()}
           </Button>
         )}
         <Button type="button" onClick={onCreate}>
@@ -149,15 +123,9 @@ export function FixedCostEmptyMonthView({
           Crear desde cero
         </Button>
         {selectedCosts.length > 0 && (
-          <Button
-            type="button"
-            disabled={copying}
-            onClick={() => onCopy(selectedCosts)}
-          >
+          <Button type="button" disabled={copying} onClick={() => onCopy(selectedCosts)}>
             <Copy className="size-4" />
-            {copying
-              ? "Copiando…"
-              : `Copiar ${selectedCosts.length} de ${getMonthName(previousMonth).toLowerCase()}`}
+            {copying ? "Copiando…" : `Copiar ${selectedCosts.length} de ${getMonthName(previousMonth).toLowerCase()}`}
           </Button>
         )}
       </div>

@@ -30,11 +30,7 @@ export function FixedCostToolbarButton({
     >
       <Icon className="size-4" />
       <span className="hidden sm:inline">{label}</span>
-      {count != null && count !== 0 && (
-        <span className="text-xs font-semibold tabular-nums text-brand">
-          {count}
-        </span>
-      )}
+      {count != null && count !== 0 && <span className="text-xs font-semibold tabular-nums text-brand">{count}</span>}
     </Button>
   );
 }

@@ -1,12 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import {
-  NO_PAYMENT_STATUS_FILTER,
-  PAYMENT_STATUS_DOT_COLORS,
-  PAYMENT_STATUS_GROUPS,
-  PAYMENT_STATUS_LABELS,
-} from "@/shared/constants/finance";
+import { NO_PAYMENT_STATUS_FILTER, PAYMENT_STATUS_DOT_COLORS, PAYMENT_STATUS_GROUPS, PAYMENT_STATUS_LABELS } from "@/shared/constants/finance";
 
 export interface StatusFilterFieldsProps {
   statuses?: readonly string[];
@@ -45,15 +40,7 @@ export function StatusFilterFields({
   return (
     <MultiSelect
       label={label}
-      value={
-        value === NO_PAYMENT_STATUS_FILTER
-          ? []
-          : multiple
-            ? (value?.split(",").filter(Boolean) ?? null)
-            : value
-              ? [value]
-              : []
-      }
+      value={value === NO_PAYMENT_STATUS_FILTER ? [] : multiple ? (value?.split(",").filter(Boolean) ?? null) : value ? [value] : []}
       options={statuses.map((status) => ({
         value: status,
         label: PAYMENT_STATUS_LABELS[status] ?? status,
@@ -61,15 +48,7 @@ export function StatusFilterFields({
         color: PAYMENT_STATUS_DOT_COLORS[status],
       }))}
       onChange={(next) =>
-        onChange(
-          !multiple
-            ? (next?.[0] ?? undefined)
-            : next === null
-              ? undefined
-              : next.length
-                ? next.join(",")
-                : NO_PAYMENT_STATUS_FILTER,
-        )
+        onChange(!multiple ? (next?.[0] ?? undefined) : next === null ? undefined : next.length ? next.join(",") : NO_PAYMENT_STATUS_FILTER)
       }
       allLabel={allLabel}
       emptySelectionLabel={emptySelectionLabel}

@@ -17,8 +17,7 @@ export const platformNativeAmount = (platform: Subscription) => platform.amount;
 
 const platformAmount = (platform: Subscription) => paidAndOwn(platform).paid;
 
-export const monthlyEquivalent = (platform: Subscription) =>
-  platformNativeAmount(platform) / monthsByPeriod[platform.period];
+export const monthlyEquivalent = (platform: Subscription) => platformNativeAmount(platform) / monthsByPeriod[platform.period];
 
 export function sumPlatformAmounts(
   platforms: Subscription[],
@@ -35,9 +34,7 @@ export function formatPlatformTotals(totals: PlatformCurrencyTotals): string {
   return (
     (["PEN", "USD"] as const)
       .filter((currency) => totals[currency] != null)
-      .map((currency) =>
-        formatPlatformCurrency(totals[currency] ?? 0, currency),
-      )
+      .map((currency) => formatPlatformCurrency(totals[currency] ?? 0, currency))
       .join(" + ") || "—"
   );
 }
@@ -51,10 +48,7 @@ export function formatPlatformCurrency(amount: number, currency: string) {
 }
 
 /** Keep the original billing day when projecting a recurring charge through short months. */
-export function nextPlatformChargeDate(
-  platform: Subscription,
-  todayKey: string,
-): string | null {
+export function nextPlatformChargeDate(platform: Subscription, todayKey: string): string | null {
   if (!platform.dueDate) return null;
   const base = platform.dueDate.slice(0, 10);
   if (!todayKey || base >= todayKey) return base;
@@ -64,11 +58,7 @@ export function nextPlatformChargeDate(
     const start = Date.UTC(year, month - 1, day);
     const [todayYear, todayMonth, todayDay] = todayKey.split("-").map(Number);
     const today = Date.UTC(todayYear, todayMonth - 1, todayDay);
-    return new Date(
-      start + Math.ceil((today - start) / (14 * 86_400_000)) * 14 * 86_400_000,
-    )
-      .toISOString()
-      .slice(0, 10);
+    return new Date(start + Math.ceil((today - start) / (14 * 86_400_000)) * 14 * 86_400_000).toISOString().slice(0, 10);
   }
   const stride = monthsByPeriod[platform.period];
   const [todayYear, todayMonth] = todayKey.split("-").map(Number);
@@ -86,11 +76,7 @@ export function nextPlatformChargeDate(
   }
 }
 
-export function platformChargesInMonth(
-  platform: Subscription,
-  month: number,
-  year: number,
-): string[] {
+export function platformChargesInMonth(platform: Subscription, month: number, year: number): string[] {
   if (!platform.dueDate) return [];
   const base = platform.dueDate.slice(0, 10);
   const [baseYear, baseMonth, baseDay] = base.split("-").map(Number);
@@ -104,40 +90,28 @@ export function platformChargesInMonth(
     const first = Math.max(0, Math.ceil((monthStart - baseTime) / stride));
     const dates: string[] = [];
     for (let cycle = first; baseTime + cycle * stride < monthEnd; cycle += 1) {
-      dates.push(
-        new Date(baseTime + cycle * stride).toISOString().slice(0, 10),
-      );
+      dates.push(new Date(baseTime + cycle * stride).toISOString().slice(0, 10));
     }
     return dates;
   }
   const baseIndex = baseYear * 12 + baseMonth - 1;
   const selectedIndex = year * 12 + month - 1;
   const stride = monthsByPeriod[platform.period];
-  if (selectedIndex < baseIndex || (selectedIndex - baseIndex) % stride !== 0)
-    return [];
+  if (selectedIndex < baseIndex || (selectedIndex - baseIndex) % stride !== 0) return [];
   const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  return [
-    `${year}-${String(month).padStart(2, "0")}-${String(Math.min(baseDay, lastDay)).padStart(2, "0")}`,
-  ];
+  return [`${year}-${String(month).padStart(2, "0")}-${String(Math.min(baseDay, lastDay)).padStart(2, "0")}`];
 }
 
-export function summarizePlatforms(
-  platforms: Subscription[],
-  todayKey: string,
-) {
+export function summarizePlatforms(platforms: Subscription[], todayKey: string) {
   const monthly = sumPlatformAmounts(platforms, monthlyEquivalent);
   const annual: PlatformCurrencyTotals = {
     PEN: monthly.PEN == null ? undefined : monthly.PEN * 12,
     USD: monthly.USD == null ? undefined : monthly.USD * 12,
   };
-  const mostExpensive = [...platforms].sort(
-    (left, right) => platformAmount(right) - platformAmount(left),
-  )[0];
+  const mostExpensive = [...platforms].sort((left, right) => platformAmount(right) - platformAmount(left))[0];
   const upcoming = platforms
     .map((item) => ({ item, date: nextPlatformChargeDate(item, todayKey) }))
-    .filter(
-      (entry): entry is { item: Subscription; date: string } => !!entry.date,
-    )
+    .filter((entry): entry is { item: Subscription; date: string } => !!entry.date)
     .sort((left, right) => left.date.localeCompare(right.date));
   const nextDue = upcoming[0]?.item;
   const nextDueDate = upcoming[0]?.date ?? null;
@@ -149,7 +123,6 @@ export function summarizePlatforms(
     mostExpensive,
     nextDue,
     nextDueDate,
-    nextDueDays:
-      nextDueDate && todayKey ? daysUntilDue(nextDueDate, todayKey) : null,
+    nextDueDays: nextDueDate && todayKey ? daysUntilDue(nextDueDate, todayKey) : null,
   };
 }

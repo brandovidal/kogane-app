@@ -47,13 +47,7 @@ export function PersonFilter({
     .map((option, index) => ({
       value: option.value,
       label: option.name,
-      decoration: (
-        <NameAvatar
-          name={option.name}
-          initials={option.initials}
-          unassigned={option.unassigned}
-        />
-      ),
+      decoration: <NameAvatar name={option.name} initials={option.initials} unassigned={option.unassigned} />,
       searchTerms: option.aliases,
       count: option.count,
       separatorBefore: option.unassigned && index > 0,

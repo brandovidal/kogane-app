@@ -5,10 +5,7 @@ import { cn } from "@/shared/utils/cn";
 import type { ImportSource } from "../types/import-types";
 import { acceptAttr } from "../lib/upload-flow";
 
-const COPY: Record<
-  ImportSource,
-  { title: string; hint: string; drop: string }
-> = {
+const COPY: Record<ImportSource, { title: string; hint: string; drop: string }> = {
   statement: {
     title: "Arrastra el estado de cuenta",
     hint: "o elige un archivo de tu equipo",
@@ -22,13 +19,7 @@ const COPY: Record<
 };
 
 // Zona de carga (boards I1 inicio · I2 arrastrando)
-export function ImportDropzone({
-  source,
-  onFiles,
-}: {
-  source: ImportSource;
-  onFiles: (files: File[]) => void;
-}) {
+export function ImportDropzone({ source, onFiles }: { source: ImportSource; onFiles: (files: File[]) => void }) {
   const input = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const copy = COPY[source];
@@ -53,12 +44,7 @@ export function ImportDropzone({
         dragging ? "border-primary bg-primary/5" : "bg-muted/20",
       )}
     >
-      <span
-        className={cn(
-          "flex size-12 items-center justify-center rounded-xl",
-          dragging ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
+      <span className={cn("flex size-12 items-center justify-center rounded-xl", dragging ? "bg-primary text-primary-foreground" : "bg-muted")}>
         <Upload aria-hidden="true" className="size-5" />
       </span>
       {dragging ? (

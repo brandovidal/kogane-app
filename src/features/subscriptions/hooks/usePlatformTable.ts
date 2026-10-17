@@ -24,10 +24,7 @@ export function usePlatformTable({
   onSelectionChange: (selection: RowSelectionState) => void;
   pending: boolean;
 }) {
-  const columns = useMemo(
-    () => getPlatformColumns({ personName, todayKey, actions }),
-    [personName, todayKey, actions],
-  );
+  const columns = useMemo(() => getPlatformColumns({ personName, todayKey, actions }), [personName, todayKey, actions]);
   const definitions = useMemo(() => toDataTableColumns(columns), [columns]);
   const table = useDataTable({
     items,
@@ -37,15 +34,10 @@ export function usePlatformTable({
     resetKey,
     selectionDisabled: pending,
     state: { rowSelection: selection },
-    onRowSelectionChange: (updater) =>
-      onSelectionChange(
-        typeof updater === "function" ? updater(selection) : updater,
-      ),
+    onRowSelectionChange: (updater) => onSelectionChange(typeof updater === "function" ? updater(selection) : updater),
   });
   return {
     table,
-    columns: columns.filter((column) =>
-      table.getColumn(column.key)?.getIsVisible(),
-    ),
+    columns: columns.filter((column) => table.getColumn(column.key)?.getIsVisible()),
   };
 }

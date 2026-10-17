@@ -7,10 +7,5 @@ export type MoveSeries = MoveSeriesDto;
 
 export const useMoveSeries = () =>
   useApiMutation((body: MoveSeries) => moveSeries(body), {
-    invalidate: [
-      expenseKeys.resource("fixed-costs"),
-      expenseKeys.resource("subscriptions"),
-      expenseKeys.resource("recurring-expenses"),
-      ["summary"],
-    ],
+    invalidate: [expenseKeys.resource("fixed-costs"), expenseKeys.resource("subscriptions"), expenseKeys.resource("recurring-expenses"), ["summary"]],
   });

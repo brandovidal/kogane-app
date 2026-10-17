@@ -25,11 +25,7 @@ interface OriginMessageDialogProps {
 }
 
 // The message a saved expense came from (the draft keeps the raw text / screenshot / voice note)
-export function OriginMessageDialog({
-  draftId,
-  title,
-  onClose,
-}: OriginMessageDialogProps) {
+export function OriginMessageDialog({ draftId, title, onClose }: OriginMessageDialogProps) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["drafts", "origin", draftId],
     queryFn: () => getDraft(draftId),
@@ -46,19 +42,14 @@ export function OriginMessageDialog({
       {isLoading ? (
         <Skeleton className="h-20 w-full" />
       ) : isError || !data ? (
-        <p className="text-sm text-muted-foreground">
-          No se pudo cargar el mensaje de origen.
-        </p>
+        <p className="text-sm text-muted-foreground">No se pudo cargar el mensaje de origen.</p>
       ) : (
         <div className="flex flex-col gap-3 text-sm">
           <p className="text-xs text-muted-foreground">
-            {CHANNELS[data.channel] ?? data.channel} ·{" "}
-            {INPUTS[data.inputType] ?? data.inputType}
+            {CHANNELS[data.channel] ?? data.channel} · {INPUTS[data.inputType] ?? data.inputType}
           </p>
           {data.rawText ? (
-            <blockquote className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3">
-              {data.rawText}
-            </blockquote>
+            <blockquote className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3">{data.rawText}</blockquote>
           ) : (
             <p className="text-muted-foreground">El mensaje no tiene texto.</p>
           )}

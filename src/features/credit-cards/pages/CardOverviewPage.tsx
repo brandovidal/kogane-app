@@ -6,10 +6,7 @@ import { CardEditorDialog } from "../components/CardEditorDialog";
 import { CardArchiveDialog } from "../components/CardArchiveDialog";
 import type { CardOverviewRow } from "../types/card-overview";
 import { useCardOverview } from "../hooks/useCardOverview";
-import {
-  CardOverviewViewBar,
-  type CardOverviewView,
-} from "../sections/overview/CardOverviewViewBar";
+import { CardOverviewViewBar, type CardOverviewView } from "../sections/overview/CardOverviewViewBar";
 import { CardOverviewMetrics } from "../sections/overview/CardOverviewMetrics";
 import { CardOverviewToolbar } from "../sections/overview/CardOverviewToolbar";
 import { CardOverviewResults } from "../sections/overview/CardOverviewResults";
@@ -83,12 +80,7 @@ function CardOverviewPageContent() {
           currencyView
         />
       ) : view === "period" ? (
-        <CardOverviewPeriodView
-          rows={data.rows}
-          onNewCard={() => setCreatingCard(true)}
-          loading={data.loading}
-          error={data.error}
-        />
+        <CardOverviewPeriodView rows={data.rows} onNewCard={() => setCreatingCard(true)} loading={data.loading} error={data.error} />
       ) : (
         <CardOverviewMovements
           expenses={data.filtered}
@@ -99,9 +91,7 @@ function CardOverviewPageContent() {
           installmentsOnly={view === "installments"}
         />
       )}
-      {creatingCard && (
-        <CardEditorDialog onClose={() => setCreatingCard(false)} />
-      )}
+      {creatingCard && <CardEditorDialog onClose={() => setCreatingCard(false)} />}
       {editing && (
         <CardEditorDialog
           card={editing.card}
@@ -117,12 +107,7 @@ function CardOverviewPageContent() {
         <CardArchiveDialog
           card={archiving.card}
           movements={archiving.count}
-          pending={
-            archiving.pending > 0
-              ? archiving.expenses.filter((e) => e.paymentStatus !== "paid")
-                  .length
-              : 0
-          }
+          pending={archiving.pending > 0 ? archiving.expenses.filter((e) => e.paymentStatus !== "paid").length : 0}
           onClose={() => setArchiving(null)}
         />
       )}

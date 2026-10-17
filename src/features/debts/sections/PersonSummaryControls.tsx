@@ -3,28 +3,19 @@ import { History, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
 
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 
-import {
-  useSavePersonSummary,
-  useSetPersonSummariesStatus,
-} from "../hooks/personSummaries";
-import type {
-  PersonSummaryAdjustment,
-  PersonSummaryStatus,
-} from "../types/person-summary.dto";
+import { useSavePersonSummary, useSetPersonSummariesStatus } from "../hooks/personSummaries";
+import type { PersonSummaryAdjustment, PersonSummaryStatus } from "../types/person-summary.dto";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
-export const PERSON_SUMMARY_STATUS_LABELS: Record<PersonSummaryStatus, string> =
-  { draft: "Borrador", in_progress: "En progreso", paid: "Pagado" };
+export const PERSON_SUMMARY_STATUS_LABELS: Record<PersonSummaryStatus, string> = {
+  draft: "Borrador",
+  in_progress: "En progreso",
+  paid: "Pagado",
+};
 
 export interface PersonSummaryData {
   /** Row of the month; the history of the cortes hangs from it */
@@ -75,17 +66,11 @@ export function PersonSummaryControls({
           })
         }
       >
-        <SelectTrigger
-          size="sm"
-          className="h-8 w-32 text-xs"
-          aria-label={`Estado del resumen de ${name}`}
-        >
+        <SelectTrigger size="sm" className="h-8 w-32 text-xs" aria-label={`Estado del resumen de ${name}`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {(
-            Object.keys(PERSON_SUMMARY_STATUS_LABELS) as PersonSummaryStatus[]
-          ).map((status) => (
+          {(Object.keys(PERSON_SUMMARY_STATUS_LABELS) as PersonSummaryStatus[]).map((status) => (
             <SelectItem key={status} value={status}>
               {PERSON_SUMMARY_STATUS_LABELS[status]}
             </SelectItem>
@@ -103,15 +88,7 @@ export function PersonSummaryControls({
       >
         <SlidersHorizontal className="size-4" />
       </Button>
-      <PersonSummaryDialog
-        open={open}
-        onOpenChange={setOpen}
-        personId={personId}
-        name={name}
-        month={month}
-        year={year}
-        summary={summary}
-      />
+      <PersonSummaryDialog open={open} onOpenChange={setOpen} personId={personId} name={name} month={month} year={year} summary={summary} />
     </div>
   );
 }
@@ -138,9 +115,7 @@ function PersonSummaryDialog({
   const [cutoffDate, setCutoffDate] = useState("");
   const [collectBy, setCollectBy] = useState("");
   const [note, setNote] = useState("");
-  const [adjustments, setAdjustments] = useState<
-    { description: string; amount: string }[]
-  >([]);
+  const [adjustments, setAdjustments] = useState<{ description: string; amount: string }[]>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -158,9 +133,7 @@ function PersonSummaryDialog({
   const rows = adjustments.filter((item) => item.description.trim());
   const valid = rows.every((item) => Number.isFinite(Number(item.amount)));
   const patch = (index: number, next: Partial<(typeof adjustments)[number]>) =>
-    setAdjustments(
-      adjustments.map((item, i) => (i === index ? { ...item, ...next } : item)),
-    );
+    setAdjustments(adjustments.map((item, i) => (i === index ? { ...item, ...next } : item)));
 
   return (
     <ResponsiveDialog
@@ -171,12 +144,7 @@ function PersonSummaryDialog({
       footer={
         <>
           {summary.id && (
-            <Button
-              type="button"
-              variant="ghost"
-              className="sm:mr-auto"
-              onClick={() => setHistoryOpen(true)}
-            >
+            <Button type="button" variant="ghost" className="sm:mr-auto" onClick={() => setHistoryOpen(true)}>
               <History className="mr-1 size-4" /> Historial de cortes
             </Button>
           )}
@@ -214,53 +182,27 @@ function PersonSummaryDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Fecha de corte</label>
-            <Input
-              type="date"
-              value={cutoffDate}
-              onChange={(e) => setCutoffDate(e.target.value)}
-            />
+            <Input type="date" value={cutoffDate} onChange={(e) => setCutoffDate(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Cobrar hasta</label>
-            <Input
-              type="date"
-              value={collectBy}
-              onChange={(e) => setCollectBy(e.target.value)}
-            />
+            <Input type="date" value={collectBy} onChange={(e) => setCollectBy(e.target.value)} />
           </div>
         </div>
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Nota</label>
-          <Textarea
-            value={note}
-            rows={2}
-            onChange={(e) => setNote(e.target.value)}
-          />
+          <Textarea value={note} rows={2} onChange={(e) => setNote(e.target.value)} />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Ajustes manuales</label>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                setAdjustments([
-                  ...adjustments,
-                  { description: "", amount: "" },
-                ])
-              }
-            >
+            <Button type="button" size="sm" variant="outline" onClick={() => setAdjustments([...adjustments, { description: "", amount: "" }])}>
               <Plus className="mr-1 h-4 w-4" /> Agregar ajuste
             </Button>
           </div>
           {adjustments.map((item, index) => (
             <div key={index} className="flex items-center gap-2">
-              <Input
-                placeholder="Descripción"
-                value={item.description}
-                onChange={(e) => patch(index, { description: e.target.value })}
-              />
+              <Input placeholder="Descripción" value={item.description} onChange={(e) => patch(index, { description: e.target.value })} />
               <Input
                 type="number"
                 step="0.01"
@@ -274,26 +216,17 @@ function PersonSummaryDialog({
                 variant="ghost"
                 size="icon"
                 aria-label="Quitar ajuste"
-                onClick={() =>
-                  setAdjustments(adjustments.filter((_, i) => i !== index))
-                }
+                onClick={() => setAdjustments(adjustments.filter((_, i) => i !== index))}
               >
                 <Trash2 className="size-4" />
               </Button>
             </div>
           ))}
-          <p className="text-xs text-muted-foreground">
-            Positivo: la persona debe más. Negativo: descuento a su favor.
-          </p>
+          <p className="text-xs text-muted-foreground">Positivo: la persona debe más. Negativo: descuento a su favor.</p>
         </div>
       </div>
       {historyOpen && summary.id && (
-        <HistoryDialog
-          title={`corte de ${name}`}
-          entity="exp_person_summaries"
-          id={summary.id}
-          onClose={() => setHistoryOpen(false)}
-        />
+        <HistoryDialog title={`corte de ${name}`} entity="exp_person_summaries" id={summary.id} onClose={() => setHistoryOpen(false)} />
       )}
     </ResponsiveDialog>
   );

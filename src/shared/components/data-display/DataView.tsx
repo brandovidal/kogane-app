@@ -34,14 +34,10 @@ export function DataView<T>({
     const title = columns.find((column) => column.role === "title");
     const amount = columns.find((column) => column.role === "amount");
     const actions = columns.find((column) => column.role === "actions");
-    const meta = columns.filter(
-      (column) => !column.role || column.role === "meta",
-    );
+    const meta = columns.filter((column) => !column.role || column.role === "meta");
     return (
       <div className="space-y-3">
-        {summary?.label && (
-          <div className="text-sm font-semibold">{summary.label}</div>
-        )}
+        {summary?.label && <div className="text-sm font-semibold">{summary.label}</div>}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {items.map((item) =>
             cardRenderer ? (
@@ -50,21 +46,10 @@ export function DataView<T>({
               <Card
                 key={rowKey(item)}
                 className={
-                  [
-                    compactCards && "py-3 sm:py-6",
-                    selected?.has(rowKey(item)) && "ring-2 ring-primary",
-                  ]
-                    .filter(Boolean)
-                    .join(" ") || undefined
+                  [compactCards && "py-3 sm:py-6", selected?.has(rowKey(item)) && "ring-2 ring-primary"].filter(Boolean).join(" ") || undefined
                 }
               >
-                <CardContent
-                  className={
-                    compactCards
-                      ? "space-y-1.5 px-3 sm:space-y-2 sm:px-6"
-                      : "space-y-2 pt-6"
-                  }
-                >
+                <CardContent className={compactCards ? "space-y-1.5 px-3 sm:space-y-2 sm:px-6" : "space-y-2 pt-6"}>
                   <div className="flex items-start justify-between gap-2">
                     {selectable && (
                       <Checkbox
@@ -72,51 +57,22 @@ export function DataView<T>({
                         disabled={selectionDisabled}
                         aria-label="Seleccionar"
                         checked={selected.has(rowKey(item))}
-                        onCheckedChange={(checked) =>
-                          toggle(rowKey(item), checked === true)
-                        }
+                        onCheckedChange={(checked) => toggle(rowKey(item), checked === true)}
                       />
                     )}
-                    <div className="min-w-0 flex-1">
-                      {title?.cardCell?.(item) ?? title?.cell(item)}
-                    </div>
-                    {actions && (
-                      <div className="shrink-0">{actions.cell(item)}</div>
-                    )}
+                    <div className="min-w-0 flex-1">{title?.cardCell?.(item) ?? title?.cell(item)}</div>
+                    {actions && <div className="shrink-0">{actions.cell(item)}</div>}
                   </div>
                   {amount && (
-                    <div
-                      className={
-                        compactCards
-                          ? "text-base font-medium sm:text-lg"
-                          : "text-lg"
-                      }
-                    >
+                    <div className={compactCards ? "text-base font-medium sm:text-lg" : "text-lg"}>
                       {amount.cardCell?.(item) ?? amount.cell(item)}
                     </div>
                   )}
-                  <dl
-                    className={
-                      compactCards
-                        ? "space-y-0.5 text-xs sm:space-y-1 sm:text-sm"
-                        : "space-y-1 text-sm"
-                    }
-                  >
+                  <dl className={compactCards ? "space-y-0.5 text-xs sm:space-y-1 sm:text-sm" : "space-y-1 text-sm"}>
                     {meta.map((column) => (
-                      <div
-                        key={column.key}
-                        className="flex justify-between gap-3"
-                      >
-                        <dt className="text-muted-foreground">
-                          {column.header}
-                        </dt>
-                        <dd
-                          className={
-                            compactCards
-                              ? "min-w-0 whitespace-nowrap text-right"
-                              : "min-w-0 text-right"
-                          }
-                        >
+                      <div key={column.key} className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">{column.header}</dt>
+                        <dd className={compactCards ? "min-w-0 whitespace-nowrap text-right" : "min-w-0 text-right"}>
                           {column.cardCell?.(item) ?? column.cell(item)}
                         </dd>
                       </div>

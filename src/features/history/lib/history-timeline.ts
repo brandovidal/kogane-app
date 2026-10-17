@@ -22,26 +22,19 @@ const timeFormatter = new Intl.DateTimeFormat("es-PE", {
 
 export function formatHistoryTime(iso: string): string {
   const date = new Date(iso);
-  return Number.isNaN(date.getTime())
-    ? "Hora desconocida"
-    : timeFormatter.format(date);
+  return Number.isNaN(date.getTime()) ? "Hora desconocida" : timeFormatter.format(date);
 }
 
 export function groupHistoryByDay(entries: HistoryEntry[]): HistoryDayGroup[] {
   const groups = new Map<string, HistoryDayGroup>();
-  const sorted = [...entries].sort(
-    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
-  );
+  const sorted = [...entries].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 
   for (const entry of sorted) {
     const date = new Date(entry.createdAt);
     const valid = !Number.isNaN(date.getTime());
     const parts = valid ? dayFormatter.formatToParts(date) : [];
-    const part = (type: Intl.DateTimeFormatPartTypes) =>
-      parts.find((value) => value.type === type)?.value;
-    const day = valid
-      ? `${part("year")}-${part("month")}-${part("day")}`
-      : "unknown";
+    const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((value) => value.type === type)?.value;
+    const day = valid ? `${part("year")}-${part("month")}-${part("day")}` : "unknown";
     const group = groups.get(day) ?? {
       day,
       label: valid ? dateFormatter.format(date) : "Fecha desconocida",

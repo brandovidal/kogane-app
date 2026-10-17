@@ -1,10 +1,5 @@
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
-import {
-  generateRecurring,
-  recurringFromSeries,
-  type GenerateRecurringDto,
-  type RecurringFromSeriesDto,
-} from "../services/recurring.service";
+import { generateRecurring, recurringFromSeries, type GenerateRecurringDto, type RecurringFromSeriesDto } from "../services/recurring.service";
 
 // "Generar" of Recurrentes: the rows of the month, never twice (D88)
 export const useGenerateRecurring = () =>

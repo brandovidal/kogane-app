@@ -14,13 +14,7 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 
 import { totalsOf } from "@/features/commitments/lib/commitment-view";
@@ -38,9 +32,7 @@ function CommitmentsPageView() {
   const people = usePeople().data ?? [];
   const [kind, setKind] = useState<KindFilter>("all");
   const [opened, setOpened] = useState<string | null>(null);
-  const [editing, setEditing] = useState<Commitment | null | undefined>(
-    undefined,
-  );
+  const [editing, setEditing] = useState<Commitment | null | undefined>(undefined);
   const [q, setQ] = useState("");
   const [person, setPerson] = useState(ALL);
   const [currency, setCurrency] = useState(ALL);
@@ -56,18 +48,14 @@ function CommitmentsPageView() {
           (person === ALL || row.personId === person) &&
           (currency === ALL || row.currency === currency) &&
           (status === ALL || row.status === status) &&
-          (!q.trim() ||
-            `${row.name} ${row.entity ?? ""} ${row.notes ?? ""}`
-              .toLocaleLowerCase()
-              .includes(q.trim().toLocaleLowerCase())),
+          (!q.trim() || `${row.name} ${row.entity ?? ""} ${row.notes ?? ""}`.toLocaleLowerCase().includes(q.trim().toLocaleLowerCase())),
       ),
     [commitments, kind, person, currency, status, q],
   );
   const totals = totalsOf(shown);
   const open = commitments.find((row) => row.id === opened) ?? null;
   const currencyOptions = [...new Set(commitments.map((row) => row.currency))];
-  const personName = (id: string) =>
-    people.find((row) => row.id === id)?.name ?? "—";
+  const personName = (id: string) => people.find((row) => row.id === id)?.name ?? "—";
 
   const columns: Column<Commitment>[] = [
     {
@@ -75,15 +63,9 @@ function CommitmentsPageView() {
       header: "Compromiso",
       role: "title",
       cell: (row) => (
-        <button
-          type="button"
-          className="text-left font-medium hover:underline"
-          onClick={() => setOpened(row.id)}
-        >
+        <button type="button" className="text-left font-medium hover:underline" onClick={() => setOpened(row.id)}>
           {row.name}
-          <span className="block text-xs font-normal text-muted-foreground">
-            {row.entity ?? ""}
-          </span>
+          <span className="block text-xs font-normal text-muted-foreground">{row.entity ?? ""}</span>
         </button>
       ),
     },
@@ -100,29 +82,19 @@ function CommitmentsPageView() {
     {
       key: "status",
       header: "Estado",
-      cell: (row) =>
-        row.status === "active"
-          ? "Activo"
-          : row.status === "paid"
-            ? "Pagado"
-            : "Cancelado",
+      cell: (row) => (row.status === "active" ? "Activo" : row.status === "paid" ? "Pagado" : "Cancelado"),
     },
     { key: "currency", header: "Moneda", cell: (row) => row.currency },
     {
       key: "progress",
       header: "Pendiente / aportado",
       role: "amount",
-      cell: (row) =>
-        formatCurrency(
-          row.progress?.pendingAmount ?? row.contributedAmount,
-          row.currency,
-        ),
+      cell: (row) => formatCurrency(row.progress?.pendingAmount ?? row.contributedAmount, row.currency),
     },
     {
       key: "next",
       header: "Próximo vencimiento",
-      cell: (row) =>
-        row.progress?.nextDueDate ? formatDate(row.progress.nextDueDate) : "—",
+      cell: (row) => (row.progress?.nextDueDate ? formatDate(row.progress.nextDueDate) : "—"),
     },
     {
       key: "actions",
@@ -130,12 +102,7 @@ function CommitmentsPageView() {
       role: "actions",
       className: "w-14",
       cell: (row) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={`Ver detalle de ${row.name}`}
-          onClick={() => setOpened(row.id)}
-        >
+        <Button variant="ghost" size="icon" aria-label={`Ver detalle de ${row.name}`} onClick={() => setOpened(row.id)}>
           <Eye className="h-4 w-4" />
         </Button>
       ),
@@ -170,10 +137,7 @@ function CommitmentsPageView() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <Tabs
-          value={kind}
-          onValueChange={(value) => setKind(value as KindFilter)}
-        >
+        <Tabs value={kind} onValueChange={(value) => setKind(value as KindFilter)}>
           <TabsList>
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="loan">Préstamos</TabsTrigger>
@@ -183,18 +147,10 @@ function CommitmentsPageView() {
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative w-full sm:w-56">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar compromiso…"
-              value={q}
-              onChange={(event) => setQ(event.target.value)}
-              className="h-9 pl-9"
-            />
+            <Input placeholder="Buscar compromiso…" value={q} onChange={(event) => setQ(event.target.value)} className="h-9 pl-9" />
           </div>
           <Select value={person} onValueChange={setPerson}>
-            <SelectTrigger
-              className="h-9 w-[150px]"
-              aria-label="Filtrar por persona"
-            >
+            <SelectTrigger className="h-9 w-[150px]" aria-label="Filtrar por persona">
               <SelectValue placeholder="Persona" />
             </SelectTrigger>
             <SelectContent>
@@ -209,10 +165,7 @@ function CommitmentsPageView() {
             </SelectContent>
           </Select>
           <Select value={currency} onValueChange={setCurrency}>
-            <SelectTrigger
-              className="h-9 w-[120px]"
-              aria-label="Filtrar por moneda"
-            >
+            <SelectTrigger className="h-9 w-[120px]" aria-label="Filtrar por moneda">
               <SelectValue placeholder="Moneda" />
             </SelectTrigger>
             <SelectContent>
@@ -225,10 +178,7 @@ function CommitmentsPageView() {
             </SelectContent>
           </Select>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger
-              className="h-9 w-[135px]"
-              aria-label="Filtrar por estado"
-            >
+            <SelectTrigger className="h-9 w-[135px]" aria-label="Filtrar por estado">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
@@ -238,14 +188,8 @@ function CommitmentsPageView() {
               <SelectItem value="cancelled">Cancelado</SelectItem>
             </SelectContent>
           </Select>
-          <Select
-            value={groupBy}
-            onValueChange={(value) => setGroupBy(value as GroupBy)}
-          >
-            <SelectTrigger
-              className="h-9 w-[150px]"
-              aria-label="Agrupar resultados"
-            >
+          <Select value={groupBy} onValueChange={(value) => setGroupBy(value as GroupBy)}>
+            <SelectTrigger className="h-9 w-[150px]" aria-label="Agrupar resultados">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -261,28 +205,14 @@ function CommitmentsPageView() {
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        {shown.length} de {commitments.length} compromisos · {totals.late}{" "}
-        cuotas atrasadas
+        {shown.length} de {commitments.length} compromisos · {totals.late} cuotas atrasadas
       </p>
       {shown.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Summary
-            label="Pagado en cuotas"
-            value={formatCurrency(totals.paid)}
-          />
-          <Summary
-            label="Pendiente en cuotas"
-            value={formatCurrency(totals.pending)}
-          />
-          <Summary
-            label="Aportado a inversiones"
-            value={formatCurrency(totals.contributed)}
-          />
-          <Summary
-            label="Cuotas atrasadas"
-            value={String(totals.late)}
-            tone={totals.late > 0 ? "text-destructive" : undefined}
-          />
+          <Summary label="Pagado en cuotas" value={formatCurrency(totals.paid)} />
+          <Summary label="Pendiente en cuotas" value={formatCurrency(totals.pending)} />
+          <Summary label="Aportado a inversiones" value={formatCurrency(totals.contributed)} />
+          <Summary label="Cuotas atrasadas" value={String(totals.late)} tone={totals.late > 0 ? "text-destructive" : undefined} />
         </div>
       )}
       {shown.length === 0 ? (
@@ -308,67 +238,33 @@ function CommitmentsPageView() {
               {group.label && (
                 <h2 className="font-medium">
                   {group.label}
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    {group.items.length}
-                  </span>
+                  <span className="ml-2 text-xs text-muted-foreground">{group.items.length}</span>
                 </h2>
               )}
               {view === "cards" && groupBy === "none" ? (
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {group.items.map((row) => (
-                    <CommitmentCard
-                      key={row.id}
-                      commitment={row}
-                      onOpen={() => setOpened(row.id)}
-                    />
+                    <CommitmentCard key={row.id} commitment={row} onOpen={() => setOpened(row.id)} />
                   ))}
                 </div>
               ) : (
-                <DataView
-                  items={group.items}
-                  columns={columns}
-                  rowKey={(row) => row.id}
-                  view={view}
-                />
+                <DataView items={group.items} columns={columns} rowKey={(row) => row.id} view={view} />
               )}
             </section>
           ))}
         </div>
       )}
-      {open && (
-        <CommitmentDetail
-          key={open.id}
-          commitment={open}
-          onClose={() => setOpened(null)}
-          onEdit={() => setEditing(open)}
-        />
-      )}
-      {editing !== undefined && (
-        <CommitmentForm
-          key={editing?.id ?? "new"}
-          commitment={editing ?? undefined}
-          onClose={() => setEditing(undefined)}
-        />
-      )}
+      {open && <CommitmentDetail key={open.id} commitment={open} onClose={() => setOpened(null)} onEdit={() => setEditing(open)} />}
+      {editing !== undefined && <CommitmentForm key={editing?.id ?? "new"} commitment={editing ?? undefined} onClose={() => setEditing(undefined)} />}
     </div>
   );
 }
 
-function Summary({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone?: string;
-}) {
+function Summary({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div className="rounded-lg border p-3">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`text-lg font-semibold tabular-nums ${tone ?? ""}`}>
-        {value}
-      </p>
+      <p className={`text-lg font-semibold tabular-nums ${tone ?? ""}`}>{value}</p>
     </div>
   );
 }

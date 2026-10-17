@@ -1,10 +1,7 @@
 import type { CSSProperties } from "react";
 
 import { cn } from "@/shared/utils/cn";
-import {
-  getCategoryIcon,
-  normalizeCategoryIconName,
-} from "@/shared/lib/category-icons";
+import { getCategoryIcon, normalizeCategoryIconName } from "@/shared/lib/category-icons";
 
 const sizeClasses = {
   xs: "size-5 rounded [&>svg]:size-3",
@@ -34,15 +31,7 @@ export function CategoryIcon({
     : undefined;
 
   return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "inline-flex shrink-0 items-center justify-center",
-        sizeClasses[size],
-        className,
-      )}
-      style={style}
-    >
+    <span aria-hidden="true" className={cn("inline-flex shrink-0 items-center justify-center", sizeClasses[size], className)} style={style}>
       <Icon />
     </span>
   );

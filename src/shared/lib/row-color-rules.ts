@@ -19,8 +19,7 @@ const ROW_COLOR_CLASSES: Record<RowColor, string> = {
   blue: "bg-sky-500/10 hover:bg-sky-500/15",
 };
 
-export type RowColorCondition =
-  { type: "overdue" } | { type: "within"; days: number };
+export type RowColorCondition = { type: "overdue" } | { type: "within"; days: number };
 
 export interface RowColorRule {
   id: string;
@@ -36,13 +35,7 @@ export interface RowColorSubject {
 }
 
 export const MAX_WITHIN_DAYS = 90;
-const FINISHED_STATUSES = [
-  "paid",
-  "waived",
-  "cashback",
-  "amortized",
-  "skipped",
-];
+const FINISHED_STATUSES = ["paid", "waived", "cashback", "amortized", "skipped"];
 
 export const DEFAULT_ROW_COLOR_RULES: RowColorRule[] = [
   {
@@ -65,56 +58,34 @@ const dayNumber = (isoDate: string) => {
 };
 
 /** Whole days from today to the due date (negative once it passed); null without a valid date. */
-export function daysUntil(
-  dueDate: string | null | undefined,
-  today: string,
-): number | null {
+export function daysUntil(dueDate: string | null | undefined, today: string): number | null {
   if (!dueDate || !/^\d{4}-\d{2}-\d{2}/.test(dueDate)) return null;
   return dayNumber(dueDate) - dayNumber(today);
 }
 
-function ruleMatches(
-  rule: RowColorRule,
-  subject: RowColorSubject,
-  today: string,
-): boolean {
-  if (rule.skipFinished && FINISHED_STATUSES.includes(subject.status ?? ""))
-    return false;
+function ruleMatches(rule: RowColorRule, subject: RowColorSubject, today: string): boolean {
+  if (rule.skipFinished && FINISHED_STATUSES.includes(subject.status ?? "")) return false;
   const days = daysUntil(subject.dueDate, today);
   if (days === null) return false;
-  return rule.when.type === "overdue"
-    ? days < 0
-    : days >= 0 && days <= rule.when.days;
+  return rule.when.type === "overdue" ? days < 0 : days >= 0 && days <= rule.when.days;
 }
 
 /** The color of the first rule that matches the row, or undefined. */
-export function matchRowColor(
-  rules: readonly RowColorRule[],
-  subject: RowColorSubject,
-  today: string,
-): RowColor | undefined {
+export function matchRowColor(rules: readonly RowColorRule[], subject: RowColorSubject, today: string): RowColor | undefined {
   return rules.find((rule) => ruleMatches(rule, subject, today))?.color;
 }
 
-export function rowColorClass(
-  rules: readonly RowColorRule[],
-  subject: RowColorSubject,
-  today: string,
-): string | undefined {
+export function rowColorClass(rules: readonly RowColorRule[], subject: RowColorSubject, today: string): string | undefined {
   const color = matchRowColor(rules, subject, today);
   return color ? ROW_COLOR_CLASSES[color] : undefined;
 }
 
 export function describeCondition(condition: RowColorCondition): string {
   if (condition.type === "overdue") return "Vencido";
-  return condition.days === 0
-    ? "Vence hoy"
-    : `Vence en ≤ ${condition.days} ${condition.days === 1 ? "día" : "días"}`;
+  return condition.days === 0 ? "Vence hoy" : `Vence en ≤ ${condition.days} ${condition.days === 1 ? "día" : "días"}`;
 }
 
-const isColor = (value: unknown): value is RowColor =>
-  typeof value === "string" &&
-  (ROW_COLORS as readonly string[]).includes(value);
+const isColor = (value: unknown): value is RowColor => typeof value === "string" && (ROW_COLORS as readonly string[]).includes(value);
 
 /** Reads the rules saved in the browser; anything malformed is dropped, so a bad value never breaks the table. */
 export function parseRowColorRules(raw: string | null): RowColorRule[] | null {

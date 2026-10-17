@@ -7,10 +7,7 @@ import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { z } from "zod";
-import {
-  useDeleteCategory,
-  useSaveCategory,
-} from "@/shared/api/hooks/catalogs";
+import { useDeleteCategory, useSaveCategory } from "@/shared/api/hooks/catalogs";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import type { Category } from "@/shared/api/types";
 import { CategoryIconPicker } from "@/features/categories/components/CategoryIconPicker";
@@ -29,11 +26,7 @@ interface CategoryDialogProps {
   category?: Category;
 }
 
-export function CategoryDialog({
-  open,
-  onOpenChange,
-  category,
-}: CategoryDialogProps) {
+export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogProps) {
   const saveCategory = useSaveCategory();
   const deleteCategory = useDeleteCategory();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -75,23 +68,14 @@ export function CategoryDialog({
   }, [open, category, reset]);
 
   const onSubmit = (data: CreateCategory) => {
-    saveCategory.mutate(
-      { ...data, icon: data.icon || null, id: category?.id },
-      { onSuccess: () => onOpenChange(false) },
-    );
+    saveCategory.mutate({ ...data, icon: data.icon || null, id: category?.id }, { onSuccess: () => onOpenChange(false) });
   };
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={
-        category?.isDefault
-          ? "Personalizar categoría"
-          : isEdit
-            ? "Editar categoría"
-            : "Nueva categoría"
-      }
+      title={category?.isDefault ? "Personalizar categoría" : isEdit ? "Editar categoría" : "Nueva categoría"}
       icon={<Tags className="size-4 text-primary" />}
       description={
         category?.isDefault
@@ -103,26 +87,15 @@ export function CategoryDialog({
       footer={
         <>
           {category && !category.isDefault && (
-            <Button
-              variant="ghost"
-              className="mr-auto text-destructive"
-              onClick={() => setConfirmDelete(true)}
-            >
+            <Button variant="ghost" className="mr-auto text-destructive" onClick={() => setConfirmDelete(true)}>
               Eliminar
             </Button>
           )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            disabled={saveCategory.isPending}
-          >
-            {isEdit
-              ? category?.isDefault
-                ? "Guardar icono"
-                : "Guardar"
-              : "Crear"}
+          <Button onClick={handleSubmit(onSubmit)} disabled={saveCategory.isPending}>
+            {isEdit ? (category?.isDefault ? "Guardar icono" : "Guardar") : "Crear"}
           </Button>
         </>
       }
@@ -132,14 +105,8 @@ export function CategoryDialog({
           <label className="text-sm font-medium">
             <FieldLabel icon={Tags}>Nombre *</FieldLabel>
           </label>
-          <Input
-            {...register("name")}
-            placeholder="Ej: Transporte, Comida..."
-            readOnly={category?.isDefault}
-          />
-          {errors.name && (
-            <p className="text-xs text-destructive">{errors.name.message}</p>
-          )}
+          <Input {...register("name")} placeholder="Ej: Transporte, Comida..." readOnly={category?.isDefault} />
+          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -155,22 +122,14 @@ export function CategoryDialog({
                 disabled={category?.isDefault}
                 className="h-9 w-12 cursor-pointer rounded border"
               />
-              <Input
-                {...register("color")}
-                className="flex-1"
-                readOnly={category?.isDefault}
-              />
+              <Input {...register("color")} className="flex-1" readOnly={category?.isDefault} />
             </div>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
               <FieldLabel icon={Shapes}>Icono (opcional)</FieldLabel>
             </label>
-            <CategoryIconPicker
-              value={watch("icon")}
-              color={watch("color")}
-              onChange={(icon) => setValue("icon", icon)}
-            />
+            <CategoryIconPicker value={watch("icon")} color={watch("color")} onChange={(icon) => setValue("icon", icon)} />
           </div>
         </div>
       </form>

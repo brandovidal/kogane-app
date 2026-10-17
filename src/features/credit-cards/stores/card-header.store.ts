@@ -15,5 +15,4 @@ export const cardHeaderStore = createStore<CardHeaderState>()((set) => ({
   setTitle: (title) => set({ title }),
 }));
 
-export const useCardHeader = <T>(selector: (state: CardHeaderState) => T) =>
-  useStore(cardHeaderStore, selector);
+export const useCardHeader = <T>(selector: (state: CardHeaderState) => T) => useStore(cardHeaderStore, selector);

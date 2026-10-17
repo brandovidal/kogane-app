@@ -21,9 +21,7 @@ interface Props {
 const { title = "Kogane", section, mainClass } = Astro.props;
 const currentPath = Astro.url.pathname;
 const hasLocalPeriodControl =
-  ["/resumen", "/calendario", "/recurrentes"].some(
-    (path) => currentPath === path,
-  ) || currentPath.startsWith("/configuracion");
+  ["/resumen", "/calendario", "/recurrentes"].some((path) => currentPath === path) || currentPath.startsWith("/configuracion");
 ---
 
 <Layout title={title}>

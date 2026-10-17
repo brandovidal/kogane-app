@@ -1,11 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import {
-  Check,
-  ChevronDown,
-  Minus,
-  Search,
-  type LucideIcon,
-} from "lucide-react";
+import { Check, ChevronDown, Minus, Search, type LucideIcon } from "lucide-react";
 
 import {
   Combobox,
@@ -23,13 +17,7 @@ import {
   ComboboxValue,
   createComboboxItems,
 } from "@/ui/combobox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 
@@ -72,9 +60,7 @@ const ALL = "__all__";
 
 function matchesOption(option: FilterSelectOption, query: string) {
   const normalizedQuery = normalize(query);
-  return [option.label, ...(option.searchTerms ?? [])].some((text) =>
-    normalize(text).includes(normalizedQuery),
-  );
+  return [option.label, ...(option.searchTerms ?? [])].some((text) => normalize(text).includes(normalizedQuery));
 }
 
 function FilterOptionItem({
@@ -103,11 +89,7 @@ function FilterOptionItem({
       )}
       {option.decoration}
       <span className="min-w-0 flex-1 truncate">{option.label}</span>
-      {option.count != null && (
-        <span className="text-xs tabular-nums text-muted-foreground">
-          {option.count}
-        </span>
-      )}
+      {option.count != null && <span className="text-xs tabular-nums text-muted-foreground">{option.count}</span>}
       {!multiple && (
         <ComboboxItemIndicator>
           <Check className="size-4" />
@@ -139,12 +121,8 @@ export function FilterSelect({
   emptyDescription,
   activeMarker = false,
 }: FilterSelectProps) {
-  const isActive =
-    active ?? (value != null && value !== "" && value !== allValue);
-  const activeControlClass =
-    isActive && !activeMarker
-      ? "border-brand/60 bg-brand/5 ring-1 ring-brand/20"
-      : undefined;
+  const isActive = active ?? (value != null && value !== "" && value !== allValue);
+  const activeControlClass = isActive && !activeMarker ? "border-brand/60 bg-brand/5 ring-1 ring-brand/20" : undefined;
   const items = useMemo(
     () =>
       createComboboxItems([{ value: allValue, label: allLabel }, ...options], {
@@ -154,12 +132,8 @@ export function FilterSelect({
     [allLabel, allValue, options],
   );
   const selectedOption = options.find((option) => option.value === value);
-  const selectedValues = multiple
-    ? (value?.split(",").filter((item) => item && item !== allValue) ?? [])
-    : [];
-  const selectedOptions = multiple
-    ? options.filter((option) => selectedValues.includes(option.value))
-    : [];
+  const selectedValues = multiple ? (value?.split(",").filter((item) => item && item !== allValue) ?? []) : [];
+  const selectedOptions = multiple ? options.filter((option) => selectedValues.includes(option.value)) : [];
   const selectedLabel = selectedOptions.length
     ? compactSelectionSummary && selectedOptions.length > 1
       ? `${selectedOptions[0].label} +${selectedOptions.length - 1}`
@@ -182,34 +156,18 @@ export function FilterSelect({
   return (
     <div className={cn("block min-w-0 space-y-1.5", containerClassName)}>
       <div className={labelClassName}>
-        <FieldLabel
-          icon={activeMarker ? undefined : icon}
-          className={isActive && activeMarker ? "text-foreground" : undefined}
-        >
-          {activeMarker && isActive && (
-            <span
-              aria-hidden="true"
-              className="mr-0.5 size-2 rounded-full bg-brand"
-            />
-          )}
+        <FieldLabel icon={activeMarker ? undefined : icon} className={isActive && activeMarker ? "text-foreground" : undefined}>
+          {activeMarker && isActive && <span aria-hidden="true" className="mr-0.5 size-2 rounded-full bg-brand" />}
           {label}
         </FieldLabel>
       </div>
-      {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
-      )}
+      {description && <p className="text-xs text-muted-foreground">{description}</p>}
       {searchable ? (
         <Combobox
           items={items}
           filter={hasSearchTerms ? matchesOption : undefined}
           multiple={multiple}
-          value={
-            multiple
-              ? selectedValues.length
-                ? selectedValues
-                : [allValue]
-              : (value ?? allValue)
-          }
+          value={multiple ? (selectedValues.length ? selectedValues : [allValue]) : (value ?? allValue)}
           onValueChange={(next) => {
             if (multiple) {
               const rawValues = Array.isArray(next) ? next.map(String) : [];
@@ -217,38 +175,20 @@ export function FilterSelect({
                 return onChange(undefined);
               }
               const nextValues = rawValues.filter((item) => item !== allValue);
-              return onChange(
-                nextValues.length ? nextValues.join(",") : undefined,
-              );
+              return onChange(nextValues.length ? nextValues.join(",") : undefined);
             }
-            onChange(
-              next == null || next === allValue ? undefined : String(next),
-            );
+            onChange(next == null || next === allValue ? undefined : String(next));
           }}
           autoHighlight
         >
-          <ComboboxTrigger
-            aria-label={label}
-            className={cn(width, activeControlClass, triggerClassName)}
-          >
+          <ComboboxTrigger aria-label={label} className={cn(width, activeControlClass, triggerClassName)}>
             {!multiple && selectedOption?.decoration}
-            <span
-              className={cn(
-                "min-w-0 flex-1 truncate text-left",
-                multiple && selectedValues.length > 0 && "text-brand",
-              )}
-            >
-              {multiple ? (
-                selectedLabel
-              ) : (
-                <ComboboxValue placeholder={allTriggerLabel ?? allLabel} />
-              )}
+            <span className={cn("min-w-0 flex-1 truncate text-left", multiple && selectedValues.length > 0 && "text-brand")}>
+              {multiple ? selectedLabel : <ComboboxValue placeholder={allTriggerLabel ?? allLabel} />}
             </span>
             <ChevronDown className="size-4 shrink-0 opacity-50" />
           </ComboboxTrigger>
-          <ComboboxContent
-            aria-label={`Opciones de ${label.toLocaleLowerCase()}`}
-          >
+          <ComboboxContent aria-label={`Opciones de ${label.toLocaleLowerCase()}`}>
             <div className="border-b p-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -265,34 +205,18 @@ export function FilterSelect({
                 <ComboboxGroup items={groupedOptions.ungrouped}>
                   <ComboboxCollection>
                     {(option: FilterSelectOption) => (
-                      <FilterOptionItem
-                        key={option.value}
-                        option={option}
-                        multiple={multiple}
-                        allValue={allValue}
-                        selectedValues={selectedValues}
-                      />
+                      <FilterOptionItem key={option.value} option={option} multiple={multiple} allValue={allValue} selectedValues={selectedValues} />
                     )}
                   </ComboboxCollection>
                 </ComboboxGroup>
               )}
               {groupedOptions.groups.map(([group, groupOptions], index) => (
                 <ComboboxGroup key={group} items={groupOptions}>
-                  {(index > 0 || groupedOptions.ungrouped.length > 0) && (
-                    <ComboboxSeparator className="my-1 h-px bg-border" />
-                  )}
-                  <ComboboxGroupLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                    {group}
-                  </ComboboxGroupLabel>
+                  {(index > 0 || groupedOptions.ungrouped.length > 0) && <ComboboxSeparator className="my-1 h-px bg-border" />}
+                  <ComboboxGroupLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{group}</ComboboxGroupLabel>
                   <ComboboxCollection>
                     {(option: FilterSelectOption) => (
-                      <FilterOptionItem
-                        key={option.value}
-                        option={option}
-                        multiple={multiple}
-                        allValue={allValue}
-                        selectedValues={selectedValues}
-                      />
+                      <FilterOptionItem key={option.value} option={option} multiple={multiple} allValue={allValue} selectedValues={selectedValues} />
                     )}
                   </ComboboxCollection>
                 </ComboboxGroup>
@@ -303,11 +227,7 @@ export function FilterSelect({
             </ComboboxEmpty>
             {multipleFooter && (
               <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
-                <span>
-                  {selectedValues.length
-                    ? `${selectedValues.length} seleccionadas`
-                    : "Sin filtro · se muestran todas"}
-                </span>
+                <span>{selectedValues.length ? `${selectedValues.length} seleccionadas` : "Sin filtro · se muestran todas"}</span>
                 <button
                   type="button"
                   className="font-medium text-foreground disabled:cursor-default disabled:opacity-50"
@@ -321,20 +241,10 @@ export function FilterSelect({
           </ComboboxContent>
         </Combobox>
       ) : (
-        <Select
-          value={value ?? allValue}
-          onValueChange={(next) =>
-            onChange(next === allValue ? undefined : next)
-          }
-        >
-          <SelectTrigger
-            className={cn("h-9", width, activeControlClass, triggerClassName)}
-            aria-label={label}
-          >
+        <Select value={value ?? allValue} onValueChange={(next) => onChange(next === allValue ? undefined : next)}>
+          <SelectTrigger className={cn("h-9", width, activeControlClass, triggerClassName)} aria-label={label}>
             {selectedOption?.decoration}
-            <SelectValue placeholder={label}>
-              {selectedOption?.label}
-            </SelectValue>
+            <SelectValue placeholder={label}>{selectedOption?.label}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={allValue}>{allLabel}</SelectItem>

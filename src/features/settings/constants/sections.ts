@@ -1,22 +1,6 @@
-import {
-  BellRing,
-  History,
-  Settings,
-  UserRound,
-  UsersRound,
-  WalletCards,
-  Contact,
-  type LucideIcon,
-} from "lucide-react";
+import { BellRing, History, Settings, UserRound, UsersRound, WalletCards, Contact, type LucideIcon } from "lucide-react";
 
-export type SettingsSection =
-  | "perfil"
-  | "general"
-  | "notificaciones"
-  | "cuentas-tarjetas"
-  | "personas"
-  | "usuarios"
-  | "historial";
+export type SettingsSection = "perfil" | "general" | "notificaciones" | "cuentas-tarjetas" | "personas" | "usuarios" | "historial";
 
 export interface SettingsNavItem {
   key: SettingsSection;
@@ -32,8 +16,8 @@ export const SETTINGS_NAV_GROUPS: {
   {
     label: "Cuenta",
     items: [
-      { key: "perfil", label: "Perfil", icon: UserRound },
       { key: "general", label: "General", icon: Settings },
+      { key: "perfil", label: "Perfil", icon: UserRound },
       { key: "notificaciones", label: "Notificaciones", icon: BellRing },
     ],
   },
@@ -83,6 +67,4 @@ export const CARDS_ACCOUNTS_TABS: {
 
 // Cuentas y tarjetas opens its first subtab
 export const settingsHref = (section: SettingsSection) =>
-  section === "cuentas-tarjetas"
-    ? CARDS_ACCOUNTS_TABS[0].href
-    : `/configuracion/${section}`;
+  section === "cuentas-tarjetas" ? CARDS_ACCOUNTS_TABS[0].href : `/configuracion/${section}`;

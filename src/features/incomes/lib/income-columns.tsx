@@ -11,47 +11,29 @@ export interface IncomeColumnActions {
   deleting?: boolean;
 }
 
-export function incomeColumns({
-  onEdit,
-  onDelete,
-  deleting,
-}: IncomeColumnActions): Column<Income>[] {
+export function incomeColumns({ onEdit, onDelete, deleting }: IncomeColumnActions): Column<Income>[] {
   return [
     {
       key: "date",
       header: "Fecha de recepción",
-      cell: (income) => (
-        <span className="text-sm text-muted-foreground">
-          {formatDate(income.receivedAt)}
-        </span>
-      ),
+      cell: (income) => <span className="text-sm text-muted-foreground">{formatDate(income.receivedAt)}</span>,
     },
     {
       key: "description",
       header: "Descripción",
       role: "title",
-      cell: (income) => (
-        <span className="font-medium">{income.description}</span>
-      ),
+      cell: (income) => <span className="font-medium">{income.description}</span>,
     },
     {
       key: "amount",
       header: "Monto",
       role: "amount",
-      cell: (income) => (
-        <span className="font-semibold tabular-nums">
-          {formatCurrency(income.amount, income.currency)}
-        </span>
-      ),
+      cell: (income) => <span className="font-semibold tabular-nums">{formatCurrency(income.amount, income.currency)}</span>,
     },
     {
       key: "notes",
       header: "Nota",
-      cell: (income) => (
-        <span className="text-sm text-muted-foreground">
-          {income.notes ?? "—"}
-        </span>
-      ),
+      cell: (income) => <span className="text-sm text-muted-foreground">{income.notes ?? "—"}</span>,
     },
     {
       key: "actions",
@@ -60,13 +42,7 @@ export function incomeColumns({
       className: "w-[80px]",
       cell: (income) => (
         <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8"
-            aria-label={`Editar ${income.description}`}
-            onClick={() => onEdit(income)}
-          >
+          <Button variant="ghost" size="icon" className="size-8" aria-label={`Editar ${income.description}`} onClick={() => onEdit(income)}>
             <Pencil className="size-3.5" />
           </Button>
           <Button

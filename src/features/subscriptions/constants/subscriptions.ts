@@ -1,9 +1,4 @@
-export const SUBSCRIPTION_STATUSES = [
-  "not_started",
-  "pending",
-  "paid",
-  "waived",
-];
+export const SUBSCRIPTION_STATUSES = ["not_started", "pending", "paid", "waived"];
 
 export const SUBSCRIPTION_PERIOD_LABELS: Record<string, string> = {
   biweekly: "Quincenal",

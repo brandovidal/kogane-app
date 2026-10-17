@@ -1,13 +1,7 @@
-import type {
-  CreditCardExpense,
-  Debt,
-  FixedCost,
-  Summary,
-} from "@/shared/api/types";
+import type { CreditCardExpense, Debt, FixedCost, Summary } from "@/shared/api/types";
 import { DASHBOARD_CLOSED_EXPENSE_STATUSES } from "../constants/dashboard";
 
-const isOpen = (status: string) =>
-  !(DASHBOARD_CLOSED_EXPENSE_STATUSES as readonly string[]).includes(status);
+const isOpen = (status: string) => !(DASHBOARD_CLOSED_EXPENSE_STATUSES as readonly string[]).includes(status);
 
 export function nextMonthForecast({
   summary,
@@ -58,8 +52,7 @@ export function nextMonthForecast({
     income,
     committed,
     available: income - committed,
-    commitmentPercent:
-      income > 0 ? Math.round((committed / income) * 100) : null,
+    commitmentPercent: income > 0 ? Math.round((committed / income) * 100) : null,
     firstDue,
   };
 }

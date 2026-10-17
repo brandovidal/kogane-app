@@ -27,12 +27,7 @@ import { DebtIndicators } from "../sections/DebtIndicators";
 import { PeriodStatusNotice } from "@/shared/components/data-display/PeriodStatusNotice";
 import { CardCheckPanel } from "../sections/CardCheckPanel";
 import { DebtBulkBar } from "../sections/DebtBulkBar";
-import {
-  ActiveDebtFilterChips,
-  DebtFilterSheet,
-  DebtGroupingSheet,
-  DebtReportLinks as ReportLinks,
-} from "../sections/DebtListControls";
+import { ActiveDebtFilterChips, DebtFilterSheet, DebtGroupingSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";
 import { CollapsibleDebtGroup } from "../sections/DebtGroupsSection";
 import { DebtGridSection } from "../sections/DebtGridSection";
 import { DebtDialog } from "../components/dialogs/DebtDialog";
@@ -40,20 +35,15 @@ import { CarryOverDialog } from "../components/dialogs/CarryOverDialog";
 import { RegisterPaymentDialog } from "../components/dialogs/RegisterPaymentDialog";
 import { useDebtGrouping } from "../hooks/useDebtGrouping";
 
-const TEXTS: Record<
-  Direction,
-  { emptyTitle: string; emptyHint: string; createLabel: string }
-> = {
+const TEXTS: Record<Direction, { emptyTitle: string; emptyHint: string; createLabel: string }> = {
   owed_to_me: {
     emptyTitle: "Sin cobros este mes",
-    emptyHint:
-      "Registra lo que te deben o pásalo desde Mensajes para llevar el saldo de cada cuota.",
+    emptyHint: "Registra lo que te deben o pásalo desde Mensajes para llevar el saldo de cada cuota.",
     createLabel: "Nuevo cobro",
   },
   i_owe: {
     emptyTitle: "Sin deudas este mes",
-    emptyHint:
-      "Registra lo que debes para llevar el saldo de cada cuota y no pasar la fecha límite.",
+    emptyHint: "Registra lo que debes para llevar el saldo de cada cuota y no pasar la fecha límite.",
     createLabel: "Nueva deuda",
   },
 };
@@ -77,16 +67,8 @@ export function DebtListView({
     month: String(month),
     year: String(year),
   };
-  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(
-    DEBT_FILTER_KEYS,
-    defaults,
-  );
-  const {
-    groupedByPerson,
-    groupedByCard,
-    setGroupedByPerson,
-    setGroupedByCard,
-  } = useDebtGrouping();
+  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS, defaults);
+  const { groupedByPerson, groupedByCard, setGroupedByPerson, setGroupedByCard } = useDebtGrouping();
   const [view, setView] = useViewMode("debts", "table");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [registering, setRegistering] = useState(false);
@@ -97,21 +79,13 @@ export function DebtListView({
 
   const shown = applyDebtFilters(debts, filters, { month, year });
   const checked = shown.filter((debt) => selected.has(debt.id));
-  const card = filters.card
-    ? cards.find((item) => item.id === filters.card)
-    : undefined;
-  const panelMonth =
-    filters.month && filters.month !== "until" ? Number(filters.month) : null;
+  const card = filters.card ? cards.find((item) => item.id === filters.card) : undefined;
+  const panelMonth = filters.month && filters.month !== "until" ? Number(filters.month) : null;
   const texts = TEXTS[direction];
   const cardNames = new Map(cards.map((c) => [c.id, c.name]));
   const personGroups = groupedByPerson ? groupByPerson(shown) : null;
-  const cardGroups = groupedByCard
-    ? groupByPaymentMethod(shown, cardNames)
-    : null;
-  const personTypeGroups =
-    groupedByPerson && groupedByCard
-      ? groupByPersonAndType(shown, cardNames)
-      : null;
+  const cardGroups = groupedByCard ? groupByPaymentMethod(shown, cardNames) : null;
+  const personTypeGroups = groupedByPerson && groupedByCard ? groupByPersonAndType(shown, cardNames) : null;
 
   if (isLoading) return null;
 
@@ -136,25 +110,16 @@ export function DebtListView({
               >
                 {!splitGroupingSheet && (
                   <div className="space-y-3 border-t pt-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Agrupar resultados
-                    </p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Agrupar resultados</p>
                     <label className="flex items-center justify-between gap-3 text-sm">
                       <span>Por persona</span>
-                      <Switch
-                        checked={groupedByPerson}
-                        onCheckedChange={setGroupedByPerson}
-                      />
+                      <Switch checked={groupedByPerson} onCheckedChange={setGroupedByPerson} />
                     </label>
                     <label className="flex items-center justify-between gap-3 text-sm">
                       <span className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />{" "}
-                        Por tarjeta
+                        <CreditCard className="h-4 w-4 text-muted-foreground" /> Por tarjeta
                       </span>
-                      <Switch
-                        checked={groupedByCard}
-                        onCheckedChange={setGroupedByCard}
-                      />
+                      <Switch checked={groupedByCard} onCheckedChange={setGroupedByCard} />
                     </label>
                     <p className="text-xs text-muted-foreground">
                       {groupedByPerson && groupedByCard
@@ -176,41 +141,18 @@ export function DebtListView({
                   onCardChange={setGroupedByCard}
                 />
               )}
-              {splitGroupingSheet && (
-                <span
-                  aria-hidden="true"
-                  className="hidden h-5 border-l sm:inline-block"
-                />
-              )}
+              {splitGroupingSheet && <span aria-hidden="true" className="hidden h-5 border-l sm:inline-block" />}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <ReportLinks filter={{ direction, month, year }} />
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-9"
-                onClick={() => setCarryingOver(true)}
-              >
+              <Button size="sm" variant="outline" className="h-9" onClick={() => setCarryingOver(true)}>
                 <MoveRight className="mr-1 h-4 w-4" /> Arrastrar saldos
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-9"
-                onClick={() => setRegistering(true)}
-              >
+              <Button size="sm" variant="outline" className="h-9" onClick={() => setRegistering(true)}>
                 <Wallet className="mr-1 h-4 w-4" /> Registrar pago
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-9"
-                onClick={() => setImporting(true)}
-              >
-                <Upload className="mr-1 h-4 w-4" />{" "}
-                {direction === "owed_to_me"
-                  ? "Importar cuotas"
-                  : "Importar deudas"}
+              <Button size="sm" variant="outline" className="h-9" onClick={() => setImporting(true)}>
+                <Upload className="mr-1 h-4 w-4" /> {direction === "owed_to_me" ? "Importar cuotas" : "Importar deudas"}
               </Button>
               {actions}
             </div>
@@ -229,10 +171,7 @@ export function DebtListView({
                 ? {
                     byPerson: groupedByPerson,
                     byCard: groupedByCard,
-                    onToggle: (key) =>
-                      key === "person"
-                        ? setGroupedByPerson((current) => !current)
-                        : setGroupedByCard((current) => !current),
+                    onToggle: (key) => (key === "person" ? setGroupedByPerson((current) => !current) : setGroupedByCard((current) => !current)),
                   }
                 : undefined
             }
@@ -241,14 +180,7 @@ export function DebtListView({
         view={<ViewToggle value={view} onChange={setView} />}
       />
 
-      {card && panelMonth && filters.year && (
-        <CardCheckPanel
-          cardId={card.id}
-          cardName={card.name}
-          month={panelMonth}
-          year={Number(filters.year)}
-        />
-      )}
+      {card && panelMonth && filters.year && <CardCheckPanel cardId={card.id} cardName={card.name} month={panelMonth} year={Number(filters.year)} />}
 
       <DebtBulkBar selected={checked} onDone={() => setSelected(new Set())} />
 
@@ -256,11 +188,7 @@ export function DebtListView({
         <PeriodStatusNotice
           month={panelMonth}
           year={Number(filters.year)}
-          billedHint={
-            direction === "owed_to_me"
-              ? "revisa qué falta por cobrar y registra los pagos"
-              : "revisa lo que debes y registra los pagos"
-          }
+          billedHint={direction === "owed_to_me" ? "revisa qué falta por cobrar y registra los pagos" : "revisa lo que debes y registra los pagos"}
         />
       )}
 
@@ -280,11 +208,7 @@ export function DebtListView({
           }
         />
       ) : !shown.length ? (
-        <EmptyState
-          variant="filters"
-          title="Ninguna cuota coincide"
-          description="No hay cuotas con estos filtros"
-        />
+        <EmptyState variant="filters" title="Ninguna cuota coincide" description="No hay cuotas con estos filtros" />
       ) : personTypeGroups ? (
         <div className="space-y-2">
           {personGroups?.map((group) => (
@@ -343,27 +267,11 @@ export function DebtListView({
           ))}
         </div>
       ) : (
-        <DebtGridSection
-          debts={shown}
-          view={view}
-          onPay={onPay}
-          onEdit={setEditingDebt}
-          selected={selected}
-          onSelectedChange={setSelected}
-        />
+        <DebtGridSection debts={shown} view={view} onPay={onPay} onEdit={setEditingDebt} selected={selected} onSelectedChange={setSelected} />
       )}
 
-      <RegisterPaymentDialog
-        open={registering}
-        onOpenChange={setRegistering}
-        debts={debts}
-        period={{ month, year }}
-      />
-      <CarryOverDialog
-        open={carryingOver}
-        onOpenChange={setCarryingOver}
-        direction={direction}
-      />
+      <RegisterPaymentDialog open={registering} onOpenChange={setRegistering} debts={debts} period={{ month, year }} />
+      <CarryOverDialog open={carryingOver} onOpenChange={setCarryingOver} direction={direction} />
       <DebtDialog
         open={!!editingDebt || creating}
         onOpenChange={(open) => {
@@ -378,9 +286,7 @@ export function DebtListView({
         open={importing}
         onOpenChange={setImporting}
         target={direction === "owed_to_me" ? "receivables" : "payables"}
-        title={
-          direction === "owed_to_me" ? "Importar cuotas" : "Importar deudas"
-        }
+        title={direction === "owed_to_me" ? "Importar cuotas" : "Importar deudas"}
       />
     </div>
   );

@@ -2,12 +2,7 @@ import { useMemo } from "react";
 import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { useDebts } from "@/features/debts/hooks/debts";
 import { useSummary } from "@/features/budget/hooks/summary";
-import {
-  EXPENSE_RESOURCES,
-  type CreditCardExpense,
-  type Debt,
-  type FixedCost,
-} from "@/shared/api/types";
+import { EXPENSE_RESOURCES, type CreditCardExpense, type Debt, type FixedCost } from "@/shared/api/types";
 import { nextMonthForecast } from "../lib/next-month-forecast";
 
 const EMPTY_FIXED_COSTS: FixedCost[] = [];
@@ -50,16 +45,8 @@ export function useNextMonthForecast(month: number, year: number) {
     month: nextMonth,
     year: nextYear,
     ...forecast,
-    isLoading:
-      summaryQuery.isPending ||
-      fixedCostsQuery.isPending ||
-      cardExpensesQuery.isPending ||
-      debtsQuery.isPending,
-    isError:
-      summaryQuery.isError ||
-      fixedCostsQuery.isError ||
-      cardExpensesQuery.isError ||
-      debtsQuery.isError,
+    isLoading: summaryQuery.isPending || fixedCostsQuery.isPending || cardExpensesQuery.isPending || debtsQuery.isPending,
+    isError: summaryQuery.isError || fixedCostsQuery.isError || cardExpensesQuery.isError || debtsQuery.isError,
     retry: () => {
       void summaryQuery.refetch();
       void fixedCostsQuery.refetch();

@@ -41,11 +41,7 @@ export const emptyPayDetails = (today: string): PayDetails => ({
 export const emptyPayAmount = (): PayAmount => ({ amount: "", kind: "total" });
 
 // Request of one payment. Empty fields are left out so the API keeps its defaults (today, full balance, total)
-export function buildPayBody(
-  event: { refType: string; refId: string },
-  details: PayDetails,
-  single: PayAmount | null,
-): PayEventDto {
+export function buildPayBody(event: { refType: string; refId: string }, details: PayDetails, single: PayAmount | null): PayEventDto {
   const body: PayEventDto = {
     refType: event.refType as PayEventDto["refType"],
     refId: event.refId,
@@ -56,28 +52,17 @@ export function buildPayBody(
   if (details.note.trim()) body.note = details.note.trim();
   if (single) {
     const amount = Number(single.amount.replace(",", "."));
-    if (single.amount.trim() !== "" && Number.isFinite(amount))
-      body.amount = amount;
-    if (event.refType === "card_statement" && single.kind !== "total")
-      body.kind = single.kind;
+    if (single.amount.trim() !== "" && Number.isFinite(amount)) body.amount = amount;
+    if (event.refType === "card_statement" && single.kind !== "total") body.kind = single.kind;
   }
   return body;
 }
 
 // "Pago mínimo" takes the amount from the statement; "Parcial" needs one
-export function payAmountError(
-  event: { refType: string },
-  single: PayAmount | null,
-): string | null {
+export function payAmountError(event: { refType: string }, single: PayAmount | null): string | null {
   if (!single) return null;
   const amount = Number(single.amount.replace(",", "."));
-  if (single.amount.trim() !== "" && !(Number.isFinite(amount) && amount > 0))
-    return "El monto debe ser mayor que cero";
-  if (
-    event.refType === "card_statement" &&
-    single.kind === "partial" &&
-    !(amount > 0)
-  )
-    return "Indica cuánto vas a pagar";
+  if (single.amount.trim() !== "" && !(Number.isFinite(amount) && amount > 0)) return "El monto debe ser mayor que cero";
+  if (event.refType === "card_statement" && single.kind === "partial" && !(amount > 0)) return "Indica cuánto vas a pagar";
   return null;
 }

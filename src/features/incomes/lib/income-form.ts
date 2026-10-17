@@ -14,35 +14,21 @@ export interface IncomeFormDraft extends MonthlyPeriod {
 
 const incomeFormSchema = z.object({
   description: z.string().trim().min(1, "Ingresa una descripción."),
-  amount: z
-    .number({ error: "Ingresa un monto válido." })
-    .positive("El monto debe ser mayor que cero."),
+  amount: z.number({ error: "Ingresa un monto válido." }).positive("El monto debe ser mayor que cero."),
   currency: z.enum(CURRENCIES),
   receivedAt: z.iso.date({ error: "Selecciona una fecha válida." }),
   month: z.number().int().min(1).max(12),
   year: z.number().int().min(PERIOD_YEAR_MIN).max(PERIOD_YEAR_MAX),
-  notes: z
-    .string()
-    .trim()
-    .max(500, "La nota admite hasta 500 caracteres.")
-    .nullable(),
+  notes: z.string().trim().max(500, "La nota admite hasta 500 caracteres.").nullable(),
 });
 
-export function incomeFormDefaults(
-  income: Income | null,
-  period: MonthlyPeriod,
-): IncomeFormDraft {
-  const day = Math.min(
-    new Date().getDate(),
-    new Date(period.year, period.month, 0).getDate(),
-  );
+export function incomeFormDefaults(income: Income | null, period: MonthlyPeriod): IncomeFormDraft {
+  const day = Math.min(new Date().getDate(), new Date(period.year, period.month, 0).getDate());
   return {
     description: income?.description ?? "",
     amount: income ? String(income.amount) : "",
     currency: income?.currency === "USD" ? "USD" : "PEN",
-    receivedAt:
-      income?.receivedAt.slice(0, 10) ??
-      `${period.year}-${String(period.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+    receivedAt: income?.receivedAt.slice(0, 10) ?? `${period.year}-${String(period.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
     notes: income?.notes ?? "",
     month: income?.month ?? period.month,
     year: income?.year ?? period.year,

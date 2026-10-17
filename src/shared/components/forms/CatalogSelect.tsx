@@ -15,10 +15,7 @@ import {
   ComboboxValue,
   createComboboxItems,
 } from "@/ui/combobox";
-import type {
-  CatalogOption,
-  CatalogSelectProps,
-} from "@/shared/types/catalog-select";
+import type { CatalogOption, CatalogSelectProps } from "@/shared/types/catalog-select";
 
 const EMPTY = "__none__";
 
@@ -34,18 +31,14 @@ export function CatalogSelectOptions({
   ...triggerProps
 }: CatalogSelectProps & { options: CatalogOption[] }) {
   const selectedOption = options.find((option) => option.id === value);
-  const items = createComboboxItems(
-    allowEmpty ? [{ id: EMPTY, name: "—" }, ...options] : options,
-    {
-      getValue: (option) => option.id,
-      getLabel: (option) => option.name,
-    },
-  );
+  const items = createComboboxItems(allowEmpty ? [{ id: EMPTY, name: "—" }, ...options] : options, {
+    getValue: (option) => option.id,
+    getLabel: (option) => option.name,
+  });
   const groups = new Map<string, CatalogOption[]>();
   const ungrouped: CatalogOption[] = [];
   for (const option of options) {
-    if (option.group)
-      groups.set(option.group, [...(groups.get(option.group) ?? []), option]);
+    if (option.group) groups.set(option.group, [...(groups.get(option.group) ?? []), option]);
     else ungrouped.push(option);
   }
 
@@ -53,37 +46,21 @@ export function CatalogSelectOptions({
     <Combobox
       items={items}
       value={value ?? (allowEmpty ? EMPTY : null)}
-      onValueChange={(next) =>
-        onChange(next === EMPTY || next == null ? null : String(next))
-      }
-      itemToStringLabel={(id) =>
-        id === EMPTY
-          ? "—"
-          : (options.find((option) => option.id === id)?.name ?? "")
-      }
+      onValueChange={(next) => onChange(next === EMPTY || next == null ? null : String(next))}
+      itemToStringLabel={(id) => (id === EMPTY ? "—" : (options.find((option) => option.id === id)?.name ?? ""))}
       autoHighlight
       disabled={disabled}
     >
       <ComboboxTrigger {...triggerProps} className={className}>
         <span className="min-w-0 flex-1 truncate text-left">
-          {allowEmpty && value == null
-            ? "—"
-            : (selectedOption?.content ?? (
-                <ComboboxValue placeholder={placeholder} />
-              ))}
+          {allowEmpty && value == null ? "—" : (selectedOption?.content ?? <ComboboxValue placeholder={placeholder} />)}
         </span>
-        <ChevronDown
-          aria-hidden="true"
-          className="size-4 shrink-0 opacity-50"
-        />
+        <ChevronDown aria-hidden="true" className="size-4 shrink-0 opacity-50" />
       </ComboboxTrigger>
       <ComboboxContent>
         <div className="border-b p-2">
           <div className="relative">
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-            />
+            <Search aria-hidden="true" className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <ComboboxInput
               aria-label={`Buscar ${placeholder.toLocaleLowerCase()}`}
               placeholder={`Buscar ${placeholder.toLocaleLowerCase()}...`}
@@ -117,12 +94,8 @@ export function CatalogSelectOptions({
           )}
           {[...groups].map(([group, groupOptions], index) => (
             <ComboboxGroup key={group} items={groupOptions}>
-              {(index > 0 || ungrouped.length > 0 || allowEmpty) && (
-                <ComboboxSeparator className="my-1 h-px bg-border" />
-              )}
-              <ComboboxGroupLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                {group}
-              </ComboboxGroupLabel>
+              {(index > 0 || ungrouped.length > 0 || allowEmpty) && <ComboboxSeparator className="my-1 h-px bg-border" />}
+              <ComboboxGroupLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{group}</ComboboxGroupLabel>
               <ComboboxCollection>
                 {(option: CatalogOption) => (
                   <ComboboxItem key={option.id} value={option.id}>
@@ -136,9 +109,7 @@ export function CatalogSelectOptions({
             </ComboboxGroup>
           ))}
         </ComboboxList>
-        <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">
-          No se encontraron opciones.
-        </ComboboxEmpty>
+        <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">No se encontraron opciones.</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
   );

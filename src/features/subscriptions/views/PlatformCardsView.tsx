@@ -8,11 +8,7 @@ import { Badge } from "@/ui/badge";
 import { PlatformMark } from "../components/PlatformMark";
 import { PLATFORM_PERIOD_COLORS } from "../constants/platforms";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
-import {
-  nextPlatformChargeDate,
-  formatPlatformCurrency,
-  platformNativeAmount,
-} from "../lib/platform-summary";
+import { nextPlatformChargeDate, formatPlatformCurrency, platformNativeAmount } from "../lib/platform-summary";
 
 export function PlatformCardsView({
   items,
@@ -48,11 +44,7 @@ export function PlatformCardsView({
           <article key={item.id} className="platform-card text-left">
             <div className="flex items-center gap-3">
               <PlatformMark name={item.description} />
-              <button
-                type="button"
-                onClick={() => onOpen(item)}
-                className="min-w-0 flex-1 truncate text-left font-semibold hover:text-brand"
-              >
+              <button type="button" onClick={() => onOpen(item)} className="min-w-0 flex-1 truncate text-left font-semibold hover:text-brand">
                 {item.description}
               </button>
               <RowActions
@@ -73,18 +65,9 @@ export function PlatformCardsView({
                 }}
               />
             </div>
-            <button
-              type="button"
-              onClick={() => onOpen(item)}
-              className="block w-full text-left"
-            >
+            <button type="button" onClick={() => onOpen(item)} className="block w-full text-left">
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-2xl font-semibold tabular-nums">
-                  {formatPlatformCurrency(
-                    platformNativeAmount(item),
-                    item.currency,
-                  )}
-                </span>
+                <span className="text-2xl font-semibold tabular-nums">{formatPlatformCurrency(platformNativeAmount(item), item.currency)}</span>
                 <span className="text-xs text-muted-foreground">
                   /{" "}
                   {item.period === "annual"
@@ -102,10 +85,7 @@ export function PlatformCardsView({
                 <div className="flex items-center justify-between gap-2">
                   <dt className="text-muted-foreground">Periodo</dt>
                   <dd>
-                    <Badge
-                      variant="secondary"
-                      className={PLATFORM_PERIOD_COLORS[item.period]}
-                    >
+                    <Badge variant="secondary" className={PLATFORM_PERIOD_COLORS[item.period]}>
                       {SUBSCRIPTION_PERIOD_LABELS[item.period]}
                     </Badge>
                   </dd>
@@ -120,11 +100,7 @@ export function PlatformCardsView({
                   <dt className="text-muted-foreground">Próximo cobro</dt>
                   <dd className="text-right tabular-nums">
                     {date ? formatDate(date) : "—"}
-                    {days != null && (
-                      <span className="block text-xs text-amber-500">
-                        {days === 0 ? "hoy" : `en ${days} días`}
-                      </span>
-                    )}
+                    {days != null && <span className="block text-xs text-amber-500">{days === 0 ? "hoy" : `en ${days} días`}</span>}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-2">
@@ -136,11 +112,7 @@ export function PlatformCardsView({
           </article>
         );
       })}
-      <button
-        type="button"
-        onClick={onCreate}
-        className="platform-card platform-card-add"
-      >
+      <button type="button" onClick={onCreate} className="platform-card platform-card-add">
         <Plus className="size-5" />
         <span>Nueva plataforma</span>
       </button>

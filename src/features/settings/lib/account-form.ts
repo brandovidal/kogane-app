@@ -25,13 +25,10 @@ export const emptyAccountForm = (): AccountForm => ({
 });
 
 // A bank account needs its bank (the API answers 422 otherwise); the rest only needs a name
-export function accountErrors(
-  form: AccountForm,
-): Partial<Record<keyof AccountForm, string>> {
+export function accountErrors(form: AccountForm): Partial<Record<keyof AccountForm, string>> {
   const errors: Partial<Record<keyof AccountForm, string>> = {};
   if (!form.name.trim()) errors.name = "Ponle un nombre";
-  if (form.type === "bank_account" && !form.bank.trim())
-    errors.bank = "Una cuenta bancaria necesita su banco";
+  if (form.type === "bank_account" && !form.bank.trim()) errors.bank = "Una cuenta bancaria necesita su banco";
   return errors;
 }
 

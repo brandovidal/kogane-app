@@ -18,19 +18,11 @@ export function StatementMinimumSection({
   return (
     <div className="grid items-start gap-3">
       {cards.map((card) => (
-        <StatementMinimumCard
-          key={card.id}
-          paymentMethodId={card.id}
-          cardName={card.name}
-          month={month}
-          year={year}
-        />
+        <StatementMinimumCard key={card.id} paymentMethodId={card.id} cardName={card.name} month={month} year={year} />
       ))}
       {isLoading && cards.length === 0 && (
         <Card>
-          <CardContent className="p-4 text-sm text-muted-foreground">
-            Buscando estados de cuenta…
-          </CardContent>
+          <CardContent className="p-4 text-sm text-muted-foreground">Buscando estados de cuenta…</CardContent>
         </Card>
       )}
       {!isLoading && cards.length === 0 && (
@@ -38,8 +30,7 @@ export function StatementMinimumSection({
           <CardContent className="p-4 text-sm text-muted-foreground">
             {hasCreditCards ? (
               <>
-                No hay estados de cuenta de tarjetas para {getMonthName(month)}{" "}
-                {year}.{" "}
+                No hay estados de cuenta de tarjetas para {getMonthName(month)} {year}.{" "}
                 <a className="underline underline-offset-4" href="/importacion">
                   Cargar estado de cuenta
                 </a>

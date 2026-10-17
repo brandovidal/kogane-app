@@ -1,17 +1,9 @@
-import type {
-  ImportBatch,
-  StatementSummary,
-  ImportRow,
-} from "@/shared/api/types";
+import type { ImportBatch, StatementSummary, ImportRow } from "@/shared/api/types";
 import type { HistoryItem } from "../types/import-types";
 import { formatCurrency } from "@/shared/lib/currency";
 
 // One list, newest first: the Notion imports and the statements read
-export function historyOf(
-  batches: ImportBatch[],
-  statements: StatementSummary[],
-  monthName: (month: number) => string,
-): HistoryItem[] {
+export function historyOf(batches: ImportBatch[], statements: StatementSummary[], monthName: (month: number) => string): HistoryItem[] {
   const notion = batches.map((batch): HistoryItem => ({
     key: `notion:${batch.id}`,
     source: "notion",
@@ -32,34 +24,21 @@ export function historyOf(
     pending: statement.status === "review",
     createdAt: statement.createdAt,
   }));
-  return [...notion, ...read].sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
-  );
+  return [...notion, ...read].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export const pageCount = (total: number, pageSize: number) =>
-  Math.max(1, Math.ceil(total / pageSize));
+export const pageCount = (total: number, pageSize: number) => Math.max(1, Math.ceil(total / pageSize));
 
 // A month of the check: the rows linked to its Resumen page add up to its "Gastos" (to the cent)
-export const monthMatches = (month: {
-  linked: number;
-  notionSpent: number | null;
-}) =>
-  month.notionSpent != null &&
-  Math.abs(month.linked - month.notionSpent) < 0.01;
+export const monthMatches = (month: { linked: number; notionSpent: number | null }) =>
+  month.notionSpent != null && Math.abs(month.linked - month.notionSpent) < 0.01;
 
 export const amountOf = (row: ImportRow) =>
-  row.amount == null
-    ? "—"
-    : row.kind === "group"
-      ? `${row.amount} %`
-      : formatCurrency(row.amount, row.currency ?? "PEN");
+  row.amount == null ? "—" : row.kind === "group" ? `${row.amount} %` : formatCurrency(row.amount, row.currency ?? "PEN");
 
-export const importRowFileName = (file: string) =>
-  file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "");
+export const importRowFileName = (file: string) => file.replace(/ [0-9a-f]{32}(_all)?\.csv$/i, "");
 
 export type HistoryFilter = "all" | "pending";
 
 // Historial (board I11): todos, o solo lo que espera una decisión
-export const filterHistory = (items: HistoryItem[], filter: HistoryFilter) =>
-  filter === "pending" ? items.filter((item) => item.pending) : items;
+export const filterHistory = (items: HistoryItem[], filter: HistoryFilter) => (filter === "pending" ? items.filter((item) => item.pending) : items);

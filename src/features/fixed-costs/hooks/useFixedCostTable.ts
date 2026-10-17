@@ -45,22 +45,12 @@ export function useFixedCostTable({
       rowSelection,
       sorting: sorting ? [{ id: sorting.column, desc: sorting.desc }] : [],
     },
-    onRowSelectionChange: (updater) =>
-      onSelectionChange(
-        typeof updater === "function" ? updater(rowSelection) : updater,
-      ),
+    onRowSelectionChange: (updater) => onSelectionChange(typeof updater === "function" ? updater(rowSelection) : updater),
   });
   return {
     table,
-    visibleColumns: columns.filter((column) =>
-      table.getColumn(column.key)?.getIsVisible(),
-    ),
-    selected: new Set(
-      Object.keys(rowSelection).filter((id) => rowSelection[id]),
-    ),
-    onSelectedChange: (selected: Set<string>) =>
-      onSelectionChange(
-        Object.fromEntries([...selected].map((id) => [id, true])),
-      ),
+    visibleColumns: columns.filter((column) => table.getColumn(column.key)?.getIsVisible()),
+    selected: new Set(Object.keys(rowSelection).filter((id) => rowSelection[id])),
+    onSelectedChange: (selected: Set<string>) => onSelectionChange(Object.fromEntries([...selected].map((id) => [id, true]))),
   };
 }

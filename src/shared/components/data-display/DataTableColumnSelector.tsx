@@ -10,16 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-export function DataTableColumnSelector<T>({
-  table,
-  disabled = false,
-}: {
-  table: Table<T>;
-  disabled?: boolean;
-}) {
-  const columns = table
-    .getAllLeafColumns()
-    .filter((column) => column.getCanHide());
+export function DataTableColumnSelector<T>({ table, disabled = false }: { table: Table<T>; disabled?: boolean }) {
+  const columns = table.getAllLeafColumns().filter((column) => column.getCanHide());
   if (!columns.length) return null;
   return (
     <DropdownMenu>

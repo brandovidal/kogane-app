@@ -1,28 +1,9 @@
 import { toast } from "sonner";
-import {
-  CalendarDays,
-  ChevronDown,
-  Columns3,
-  Link2,
-  MessageSquareText,
-  MoreHorizontal,
-  Plus,
-  Repeat2,
-  Table2,
-  Upload,
-} from "lucide-react";
+import { CalendarDays, ChevronDown, Columns3, Link2, MessageSquareText, MoreHorizontal, Plus, Repeat2, Table2, Upload } from "lucide-react";
 import type { ViewMode } from "@/shared/types/data-view";
-import {
-  ExportMenu,
-  type ExportMenuItem,
-} from "@/shared/components/toolbar/ExportMenu";
+import { ExportMenu, type ExportMenuItem } from "@/shared/components/toolbar/ExportMenu";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { cn } from "@/shared/utils/cn";
 
 type PlatformView = "list" | "cards" | "period" | "calendar";
@@ -71,10 +52,7 @@ export function PlatformViewBar({
         className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {views.map(({ value, label, Icon }) => {
-          const selected =
-            value === "list"
-              ? view === "list" || view === "cards"
-              : view === value;
+          const selected = value === "list" ? view === "list" || view === "cards" : view === value;
           return (
             <button
               key={value}
@@ -98,11 +76,7 @@ export function PlatformViewBar({
           size="icon-sm"
           className="size-8 border border-border/60"
           aria-label="Más vistas, próximamente"
-          onClick={() =>
-            toast.info(
-              "Las vistas personalizadas estarán disponibles próximamente.",
-            )
-          }
+          onClick={() => toast.info("Las vistas personalizadas estarán disponibles próximamente.")}
         >
           <Plus className="size-4" />
         </Button>
@@ -110,12 +84,7 @@ export function PlatformViewBar({
       <div className="flex shrink-0 items-center gap-2">
         <ExportMenu items={menuItems} label="Más opciones" iconOnly />
         <div className="inline-flex items-center">
-          <Button
-            type="button"
-            size="sm"
-            className="platform-create-button h-9 gap-1 rounded-l-md rounded-r-none px-4"
-            onClick={onCreate}
-          >
+          <Button type="button" size="sm" className="platform-create-button h-9 gap-1 rounded-l-md rounded-r-none px-4" onClick={onCreate}>
             <Plus className="size-4" />
             Nueva plataforma
           </Button>
@@ -135,9 +104,7 @@ export function PlatformViewBar({
                 <MoreHorizontal className="size-4" />
                 <span className="flex flex-col">
                   Nueva plataforma
-                  <span className="text-xs text-muted-foreground">
-                    Suscripción o servicio periódico
-                  </span>
+                  <span className="text-xs text-muted-foreground">Suscripción o servicio periódico</span>
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -145,9 +112,7 @@ export function PlatformViewBar({
                   <Repeat2 className="size-4" />
                   <span className="flex flex-col">
                     Nueva recurrente
-                    <span className="text-xs text-muted-foreground">
-                      Se repite cada mes
-                    </span>
+                    <span className="text-xs text-muted-foreground">Se repite cada mes</span>
                   </span>
                 </a>
               </DropdownMenuItem>
@@ -156,9 +121,7 @@ export function PlatformViewBar({
                   <MessageSquareText className="size-4" />
                   <span className="flex flex-col">
                     Registrar en Mensajes
-                    <span className="text-xs text-muted-foreground">
-                      Captura, audio o texto
-                    </span>
+                    <span className="text-xs text-muted-foreground">Captura, audio o texto</span>
                   </span>
                 </a>
               </DropdownMenuItem>
@@ -177,5 +140,4 @@ export function PlatformViewBar({
 }
 
 export type { PlatformView };
-export const layoutForPlatformView = (view: PlatformView): ViewMode =>
-  view === "cards" ? "cards" : "table";
+export const layoutForPlatformView = (view: PlatformView): ViewMode => (view === "cards" ? "cards" : "table");

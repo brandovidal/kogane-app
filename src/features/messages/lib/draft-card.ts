@@ -34,10 +34,7 @@ function dateTag(raw: string, now: Date): string {
 //   👤 Brando ❓ 💳 Yape 📂 Comida
 //   📅 09/10/2026 · Día a día · Esencial
 // Si el texto no tiene ese formato devuelve null y el mensaje se muestra tal cual.
-export function parseDraftCard(
-  text: string,
-  now: Date = new Date(),
-): DraftCard | null {
+export function parseDraftCard(text: string, now: Date = new Date()): DraftCard | null {
   const lines = text.split("\n");
   const start = lines.findIndex((line) => line.trimStart().startsWith("🧾"));
   if (start < 0) return null;
@@ -51,17 +48,11 @@ export function parseDraftCard(
   const person = clean(block.match(/👤\s*([^💳📂📅]*)/u)?.[1]);
   const method = clean(block.match(/💳\s*([^👤📂📅]*)/u)?.[1]);
   const category = clean(block.match(/📂\s*([^👤💳📅]*)/u)?.[1]);
-  const [date, ...rest] = (block.match(/📅\s*(.+)$/u)?.[1] ?? "")
-    .split("·")
-    .map((part) => strip(part));
+  const [date, ...rest] = (block.match(/📅\s*(.+)$/u)?.[1] ?? "").split("·").map((part) => strip(part));
 
-  const tags = [
-    ...rest.filter(Boolean).slice(0, 1),
-    method,
-    person,
-    category,
-    date ? dateTag(date, now) : undefined,
-  ].filter((tag): tag is string => Boolean(tag));
+  const tags = [...rest.filter(Boolean).slice(0, 1), method, person, category, date ? dateTag(date, now) : undefined].filter((tag): tag is string =>
+    Boolean(tag),
+  );
 
   return {
     title: strip(head[1]),

@@ -13,9 +13,4 @@ export {
   useCollectNow,
   useRemindDebts,
 } from "./hooks/notifications";
-export {
-  NOTIFICATION_KIND_LABELS,
-  NOTIFICATION_KINDS,
-  notificationLink,
-  timeAgo,
-} from "./lib/notification-view";
+export { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS, notificationLink, timeAgo } from "./lib/notification-view";

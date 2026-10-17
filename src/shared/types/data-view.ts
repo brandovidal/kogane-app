@@ -1,8 +1,5 @@
 import type { ReactNode } from "react";
-import type {
-  DataTableCalculation,
-  DataTableCalculationState,
-} from "./data-table-calculation";
+import type { DataTableCalculation, DataTableCalculationState } from "./data-table-calculation";
 
 export type ViewMode = "table" | "cards";
 

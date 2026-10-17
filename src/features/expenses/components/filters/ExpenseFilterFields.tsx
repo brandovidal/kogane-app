@@ -1,14 +1,4 @@
-import {
-  Banknote,
-  CalendarRange,
-  CircleCheck,
-  Coins,
-  ListFilter,
-  Tags,
-  UsersRound,
-  WalletCards,
-  Waypoints,
-} from "lucide-react";
+import { Banknote, CalendarRange, CircleCheck, Coins, ListFilter, Tags, UsersRound, WalletCards, Waypoints } from "lucide-react";
 import { BillingPeriodFilterFields } from "@/features/subscriptions/components/BillingPeriodFilterFields";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
@@ -28,10 +18,7 @@ import { cn } from "@/shared/utils/cn";
 import { countActiveExpenseFilters } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
 import type { ExpenseFilterFieldsProps } from "../../types/expense-filter-props";
-import {
-  PANEL_FILTER_KEYS,
-  PRIMARY_PANEL_FILTER_KEYS,
-} from "../../constants/expense-filters";
+import { PANEL_FILTER_KEYS, PRIMARY_PANEL_FILTER_KEYS } from "../../constants/expense-filters";
 
 export function ExpenseFilterFields({
   fields,
@@ -51,8 +38,7 @@ export function ExpenseFilterFields({
   sharedOwnLabel,
   methodLabel = "Medio de pago",
 }: ExpenseFilterFieldsProps) {
-  const set = (key: ExpenseFilterKey, next: string | undefined) =>
-    onChange({ ...value, [key]: next || undefined });
+  const set = (key: ExpenseFilterKey, next: string | undefined) => onChange({ ...value, [key]: next || undefined });
   const width = panel || fullWidth ? "w-full" : undefined;
 
   const renderFields = (keys: readonly ExpenseFilterKey[]) => {
@@ -112,9 +98,7 @@ export function ExpenseFilterFields({
             statuses={statuses}
             value={value.status}
             onChange={(next) => set("status", next)}
-            allLabel={
-              statusAllLabel === "Todos" ? "Todos los estados" : statusAllLabel
-            }
+            allLabel={statusAllLabel === "Todos" ? "Todos los estados" : statusAllLabel}
             width={width}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
@@ -173,27 +157,17 @@ export function ExpenseFilterFields({
           <NoteFilterFields
             label="Con nota"
             value={value.hasNote}
-            onChange={(next) =>
-              set("hasNote", next as "yes" | "no" | undefined)
-            }
+            onChange={(next) => set("hasNote", next as "yes" | "no" | undefined)}
             width={width}
             labelClassName="text-sm font-medium"
             activeMarker={activeMarkers}
           />
         )}
         {(has("dueFrom") || has("dueTo")) && (
-          <div
-            className={
-              panel
-                ? "col-span-2 space-y-2 rounded-lg border p-3"
-                : "space-y-2 rounded-lg border p-3"
-            }
-          >
+          <div className={panel ? "col-span-2 space-y-2 rounded-lg border p-3" : "space-y-2 rounded-lg border p-3"}>
             <div>
               <div className="text-sm font-medium">
-                <FieldLabel icon={showIcons ? CalendarRange : undefined}>
-                  Vencimiento
-                </FieldLabel>
+                <FieldLabel icon={showIcons ? CalendarRange : undefined}>Vencimiento</FieldLabel>
               </div>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -227,17 +201,9 @@ export function ExpenseFilterFields({
           </div>
         )}
         {has("amountFrom") && (
-          <section
-            className={
-              panel
-                ? "col-span-2 space-y-2 rounded-lg border p-3"
-                : "space-y-2 rounded-lg border p-3"
-            }
-          >
+          <section className={panel ? "col-span-2 space-y-2 rounded-lg border p-3" : "space-y-2 rounded-lg border p-3"}>
             <h3 className="text-sm font-medium">
-              <FieldLabel icon={showIcons ? Banknote : undefined}>
-                Monto
-              </FieldLabel>
+              <FieldLabel icon={showIcons ? Banknote : undefined}>Monto</FieldLabel>
             </h3>
             <div className="grid grid-cols-2 gap-3">
               <label className="space-y-1.5 text-xs text-muted-foreground">
@@ -273,16 +239,9 @@ export function ExpenseFilterFields({
 
   if (!panel) return renderFields(fields);
 
-  const panelFields = fields.filter(
-    (key) =>
-      PANEL_FILTER_KEYS.includes(key) || (key === "person" && personInPanel),
-  );
-  const primary = panelFields.filter((key) =>
-    PRIMARY_PANEL_FILTER_KEYS.includes(key),
-  );
-  const additional = panelFields.filter(
-    (key) => !PRIMARY_PANEL_FILTER_KEYS.includes(key),
-  );
+  const panelFields = fields.filter((key) => PANEL_FILTER_KEYS.includes(key) || (key === "person" && personInPanel));
+  const primary = panelFields.filter((key) => PRIMARY_PANEL_FILTER_KEYS.includes(key));
+  const additional = panelFields.filter((key) => !PRIMARY_PANEL_FILTER_KEYS.includes(key));
   return (
     <div className="space-y-3">
       {primary.length > 0 && (
@@ -296,30 +255,16 @@ export function ExpenseFilterFields({
               onChange={(next) => set("q", next)}
             />
           )}
-          <div
-            className={cn(
-              "grid gap-3",
-              fullWidth ? "grid-cols-1" : "grid-cols-2",
-            )}
-          >
-            {renderFields(primary)}
-          </div>
+          <div className={cn("grid gap-3", fullWidth ? "grid-cols-1" : "grid-cols-2")}>{renderFields(primary)}</div>
         </section>
       )}
       {additional.length > 0 &&
         (wrapAdditionalFilters ? (
-          <MoreFilters
-            activeCount={countActiveExpenseFilters(value, additional)}
-            defaultOpen={panel}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              {renderFields(additional)}
-            </div>
+          <MoreFilters activeCount={countActiveExpenseFilters(value, additional)} defaultOpen={panel}>
+            <div className="grid grid-cols-2 gap-3">{renderFields(additional)}</div>
           </MoreFilters>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {renderFields(additional)}
-          </div>
+          <div className="grid grid-cols-2 gap-3">{renderFields(additional)}</div>
         ))}
     </div>
   );

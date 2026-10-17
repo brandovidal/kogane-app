@@ -122,15 +122,8 @@ export function CardDetailToolbar({
                 />
               }
             />
-            <AppliedViewToggle
-              count={appliedCount}
-              open={showApplied}
-              onOpenChange={setShowApplied}
-            />
-            <span
-              aria-hidden="true"
-              className="mx-1 hidden h-5 w-px bg-border sm:block"
-            />
+            <AppliedViewToggle count={appliedCount} open={showApplied} onOpenChange={setShowApplied} />
+            <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-border sm:block" />
             <ColumnVisibilityMenu
               columns={columns}
               align="end"
@@ -157,15 +150,9 @@ export function CardDetailToolbar({
                 </Button>
               }
             >
-              <DropdownMenuItem onSelect={onResetView}>
-                Restablecer vista
-              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onResetView}>Restablecer vista</DropdownMenuItem>
             </ViewSettingsMenu>
-            <ViewModeToggle
-              value={view}
-              onChange={onViewChange}
-              label="Diseño de movimientos"
-            />
+            <ViewModeToggle value={view} onChange={onViewChange} label="Diseño de movimientos" />
           </>
         }
         showActiveSummary={false}
@@ -173,25 +160,15 @@ export function CardDetailToolbar({
       />
 
       {showApplied && appliedCount > 0 && (
-        <AppliedViewSummary
-          onAddFilter={() => setFilterOpen(true)}
-          onReset={onResetView}
-          resetDisabled={appliedCount === 0}
-        >
+        <AppliedViewSummary onAddFilter={() => setFilterOpen(true)} onReset={onResetView} resetDisabled={appliedCount === 0}>
           {sortLabel && (
-            <AppliedSortChip
-              label={sortLabel.split(":")[0]}
-              descending={sort?.endsWith("desc") ?? false}
-              onRemove={() => onSortChange(undefined)}
-            />
+            <AppliedSortChip label={sortLabel.split(":")[0]} descending={sort?.endsWith("desc") ?? false} onRemove={() => onSortChange(undefined)} />
           )}
           {groupBy.length > 0 && (
             <AppliedGroupChips
               value={groupBy}
               options={CARD_DETAIL_GROUP_OPTIONS}
-              onChange={(next) =>
-                onGroupByChange(next.slice(0, 2) as CardDetailGroupBy[])
-              }
+              onChange={(next) => onGroupByChange(next.slice(0, 2) as CardDetailGroupBy[])}
             />
           )}
           {filterCount > 0 && (

@@ -33,15 +33,7 @@ export interface ExpenseFiltersProps {
   activeMarkers?: boolean;
 }
 
-export type ExpenseFilterFieldsProps = Pick<
-  ExpenseFiltersProps,
-  | "fields"
-  | "value"
-  | "onChange"
-  | "statuses"
-  | "personInPanel"
-  | "searchInPanel"
-> & {
+export type ExpenseFilterFieldsProps = Pick<ExpenseFiltersProps, "fields" | "value" | "onChange" | "statuses" | "personInPanel" | "searchInPanel"> & {
   panel: boolean;
   personCounts?: Record<string, number>;
   paymentMethodCounts?: Record<string, number>;
@@ -54,9 +46,7 @@ export type ExpenseFilterFieldsProps = Pick<
   methodLabel?: string;
 };
 
-export interface ActiveExpenseFilterChipsOptions<
-  T extends string | string[] = string,
-> {
+export interface ActiveExpenseFilterChipsOptions<T extends string | string[] = string> {
   fields: ExpenseFilterKey[];
   value: ExpenseFilterValues;
   onChange: (value: ExpenseFilterValues) => void;
@@ -71,9 +61,7 @@ export interface ActiveExpenseFilterChipsOptions<
   onClearAll?: () => void;
 }
 
-export interface ActiveExpenseFilterChipsProps<
-  T extends string | string[] = string,
-> extends ActiveExpenseFilterChipsOptions<T> {
+export interface ActiveExpenseFilterChipsProps<T extends string | string[] = string> extends ActiveExpenseFilterChipsOptions<T> {
   tone?: "default" | "brand";
   maxVisibleItems?: number;
   collapsible?: boolean;

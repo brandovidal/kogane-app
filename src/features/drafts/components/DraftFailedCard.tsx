@@ -21,9 +21,7 @@ const KIND_TITLE = {
 
 export const failureReason = (draft: Pick<FailedDraft, "missingFields">) => {
   const missing = missingLabels(draft);
-  return missing.length
-    ? `No se pudo leer: ${missing.join(", ").toLowerCase()}`
-    : "No se pudo procesar";
+  return missing.length ? `No se pudo leer: ${missing.join(", ").toLowerCase()}` : "No se pudo procesar";
 };
 
 // Tarjeta de Fallidos (board B5): qué falló, por qué y cómo seguir
@@ -40,10 +38,7 @@ export function DraftFailedCard({
   onWriteManually: () => void;
   onDiscard: () => void;
 }) {
-  const kind =
-    draft.inputType === "image" || draft.inputType === "audio"
-      ? draft.inputType
-      : "text";
+  const kind = draft.inputType === "image" || draft.inputType === "audio" ? draft.inputType : "text";
   const Icon = kind === "text" ? MessageSquare : KIND_ICON[kind];
   return (
     <article className="flex h-full flex-col gap-3 rounded-2xl border bg-card p-4">
@@ -52,24 +47,15 @@ export function DraftFailedCard({
           <Icon aria-hidden="true" className="size-5" />
         </span>
         <div className="min-w-0 flex-1 space-y-0.5">
-          <h3 className="truncate font-semibold">
-            {draft.description ?? KIND_TITLE[kind]}
-          </h3>
+          <h3 className="truncate font-semibold">{draft.description ?? KIND_TITLE[kind]}</h3>
           <p className="text-xs text-muted-foreground">
-            {draft.channel === "web" ? "Mensajes" : "Telegram"} ·{" "}
-            {formatDate(draft.createdAt)}
+            {draft.channel === "web" ? "Mensajes" : "Telegram"} · {formatDate(draft.createdAt)}
           </p>
         </div>
-        <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive">
-          Falló
-        </span>
+        <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive">Falló</span>
       </div>
       <p className="text-xs text-destructive">{failureReason(draft)}</p>
-      {draft.rawText && (
-        <p className="line-clamp-2 text-xs italic text-muted-foreground">
-          «{draft.rawText}»
-        </p>
-      )}
+      {draft.rawText && <p className="line-clamp-2 text-xs italic text-muted-foreground">«{draft.rawText}»</p>}
       <div className="mt-auto flex items-center gap-2 pt-1">
         <Button variant="outline" size="sm" onClick={onRetry} disabled={busy}>
           <RotateCw className="size-4" /> Reintentar

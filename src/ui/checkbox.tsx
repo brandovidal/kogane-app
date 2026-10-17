@@ -7,10 +7,7 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 
 // shadcn/ui new-york checkbox (D101); written by hand because `shadcn add` failed on 2026-09-25
-function Checkbox({
-  className,
-  ...props
-}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
+function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
@@ -20,15 +17,8 @@ function Checkbox({
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator
-        data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none"
-      >
-        {props.checked === "indeterminate" ? (
-          <MinusIcon className="size-3.5" />
-        ) : (
-          <CheckIcon className="size-3.5" />
-        )}
+      <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="grid place-content-center text-current transition-none">
+        {props.checked === "indeterminate" ? <MinusIcon className="size-3.5" /> : <CheckIcon className="size-3.5" />}
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );

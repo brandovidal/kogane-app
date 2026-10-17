@@ -27,26 +27,14 @@ export function CollectButton({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(
-        buildCollectSummaryMessage(
-          name,
-          debts,
-          cardNames,
-          additionalCharges,
-          summaryDebts ? { debts: summaryDebts, personalExpenses } : undefined,
-        ),
+        buildCollectSummaryMessage(name, debts, cardNames, additionalCharges, summaryDebts ? { debts: summaryDebts, personalExpenses } : undefined),
       );
       toast.success(`Mensaje para ${name} copiado`);
     } catch {
       toast.error("No pude copiar el mensaje");
     }
   };
-  if (
-    !debts.length &&
-    !additionalCharges.length &&
-    !summaryDebts?.length &&
-    !personalExpenses.length
-  )
-    return null;
+  if (!debts.length && !additionalCharges.length && !summaryDebts?.length && !personalExpenses.length) return null;
   return (
     <Button
       variant="outline"

@@ -4,27 +4,14 @@ export interface DebtReportFilter {
   year?: number;
   until?: boolean;
   person?: string;
-  state?:
-    | "pending"
-    | "partial"
-    | "paid"
-    | "prepaid"
-    | "cashback"
-    | "open"
-    | "late"
-    | "due"
-    | "upcoming";
+  state?: "pending" | "partial" | "paid" | "prepaid" | "cashback" | "open" | "late" | "due" | "upcoming";
   card?: string;
   origin?: "shared" | "loan";
   q?: string;
 }
 
 // Excel / PDF of the debts (D39), with the same filters selected on screen
-export function debtReportUrl(
-  format: "xlsx" | "pdf",
-  personId?: string,
-  filter: DebtReportFilter = {},
-): string {
+export function debtReportUrl(format: "xlsx" | "pdf", personId?: string, filter: DebtReportFilter = {}): string {
   const query = new URLSearchParams({
     format,
     ...(personId ? { personId } : {}),

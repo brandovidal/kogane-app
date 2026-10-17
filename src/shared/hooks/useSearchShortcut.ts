@@ -1,9 +1,6 @@
 import { useEffect, type RefObject } from "react";
 
-export function useSearchShortcut(
-  inputRef: RefObject<HTMLInputElement | null>,
-  shortcut?: string,
-) {
+export function useSearchShortcut(inputRef: RefObject<HTMLInputElement | null>, shortcut?: string) {
   useEffect(() => {
     if (shortcut !== "/") return;
 
@@ -15,9 +12,7 @@ export function useSearchShortcut(
         event.ctrlKey ||
         event.metaKey ||
         document.querySelector('[role="dialog"], [role="alertdialog"]') ||
-        (target instanceof HTMLElement &&
-          (target.isContentEditable ||
-            ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)))
+        (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)))
       ) {
         return;
       }

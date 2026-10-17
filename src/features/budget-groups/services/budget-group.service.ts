@@ -22,16 +22,9 @@ interface Spending {
 
 // What each budget group got (salary × %) against what its categories spent in the month. Plataformas stay out: the
 // card expense is the real charge (D46).
-export function buildBudgetGroupSummaries(
-  groups: BudgetGroup[],
-  categories: Category[],
-  spending: Spending[],
-  salary: number,
-): BudgetGroupSummary[] {
+export function buildBudgetGroupSummaries(groups: BudgetGroup[], categories: Category[], spending: Spending[], salary: number): BudgetGroupSummary[] {
   const spentBy = (categoryId: string) =>
-    spending
-      .filter((item) => item.categoryId === categoryId)
-      .reduce((sum, item) => sum + (item.amountInPen ?? item.amount), 0);
+    spending.filter((item) => item.categoryId === categoryId).reduce((sum, item) => sum + (item.amountInPen ?? item.amount), 0);
 
   return groups
     .slice()
@@ -50,10 +43,7 @@ export function buildBudgetGroupSummaries(
       return {
         group,
         assignedAmount: (salary * group.percentage) / 100,
-        spentAmount: groupCategories.reduce(
-          (sum, category) => sum + category.spent,
-          0,
-        ),
+        spentAmount: groupCategories.reduce((sum, category) => sum + category.spent, 0),
         categoryIds: groupCategories.map((category) => category.id),
         categories: groupCategories,
       };

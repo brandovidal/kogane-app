@@ -14,21 +14,9 @@ const VIEW_OPTIONS = [
   ["cards", "Tarjetas", LayoutGrid],
 ] as const satisfies readonly (readonly [ViewMode, string, typeof Table2])[];
 
-export function ViewModeToggle({
-  value,
-  onChange,
-  className,
-  label = "Diseño",
-}: ViewModeToggleProps) {
+export function ViewModeToggle({ value, onChange, className, label = "Diseño" }: ViewModeToggleProps) {
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className={cn(
-        "flex items-center gap-0.5 rounded-sm border border-border/80 p-0.5",
-        className,
-      )}
-    >
+    <div role="radiogroup" aria-label={label} className={cn("flex items-center gap-0.5 rounded-sm border border-border/80 p-0.5", className)}>
       {VIEW_OPTIONS.map(([mode, optionLabel, Icon]) => (
         <button
           key={mode}

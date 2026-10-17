@@ -9,13 +9,7 @@ import { formatDate } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
 
 const NO_CATEGORY_FILL = "var(--muted-foreground)";
 
@@ -58,24 +52,15 @@ export function CardCategoryBreakdown({
     }
     group.expenses.push(expense);
     const currency = expense.currency || "PEN";
-    group.currencyTotals.set(
-      currency,
-      (group.currencyTotals.get(currency) ?? 0) + expense.amount,
-    );
+    group.currencyTotals.set(currency, (group.currencyTotals.get(currency) ?? 0) + expense.amount);
   }
 
   const groups = [...groupsByKey.values()].sort((a, b) => {
-    const solesDifference =
-      (b.currencyTotals.get("PEN") ?? 0) - (a.currencyTotals.get("PEN") ?? 0);
-    return (
-      solesDifference ||
-      (b.currencyTotals.get("USD") ?? 0) - (a.currencyTotals.get("USD") ?? 0)
-    );
+    const solesDifference = (b.currencyTotals.get("PEN") ?? 0) - (a.currencyTotals.get("PEN") ?? 0);
+    return solesDifference || (b.currencyTotals.get("USD") ?? 0) - (a.currencyTotals.get("USD") ?? 0);
   });
   const categoryDetail = groups.find((group) => group.key === selectedCategory);
-  const totalPEN = expenses
-    .filter((expense) => (expense.currency || "PEN") === "PEN")
-    .reduce((sum, expense) => sum + expense.amount, 0);
+  const totalPEN = expenses.filter((expense) => (expense.currency || "PEN") === "PEN").reduce((sum, expense) => sum + expense.amount, 0);
   const slices = groups
     .map((group) => ({
       key: group.key,
@@ -88,14 +73,10 @@ export function CardCategoryBreakdown({
   if (!groups.length) return null;
 
   const uncategorized = groupsByKey.get("none")?.expenses.length ?? 0;
-  const top = slices.reduce<(typeof slices)[number] | undefined>(
-    (best, slice) => (!best || slice.value > best.value ? slice : best),
-    undefined,
-  );
+  const top = slices.reduce<(typeof slices)[number] | undefined>((best, slice) => (!best || slice.value > best.value ? slice : best), undefined);
   const inUse = new Set(groupsByKey.keys());
 
-  const currencyAmounts = (totals: Map<string, number>) =>
-    [...totals.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const currencyAmounts = (totals: Map<string, number>) => [...totals.entries()].sort(([a], [b]) => a.localeCompare(b));
 
   return (
     <div className="space-y-4">
@@ -106,30 +87,21 @@ export function CardCategoryBreakdown({
               <CardTitle className="text-base">Consumo por categoría</CardTitle>
               {onCategorize && uncategorized > 0 && (
                 <Button size="sm" variant="outline" onClick={onCategorize}>
-                  Categorizar {uncategorized}{" "}
-                  {uncategorized === 1 ? "pendiente" : "pendientes"}
+                  Categorizar {uncategorized} {uncategorized === 1 ? "pendiente" : "pendientes"}
                 </Button>
               )}
             </div>
-            <p className="text-sm text-muted-foreground">
-              Despliega una categoría para ver sus movimientos o abre el detalle
-              completo.
-            </p>
+            <p className="text-sm text-muted-foreground">Despliega una categoría para ver sus movimientos o abre el detalle completo.</p>
             {(top || uncategorized > 0) && (
               <p className="text-xs text-muted-foreground">
                 {top && (
                   <>
-                    Mayor categoría:{" "}
-                    <span className="font-medium text-foreground">
-                      {top.name}
-                    </span>{" "}
-                    · {formatCurrency(top.value)} ·{" "}
+                    Mayor categoría: <span className="font-medium text-foreground">{top.name}</span> · {formatCurrency(top.value)} ·{" "}
                     {totalPEN ? Math.round((top.value / totalPEN) * 100) : 0}%
                   </>
                 )}
                 {top && uncategorized > 0 && " · "}
-                {uncategorized > 0 &&
-                  `${uncategorized} ${uncategorized === 1 ? "consumo" : "consumos"} sin categoría`}
+                {uncategorized > 0 && `${uncategorized} ${uncategorized === 1 ? "consumo" : "consumos"} sin categoría`}
               </p>
             )}
           </CardHeader>
@@ -139,19 +111,14 @@ export function CardCategoryBreakdown({
               const amounts = currencyAmounts(group.currencyTotals);
               const panelId = `card-category-${group.key}`;
               return (
-                <section
-                  key={group.key}
-                  className="overflow-hidden rounded-lg border bg-card"
-                >
+                <section key={group.key} className="overflow-hidden rounded-lg border bg-card">
                   <div className="flex items-stretch">
                     <button
                       type="button"
                       className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50"
                       aria-expanded={expanded}
                       aria-controls={panelId}
-                      onClick={() =>
-                        setExpandedCategory(expanded ? null : group.key)
-                      }
+                      onClick={() => setExpandedCategory(expanded ? null : group.key)}
                     >
                       <span
                         className="flex size-9 shrink-0 items-center justify-center rounded-full"
@@ -161,33 +128,22 @@ export function CardCategoryBreakdown({
                         }}
                         aria-hidden="true"
                       >
-                        <span
-                          className="size-2.5 rounded-full"
-                          style={{ backgroundColor: group.fill }}
-                        />
+                        <span className="size-2.5 rounded-full" style={{ backgroundColor: group.fill }} />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">
-                          {group.name}
-                        </span>
+                        <span className="block truncate font-medium">{group.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          {group.expenses.length}{" "}
-                          {group.expenses.length === 1 ? "consumo" : "consumos"}
+                          {group.expenses.length} {group.expenses.length === 1 ? "consumo" : "consumos"}
                         </span>
                       </span>
                       <span className="flex shrink-0 flex-col items-end gap-0.5">
                         {amounts.map(([currency, amount]) => (
-                          <span
-                            key={currency}
-                            className="text-sm font-semibold tabular-nums"
-                          >
+                          <span key={currency} className="text-sm font-semibold tabular-nums">
                             {formatCurrency(amount, currency)}
                           </span>
                         ))}
                       </span>
-                      <ChevronDown
-                        className={`size-4 shrink-0 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
-                      />
+                      <ChevronDown className={`size-4 shrink-0 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`} />
                     </button>
                     <Button
                       type="button"
@@ -210,42 +166,20 @@ export function CardCategoryBreakdown({
                       }}
                     />
                   </div>
-                  <ul
-                    id={panelId}
-                    hidden={!expanded}
-                    className="divide-y border-t bg-muted/20 px-3"
-                  >
+                  <ul id={panelId} hidden={!expanded} className="divide-y border-t bg-muted/20 px-3">
                     {group.expenses
                       .slice()
-                      .sort((a, b) =>
-                        (b.processDate ?? "").localeCompare(
-                          a.processDate ?? "",
-                        ),
-                      )
+                      .sort((a, b) => (b.processDate ?? "").localeCompare(a.processDate ?? ""))
                       .map((expense) => (
-                        <li
-                          key={expense.id}
-                          className="flex items-center justify-between gap-3 py-2.5 text-sm"
-                        >
+                        <li key={expense.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                           <span className="min-w-0">
-                            <span className="block truncate">
-                              {expense.description}
-                            </span>
+                            <span className="block truncate">{expense.description}</span>
                             <span className="text-xs text-muted-foreground">
-                              {expense.processDate
-                                ? formatDate(expense.processDate)
-                                : "Sin fecha"}
-                              {expense.installment
-                                ? ` · Cuota ${expense.installment}`
-                                : ""}
+                              {expense.processDate ? formatDate(expense.processDate) : "Sin fecha"}
+                              {expense.installment ? ` · Cuota ${expense.installment}` : ""}
                             </span>
                           </span>
-                          <span className="shrink-0 font-medium tabular-nums">
-                            {formatCurrency(
-                              expense.amount,
-                              expense.currency || "PEN",
-                            )}
-                          </span>
+                          <span className="shrink-0 font-medium tabular-nums">{formatCurrency(expense.amount, expense.currency || "PEN")}</span>
                         </li>
                       ))}
                   </ul>
@@ -280,19 +214,12 @@ export function CardCategoryBreakdown({
                       />
                       <Tooltip
                         content={({ active, payload }) => {
-                          const slice = active
-                            ? (payload?.[0]?.payload as
-                                (typeof slices)[number] | undefined)
-                            : undefined;
+                          const slice = active ? (payload?.[0]?.payload as (typeof slices)[number] | undefined) : undefined;
                           if (!slice) return null;
                           return (
                             <div className="rounded-lg border bg-popover px-3 py-2 text-xs shadow-sm">
-                              <p className="font-medium text-popover-foreground">
-                                {slice.name}
-                              </p>
-                              <p className="tabular-nums text-muted-foreground">
-                                {formatCurrency(slice.value)}
-                              </p>
+                              <p className="font-medium text-popover-foreground">{slice.name}</p>
+                              <p className="tabular-nums text-muted-foreground">{formatCurrency(slice.value)}</p>
                             </div>
                           );
                         }}
@@ -301,31 +228,18 @@ export function CardCategoryBreakdown({
                   </ResponsiveContainer>
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
                     <span className="text-xs text-muted-foreground">Total</span>
-                    <span className="text-base font-bold tabular-nums">
-                      {formatCurrency(totalPEN)}
-                    </span>
+                    <span className="text-base font-bold tabular-nums">{formatCurrency(totalPEN)}</span>
                   </div>
                 </div>
                 <ul className="space-y-1.5 text-sm">
                   {slices.map((slice) => (
-                    <li
-                      key={slice.key}
-                      className="flex items-center justify-between gap-2 px-1 py-0.5"
-                    >
+                    <li key={slice.key} className="flex items-center justify-between gap-2 px-1 py-0.5">
                       <span className="flex min-w-0 items-center gap-2">
-                        <span
-                          className="size-2.5 shrink-0 rounded-sm"
-                          style={{ backgroundColor: slice.fill }}
-                          aria-hidden="true"
-                        />
+                        <span className="size-2.5 shrink-0 rounded-sm" style={{ backgroundColor: slice.fill }} aria-hidden="true" />
                         <span className="truncate">{slice.name}</span>
                       </span>
                       <span className="shrink-0 tabular-nums text-muted-foreground">
-                        {formatCurrency(slice.value)} ·{" "}
-                        {totalPEN
-                          ? Math.round((slice.value / totalPEN) * 100)
-                          : 0}{" "}
-                        %
+                        {formatCurrency(slice.value)} · {totalPEN ? Math.round((slice.value / totalPEN) * 100) : 0} %
                       </span>
                     </li>
                   ))}
@@ -340,28 +254,16 @@ export function CardCategoryBreakdown({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <CardTitle className="text-base">Categorías disponibles</CardTitle>
-            <a
-              href="/presupuesto"
-              className="text-sm text-primary hover:underline"
-            >
+            <a href="/presupuesto" className="text-sm text-primary hover:underline">
               Administrar en Presupuesto
             </a>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Las mismas categorías de los movimientos de tarjeta. «Sin categoría»
-            la asigna el sistema.
-          </p>
+          <p className="text-sm text-muted-foreground">Las mismas categorías de los movimientos de tarjeta. «Sin categoría» la asigna el sistema.</p>
         </CardHeader>
         <CardContent className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           {categories.map((category) => (
-            <div
-              key={category.id}
-              className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"
-            >
-              <span
-                className="size-3 rounded-sm"
-                style={{ backgroundColor: category.color }}
-              />
+            <div key={category.id} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm">
+              <span className="size-3 rounded-sm" style={{ backgroundColor: category.color }} />
               <span className="min-w-0 flex-1 truncate">{category.name}</span>
               {inUse.has(category.id) && (
                 <Badge variant="secondary" className="shrink-0 text-[10px]">
@@ -373,87 +275,45 @@ export function CardCategoryBreakdown({
         </CardContent>
       </Card>
 
-      <Sheet
-        open={!!categoryDetail}
-        onOpenChange={(open) => !open && setSelectedCategory(null)}
-      >
-        <SheetContent
-          side="right"
-          className="w-full overflow-y-auto sm:max-w-xl"
-        >
+      <Sheet open={!!categoryDetail} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
           {categoryDetail && (
             <>
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
-                  <span
-                    className="size-2.5 rounded-full"
-                    style={{ backgroundColor: categoryDetail.fill }}
-                  />
+                  <span className="size-2.5 rounded-full" style={{ backgroundColor: categoryDetail.fill }} />
                   {categoryDetail.name}
                 </SheetTitle>
                 <SheetDescription>
-                  Detalle de consumos por categoría ·{" "}
-                  {categoryDetail.expenses.length}{" "}
-                  {categoryDetail.expenses.length === 1
-                    ? "movimiento"
-                    : "movimientos"}
+                  Detalle de consumos por categoría · {categoryDetail.expenses.length}{" "}
+                  {categoryDetail.expenses.length === 1 ? "movimiento" : "movimientos"}
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-4 px-4 pb-4">
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {currencyAmounts(categoryDetail.currencyTotals).map(
-                    ([currency, amount]) => (
-                      <div
-                        key={currency}
-                        className="rounded-lg border bg-muted/30 p-3"
-                      >
-                        <p className="text-xs text-muted-foreground">
-                          Total · {currency}
-                        </p>
-                        <p className="mt-1 text-lg font-semibold tabular-nums">
-                          {formatCurrency(amount, currency)}
-                        </p>
-                      </div>
-                    ),
-                  )}
+                  {currencyAmounts(categoryDetail.currencyTotals).map(([currency, amount]) => (
+                    <div key={currency} className="rounded-lg border bg-muted/30 p-3">
+                      <p className="text-xs text-muted-foreground">Total · {currency}</p>
+                      <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(amount, currency)}</p>
+                    </div>
+                  ))}
                 </div>
                 <ul className="divide-y rounded-lg border">
                   {categoryDetail.expenses
                     .slice()
-                    .sort((a, b) =>
-                      (b.processDate ?? "").localeCompare(a.processDate ?? ""),
-                    )
+                    .sort((a, b) => (b.processDate ?? "").localeCompare(a.processDate ?? ""))
                     .map((expense) => (
-                      <li
-                        key={expense.id}
-                        className="flex items-center justify-between gap-3 p-3"
-                      >
+                      <li key={expense.id} className="flex items-center justify-between gap-3 p-3">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium">
-                            {expense.description}
-                          </p>
+                          <p className="truncate text-sm font-medium">{expense.description}</p>
                           <p className="mt-0.5 text-xs text-muted-foreground">
-                            {expense.processDate
-                              ? formatDate(expense.processDate)
-                              : "Sin fecha"}
-                            {expense.installment
-                              ? ` · Cuota ${expense.installment}`
-                              : ""}
+                            {expense.processDate ? formatDate(expense.processDate) : "Sin fecha"}
+                            {expense.installment ? ` · Cuota ${expense.installment}` : ""}
                           </p>
-                          {expense.notes && (
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              {expense.notes}
-                            </p>
-                          )}
+                          {expense.notes && <p className="mt-1 text-xs text-muted-foreground">{expense.notes}</p>}
                         </div>
-                        <Badge
-                          variant="secondary"
-                          className="shrink-0 tabular-nums"
-                        >
-                          {formatCurrency(
-                            expense.amount,
-                            expense.currency || "PEN",
-                          )}
+                        <Badge variant="secondary" className="shrink-0 tabular-nums">
+                          {formatCurrency(expense.amount, expense.currency || "PEN")}
                         </Badge>
                       </li>
                     ))}

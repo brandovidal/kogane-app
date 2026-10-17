@@ -60,11 +60,8 @@ export function CardDetailMetrics({
   closeDay?: number | null;
   creditLimit?: number | null;
 }) {
-  const balance =
-    statement?.balances.find((item) => item.currency === "PEN") ??
-    statement?.balances[0];
-  const money = (value: number | null | undefined) =>
-    value == null ? "—" : formatCurrency(value, balance?.currency ?? "PEN");
+  const balance = statement?.balances.find((item) => item.currency === "PEN") ?? statement?.balances[0];
+  const money = (value: number | null | undefined) => (value == null ? "—" : formatCurrency(value, balance?.currency ?? "PEN"));
   const period = `${getMonthName(month)} ${year}`;
   if (view === "payment") return null;
 
@@ -82,65 +79,34 @@ export function CardDetailMetrics({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-emerald-400">
-          <span
-            className="size-2 rounded-full bg-emerald-400"
-            aria-hidden="true"
-          />
-          {statement ? "Estado de cuenta cargado" : "Consumo registrado"} ·{" "}
-          {period}
+          <span className="size-2 rounded-full bg-emerald-400" aria-hidden="true" />
+          {statement ? "Estado de cuenta cargado" : "Consumo registrado"} · {period}
         </span>
         {balance?.totalDue != null && (
           <span className="inline-flex items-center gap-2 rounded-lg border bg-card px-3 py-1 font-semibold tabular-nums">
             {formatCurrency(balance.totalDue, balance.currency)}
-            <span className="text-[10px] font-medium text-muted-foreground">
-              {balance.currency}
-            </span>
+            <span className="text-[10px] font-medium text-muted-foreground">{balance.currency}</span>
           </span>
         )}
         <span className="text-xs text-muted-foreground">
-          {statement?.dueDate
-            ? `Vence ${formatDate(statement.dueDate)}`
-            : "Sin fecha de vencimiento"}
+          {statement?.dueDate ? `Vence ${formatDate(statement.dueDate)}` : "Sin fecha de vencimiento"}
         </span>
       </div>
-      <IndicatorsDisclosure
-        ariaLabel="indicadores de la tarjeta"
-        summary={`${formatCurrency(amount)} · ${movementCount} movimientos`}
-      >
+      <IndicatorsDisclosure ariaLabel="indicadores de la tarjeta" summary={`${formatCurrency(amount)} · ${movementCount} movimientos`}>
         {view === "card-detail" ? (
-          <div
-            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-            aria-label="Indicadores de la tarjeta"
-          >
-            <Metric
-              label="Consumo del ciclo"
-              value={formatCurrency(amount)}
-              note={period}
-              className="card-metric-active"
-            />
-            <Metric
-              label="Categorías"
-              value={String(categories)}
-              note="Con movimientos"
-            />
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores de la tarjeta">
+            <Metric label="Consumo del ciclo" value={formatCurrency(amount)} note={period} className="card-metric-active" />
+            <Metric label="Categorías" value={String(categories)} note="Con movimientos" />
             <Metric label="Mayor categoría" value={largestCategory} />
-            <Metric
-              label="Intereses y seguros"
-              value={money(balance?.itemizedCharges)}
-            />
+            <Metric label="Intereses y seguros" value={money(balance?.itemizedCharges)} />
           </div>
         ) : (
-          <div
-            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-            aria-label="Indicadores de la tarjeta"
-          >
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores de la tarjeta">
             <Metric
               label={
                 <span className="flex items-center justify-between gap-2">
                   Consumo registrado
-                  <span className="text-xs font-medium normal-case tracking-normal text-brand">
-                    Mostrando
-                  </span>
+                  <span className="text-xs font-medium normal-case tracking-normal text-brand">Mostrando</span>
                 </span>
               }
               value={formatCurrency(amount)}
@@ -162,35 +128,19 @@ export function CardDetailMetrics({
             {view === "summary" ? (
               <Metric
                 label="Línea usada"
-                value={
-                  lineUsage(amount, creditLimit) == null
-                    ? "—"
-                    : `${lineUsage(amount, creditLimit)}%`
-                }
-                note={
-                  creditLimit
-                    ? `${formatCurrency(amount)} de ${formatCurrency(creditLimit)}`
-                    : "Sin línea de crédito"
-                }
+                value={lineUsage(amount, creditLimit) == null ? "—" : `${lineUsage(amount, creditLimit)}%`}
+                note={creditLimit ? `${formatCurrency(amount)} de ${formatCurrency(creditLimit)}` : "Sin línea de crédito"}
                 valueClassName="text-amber-400"
               />
             ) : (
               <Metric
                 label="Diferencia con el banco"
                 value={money(balance?.difference)}
-                note={
-                  balance
-                    ? `Banco ${money(balance.totalDue)} · registrado ${formatCurrency(amount)}`
-                    : undefined
-                }
+                note={balance ? `Banco ${money(balance.totalDue)} · registrado ${formatCurrency(amount)}` : undefined}
                 valueClassName="text-amber-400"
               />
             )}
-            <Metric
-              label="Vence"
-              value={statement?.dueDate ? formatDate(statement.dueDate) : "—"}
-              note={dueNote}
-            />
+            <Metric label="Vence" value={statement?.dueDate ? formatDate(statement.dueDate) : "—"} note={dueNote} />
           </div>
         )}
       </IndicatorsDisclosure>

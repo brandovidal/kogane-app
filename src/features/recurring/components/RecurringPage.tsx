@@ -4,12 +4,7 @@ import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { withQuery } from "@/shared/api/query";
 import { ChevronDown, Repeat, Upload } from "lucide-react";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { RecurringDialog } from "./RecurringDialog";
 import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
 import { FromSeriesDialog, type SeriesSource } from "./FromSeriesDialog";
@@ -26,11 +21,7 @@ function RecurringPageView() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <div
-          role="tablist"
-          aria-label="Vistas de recurrentes"
-          className="inline-flex h-9 items-center gap-1 rounded-lg bg-muted/60 p-1"
-        >
+        <div role="tablist" aria-label="Vistas de recurrentes" className="inline-flex h-9 items-center gap-1 rounded-lg bg-muted/60 p-1">
           {(
             [
               ["mes", "Del mes"],
@@ -43,23 +34,14 @@ function RecurringPageView() {
               role="tab"
               aria-selected={view === value}
               onClick={() => setParams(value === "mes" ? {} : { vista: value })}
-              className={`h-7 rounded-md px-2.5 text-sm transition-colors ${
-                view === value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`h-7 rounded-md px-2.5 text-sm transition-colors ${view === value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
               {label}
             </button>
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-9"
-            onClick={() => setImporting(true)}
-          >
+          <Button size="sm" variant="outline" className="h-9" onClick={() => setImporting(true)}>
             <Upload className="mr-1 h-4 w-4" /> Importar recurrentes
           </Button>
           <DropdownMenu>
@@ -73,42 +55,23 @@ function RecurringPageView() {
               <DropdownMenuItem onSelect={() => setFromSeries("fixed-costs")}>
                 <div>
                   <p>Pasar desde Costos fijos…</p>
-                  <p className="text-xs text-muted-foreground">
-                    Elige un gasto fijo y se repite cada mes
-                  </p>
+                  <p className="text-xs text-muted-foreground">Elige un gasto fijo y se repite cada mes</p>
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setFromSeries("subscriptions")}>
                 <div>
                   <p>Pasar desde Plataformas…</p>
-                  <p className="text-xs text-muted-foreground">
-                    Elige una suscripción
-                  </p>
+                  <p className="text-xs text-muted-foreground">Elige una suscripción</p>
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-      {view === "mes" ? (
-        <SubscriptionList
-          group="recurring"
-          onCreateRecurringTemplate={() => setCreateOpen(true)}
-        />
-      ) : (
-        <RecurringList />
-      )}
+      {view === "mes" ? <SubscriptionList group="recurring" onCreateRecurringTemplate={() => setCreateOpen(true)} /> : <RecurringList />}
       <RecurringDialog open={createOpen} onOpenChange={setCreateOpen} />
-      <ImportListDialog
-        open={importing}
-        onOpenChange={setImporting}
-        target="recurring-expenses"
-        title="Importar recurrentes"
-      />
-      <FromSeriesDialog
-        source={fromSeries}
-        onOpenChange={(open) => !open && setFromSeries(null)}
-      />
+      <ImportListDialog open={importing} onOpenChange={setImporting} target="recurring-expenses" title="Importar recurrentes" />
+      <FromSeriesDialog source={fromSeries} onOpenChange={(open) => !open && setFromSeries(null)} />
     </div>
   );
 }

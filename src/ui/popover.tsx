@@ -21,12 +21,7 @@ function Popover(props: React.ComponentProps<typeof PopoverPrimitive.Root>) {
         {...props}
         onOpenChange={(open, details) => {
           // Keep the popup inside the enclosing modal's pointer and focus scope.
-          if (open)
-            setContainer(
-              triggerRef.current?.closest<HTMLElement>(
-                '[role="dialog"], [role="alertdialog"]',
-              ) ?? null,
-            );
+          if (open) setContainer(triggerRef.current?.closest<HTMLElement>('[role="dialog"], [role="alertdialog"]') ?? null);
           props.onOpenChange?.(open, details);
         }}
       />
@@ -34,10 +29,7 @@ function Popover(props: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   );
 }
 
-const PopoverTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof PopoverPrimitive.Trigger>
->((props, ref) => {
+const PopoverTrigger = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof PopoverPrimitive.Trigger>>((props, ref) => {
   const triggerRef = React.useContext(PopoverPortalContext)?.triggerRef;
   const registerTrigger = React.useCallback(
     (element: HTMLButtonElement | null) => {
@@ -64,17 +56,8 @@ function PopoverContent({
 }) {
   const portal = React.useContext(PopoverPortalContext);
   return (
-    <PopoverPrimitive.Portal
-      container={
-        container === undefined ? (portal?.container ?? undefined) : container
-      }
-    >
-      <PopoverPrimitive.Positioner
-        positionMethod="fixed"
-        sideOffset={sideOffset}
-        align={align}
-        className="pointer-events-auto z-50"
-      >
+    <PopoverPrimitive.Portal container={container === undefined ? (portal?.container ?? undefined) : container}>
+      <PopoverPrimitive.Positioner positionMethod="fixed" sideOffset={sideOffset} align={align} className="pointer-events-auto z-50">
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(

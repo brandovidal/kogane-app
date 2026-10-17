@@ -10,10 +10,7 @@ export function useEstimatedProgress(active: boolean) {
       return;
     }
     const start = Date.now();
-    const timer = window.setInterval(
-      () => setProgress(estimateProgress(Date.now() - start)),
-      250,
-    );
+    const timer = window.setInterval(() => setProgress(estimateProgress(Date.now() - start)), 250);
     return () => window.clearInterval(timer);
   }, [active]);
   return progress;

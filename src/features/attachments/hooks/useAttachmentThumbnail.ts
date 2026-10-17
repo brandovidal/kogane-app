@@ -4,10 +4,7 @@ import { useAttachments } from "./attachments";
 
 // Load attachment metadata only for rows approaching the viewport; share the
 // panel's query cache and refresh signed URLs when stale or invalidated.
-export function useAttachmentThumbnail(
-  refType: AttachmentRefType,
-  refId: string,
-) {
+export function useAttachmentThumbnail(refType: AttachmentRefType, refId: string) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 

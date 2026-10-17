@@ -13,13 +13,9 @@ export const PEOPLE_TABS: [PeopleTab, string][] = [
 ];
 
 // "Yo" is always in every page, so it counts as assigned
-export const isAssigned = (person: Person) =>
-  person.isDefault || (person.appearsIn?.length ?? 0) > 0;
+export const isAssigned = (person: Person) => person.isDefault || (person.appearsIn?.length ?? 0) > 0;
 
-export function filterPeople(
-  people: Person[],
-  options: { tab: PeopleTab; query: string; module: PersonModule | null },
-): Person[] {
+export function filterPeople(people: Person[], options: { tab: PeopleTab; query: string; module: PersonModule | null }): Person[] {
   const query = normalize(options.query.trim());
   return people.filter((person) => {
     if (options.tab === "archived") {
@@ -31,17 +27,10 @@ export function filterPeople(
       if (!person.appearsIn?.includes(options.module)) return false;
     }
     if (!query) return true;
-    return [person.name, ...person.aliases].some((text) =>
-      normalize(text).includes(query),
-    );
+    return [person.name, ...person.aliases].some((text) => normalize(text).includes(query));
   });
 }
 
-export function toggleModule(
-  current: PersonModule[],
-  module: PersonModule,
-): PersonModule[] {
-  return current.includes(module)
-    ? current.filter((key) => key !== module)
-    : [...current, module];
+export function toggleModule(current: PersonModule[], module: PersonModule): PersonModule[] {
+  return current.includes(module) ? current.filter((key) => key !== module) : [...current, module];
 }

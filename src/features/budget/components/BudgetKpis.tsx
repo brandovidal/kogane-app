@@ -1,10 +1,4 @@
-import {
-  AlertTriangle,
-  CheckCircle2,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 import { useSetBudget } from "@/features/budget/hooks/summary";
 import type { Summary } from "@/shared/api/types";
@@ -34,11 +28,7 @@ export function BudgetKpis({ summary, month, year }: BudgetKpisProps) {
         label="Ingresos"
         value={formatCurrency(income.total)}
         icon={Wallet}
-        hint={
-          income.extra
-            ? `Sueldo ${formatCurrency(income.salary)} + extras ${formatCurrency(income.extra)}`
-            : "Sueldo del mes"
-        }
+        hint={income.extra ? `Sueldo ${formatCurrency(income.salary)} + extras ${formatCurrency(income.extra)}` : "Sueldo del mes"}
       >
         {isProposal && summary?.budget && (
           <div className="flex items-center gap-2 pt-1">
@@ -72,13 +62,7 @@ export function BudgetKpis({ summary, month, year }: BudgetKpisProps) {
         label="Excedente"
         value={surplus == null ? "—" : formatCurrency(surplus)}
         icon={TrendingUp}
-        hint={
-          surplus == null
-            ? "Registra el sueldo del mes"
-            : surplus < 0
-              ? "Gastaste más de lo que ingresó"
-              : "Ingresos − gastos"
-        }
+        hint={surplus == null ? "Registra el sueldo del mes" : surplus < 0 ? "Gastaste más de lo que ingresó" : "Ingresos − gastos"}
       />
       <BudgetKpiCard
         label="Límite"

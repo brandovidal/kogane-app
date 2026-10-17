@@ -1,22 +1,9 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type SetStateAction,
-} from "react";
+import { useCallback, useEffect, useRef, useState, type SetStateAction } from "react";
 import { URL_STATE_CHANGE_EVENT } from "@/shared/constants/url-state";
-import {
-  readUrlValues,
-  replaceUrlValues,
-  sameUrlValues,
-} from "@/shared/lib/url-state";
+import { readUrlValues, replaceUrlValues, sameUrlValues } from "@/shared/lib/url-state";
 
 // Filters kept in the query string (?q=…&category=…), so a reload or a shared link keeps them (D79)
-export function useUrlFilters<T extends object>(
-  keys: readonly (keyof T & string)[],
-  defaults: T = {} as T,
-) {
+export function useUrlFilters<T extends object>(keys: readonly (keyof T & string)[], defaults: T = {} as T) {
   const [filters, setFilters] = useState<T>(defaults);
   const current = useRef(filters);
   const configuration = useRef({ keys, defaults });

@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  DEFAULT_ROW_COLOR_RULES,
-  parseRowColorRules,
-  rowColorClass,
-  type RowColorRule,
-  type RowColorSubject,
-} from "@/shared/lib/row-color-rules";
+import { DEFAULT_ROW_COLOR_RULES, parseRowColorRules, rowColorClass, type RowColorRule, type RowColorSubject } from "@/shared/lib/row-color-rules";
 import { localTodayKey } from "@/shared/lib/dates";
 
 const STORAGE_PREFIX = "kogane:row-colors:";
@@ -21,9 +15,7 @@ export function useRowColorRules(page: string) {
   useEffect(() => {
     setToday(localTodayKey());
     try {
-      const stored = parseRowColorRules(
-        localStorage.getItem(STORAGE_PREFIX + page),
-      );
+      const stored = parseRowColorRules(localStorage.getItem(STORAGE_PREFIX + page));
       if (stored) setRules(stored);
     } catch {
       // keep the defaults
@@ -51,13 +43,7 @@ export function useRowColorRules(page: string) {
     }
   }, [page]);
 
-  const rowClassName = useMemo(
-    () =>
-      today
-        ? (subject: RowColorSubject) => rowColorClass(rules, subject, today)
-        : () => undefined,
-    [rules, today],
-  );
+  const rowClassName = useMemo(() => (today ? (subject: RowColorSubject) => rowColorClass(rules, subject, today) : () => undefined), [rules, today]);
 
   return { rules, setRules: update, reset, rowClassName };
 }

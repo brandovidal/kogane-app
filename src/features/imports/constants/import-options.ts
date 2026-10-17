@@ -15,14 +15,7 @@ export const TAB_LABELS: Record<ImportTab, string> = {
   issues: "Avisos",
 };
 
-export const TAB_ORDER: ImportTab[] = [
-  "cards",
-  "fixed_costs",
-  "platforms",
-  "debts",
-  "budget",
-  "issues",
-];
+export const TAB_ORDER: ImportTab[] = ["cards", "fixed_costs", "platforms", "debts", "budget", "issues"];
 
 export const ROW_STATUS: Record<
   ImportRowStatus,
@@ -47,9 +40,5 @@ export const BATCH_STATUS: Record<string, string> = {
 };
 
 export const IMPORT_STATUS_ALL = "all";
-export const IMPORT_ROW_STATUSES: ImportRowStatus[] = [
-  "new",
-  "changed",
-  "unchanged",
-];
+export const IMPORT_ROW_STATUSES: ImportRowStatus[] = ["new", "changed", "unchanged"];
 export const IMPORT_ISSUE_STATUSES: ImportRowStatus[] = ["blocked", "warning"];

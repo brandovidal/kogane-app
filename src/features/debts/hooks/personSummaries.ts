@@ -1,15 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
-import {
-  getPersonSummaries,
-  savePersonSummary,
-  setPersonSummariesStatus,
-} from "../services/person-summary.service";
-import type {
-  BulkPersonSummaryStatusDto,
-  SavePersonSummaryDto,
-} from "../types/person-summary.dto";
+import { getPersonSummaries, savePersonSummary, setPersonSummariesStatus } from "../services/person-summary.service";
+import type { BulkPersonSummaryStatusDto, SavePersonSummaryDto } from "../types/person-summary.dto";
 
 const KEY = ["person-summaries"] as const;
 
@@ -21,14 +14,13 @@ export const usePersonSummaries = (month: number, year: number) =>
   });
 
 export const useSavePersonSummary = () =>
-  useApiMutation(
-    (input: { personId: string; body: SavePersonSummaryDto }) =>
-      savePersonSummary(input.personId, input.body),
-    { invalidate: [[...KEY]], success: "Resumen guardado" },
-  );
+  useApiMutation((input: { personId: string; body: SavePersonSummaryDto }) => savePersonSummary(input.personId, input.body), {
+    invalidate: [[...KEY]],
+    success: "Resumen guardado",
+  });
 
 export const useSetPersonSummariesStatus = () =>
-  useApiMutation(
-    (body: BulkPersonSummaryStatusDto) => setPersonSummariesStatus(body),
-    { invalidate: [[...KEY]], success: "Estado actualizado" },
-  );
+  useApiMutation((body: BulkPersonSummaryStatusDto) => setPersonSummariesStatus(body), {
+    invalidate: [[...KEY]],
+    success: "Estado actualizado",
+  });

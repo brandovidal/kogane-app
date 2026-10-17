@@ -1,16 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  FileText,
-  History,
-  Maximize2,
-  Minimize2,
-  Paperclip,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, FileText, History, Maximize2, Minimize2, Paperclip, Pencil, Trash2 } from "lucide-react";
 import type { FixedCost } from "@/shared/api/types";
 import { StatusBadge } from "@/features/expenses/components/StatusBadge";
 import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
@@ -23,13 +12,7 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { FixedCostDetailOverviewSection } from "../sections/detail/FixedCostDetailOverviewSection";
 import { cn } from "@/shared/utils/cn";
@@ -78,14 +61,9 @@ export function FixedCostDetailPage({
     enabled: !!fixedCost,
   });
   const files = attachments.data ?? [];
-  const currentIndex = fixedCost
-    ? items.findIndex((item) => item.id === fixedCost.id)
-    : -1;
+  const currentIndex = fixedCost ? items.findIndex((item) => item.id === fixedCost.id) : -1;
   const previous = currentIndex > 0 ? items[currentIndex - 1] : undefined;
-  const next =
-    currentIndex >= 0 && currentIndex < items.length - 1
-      ? items[currentIndex + 1]
-      : undefined;
+  const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : undefined;
   const latestChange = history.data?.items?.[0];
   const attachmentKinds = Object.keys(ATTACHMENT_KIND_LABELS);
   const fileFilters = ["all", ...attachmentKinds];
@@ -98,23 +76,14 @@ export function FixedCostDetailPage({
   return (
     <Sheet open={!!fixedCost} onOpenChange={(open) => !open && onClose()}>
       {fixedCost && (
-        <SheetContent
-          side="right"
-          className={cn(
-            "w-full gap-0 overflow-hidden",
-            expanded ? "sm:max-w-none" : "sm:max-w-xl",
-          )}
-        >
+        <SheetContent side="right" className={cn("w-full gap-0 overflow-hidden", expanded ? "sm:max-w-none" : "sm:max-w-xl")}>
           <SheetHeader className="min-w-0 shrink-0 gap-1.5 pb-0 pr-12 sm:pr-24">
             <SheetTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left text-lg tracking-tight">
-              <span className="min-w-0 wrap-anywhere">
-                {fixedCost.description}
-              </span>
+              <span className="min-w-0 wrap-anywhere">{fixedCost.description}</span>
               <StatusBadge status={fixedCost.paymentStatus} />
             </SheetTitle>
             <SheetDescription className="wrap-anywhere">
-              {categoryName} · {getMonthName(fixedCost.paymentMonth)}{" "}
-              {fixedCost.paymentYear} ·{" "}
+              {categoryName} · {getMonthName(fixedCost.paymentMonth)} {fixedCost.paymentYear} ·{" "}
               {formatCurrency(fixedCost.amountInPen ?? fixedCost.amount)}
             </SheetDescription>
           </SheetHeader>
@@ -123,29 +92,14 @@ export function FixedCostDetailPage({
             variant="ghost"
             size="icon-sm"
             className="absolute top-2.5 right-12 hidden sm:inline-flex"
-            aria-label={
-              expanded
-                ? "Reducir detalle"
-                : "Ampliar detalle a pantalla completa"
-            }
+            aria-label={expanded ? "Reducir detalle" : "Ampliar detalle a pantalla completa"}
             aria-pressed={expanded}
             onClick={() => setExpanded((current) => !current)}
           >
-            {expanded ? (
-              <Minimize2 aria-hidden="true" />
-            ) : (
-              <Maximize2 aria-hidden="true" />
-            )}
+            {expanded ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
           </Button>
-          <Tabs
-            value={tab}
-            onValueChange={(value) => setTab(value as DetailTab)}
-            className="min-h-0 flex-1 gap-0"
-          >
-            <TabsList
-              variant="line"
-              className="w-full justify-start gap-4 border-b px-4"
-            >
+          <Tabs value={tab} onValueChange={(value) => setTab(value as DetailTab)} className="min-h-0 flex-1 gap-0">
+            <TabsList variant="line" className="w-full justify-start gap-4 border-b px-4">
               <TabsTrigger value="detail" className="flex-none px-0">
                 <FileText aria-hidden="true" />
                 Detalle
@@ -153,28 +107,19 @@ export function FixedCostDetailPage({
               <TabsTrigger value="files" className="flex-none px-0">
                 <Paperclip aria-hidden="true" />
                 Archivos
-                <Badge
-                  variant="secondary"
-                  className="ml-1 h-5 min-w-5 px-1 text-[10px]"
-                >
+                <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                   {files.length}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="history" className="flex-none px-0">
                 <History aria-hidden="true" />
                 Historial
-                <Badge
-                  variant="secondary"
-                  className="ml-1 h-5 min-w-5 px-1 text-[10px]"
-                >
+                <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                   {history.data?.total ?? 0}
                 </Badge>
               </TabsTrigger>
             </TabsList>
-            <TabsContent
-              value="detail"
-              className="min-h-0 overflow-y-auto overscroll-contain"
-            >
+            <TabsContent value="detail" className="min-h-0 overflow-y-auto overscroll-contain">
               <FixedCostDetailOverviewSection
                 fixedCost={fixedCost}
                 categoryName={categoryName}
@@ -199,28 +144,18 @@ export function FixedCostDetailPage({
                       className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
                     >
                       <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                        {files[0].contentType.startsWith("image/") &&
-                        files[0].url ? (
-                          <img
-                            src={files[0].url}
-                            alt=""
-                            className="size-full object-cover"
-                          />
+                        {files[0].contentType.startsWith("image/") && files[0].url ? (
+                          <img src={files[0].url} alt="" className="size-full object-cover" />
                         ) : (
                           <Paperclip className="size-4" />
                         )}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block font-medium">
-                          {files.length}{" "}
-                          {files.length === 1
-                            ? "archivo adjunto"
-                            : "archivos adjuntos"}
+                          {files.length} {files.length === 1 ? "archivo adjunto" : "archivos adjuntos"}
                         </span>
                         <span className="block truncate text-sm text-muted-foreground">
-                          {ATTACHMENT_KIND_LABELS[files[0].kind] ??
-                            files[0].kind}{" "}
-                          · {files[0].name}
+                          {ATTACHMENT_KIND_LABELS[files[0].kind] ?? files[0].kind} · {files[0].name}
                         </span>
                       </span>
                       <Eye className="size-4 text-muted-foreground" />
@@ -241,10 +176,7 @@ export function FixedCostDetailPage({
                             timeStyle: "short",
                           }).format(new Date(latestChange.createdAt))}
                         </span>
-                        <span className="block truncate text-sm text-muted-foreground">
-                          {latestChange.changes[0]?.field ??
-                            latestChange.action}
-                        </span>
+                        <span className="block truncate text-sm text-muted-foreground">{latestChange.changes[0]?.field ?? latestChange.action}</span>
                       </span>
                       <Eye className="size-4 text-muted-foreground" />
                     </button>
@@ -252,21 +184,14 @@ export function FixedCostDetailPage({
                 </div>
               )}
             </TabsContent>
-            <TabsContent
-              value="files"
-              className="min-h-0 overflow-y-auto overscroll-contain p-4"
-            >
+            <TabsContent value="files" className="min-h-0 overflow-y-auto overscroll-contain p-4">
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <h2 className="font-semibold">Adjuntos</h2>
-                  <span className="text-sm text-muted-foreground">
-                    {files.length} archivos
-                  </span>
+                  <span className="text-sm text-muted-foreground">{files.length} archivos</span>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs font-medium">
-                    Tipo para los archivos nuevos
-                  </p>
+                  <p className="text-xs font-medium">Tipo para los archivos nuevos</p>
                   <div className="flex flex-wrap gap-2">
                     {attachmentKinds.map((kind) => (
                       <Button
@@ -278,26 +203,16 @@ export function FixedCostDetailPage({
                         aria-pressed={uploadKind === kind}
                         onClick={() => setUploadKind(kind)}
                       >
-                        {uploadKind === kind && (
-                          <span aria-hidden="true">✓</span>
-                        )}
+                        {uploadKind === kind && <span aria-hidden="true">✓</span>}
                         {ATTACHMENT_KIND_LABELS[kind]}
                       </Button>
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Se aplica a los archivos que subas ahora.
-                  </p>
+                  <p className="text-xs text-muted-foreground">Se aplica a los archivos que subas ahora.</p>
                 </div>
-                <div
-                  className="flex flex-wrap gap-2 border-t pt-3"
-                  aria-label="Filtrar archivos por tipo"
-                >
+                <div className="flex flex-wrap gap-2 border-t pt-3" aria-label="Filtrar archivos por tipo">
                   {fileFilters.map((kind) => {
-                    const count =
-                      kind === "all"
-                        ? files.length
-                        : files.filter((file) => file.kind === kind).length;
+                    const count = kind === "all" ? files.length : files.filter((file) => file.kind === kind).length;
                     if (kind !== "all" && !count) return null;
                     return (
                       <Button
@@ -309,12 +224,7 @@ export function FixedCostDetailPage({
                         onClick={() => setFilterKind(kind)}
                         aria-pressed={filterKind === kind}
                       >
-                        {kind === "all"
-                          ? "Todos"
-                          : ATTACHMENT_KIND_LABELS[kind]}{" "}
-                        <span className="ml-1 text-muted-foreground">
-                          {count}
-                        </span>
+                        {kind === "all" ? "Todos" : ATTACHMENT_KIND_LABELS[kind]} <span className="ml-1 text-muted-foreground">{count}</span>
                       </Button>
                     );
                   })}
@@ -331,25 +241,12 @@ export function FixedCostDetailPage({
                 />
               </div>
             </TabsContent>
-            <TabsContent
-              value="history"
-              className="min-h-0 overflow-y-auto overscroll-contain p-4"
-            >
-              <RecordHistoryPanel
-                key={fixedCost.id}
-                entity="exp_fixed_costs"
-                id={fixedCost.id}
-                compact
-              />
+            <TabsContent value="history" className="min-h-0 overflow-y-auto overscroll-contain p-4">
+              <RecordHistoryPanel key={fixedCost.id} entity="exp_fixed_costs" id={fixedCost.id} compact />
             </TabsContent>
           </Tabs>
           <footer className="flex shrink-0 items-center justify-between border-t px-4 py-3">
-            <Button
-              type="button"
-              variant="ghost"
-              className="text-destructive hover:text-destructive"
-              onClick={() => setConfirmDelete(true)}
-            >
+            <Button type="button" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}>
               <Trash2 className="size-4" />
               Eliminar
             </Button>
@@ -380,12 +277,7 @@ export function FixedCostDetailPage({
             open={confirmDelete}
             onOpenChange={setConfirmDelete}
             title="¿Eliminar costo fijo?"
-            description={
-              <>
-                Se eliminará «{fixedCost.description}». Esta acción no se puede
-                deshacer.
-              </>
-            }
+            description={<>Se eliminará «{fixedCost.description}». Esta acción no se puede deshacer.</>}
             pending={deleting}
             onConfirm={() => {
               setDeleting(true);

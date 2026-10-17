@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/ui/button";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatDate } from "@/shared/lib/dates";
-import {
-  useDiscardDraft,
-  useSaveDraft,
-  useUpdateDraft,
-  type DraftFields,
-} from "@/features/drafts/hooks/drafts";
+import { useDiscardDraft, useSaveDraft, useUpdateDraft, type DraftFields } from "@/features/drafts/hooks/drafts";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import { toDraftBody } from "@/features/drafts/lib/draft-form";
 import { originLabel } from "@/features/drafts/lib/draft-filters";
@@ -37,13 +32,7 @@ interface EditableDraft {
 }
 
 // Completar / Editar borrador (board B4): Guardar completa los datos y, si ya está todo, lo guarda en su destino
-export function DraftEditDialog({
-  draft,
-  onClose,
-}: {
-  draft?: EditableDraft;
-  onClose: () => void;
-}) {
+export function DraftEditDialog({ draft, onClose }: { draft?: EditableDraft; onClose: () => void }) {
   const updateDraft = useUpdateDraft();
   const saveDraft = useSaveDraft();
   const discardDraft = useDiscardDraft();
@@ -72,8 +61,7 @@ export function DraftEditDialog({
     });
   }, [draft]);
 
-  const busy =
-    updateDraft.isPending || saveDraft.isPending || discardDraft.isPending;
+  const busy = updateDraft.isPending || saveDraft.isPending || discardDraft.isPending;
 
   // Guarda los cambios; si la API ya no ve campos faltantes, lo manda a su destino
   const save = async () => {
@@ -83,9 +71,7 @@ export function DraftEditDialog({
         id: draft.id,
         body: toDraftBody(fields),
       });
-      const stillMissing =
-        (updated as { missingFields?: string[] } | undefined)?.missingFields ??
-        [];
+      const stillMissing = (updated as { missingFields?: string[] } | undefined)?.missingFields ?? [];
       setMissing(stillMissing);
       if (stillMissing.length === 0) {
         await saveDraft.mutateAsync(draft.id);
@@ -106,9 +92,7 @@ export function DraftEditDialog({
   };
 
   const incomplete = (draft?.missingFields.length ?? 0) > 0;
-  const where = fields.destination
-    ? (DESTINATION_LABELS[fields.destination] ?? fields.destination)
-    : null;
+  const where = fields.destination ? (DESTINATION_LABELS[fields.destination] ?? fields.destination) : null;
 
   return (
     <ResponsiveDialog
@@ -116,18 +100,11 @@ export function DraftEditDialog({
       onOpenChange={(open) => !open && onClose()}
       title={incomplete ? "Completar borrador" : "Editar borrador"}
       description={
-        draft
-          ? `${originLabel(draft.channel)} · ${formatDate(draft.createdAt)}${draft.rawText ? ` · «${draft.rawText}»` : ""}`
-          : undefined
+        draft ? `${originLabel(draft.channel)} · ${formatDate(draft.createdAt)}${draft.rawText ? ` · «${draft.rawText}»` : ""}` : undefined
       }
       footer={
         <>
-          <Button
-            variant="ghost"
-            className="mr-auto text-destructive hover:text-destructive"
-            onClick={() => void discard()}
-            disabled={busy}
-          >
+          <Button variant="ghost" className="mr-auto text-destructive hover:text-destructive" onClick={() => void discard()} disabled={busy}>
             Descartar
           </Button>
           <Button variant="outline" onClick={onClose} disabled={busy}>
@@ -140,11 +117,7 @@ export function DraftEditDialog({
       }
     >
       <DraftForm value={fields} onChange={setFields} missingFields={missing} />
-      {where && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Se guardará en {where}
-        </p>
-      )}
+      {where && <p className="mt-3 text-xs text-muted-foreground">Se guardará en {where}</p>}
     </ResponsiveDialog>
   );
 }

@@ -1,22 +1,7 @@
-import {
-  CURRENCY_OPTIONS,
-  type CurrencyCode,
-} from "@/shared/constants/currency";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { CURRENCY_OPTIONS, type CurrencyCode } from "@/shared/constants/currency";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
-export function CurrencySelect({
-  value,
-  onChange,
-}: {
-  value: CurrencyCode;
-  onChange: (currency: CurrencyCode) => void;
-}) {
+export function CurrencySelect({ value, onChange }: { value: CurrencyCode; onChange: (currency: CurrencyCode) => void }) {
   return (
     <Select
       value={value}

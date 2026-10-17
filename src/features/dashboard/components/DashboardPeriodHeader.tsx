@@ -1,18 +1,9 @@
 import { useState } from "react";
-import {
-  CalendarDays,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
-import {
-  getCurrentMonth,
-  getCurrentYear,
-  getMonthName,
-} from "@/shared/lib/dates";
+import { getCurrentMonth, getCurrentYear, getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 import { PERIOD_YEAR_MAX, PERIOD_YEAR_MIN } from "@/shared/constants/period";
 
@@ -26,21 +17,11 @@ export function DashboardPeriodHeader() {
   const isCurrent = month === getCurrentMonth() && year === getCurrentYear();
   const isPast = year * 12 + month < getCurrentYear() * 12 + getCurrentMonth();
   const billedMonth = getCurrentMonth() === 1 ? 12 : getCurrentMonth() - 1;
-  const billedYear =
-    getCurrentMonth() === 1 ? getCurrentYear() - 1 : getCurrentYear();
+  const billedYear = getCurrentMonth() === 1 ? getCurrentYear() - 1 : getCurrentYear();
 
   return (
-    <div
-      className="flex items-center gap-1 rounded-lg border bg-card p-1"
-      aria-label="Período del dashboard"
-    >
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8"
-        aria-label="Mes anterior"
-        onClick={() => navigate(-1)}
-      >
+    <div className="flex items-center gap-1 rounded-lg border bg-card p-1" aria-label="Período del dashboard">
+      <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Mes anterior" onClick={() => navigate(-1)}>
         <ChevronLeft className="size-4" />
       </Button>
       <Popover
@@ -50,10 +31,7 @@ export function DashboardPeriodHeader() {
           if (next) setGridYear(year);
         }}
       >
-        <PopoverTrigger
-          type="button"
-          className="flex h-8 items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors hover:bg-muted"
-        >
+        <PopoverTrigger type="button" className="flex h-8 items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors hover:bg-muted">
           <CalendarDays className="size-4 text-muted-foreground" />
           <span>
             {getMonthName(month)} {year}
@@ -82,9 +60,7 @@ export function DashboardPeriodHeader() {
               }}
               className={`rounded-lg border p-2.5 text-left transition-colors hover:bg-muted ${month === billedMonth && year === billedYear ? "border-amber-500/50 bg-amber-500/10" : ""}`}
             >
-              <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Mes facturado
-              </span>
+              <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Mes facturado</span>
               <span className="mt-0.5 block text-sm font-medium">
                 {getMonthName(billedMonth)} {billedYear}
               </span>
@@ -97,9 +73,7 @@ export function DashboardPeriodHeader() {
               }}
               className={`rounded-lg border p-2.5 text-left transition-colors hover:bg-muted ${isCurrent ? "border-emerald-500/50 bg-emerald-500/10" : ""}`}
             >
-              <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                En curso
-              </span>
+              <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">En curso</span>
               <span className="mt-0.5 block text-sm font-medium">
                 {getMonthName(getCurrentMonth())} {getCurrentYear()}
               </span>
@@ -117,9 +91,7 @@ export function DashboardPeriodHeader() {
             >
               <ChevronLeft className="size-4" />
             </Button>
-            <span className="text-sm font-semibold tabular-nums">
-              {gridYear}
-            </span>
+            <span className="text-sm font-semibold tabular-nums">{gridYear}</span>
             <Button
               type="button"
               variant="ghost"
@@ -135,9 +107,7 @@ export function DashboardPeriodHeader() {
           <div className="grid grid-cols-4 gap-1">
             {Array.from({ length: 12 }, (_, index) => {
               const selected = month === index + 1 && year === gridYear;
-              const future =
-                gridYear * 12 + index + 1 >
-                getCurrentYear() * 12 + getCurrentMonth();
+              const future = gridYear * 12 + index + 1 > getCurrentYear() * 12 + getCurrentMonth();
               return (
                 <button
                   key={index}
@@ -171,13 +141,7 @@ export function DashboardPeriodHeader() {
           </div>
         </PopoverContent>
       </Popover>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8"
-        aria-label="Mes siguiente"
-        onClick={() => navigate(1)}
-      >
+      <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Mes siguiente" onClick={() => navigate(1)}>
         <ChevronRight className="size-4" />
       </Button>
     </div>

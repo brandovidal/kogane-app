@@ -30,8 +30,7 @@ function IncomesPageView() {
   const month = usePeriod((state) => state.month);
   const year = usePeriod((state) => state.year);
   const setPeriod = usePeriod((state) => state.setPeriod);
-  const changePeriod = (period: MonthlyPeriod) =>
-    setPeriod(period.month, period.year);
+  const changePeriod = (period: MonthlyPeriod) => setPeriod(period.month, period.year);
   const query = useIncomes(month, year);
   const summary = useSummary(month, year);
   const incomes = query.data ?? [];
@@ -53,24 +52,15 @@ function IncomesPageView() {
           <h2 className="text-lg font-semibold">
             Ingresos de {getMonthName(month)} {year}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Gestiona el sueldo y los ingresos extra de cada mes.
-          </p>
+          <p className="text-sm text-muted-foreground">Gestiona el sueldo y los ingresos extra de cada mes.</p>
         </div>
         <div className="w-full sm:w-72">
-          <PeriodFields
-            value={{ month, year }}
-            onChange={changePeriod}
-            ariaLabel="Mes de ingresos"
-          />
+          <PeriodFields value={{ month, year }} onChange={changePeriod} ariaLabel="Mes de ingresos" />
         </div>
       </div>
 
       {summary.isPending && (
-        <p
-          role="status"
-          className="flex items-center gap-2 text-sm text-muted-foreground"
-        >
+        <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
           Cargando sueldo del mes…
         </p>
@@ -85,9 +75,7 @@ function IncomesPageView() {
       )}
       <IncomeSummarySection
         budget={summary.isError ? undefined : summary.data?.budget}
-        totals={
-          query.data && !query.isError ? incomeTotals(incomes) : undefined
-        }
+        totals={query.data && !query.isError ? incomeTotals(incomes) : undefined}
         onEditSalary={() => setSalaryOpen(true)}
       />
 
@@ -97,11 +85,7 @@ function IncomesPageView() {
             <h2 id="extra-incomes-title" className="text-base font-semibold">
               Ingresos extra
             </h2>
-            {query.data && !query.isError && (
-              <p className="text-xs text-muted-foreground">
-                {incomes.length} registros en este mes
-              </p>
-            )}
+            {query.data && !query.isError && <p className="text-xs text-muted-foreground">{incomes.length} registros en este mes</p>}
           </div>
           <div className="flex items-center gap-2">
             <ViewToggle value={view} onChange={setView} />
@@ -112,10 +96,7 @@ function IncomesPageView() {
           </div>
         </div>
         {query.isPending ? (
-          <p
-            role="status"
-            className="flex items-center gap-2 py-8 text-sm text-muted-foreground"
-          >
+          <p role="status" className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
             <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
             Cargando ingresos extra…
           </p>
@@ -129,43 +110,21 @@ function IncomesPageView() {
         ) : incomes.length === 0 ? (
           <EmptyState description="No hay ingresos extra en este mes" />
         ) : (
-          <DataView
-            items={incomes}
-            columns={columns}
-            rowKey={(income) => income.id}
-            view={view}
-          />
+          <DataView items={incomes} columns={columns} rowKey={(income) => income.id} view={view} />
         )}
       </section>
 
       {editing !== undefined && (
-        <IncomeDialog
-          income={editing}
-          period={{ month, year }}
-          onClose={() => setEditing(undefined)}
-          onSaved={changePeriod}
-        />
+        <IncomeDialog income={editing} period={{ month, year }} onClose={() => setEditing(undefined)} onSaved={changePeriod} />
       )}
-      {salaryOpen && (
-        <SalaryDialog
-          open
-          onOpenChange={setSalaryOpen}
-          initialPeriod={{ month, year }}
-          onSaved={changePeriod}
-        />
-      )}
+      {salaryOpen && <SalaryDialog open onOpenChange={setSalaryOpen} initialPeriod={{ month, year }} onSaved={changePeriod} />}
       <DeleteConfirmationDialog
         open={!!deleting}
         onOpenChange={(open) => {
           if (!open) setDeleting(null);
         }}
         title="Eliminar ingreso"
-        description={
-          <>
-            Se eliminará «{deleting?.description}» y se actualizará el total de
-            su mes. Esta acción no se puede deshacer.
-          </>
-        }
+        description={<>Se eliminará «{deleting?.description}» y se actualizará el total de su mes. Esta acción no se puede deshacer.</>}
         pending={deleteIncome.isPending}
         onConfirm={() => {
           if (deleting)

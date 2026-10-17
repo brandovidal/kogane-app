@@ -10,9 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-export interface GroupingMenuProps<
-  T extends string | readonly string[] = string,
-> {
+export interface GroupingMenuProps<T extends string | readonly string[] = string> {
   value: T;
   onChange: (value: T) => void;
   options: { value: string; label: string }[];
@@ -40,14 +38,9 @@ export function GroupingMenu<T extends string | readonly string[]>({
   className = "w-48",
   hideEmpty,
 }: GroupingMenuProps<T>) {
-  const selected: string[] = Array.isArray(value)
-    ? value.map(String)
-    : value && value !== "none"
-      ? [value as string]
-      : [];
+  const selected: string[] = Array.isArray(value) ? value.map(String) : value && value !== "none" ? [value as string] : [];
   const count = selected.length;
-  const change = (next: string[]) =>
-    onChange((multiple ? next : (next[0] ?? "none")) as T);
+  const change = (next: string[]) => onChange((multiple ? next : (next[0] ?? "none")) as T);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -63,14 +56,10 @@ export function GroupingMenu<T extends string | readonly string[]>({
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align} className={className}>
-        {ordered && (
-          <DropdownMenuLabel>Agrupar por (en orden)</DropdownMenuLabel>
-        )}
+        {ordered && <DropdownMenuLabel>Agrupar por (en orden)</DropdownMenuLabel>}
         <DropdownMenuCheckboxItem
           checked={count === 0}
-          onSelect={
-            multiple || ordered ? (event) => event.preventDefault() : undefined
-          }
+          onSelect={multiple || ordered ? (event) => event.preventDefault() : undefined}
           onCheckedChange={() => change([])}
         >
           Sin agrupar
@@ -79,11 +68,7 @@ export function GroupingMenu<T extends string | readonly string[]>({
           <DropdownMenuCheckboxItem
             key={option.value}
             checked={selected.includes(option.value)}
-            onSelect={
-              multiple || ordered
-                ? (event) => event.preventDefault()
-                : undefined
-            }
+            onSelect={multiple || ordered ? (event) => event.preventDefault() : undefined}
             onCheckedChange={(checked) =>
               change(
                 checked
@@ -98,20 +83,14 @@ export function GroupingMenu<T extends string | readonly string[]>({
           >
             {option.label}
             {ordered && selected.includes(option.value) && count > 1 && (
-              <span className="ml-auto text-xs text-muted-foreground">
-                {selected.indexOf(option.value) + 1}°
-              </span>
+              <span className="ml-auto text-xs text-muted-foreground">{selected.indexOf(option.value) + 1}°</span>
             )}
           </DropdownMenuCheckboxItem>
         ))}
         {hideEmpty && count > 0 && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={hideEmpty.checked}
-              onSelect={(event) => event.preventDefault()}
-              onCheckedChange={hideEmpty.onChange}
-            >
+            <DropdownMenuCheckboxItem checked={hideEmpty.checked} onSelect={(event) => event.preventDefault()} onCheckedChange={hideEmpty.onChange}>
               Ocultar grupos vacíos
             </DropdownMenuCheckboxItem>
           </>

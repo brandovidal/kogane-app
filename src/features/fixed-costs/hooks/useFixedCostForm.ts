@@ -26,32 +26,19 @@ export interface FixedCostDialogProps {
   fixedCost?: FixedCost;
 }
 
-export function useFixedCostForm({
-  open,
-  onOpenChange,
-  fixedCost,
-}: FixedCostDialogProps) {
+export function useFixedCostForm({ open, onOpenChange, fixedCost }: FixedCostDialogProps) {
   const saveExpense = useSaveExpense(EXPENSE_RESOURCES.fixedCost);
   const uploadAttachment = useUploadAttachment({ quiet: true });
-  const currentCost = useExpense(
-    EXPENSE_RESOURCES.fixedCost,
-    fixedCost?.id,
-    open,
-  );
+  const currentCost = useExpense(EXPENSE_RESOURCES.fixedCost, fixedCost?.id, open);
   const [createdId, setCreatedId] = useState<string>();
-  const [pendingAttachments, setPendingAttachments] = useState<
-    PendingAttachmentUpload[]
-  >([]);
+  const [pendingAttachments, setPendingAttachments] = useState<PendingAttachmentUpload[]>([]);
   const [invalidSavedUploads, setInvalidSavedUploads] = useState(0);
-  const [uploadingAttachmentIds, setUploadingAttachmentIds] = useState<
-    Set<string>
-  >(() => new Set());
+  const [uploadingAttachmentIds, setUploadingAttachmentIds] = useState<Set<string>>(() => new Set());
   const isUploading =
     useIsMutating({
       mutationKey: attachmentKeys.upload,
       predicate: (mutation) => {
-        const variables = mutation.state.variables as
-          AttachmentUpload | undefined;
+        const variables = mutation.state.variables as AttachmentUpload | undefined;
         return variables?.refId === (fixedCost?.id ?? createdId);
       },
     }) > 0;
@@ -76,25 +63,12 @@ export function useFixedCostForm({
 
   // An upload can finish after leaving the Notes tab. Sync only this field, keeping other edits intact.
   useEffect(() => {
-    if (
-      open &&
-      currentCost.data?.paymentStatus === "paid" &&
-      getValues("paymentStatus") === "not_started"
-    ) {
+    if (open && currentCost.data?.paymentStatus === "paid" && getValues("paymentStatus") === "not_started") {
       setValue("paymentStatus", "paid", { shouldDirty: true });
     }
-  }, [
-    open,
-    fixedCost?.id,
-    currentCost.data?.paymentStatus,
-    getValues,
-    setValue,
-  ]);
+  }, [open, fixedCost?.id, currentCost.data?.paymentStatus, getValues, setValue]);
 
-  const uploadPendingAttachments = async (
-    refId: string,
-    files: PendingAttachmentUpload[],
-  ) => {
+  const uploadPendingAttachments = async (refId: string, files: PendingAttachmentUpload[]) => {
     const failed: PendingAttachmentUpload[] = [];
     for (const pending of files) {
       setUploadingAttachmentIds((current) => new Set(current).add(pending.id));
@@ -105,10 +79,7 @@ export function useFixedCostForm({
           refId,
           kind: pending.kind,
         });
-        if (
-          attachment.kind === "boleta" &&
-          getValues("paymentStatus") === "not_started"
-        ) {
+        if (attachment.kind === "boleta" && getValues("paymentStatus") === "not_started") {
           setValue("paymentStatus", "paid", { shouldDirty: true });
         }
       } catch {
@@ -122,28 +93,20 @@ export function useFixedCostForm({
       }
     }
     setPendingAttachments(failed);
-    if (failed.length)
-      toast.error(
-        "No se pudieron subir todos los archivos. Puedes reintentar desde Notas y archivos.",
-      );
+    if (failed.length) toast.error("No se pudieron subir todos los archivos. Puedes reintentar desde Notas y archivos.");
   };
 
   const retryPendingAttachments = () => {
     const id = fixedCost?.id ?? createdId;
-    if (id && pendingAttachments.length)
-      void uploadPendingAttachments(id, pendingAttachments);
+    if (id && pendingAttachments.length) void uploadPendingAttachments(id, pendingAttachments);
   };
 
   const onSubmit = handleSubmit(
     (values) => {
-      const hasOversizedPending = pendingAttachments.some(
-        ({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024,
-      );
+      const hasOversizedPending = pendingAttachments.some(({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024);
       if (hasOversizedPending || invalidSavedUploads > 0) {
         setActiveTab("notes");
-        toast.error(
-          `Comprime o reemplaza los archivos para que pesen ${ATTACHMENT_MAX_MB} MB o menos antes de guardar.`,
-        );
+        toast.error(`Comprime o reemplaza los archivos para que pesen ${ATTACHMENT_MAX_MB} MB o menos antes de guardar.`);
         return;
       }
       if (isUploading) return;
@@ -161,8 +124,7 @@ export function useFixedCostForm({
                 });
                 setCreatedId(id);
                 setActiveTab("notes");
-                if (pendingAttachments.length)
-                  void uploadPendingAttachments(id, pendingAttachments);
+                if (pendingAttachments.length) void uploadPendingAttachments(id, pendingAttachments);
                 return;
               }
             }
@@ -172,13 +134,7 @@ export function useFixedCostForm({
       );
     },
     (errors) => {
-      setActiveTab(
-        Object.keys(errors).some((field) =>
-          FIXED_COST_SCHEDULE_FIELDS.includes(field),
-        )
-          ? "schedule"
-          : "general",
-      );
+      setActiveTab(Object.keys(errors).some((field) => FIXED_COST_SCHEDULE_FIELDS.includes(field)) ? "schedule" : "general");
     },
   );
 
@@ -194,14 +150,9 @@ export function useFixedCostForm({
     retryPendingAttachments,
     isUploadingAttachments: isUploading,
     uploadingAttachmentIds,
-    hasInvalidAttachments:
-      invalidSavedUploads > 0 ||
-      pendingAttachments.some(
-        ({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024,
-      ),
+    hasInvalidAttachments: invalidSavedUploads > 0 || pendingAttachments.some(({ file }) => file.size > ATTACHMENT_MAX_MB * 1024 * 1024),
     invalidSavedUploadCount: invalidSavedUploads,
-    isSaving:
-      saveExpense.isPending || isUploading || uploadAttachment.isPending,
+    isSaving: saveExpense.isPending || isUploading || uploadAttachment.isPending,
     setInvalidSavedUploads,
   };
 }

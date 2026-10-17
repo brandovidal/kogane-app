@@ -2,11 +2,7 @@ import { useEffect } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useThemeStore } from "@/shared/hooks/useTheme";
 import { THEME_OPTIONS, THEME_PREFERENCE } from "@/shared/constants/theme";
-import {
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from "@/ui/dropdown-menu";
+import { DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/ui/dropdown-menu";
 
 const ICONS = { light: Sun, dark: Moon, system: Monitor };
 
@@ -29,12 +25,7 @@ export function ThemeMenuItems() {
         className="mx-1 mb-1 grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
         value={preference}
         onValueChange={(value) => {
-          if (
-            value === THEME_PREFERENCE.LIGHT ||
-            value === THEME_PREFERENCE.DARK ||
-            value === THEME_PREFERENCE.SYSTEM
-          )
-            setTheme(value);
+          if (value === THEME_PREFERENCE.LIGHT || value === THEME_PREFERENCE.DARK || value === THEME_PREFERENCE.SYSTEM) setTheme(value);
         }}
       >
         {THEME_OPTIONS.map((option) => {

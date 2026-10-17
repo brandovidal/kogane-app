@@ -8,18 +8,11 @@ import { importList, type ListImportTarget } from "../services/import.service";
 export function useListImport(target: ListImportTarget) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { file: File; apply: boolean }) =>
-      importList({ target, ...input }),
+    mutationFn: (input: { file: File; apply: boolean }) => importList({ target, ...input }),
     onSuccess: async (result) => {
       if (!result.applied) return;
-      await Promise.all(
-        [["expenses"], ["debts"], ["calendar"], ["summary"]].map((queryKey) =>
-          queryClient.invalidateQueries({ queryKey }),
-        ),
-      );
-      toast.success(
-        `${result.created} ${result.created === 1 ? "fila importada" : "filas importadas"}`,
-      );
+      await Promise.all([["expenses"], ["debts"], ["calendar"], ["summary"]].map((queryKey) => queryClient.invalidateQueries({ queryKey })));
+      toast.success(`${result.created} ${result.created === 1 ? "fila importada" : "filas importadas"}`);
     },
     onError: (error) => toast.error(errorMessage(error)),
   });

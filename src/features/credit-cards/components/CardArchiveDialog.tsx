@@ -27,24 +27,15 @@ export function CardArchiveDialog({
 }) {
   const deactivate = useDeactivatePaymentMethod();
   return (
-    <AlertDialog
-      open
-      onOpenChange={(open) => !open && !deactivate.isPending && onClose()}
-    >
-      <AlertDialogContent
-        className="sm:max-w-md"
-        aria-busy={deactivate.isPending}
-      >
+    <AlertDialog open onOpenChange={(open) => !open && !deactivate.isPending && onClose()}>
+      <AlertDialogContent className="sm:max-w-md" aria-busy={deactivate.isPending}>
         <AlertDialogHeader>
           <span className="flex size-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
             <Archive aria-hidden="true" className="size-5" />
           </span>
-          <AlertDialogTitle className="break-words">
-            ¿Archivar la tarjeta {card.name}?
-          </AlertDialogTitle>
+          <AlertDialogTitle className="break-words">¿Archivar la tarjeta {card.name}?</AlertDialogTitle>
           <AlertDialogDescription className="break-words">
-            {archiveSummary(movements, pending)} Dejará de aparecer en las
-            listas y en el registro de gastos.
+            {archiveSummary(movements, pending)} Dejará de aparecer en las listas y en el registro de gastos.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -60,10 +51,7 @@ export function CardArchiveDialog({
             }}
           >
             {deactivate.isPending ? (
-              <LoaderCircle
-                aria-hidden="true"
-                className="size-4 animate-spin"
-              />
+              <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
             ) : (
               <Archive aria-hidden="true" className="size-4" />
             )}

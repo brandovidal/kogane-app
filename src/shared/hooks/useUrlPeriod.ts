@@ -1,8 +1,5 @@
 import { useEffect } from "react";
-import {
-  URL_PERIOD_KEYS,
-  URL_STATE_CHANGE_EVENT,
-} from "@/shared/constants/url-state";
+import { URL_PERIOD_KEYS, URL_STATE_CHANGE_EVENT } from "@/shared/constants/url-state";
 import { replaceUrlValues } from "@/shared/lib/url-state";
 import { periodStore } from "@/shared/stores/period.store";
 
@@ -14,9 +11,7 @@ export function useUrlPeriod({
 }: { minYear?: number; maxYear?: number; defaultToCurrent?: boolean } = {}) {
   useEffect(() => {
     const today = new Date();
-    const initial = defaultToCurrent
-      ? { month: today.getMonth() + 1, year: today.getFullYear() }
-      : periodStore.getState();
+    const initial = defaultToCurrent ? { month: today.getMonth() + 1, year: today.getFullYear() } : periodStore.getState();
     const write = () => {
       const { month, year } = periodStore.getState();
       replaceUrlValues(URL_PERIOD_KEYS, {
@@ -30,15 +25,10 @@ export function useUrlPeriod({
       const yearValue = params.get("year") ?? "";
       const parsedMonth = /^\d{1,2}$/.test(monthValue) ? Number(monthValue) : 0;
       const parsedYear = /^\d{1,4}$/.test(yearValue) ? Number(yearValue) : 0;
-      const month =
-        parsedMonth >= 1 && parsedMonth <= 12 ? parsedMonth : initial.month;
-      const year =
-        parsedYear >= minYear && parsedYear <= maxYear
-          ? parsedYear
-          : initial.year;
+      const month = parsedMonth >= 1 && parsedMonth <= 12 ? parsedMonth : initial.month;
+      const year = parsedYear >= minYear && parsedYear <= maxYear ? parsedYear : initial.year;
       const current = periodStore.getState();
-      if (current.month !== month || current.year !== year)
-        current.setPeriod(month, year);
+      if (current.month !== month || current.year !== year) current.setPeriod(month, year);
     };
     restore();
     const unsubscribe = periodStore.subscribe(write);

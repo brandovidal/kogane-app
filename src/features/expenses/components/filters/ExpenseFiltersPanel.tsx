@@ -56,8 +56,7 @@ export function ExpenseFiltersPanel({
               className="[display:-webkit-box] overflow-hidden whitespace-normal [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
               title={description}
             >
-              {description ??
-                "Filtra los registros y conserva tus opciones en la dirección de la página."}
+              {description ?? "Filtra los registros y conserva tus opciones en la dirección de la página."}
             </span>
             {!compactCountInTitle && countLabel && (
               <span className="mt-1 block">
@@ -68,14 +67,7 @@ export function ExpenseFiltersPanel({
         </>
       }
       footer={
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          className="ml-auto h-8 px-3 text-xs"
-          disabled={count === 0}
-          onClick={onClear}
-        >
+        <Button type="button" variant="destructive" size="sm" className="ml-auto h-8 px-3 text-xs" disabled={count === 0} onClick={onClear}>
           <Trash className="mr-1 size-3.5" /> Limpiar
         </Button>
       }

@@ -22,28 +22,16 @@ export interface DeleteConfirmationDialogProps {
   pending?: boolean;
 }
 
-export function DeleteConfirmationDialog({
-  open,
-  onOpenChange,
-  title,
-  description,
-  onConfirm,
-  pending = false,
-}: DeleteConfirmationDialogProps) {
+export function DeleteConfirmationDialog({ open, onOpenChange, title, description, onConfirm, pending = false }: DeleteConfirmationDialogProps) {
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={(next) => !pending && onOpenChange(next)}
-    >
+    <AlertDialog open={open} onOpenChange={(next) => !pending && onOpenChange(next)}>
       <AlertDialogContent className="sm:max-w-md" aria-busy={pending}>
         <AlertDialogHeader>
           <span className="flex size-10 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
             <Trash2 aria-hidden="true" className="size-5" />
           </span>
           <AlertDialogTitle className="break-words">{title}</AlertDialogTitle>
-          <AlertDialogDescription className="break-words">
-            {description}
-          </AlertDialogDescription>
+          <AlertDialogDescription className="break-words">{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel type="button" disabled={pending}>
@@ -59,14 +47,7 @@ export function DeleteConfirmationDialog({
               if (!pending) onConfirm();
             }}
           >
-            {pending ? (
-              <LoaderCircle
-                aria-hidden="true"
-                className="size-4 animate-spin"
-              />
-            ) : (
-              <Trash2 aria-hidden="true" className="size-4" />
-            )}
+            {pending ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <Trash2 aria-hidden="true" className="size-4" />}
             {pending ? "Eliminando…" : "Eliminar"}
           </AlertDialogAction>
         </AlertDialogFooter>

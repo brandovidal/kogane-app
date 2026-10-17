@@ -1,11 +1,4 @@
-import {
-  CalendarDays,
-  CreditCard,
-  FileUp,
-  MessageCircle,
-  Plus,
-  WalletCards,
-} from "lucide-react";
+import { CalendarDays, CreditCard, FileUp, MessageCircle, Plus, WalletCards } from "lucide-react";
 import { useDraftCount } from "@/features/drafts/hooks/drafts";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { cn } from "@/shared/utils/cn";
@@ -14,38 +7,22 @@ import type { DashboardPaymentTab } from "../types/dashboard";
 const actionClass =
   "inline-flex min-h-10 items-center gap-2 rounded-lg border bg-card px-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-export function DashboardQuickActions({
-  onRegisterPayment,
-}: {
-  onRegisterPayment: (tab: DashboardPaymentTab) => void;
-}) {
+export function DashboardQuickActions({ onRegisterPayment }: { onRegisterPayment: (tab: DashboardPaymentTab) => void }) {
   const draftCount = useDraftCount().data ?? 0;
   const openNewExpense = useNewExpense((state) => state.openWith);
 
   return (
-    <nav
-      aria-label="Accesos rápidos"
-      className="flex flex-wrap items-center gap-2 rounded-xl border bg-card/60 p-2.5"
-    >
-      <span className="px-2 text-xs font-medium text-muted-foreground">
-        Accesos rápidos
-      </span>
+    <nav aria-label="Accesos rápidos" className="flex flex-wrap items-center gap-2 rounded-xl border bg-card/60 p-2.5">
+      <span className="px-2 text-xs font-medium text-muted-foreground">Accesos rápidos</span>
       <button
         type="button"
         onClick={() => openNewExpense()}
-        className={cn(
-          actionClass,
-          "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
-        )}
+        className={cn(actionClass, "border-primary bg-primary text-primary-foreground hover:bg-primary/90")}
       >
         <Plus className="size-4" />
         Nuevo gasto
       </button>
-      <button
-        type="button"
-        onClick={() => onRegisterPayment("card")}
-        className={actionClass}
-      >
+      <button type="button" onClick={() => onRegisterPayment("card")} className={actionClass}>
         <CreditCard className="size-4 text-primary" />
         Registrar pago
       </button>
@@ -61,9 +38,7 @@ export function DashboardQuickActions({
         <WalletCards className="size-4 text-primary" />
         Borrador
         {draftCount > 0 && (
-          <span className="rounded-full bg-destructive px-1.5 text-[10px] font-semibold text-destructive-foreground">
-            {draftCount}
-          </span>
+          <span className="rounded-full bg-destructive px-1.5 text-[10px] font-semibold text-destructive-foreground">{draftCount}</span>
         )}
       </a>
       <a href="/calendario" className={actionClass}>

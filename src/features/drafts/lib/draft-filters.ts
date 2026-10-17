@@ -35,43 +35,27 @@ export const ORIGIN_LABELS: Record<string, string> = {
   telegram: "Telegram",
 };
 
-export const originLabel = (channel: string) =>
-  ORIGIN_LABELS[channel] ?? channel;
+export const originLabel = (channel: string) => ORIGIN_LABELS[channel] ?? channel;
 
-const normalize = (value: string) =>
-  value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const normalize = (value: string) => value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 // Buscar, Origen y Filtros de la barra de Borrador (boards B1/B2): todo en el navegador, sobre la lista de la pestaña
-export function filterDrafts<T extends FilterableDraft>(
-  items: T[],
-  filters: DraftFilters,
-): T[] {
+export function filterDrafts<T extends FilterableDraft>(items: T[], filters: DraftFilters): T[] {
   const query = normalize(filters.q.trim());
   return items.filter((item) => {
-    if (filters.origin !== "all" && item.channel !== filters.origin)
-      return false;
-    if (filters.state !== "all" && draftState(item) !== filters.state)
-      return false;
-    if (filters.destination && item.destination !== filters.destination)
-      return false;
+    if (filters.origin !== "all" && item.channel !== filters.origin) return false;
+    if (filters.state !== "all" && draftState(item) !== filters.state) return false;
+    if (filters.destination && item.destination !== filters.destination) return false;
     if (filters.personId && item.personId !== filters.personId) return false;
     if (!query) return true;
-    return [item.description, item.rawText, item.merchant].some(
-      (text) => text && normalize(text).includes(query),
-    );
+    return [item.description, item.rawText, item.merchant].some((text) => text && normalize(text).includes(query));
   });
 }
 
 /** Filtros del popover (sin Buscar ni Origen, que tienen su propio control). */
-export const activeFilterCount = (filters: DraftFilters) =>
-  [filters.state !== "all", filters.destination, filters.personId].filter(
-    Boolean,
-  ).length;
+export const activeFilterCount = (filters: DraftFilters) => [filters.state !== "all", filters.destination, filters.personId].filter(Boolean).length;
 
-export const hasActiveFilters = (filters: DraftFilters) =>
-  activeFilterCount(filters) > 0 ||
-  filters.origin !== "all" ||
-  filters.q.trim().length > 0;
+export const hasActiveFilters = (filters: DraftFilters) => activeFilterCount(filters) > 0 || filters.origin !== "all" || filters.q.trim().length > 0;
 
 export interface DraftGroup<T> {
   key: string;
@@ -88,12 +72,7 @@ export function groupDrafts<T extends FilterableDraft>(
   },
 ): DraftGroup<T>[] {
   if (by === "none") return [{ key: "all", label: "", items }];
-  const keyOf = (item: T) =>
-    by === "destination"
-      ? (item.destination ?? "")
-      : by === "person"
-        ? (item.personId ?? "")
-        : item.channel;
+  const keyOf = (item: T) => (by === "destination" ? (item.destination ?? "") : by === "person" ? (item.personId ?? "") : item.channel);
   const labelOf = (key: string) =>
     !key
       ? by === "destination"
@@ -125,9 +104,7 @@ export interface SelectionSummary<T> {
 }
 
 // Barra flotante (board B3): cuántos se guardan y cuántos se quedan por estar incompletos
-export function summarizeSelection<
-  T extends { id: string; missingFields: string[] },
->(items: T[], selected: Set<string>): SelectionSummary<T> {
+export function summarizeSelection<T extends { id: string; missingFields: string[] }>(items: T[], selected: Set<string>): SelectionSummary<T> {
   const chosen = items.filter((item) => selected.has(item.id));
   const ready = chosen.filter((item) => draftState(item) === "ready");
   return {

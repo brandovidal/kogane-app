@@ -6,9 +6,7 @@ import { cn } from "@/shared/utils/cn";
 import type { ViewMode } from "@/shared/types/data-view";
 import { FIXED_COST_FILTER_KEYS } from "../../lib/fixed-cost-filters";
 
-const FILTER_FIELDS = FIXED_COST_FILTER_KEYS.filter(
-  (key) => key !== "month" && key !== "year",
-);
+const FILTER_FIELDS = FIXED_COST_FILTER_KEYS.filter((key) => key !== "month" && key !== "year");
 
 export function FixedCostEmptyState({
   view,
@@ -46,12 +44,7 @@ export function FixedCostEmptyState({
   const isFilters = kind === "filters";
   const Icon = isSearch ? SearchX : isFilters ? ListFilter : CalendarPlus;
   const title =
-    titleOverride ??
-    (isSearch
-      ? `Sin resultados para “${search}”`
-      : isFilters
-        ? "Ningún costo coincide"
-        : `Sin costos fijos en ${periodLabel}`);
+    titleOverride ?? (isSearch ? `Sin resultados para “${search}”` : isFilters ? "Ningún costo coincide" : `Sin costos fijos en ${periodLabel}`);
   const description =
     descriptionOverride ??
     (isSearch
@@ -74,9 +67,7 @@ export function FixedCostEmptyState({
       </span>
       <div className="space-y-1">
         <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-        <p className="max-w-lg text-sm leading-6 text-muted-foreground">
-          {description}
-        </p>
+        <p className="max-w-lg text-sm leading-6 text-muted-foreground">{description}</p>
       </div>
 
       {isFilters && (

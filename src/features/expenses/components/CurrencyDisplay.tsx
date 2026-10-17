@@ -9,27 +9,16 @@ export interface CurrencyDisplayProps {
   className?: string;
 }
 
-function Amount({
-  amount,
-  currency = "PEN",
-  amountInPEN,
-  className,
-}: CurrencyDisplayProps) {
+function Amount({ amount, currency = "PEN", amountInPEN, className }: CurrencyDisplayProps) {
   if (currency !== "PEN" && amountInPEN) {
     return (
       <div className={className}>
         <span className="font-semibold">{formatCurrency(amountInPEN)}</span>
-        <span className="text-xs text-muted-foreground ml-1">
-          ({formatCurrency(amount, currency)})
-        </span>
+        <span className="text-xs text-muted-foreground ml-1">({formatCurrency(amount, currency)})</span>
       </div>
     );
   }
-  return (
-    <span className={`font-semibold ${className ?? ""}`}>
-      {formatCurrency(amount, currency)}
-    </span>
-  );
+  return <span className={`font-semibold ${className ?? ""}`}>{formatCurrency(amount, currency)}</span>;
 }
 
 // The amount paid; for a shared expense also "👥 otros S/ 32.00 · tu parte S/ 32.00"

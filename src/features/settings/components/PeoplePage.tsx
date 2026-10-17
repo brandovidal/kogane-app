@@ -10,26 +10,9 @@ import { Checkbox } from "@/ui/checkbox";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
-import {
-  PERSON_MODULE_KEYS,
-  PERSON_MODULES,
-  type PersonModule,
-} from "../constants";
-import {
-  PEOPLE_TABS,
-  filterPeople,
-  toggleModule,
-  type PeopleTab,
-  type Person,
-} from "../lib/people-filter";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../constants";
+import { PEOPLE_TABS, filterPeople, toggleModule, type PeopleTab, type Person } from "../lib/people-filter";
 import { PersonDialog } from "./PersonDialog";
 
 type View = "checks" | "compact" | "cards";
@@ -56,8 +39,7 @@ export function PeoplePage() {
   const [editing, setEditing] = useState<Person | null | undefined>(undefined); // null: new
 
   const visible = filterPeople(people, { tab, query, module });
-  const setModules = (person: Person, appearsIn: PersonModule[]) =>
-    savePerson.mutate({ id: person.id, name: person.name, appearsIn });
+  const setModules = (person: Person, appearsIn: PersonModule[]) => savePerson.mutate({ id: person.id, name: person.name, appearsIn });
 
   return (
     <div className="space-y-4">
@@ -88,9 +70,7 @@ export function PeoplePage() {
           aria-label="Filtrar por página"
           className="h-9 rounded-md border bg-background px-2 text-sm"
           value={module ?? ""}
-          onChange={(e) =>
-            setModule((e.target.value || null) as PersonModule | null)
-          }
+          onChange={(e) => setModule((e.target.value || null) as PersonModule | null)}
         >
           <option value="">Todas las páginas</option>
           {PERSON_MODULES.map(([key, label]) => (
@@ -101,24 +81,14 @@ export function PeoplePage() {
         </select>
         <div className="ml-auto flex gap-1" role="group" aria-label="Vista">
           {VIEWS.map(([key, label, Icon]) => (
-            <Button
-              key={key}
-              size="sm"
-              variant={view === key ? "secondary" : "ghost"}
-              aria-pressed={view === key}
-              onClick={() => setView(key)}
-            >
+            <Button key={key} size="sm" variant={view === key ? "secondary" : "ghost"} aria-pressed={view === key} onClick={() => setView(key)}>
               <Icon className="mr-1 h-4 w-4" /> {label}
             </Button>
           ))}
         </div>
       </div>
 
-      {visible.length === 0 && (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          No hay personas con esos filtros.
-        </p>
-      )}
+      {visible.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">No hay personas con esos filtros.</p>}
 
       {visible.length > 0 && view === "cards" && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -128,30 +98,16 @@ export function PeoplePage() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-medium">
-                      {person.name}{" "}
-                      {person.isDefault && (
-                        <Badge variant="secondary">Yo</Badge>
-                      )}
+                      {person.name} {person.isDefault && <Badge variant="secondary">Yo</Badge>}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {person.aliases.join(", ") || "Sin alias"}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{person.aliases.join(", ") || "Sin alias"}</p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    aria-label={`Editar ${person.name}`}
-                    onClick={() => setEditing(person)}
-                  >
+                  <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Editar ${person.name}`} onClick={() => setEditing(person)}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {(person.isDefault
-                    ? PERSON_MODULE_KEYS
-                    : person.appearsIn
-                  ).map((key) => (
+                  {(person.isDefault ? PERSON_MODULE_KEYS : person.appearsIn).map((key) => (
                     <Badge key={key} variant="outline">
                       {PERSON_MODULES.find(([k]) => k === key)?.[1]}
                     </Badge>
@@ -192,25 +148,16 @@ export function PeoplePage() {
                         Yo
                       </Badge>
                     )}
-                    <span className="block text-xs font-normal text-muted-foreground">
-                      {person.aliases.join(", ")}
-                    </span>
+                    <span className="block text-xs font-normal text-muted-foreground">{person.aliases.join(", ")}</span>
                   </TableCell>
                   {view === "checks" ? (
                     PERSON_MODULES.map(([key, label]) => (
                       <TableCell key={key} className="text-center">
                         <Checkbox
-                          checked={
-                            person.isDefault || person.appearsIn.includes(key)
-                          }
+                          checked={person.isDefault || person.appearsIn.includes(key)}
                           disabled={person.isDefault || savePerson.isPending}
                           aria-label={`${person.name} en ${label}`}
-                          onCheckedChange={() =>
-                            setModules(
-                              person,
-                              toggleModule(person.appearsIn, key),
-                            )
-                          }
+                          onCheckedChange={() => setModules(person, toggleModule(person.appearsIn, key))}
                         />
                       </TableCell>
                     ))
@@ -218,19 +165,12 @@ export function PeoplePage() {
                     <TableCell>
                       <MultiSelect
                         label={`Aparece en · ${person.name}`}
-                        value={
-                          person.isDefault
-                            ? [...PERSON_MODULE_KEYS]
-                            : person.appearsIn
-                        }
+                        value={person.isDefault ? [...PERSON_MODULE_KEYS] : person.appearsIn}
                         options={moduleOptions}
                         allLabel="Ninguna"
                         emptyValueMeansAll={false}
                         searchable={false}
-                        onChange={(next) =>
-                          !person.isDefault &&
-                          setModules(person, (next ?? []) as PersonModule[])
-                        }
+                        onChange={(next) => !person.isDefault && setModules(person, (next ?? []) as PersonModule[])}
                       />
                     </TableCell>
                   )}
@@ -249,13 +189,7 @@ export function PeoplePage() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      aria-label={`Editar ${person.name}`}
-                      onClick={() => setEditing(person)}
-                    >
+                    <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Editar ${person.name}`} onClick={() => setEditing(person)}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                   </TableCell>
@@ -266,9 +200,7 @@ export function PeoplePage() {
         </div>
       )}
 
-      {editing !== undefined && (
-        <PersonDialog person={editing} onClose={() => setEditing(undefined)} />
-      )}
+      {editing !== undefined && <PersonDialog person={editing} onClose={() => setEditing(undefined)} />}
     </div>
   );
 }

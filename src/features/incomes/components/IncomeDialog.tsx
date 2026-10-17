@@ -17,12 +17,7 @@ export interface IncomeDialogProps {
   onSaved: (period: MonthlyPeriod) => void;
 }
 
-export function IncomeDialog({
-  income,
-  period,
-  onClose,
-  onSaved,
-}: IncomeDialogProps) {
+export function IncomeDialog({ income, period, onClose, onSaved }: IncomeDialogProps) {
   const id = useId();
   const form = useIncomeForm(income, period, (savedPeriod) => {
     onSaved(savedPeriod);
@@ -41,20 +36,11 @@ export function IncomeDialog({
       contentClassName="sm:max-w-xl"
       footer={
         <>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={close}
-            disabled={form.pending}
-          >
+          <Button type="button" variant="outline" onClick={close} disabled={form.pending}>
             Cancelar
           </Button>
           <Button type="submit" form={id} disabled={!form.canSave}>
-            {form.pending ? (
-              <LoaderCircle aria-hidden="true" className="animate-spin" />
-            ) : (
-              <Save aria-hidden="true" />
-            )}
+            {form.pending ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
             {form.pending ? "Guardando…" : "Guardar ingreso"}
           </Button>
         </>
@@ -70,12 +56,7 @@ export function IncomeDialog({
         <fieldset disabled={form.pending} className="min-w-0 space-y-4">
           <IncomeGeneralSection form={form} />
           <IncomeScheduleSection form={form} />
-          <FormField
-            label="Nota"
-            icon={StickyNote}
-            htmlFor={`${id}-notes`}
-            error={form.errorFor("notes")}
-          >
+          <FormField label="Nota" icon={StickyNote} htmlFor={`${id}-notes`} error={form.errorFor("notes")}>
             <Textarea
               id={`${id}-notes`}
               maxLength={500}

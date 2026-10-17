@@ -36,15 +36,8 @@ export function SortMenu({
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align={align} className={className}>
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
-        <DropdownMenuRadioGroup
-          value={value ?? ORIGINAL_ORDER}
-          onValueChange={(next) =>
-            onChange(next === ORIGINAL_ORDER ? undefined : next)
-          }
-        >
-          <DropdownMenuRadioItem value={ORIGINAL_ORDER}>
-            {originalLabel}
-          </DropdownMenuRadioItem>
+        <DropdownMenuRadioGroup value={value ?? ORIGINAL_ORDER} onValueChange={(next) => onChange(next === ORIGINAL_ORDER ? undefined : next)}>
+          <DropdownMenuRadioItem value={ORIGINAL_ORDER}>{originalLabel}</DropdownMenuRadioItem>
           {options.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value}>
               {option.label}

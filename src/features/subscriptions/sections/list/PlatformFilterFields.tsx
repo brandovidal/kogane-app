@@ -12,10 +12,7 @@ import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMe
 import { Input } from "@/ui/input";
 import { countPlatformFilters } from "../../lib/platform-filters";
 import { PLATFORM_MORE_FILTER_KEYS } from "../../constants/platforms";
-import type {
-  ExpenseFilterKey,
-  ExpenseFilterValues,
-} from "@/features/expenses/types/expense-filters";
+import type { ExpenseFilterKey, ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
 
 export function PlatformFilterFields({
   filters,
@@ -30,21 +27,14 @@ export function PlatformFilterFields({
   paymentMethodCounts: Record<string, number>;
   statuses: string[];
 }) {
-  const set = (key: ExpenseFilterKey, value: string | undefined) =>
-    onFiltersChange({ ...filters, [key]: value || undefined });
+  const set = (key: ExpenseFilterKey, value: string | undefined) => onFiltersChange({ ...filters, [key]: value || undefined });
   const moreCount = countPlatformFilters(filters, PLATFORM_MORE_FILTER_KEYS);
   const amountPrefix = filters.currency === "USD" ? "$" : "S/";
 
   return (
     <div className="space-y-5">
       <section className="space-y-2">
-        <StatusFilterFields
-          statuses={statuses}
-          value={filters.status}
-          onChange={(value) => set("status", value)}
-          width="w-full"
-          activeMarker
-        />
+        <StatusFilterFields statuses={statuses} value={filters.status} onChange={(value) => set("status", value)} width="w-full" activeMarker />
       </section>
 
       <section className="grid grid-cols-2 gap-3">
@@ -68,11 +58,7 @@ export function PlatformFilterFields({
         />
       </section>
 
-      <MoreFilters
-        activeCount={moreCount}
-        activeCountDisplay="inline"
-        defaultOpen
-      >
+      <MoreFilters activeCount={moreCount} activeCountDisplay="inline" defaultOpen>
         <div className="grid grid-cols-2 gap-3">
           <CurrencyFilterFields
             label="Moneda"
@@ -93,9 +79,7 @@ export function PlatformFilterFields({
           <NoteFilterFields
             label="Con nota"
             value={filters.hasNote}
-            onChange={(value) =>
-              set("hasNote", value as "yes" | "no" | undefined)
-            }
+            onChange={(value) => set("hasNote", value as "yes" | "no" | undefined)}
             width="w-full"
             allLabel="Todas"
             activeMarker
@@ -119,21 +103,14 @@ export function PlatformFilterFields({
           />
           <div className="col-span-2 space-y-2 rounded-lg border p-3">
             <div className="flex items-center gap-2 text-sm font-medium">
-              {(filters.amountFrom || filters.amountTo) && (
-                <span
-                  aria-hidden="true"
-                  className="size-2 rounded-full bg-brand"
-                />
-              )}
+              {(filters.amountFrom || filters.amountTo) && <span aria-hidden="true" className="size-2 rounded-full bg-brand" />}
               Monto
             </div>
             <div className="grid grid-cols-2 gap-3">
               <label className="space-y-1.5 text-xs text-muted-foreground">
                 Desde
                 <div className="relative">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                    {amountPrefix}
-                  </span>
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{amountPrefix}</span>
                   <Input
                     type="number"
                     min="0"
@@ -148,9 +125,7 @@ export function PlatformFilterFields({
               <label className="space-y-1.5 text-xs text-muted-foreground">
                 Hasta
                 <div className="relative">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                    {amountPrefix}
-                  </span>
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{amountPrefix}</span>
                   <Input
                     type="number"
                     min={filters.amountFrom ?? "0"}

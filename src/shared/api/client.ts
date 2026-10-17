@@ -4,15 +4,9 @@ import { loginUrl } from "@/shared/lib/auth-redirect";
 import type { components, paths } from "./schema";
 
 function recoveryPageUrl() {
-  if (
-    typeof window === "undefined" ||
-    window.location.pathname.startsWith("/servicio-no-disponible")
-  )
-    return;
+  if (typeof window === "undefined" || window.location.pathname.startsWith("/servicio-no-disponible")) return;
   const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-  window.location.replace(
-    `/servicio-no-disponible?returnTo=${encodeURIComponent(returnTo)}`,
-  );
+  window.location.replace(`/servicio-no-disponible?returnTo=${encodeURIComponent(returnTo)}`);
 }
 
 export const apiFetch: typeof fetch = async (input, init) => {
@@ -32,10 +26,7 @@ export const apiFetch: typeof fetch = async (input, init) => {
     // A missing or expired session is still an authentication failure when an
     // API response omits the expected SESSION_REQUIRED code. Treat every 401
     // on a protected page as a login redirect; leave login submissions alone.
-    if (
-      response.status === 401 &&
-      !window.location.pathname.startsWith("/entrar")
-    ) {
+    if (response.status === 401 && !window.location.pathname.startsWith("/entrar")) {
       const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
       window.location.replace(loginUrl(returnTo));
       return response;
@@ -50,9 +41,7 @@ export const apiFetch: typeof fetch = async (input, init) => {
     return response;
   } catch {
     recoveryPageUrl();
-    throw new Error(
-      "No se pudo conectar con Kogane. Se abrirá la página de recuperación.",
-    );
+    throw new Error("No se pudo conectar con Kogane. Se abrirá la página de recuperación.");
   }
 };
 
@@ -74,28 +63,16 @@ export class ApiError extends Error {
 
 type ApiResult = { data?: unknown; error?: unknown; response: Response };
 
-type Payload<R> = R extends { data: infer D }
-  ? D extends { data: infer X }
-    ? X
-    : undefined
-  : never;
+type Payload<R> = R extends { data: infer D } ? (D extends { data: infer X } ? X : undefined) : never;
 
-export async function unwrap<R extends ApiResult>(
-  call: Promise<R>,
-): Promise<Payload<R>> {
+export async function unwrap<R extends ApiResult>(call: Promise<R>): Promise<Payload<R>> {
   const { data, error, response } = await call;
-  if (response.ok)
-    return (data as { data?: unknown } | undefined)?.data as Payload<R>;
+  if (response.ok) return (data as { data?: unknown } | undefined)?.data as Payload<R>;
 
   const body = (error ?? {}) as {
     code?: string;
     message?: string;
     details?: unknown;
   };
-  throw new ApiError(
-    response.status,
-    body.code ?? "UNKNOWN_ERROR",
-    body.message ?? response.statusText,
-    body.details,
-  );
+  throw new ApiError(response.status, body.code ?? "UNKNOWN_ERROR", body.message ?? response.statusText, body.details);
 }

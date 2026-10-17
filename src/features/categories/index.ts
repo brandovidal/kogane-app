@@ -1,21 +1,10 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { CategoryDialog } from "./components/CategoryDialog";
-export {
-  CATEGORY_ICON_OPTIONS,
-  normalizeCategoryIconName,
-  matchesCategoryIcon,
-} from "./lib/category-icons";
+export { CATEGORY_ICON_OPTIONS, normalizeCategoryIconName, matchesCategoryIcon } from "./lib/category-icons";
 export { CategoryIcon } from "./components/CategoryIcon";
 export { CategoryIconPicker } from "./components/CategoryIconPicker";
 export { CategoryLimitDialog } from "./components/CategoryLimitDialog";
 export { CategoryLabel } from "./components/CategoryLabel";
 export { CategorySelect } from "./components/CategorySelect";
-export type {
-  CategoryBudgetLine,
-  CategoryBudgetBody,
-} from "./hooks/category-budgets";
-export {
-  useCategoryBudgets,
-  useSaveCategoryBudget,
-  useDeleteCategoryBudget,
-} from "./hooks/category-budgets";
+export type { CategoryBudgetLine, CategoryBudgetBody } from "./hooks/category-budgets";
+export { useCategoryBudgets, useSaveCategoryBudget, useDeleteCategoryBudget } from "./hooks/category-budgets";

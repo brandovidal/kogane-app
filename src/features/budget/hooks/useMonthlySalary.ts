@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { periodStore } from "@/shared/stores/period.store";
-import {
-  monthlySalarySchema,
-  salaryPeriodFromUrl,
-} from "../lib/monthly-salary";
+import { monthlySalarySchema, salaryPeriodFromUrl } from "../lib/monthly-salary";
 import { useSetBudget, useSummary } from "./summary";
 import type { MonthlyPeriod } from "@/shared/types/period";
 
@@ -14,20 +11,10 @@ interface SalaryFields {
   limitPercent: string;
 }
 
-export function useMonthlySalary(
-  open: boolean,
-  onSaved: (period: MonthlyPeriod) => void,
-  initialPeriod?: MonthlyPeriod,
-) {
+export function useMonthlySalary(open: boolean, onSaved: (period: MonthlyPeriod) => void, initialPeriod?: MonthlyPeriod) {
   const [period, setPeriod] = useState(
     () =>
-      initialPeriod ??
-      salaryPeriodFromUrl(
-        new URLSearchParams(
-          typeof window === "undefined" ? "" : window.location.search,
-        ),
-        periodStore.getState(),
-      ),
+      initialPeriod ?? salaryPeriodFromUrl(new URLSearchParams(typeof window === "undefined" ? "" : window.location.search), periodStore.getState()),
   );
   const [fields, setFields] = useState<SalaryFields | null>(null);
   const query = useSummary(period.month, period.year, open);
@@ -40,12 +27,7 @@ export function useMonthlySalary(
       setFields(null);
       return;
     }
-    if (
-      !summary ||
-      summary.month !== period.month ||
-      summary.year !== period.year
-    )
-      return;
+    if (!summary || summary.month !== period.month || summary.year !== period.year) return;
     // Populate once for each selected month; a background refresh must preserve edits.
     setFields((current) =>
       current?.periodKey === periodKey
@@ -60,22 +42,16 @@ export function useMonthlySalary(
 
   const ready = fields?.periodKey === periodKey && !!summary && !query.isError;
   const salaryValue = fields?.periodKey === periodKey ? fields.salary : "";
-  const percentValue =
-    fields?.periodKey === periodKey ? fields.limitPercent : "";
+  const percentValue = fields?.periodKey === periodKey ? fields.limitPercent : "";
   const validation = monthlySalarySchema.safeParse({
     ...period,
     salary: salaryValue.trim() ? Number(salaryValue) : NaN,
     limitPercent: percentValue.trim() ? Number(percentValue) : NaN,
   });
-  const errors =
-    ready && !validation.success
-      ? z.flattenError(validation.error).fieldErrors
-      : {};
+  const errors = ready && !validation.success ? z.flattenError(validation.error).fieldErrors : {};
 
   const updateField = (key: "salary" | "limitPercent", value: string) => {
-    setFields((current) =>
-      current?.periodKey === periodKey ? { ...current, [key]: value } : current,
-    );
+    setFields((current) => (current?.periodKey === periodKey ? { ...current, [key]: value } : current));
   };
   const save = () => {
     if (!ready || !validation.success || mutation.isPending) return;
@@ -96,9 +72,7 @@ export function useMonthlySalary(
     error: query.isError,
     retry: () => query.refetch(),
     summary,
-    limit: validation.success
-      ? (validation.data.salary * validation.data.limitPercent) / 100
-      : null,
+    limit: validation.success ? (validation.data.salary * validation.data.limitPercent) / 100 : null,
     save,
   };
 }

@@ -44,10 +44,7 @@ export function useDataTable<T>({
   const [search, setSearch] = useState("");
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const tableColumns = useMemo(
-    () => (selectable ? [selectionColumn<T>(), ...columns] : columns),
-    [columns, selectable],
-  );
+  const tableColumns = useMemo(() => (selectable ? [selectionColumn<T>(), ...columns] : columns), [columns, selectable]);
   const server = mode === "server";
   const table = useReactTable({
     data: items,
@@ -79,12 +76,7 @@ export function useDataTable<T>({
     getPaginationRowModel: getPaginationRowModel(),
   });
   const current = table.getState();
-  const filterKey = JSON.stringify([
-    resetKey,
-    current.globalFilter,
-    current.columnFilters,
-    current.sorting,
-  ]);
+  const filterKey = JSON.stringify([resetKey, current.globalFilter, current.columnFilters, current.sorting]);
   const previousFilterKey = useRef(filterKey);
   const filtersChanged = previousFilterKey.current !== filterKey;
   useEffect(() => {
@@ -94,23 +86,12 @@ export function useDataTable<T>({
   }, [filterKey, filtersChanged, table]);
 
   // Keep a valid page after deletes or a smaller response; unknown server totals stay under caller control.
-  const count = server
-    ? rowCount
-    : table.getPrePaginationRowModel().rows.length;
+  const count = server ? rowCount : table.getPrePaginationRowModel().rows.length;
   useEffect(() => {
     if (!paginationEnabled || count === undefined) return;
-    const last = Math.max(
-      0,
-      Math.ceil(count / current.pagination.pageSize) - 1,
-    );
+    const last = Math.max(0, Math.ceil(count / current.pagination.pageSize) - 1);
     if (current.pagination.pageIndex > last) table.setPageIndex(last);
-  }, [
-    count,
-    current.pagination.pageIndex,
-    current.pagination.pageSize,
-    paginationEnabled,
-    table,
-  ]);
+  }, [count, current.pagination.pageIndex, current.pagination.pageSize, paginationEnabled, table]);
 
   useEffect(() => {
     // Skip the old page when filters changed; emit the new query after the reset takes effect.
@@ -121,13 +102,6 @@ export function useDataTable<T>({
         columnFilters: current.columnFilters,
         search: current.globalFilter,
       });
-  }, [
-    current.pagination,
-    current.sorting,
-    current.columnFilters,
-    current.globalFilter,
-    filtersChanged,
-    onQueryChange,
-  ]);
+  }, [current.pagination, current.sorting, current.columnFilters, current.globalFilter, filtersChanged, onQueryChange]);
   return table;
 }

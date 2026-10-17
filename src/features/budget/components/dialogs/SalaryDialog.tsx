@@ -17,12 +17,7 @@ export interface SalaryDialogProps {
 }
 
 // Mounted on opening: values and writes belong to the selected month.
-export function SalaryDialog({
-  open,
-  onOpenChange,
-  initialPeriod,
-  onSaved,
-}: SalaryDialogProps) {
+export function SalaryDialog({ open, onOpenChange, initialPeriod, onSaved }: SalaryDialogProps) {
   const formId = useId();
   const form = useMonthlySalary(
     open,
@@ -47,20 +42,11 @@ export function SalaryDialog({
       contentClassName="sm:max-w-md"
       footer={
         <>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={form.saving}
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" disabled={form.saving} onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button type="submit" form={formId} disabled={!form.canSave}>
-            {form.saving ? (
-              <LoaderCircle aria-hidden="true" className="animate-spin" />
-            ) : (
-              <Save aria-hidden="true" />
-            )}
+            {form.saving ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
             {form.saving ? "Guardando…" : "Guardar sueldo del mes"}
           </Button>
         </>
@@ -74,17 +60,9 @@ export function SalaryDialog({
           form.save();
         }}
       >
-        <PeriodFields
-          ariaLabel="Período del sueldo"
-          value={form.period}
-          onChange={form.setPeriod}
-          disabled={form.saving}
-        />
+        <PeriodFields ariaLabel="Período del sueldo" value={form.period} onChange={form.setPeriod} disabled={form.saving} />
         {form.loading && (
-          <p
-            role="status"
-            className="flex items-center gap-2 text-sm text-muted-foreground"
-          >
+          <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
             <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
             Cargando sueldo del mes…
           </p>
@@ -92,27 +70,17 @@ export function SalaryDialog({
         {form.error && (
           <div role="alert" className="space-y-2 text-sm">
             <p>No se pudo cargar el sueldo de este mes.</p>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={form.retry}
-            >
+            <Button type="button" size="sm" variant="outline" onClick={form.retry}>
               Reintentar
             </Button>
           </div>
         )}
         {form.ready && (
           <div className="space-y-1 rounded-lg border bg-muted/20 p-3 text-sm">
-            <Badge variant="outline">
-              {saved
-                ? "Registrado para este mes"
-                : "Sin registrar para este mes"}
-            </Badge>
+            <Badge variant="outline">{saved ? "Registrado para este mes" : "Sin registrar para este mes"}</Badge>
             {form.summary?.budget?.isProposal && (
               <p className="text-xs text-muted-foreground">
-                El monto es una sugerencia del último sueldo registrado.
-                Guárdalo para confirmarlo en este mes.
+                El monto es una sugerencia del último sueldo registrado. Guárdalo para confirmarlo en este mes.
               </p>
             )}
           </div>

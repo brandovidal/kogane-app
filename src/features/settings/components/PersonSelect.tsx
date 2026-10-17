@@ -1,12 +1,7 @@
 import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
 import type { CatalogSelectProps } from "@/shared/types/catalog-select";
 
-export function PersonSelect({
-  value,
-  onChange,
-  placeholder = "Selecciona persona",
-  className,
-}: CatalogSelectProps) {
+export function PersonSelect({ value, onChange, placeholder = "Selecciona persona", className }: CatalogSelectProps) {
   return (
     <PersonFilterFields
       value={value ?? undefined}

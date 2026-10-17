@@ -6,7 +6,5 @@ export function archiveSummary(movements: number, pending: number): string {
     movements === 0
       ? "No tiene movimientos."
       : `Tiene ${pluralize(movements, "movimiento", "movimientos")}; se conservan y siguen asignados a la tarjeta.`;
-  return pending > 0
-    ? `${moves} Hay ${pluralize(pending, "pago pendiente", "pagos pendientes")} sin registrar.`
-    : moves;
+  return pending > 0 ? `${moves} Hay ${pluralize(pending, "pago pendiente", "pagos pendientes")} sin registrar.` : moves;
 }

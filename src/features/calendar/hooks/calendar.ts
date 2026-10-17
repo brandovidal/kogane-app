@@ -1,20 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
-import {
-  getCalendar,
-  getCommittedInstallments,
-  getReminders,
-  payCalendarEvent,
-  type PayEventDto,
-} from "../services/calendar.service";
+import { getCalendar, getCommittedInstallments, getReminders, payCalendarEvent, type PayEventDto } from "../services/calendar.service";
 
 const calendarKeys = {
   all: ["calendar"] as const,
-  events: (from: string, to: string) =>
-    ["calendar", "events", from, to] as const,
-  installments: (months: number) =>
-    ["calendar", "installments", months] as const,
+  events: (from: string, to: string) => ["calendar", "events", from, to] as const,
+  installments: (months: number) => ["calendar", "installments", months] as const,
   reminders: (days: number) => ["calendar", "reminders", days] as const,
 };
 

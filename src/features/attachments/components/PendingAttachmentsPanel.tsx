@@ -1,20 +1,10 @@
 import { useRef, useState, type ReactNode } from "react";
 import { CloudUpload, Paperclip } from "lucide-react";
-import {
-  ATTACHMENT_ACCEPT,
-  ATTACHMENT_KIND_LABELS,
-  ATTACHMENT_MAX_MB,
-} from "@/features/attachments/constants/attachments";
+import { ATTACHMENT_ACCEPT, ATTACHMENT_KIND_LABELS, ATTACHMENT_MAX_MB } from "@/features/attachments/constants/attachments";
 import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
 import type { Attachment } from "@/shared/api/types";
 import { Button } from "@/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { AttachmentFileCard } from "./AttachmentFileCard";
 import { OversizedAttachmentCard } from "./OversizedAttachmentCard";
 
@@ -44,8 +34,7 @@ export function PendingAttachmentsPanel({
   uploadingIds?: ReadonlySet<string>;
 }) {
   const input = useRef<HTMLInputElement>(null);
-  const [localKind, setLocalKind] =
-    useState<PendingAttachmentUpload["kind"]>("boleta");
+  const [localKind, setLocalKind] = useState<PendingAttachmentUpload["kind"]>("boleta");
   const selectedKind = kind ?? localKind;
   const changeKind = (next: PendingAttachmentUpload["kind"]) => {
     onKindChange?.(next);
@@ -69,46 +58,28 @@ export function PendingAttachmentsPanel({
       ]);
     }
   };
-  const visibleFiles =
-    filterKind === "all"
-      ? files
-      : files.filter((file) => file.kind === filterKind);
+  const visibleFiles = filterKind === "all" ? files : files.filter((file) => file.kind === filterKind);
 
   return (
     <div className="space-y-3">
       {(showKindSelect || dropzone) && (
         <div className="flex flex-wrap items-center gap-2">
           {showKindSelect && (
-            <Select
-              value={selectedKind}
-              onValueChange={(value) =>
-                changeKind(value as PendingAttachmentUpload["kind"])
-              }
-            >
-              <SelectTrigger
-                className="h-9 w-[130px]"
-                aria-label="Tipo de archivo"
-              >
+            <Select value={selectedKind} onValueChange={(value) => changeKind(value as PendingAttachmentUpload["kind"])}>
+              <SelectTrigger className="h-9 w-[130px]" aria-label="Tipo de archivo">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(ATTACHMENT_KIND_LABELS).map(
-                  ([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ),
-                )}
+                {Object.entries(ATTACHMENT_KIND_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )}
           {!dropzone && (
-            <Button
-              type="button"
-              size="sm"
-              className="h-9"
-              onClick={() => input.current?.click()}
-            >
+            <Button type="button" size="sm" className="h-9" onClick={() => input.current?.click()}>
               <Paperclip className="mr-1.5 size-4" /> Adjuntar
             </Button>
           )}
@@ -121,9 +92,7 @@ export function PendingAttachmentsPanel({
             onChange={(event) => event.target.files && add(event.target.files)}
           />
           {!dropzone && showKindSelect && (
-            <span className="text-xs text-muted-foreground">
-              Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB
-            </span>
+            <span className="text-xs text-muted-foreground">Imagen, PDF o documento de hasta {ATTACHMENT_MAX_MB} MB</span>
           )}
         </div>
       )}
@@ -165,18 +134,9 @@ export function PendingAttachmentsPanel({
                 selecciónalos
               </button>
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno
-            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Imágenes y documentos · hasta {ATTACHMENT_MAX_MB} MB cada uno</p>
           </div>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="h-8 shrink-0 px-3"
-            disabled={retrying}
-            onClick={() => input.current?.click()}
-          >
+          <Button type="button" size="sm" variant="outline" className="h-8 shrink-0 px-3" disabled={retrying} onClick={() => input.current?.click()}>
             Subir
           </Button>
         </div>
@@ -190,16 +150,8 @@ export function PendingAttachmentsPanel({
                 <OversizedAttachmentCard
                   file={file}
                   kind={fileKind}
-                  onReplace={(replacement) =>
-                    onChange(
-                      files.map((item) =>
-                        item.id === id ? { ...item, file: replacement } : item,
-                      ),
-                    )
-                  }
-                  onRemove={() =>
-                    onChange(files.filter((item) => item.id !== id))
-                  }
+                  onReplace={(replacement) => onChange(files.map((item) => (item.id === id ? { ...item, file: replacement } : item)))}
+                  onRemove={() => onChange(files.filter((item) => item.id !== id))}
                 />
               ) : (
                 <AttachmentFileCard
@@ -211,9 +163,7 @@ export function PendingAttachmentsPanel({
                     kind: fileKind,
                     url: null,
                   }}
-                  onRemove={() =>
-                    onChange(files.filter((item) => item.id !== id))
-                  }
+                  onRemove={() => onChange(files.filter((item) => item.id !== id))}
                   removeDisabled={retrying}
                 />
               )}
@@ -221,21 +171,11 @@ export function PendingAttachmentsPanel({
           ))}
         </ul>
       )}
-      {files.length > 0 &&
-        visibleFiles.length === 0 &&
-        filterKind !== "all" && (
-          <p className="text-sm text-muted-foreground">
-            No hay archivos pendientes de este tipo.
-          </p>
-        )}
+      {files.length > 0 && visibleFiles.length === 0 && filterKind !== "all" && (
+        <p className="text-sm text-muted-foreground">No hay archivos pendientes de este tipo.</p>
+      )}
       {onRetry && files.length > 0 && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={retrying}
-          onClick={onRetry}
-        >
+        <Button type="button" variant="outline" size="sm" disabled={retrying} onClick={onRetry}>
           {retrying ? "Subiendo…" : "Reintentar carga"}
         </Button>
       )}

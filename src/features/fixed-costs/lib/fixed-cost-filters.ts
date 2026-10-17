@@ -17,9 +17,7 @@ export const FIXED_COST_FILTER_KEYS: ExpenseFilterKey[] = [
 ];
 
 const PERIOD_KEYS = new Set<ExpenseFilterKey>(["month", "year"]);
-export const FIXED_COST_PANEL_FILTER_KEYS = FIXED_COST_FILTER_KEYS.filter(
-  (key) => !PERIOD_KEYS.has(key) && key !== "q",
-);
+export const FIXED_COST_PANEL_FILTER_KEYS = FIXED_COST_FILTER_KEYS.filter((key) => !PERIOD_KEYS.has(key) && key !== "q");
 
 export const FIXED_COST_GROUP_OPTIONS = [
   { value: "person", label: "Por persona" },

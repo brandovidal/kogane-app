@@ -14,9 +14,7 @@ export function importSummaryOf(batch: ImportDetail) {
       value: `${batch.blocked} · ${batch.warnings}`,
     },
   ];
-  const months = batch.summary.months.filter(
-    (month) => month.notionSpent != null,
-  );
+  const months = batch.summary.months.filter((month) => month.notionSpent != null);
   const matching = months.filter(monthMatches).length;
 
   return { kpis, months, matching };

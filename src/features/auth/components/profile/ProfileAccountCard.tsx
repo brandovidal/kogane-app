@@ -44,32 +44,17 @@ export function ProfileAccountCard({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="font-semibold">{user.name}</h2>
-              <Badge variant="secondary">
-                {AUTH_ROLE_LABELS[user.role] ?? user.role}
-              </Badge>
+              <Badge variant="secondary">{AUTH_ROLE_LABELS[user.role] ?? user.role}</Badge>
             </div>
-            <p className="truncate text-sm text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="truncate text-sm text-muted-foreground">{user.email}</p>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline">
-            {user.googleLinked ? "Google vinculado" : "Sin Google"}
-          </Badge>
-          <Badge variant="outline">
-            {user.hasPassword ? "Con contraseña" : "Sin contraseña"}
-          </Badge>
+          <Badge variant="outline">{user.googleLinked ? "Google vinculado" : "Sin Google"}</Badge>
+          <Badge variant="outline">{user.hasPassword ? "Con contraseña" : "Sin contraseña"}</Badge>
           {!user.googleLinked && googleEnabled && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={onLinkGoogle}
-              disabled={linkingGoogle}
-            >
+            <Button type="button" variant="outline" size="sm" className="w-full" onClick={onLinkGoogle} disabled={linkingGoogle}>
               <Link2 aria-hidden="true" className="size-4" />
               {linkingGoogle ? "Abriendo Google…" : "Vincular Google"}
             </Button>
@@ -79,9 +64,7 @@ export function ProfileAccountCard({
         <dl className="space-y-2 border-t pt-3 text-sm">
           <div className="flex items-center justify-between gap-3">
             <dt className="text-muted-foreground">Persona en repartos</dt>
-            <dd className="truncate text-right">
-              Yo · {user.nickname?.trim() || user.name}
-            </dd>
+            <dd className="truncate text-right">Yo · {user.nickname?.trim() || user.name}</dd>
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="text-muted-foreground">Entras con</dt>
@@ -98,12 +81,7 @@ export function ProfileAccountCard({
                 : "border-destructive/30 bg-destructive/10 text-destructive"
             }`}
           >
-            {googleNotice.kind === "success" && (
-              <ShieldCheck
-                aria-hidden="true"
-                className="mt-0.5 size-4 shrink-0"
-              />
-            )}
+            {googleNotice.kind === "success" && <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />}
             {googleNotice.text}
           </p>
         )}

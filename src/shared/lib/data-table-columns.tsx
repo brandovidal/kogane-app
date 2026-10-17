@@ -11,8 +11,7 @@ export function toDataTableColumns<T>(columns: Column<T>[]): ColumnDef<T>[] {
     accessorFn: column.accessor,
     cell: ({ row }) => column.cell(row.original),
     enableSorting: !!column.accessor,
-    enableHiding:
-      column.hideable ?? (column.role !== "title" && column.role !== "actions"),
+    enableHiding: column.hideable ?? (column.role !== "title" && column.role !== "actions"),
     meta: {
       label: column.header,
       className: column.className,
@@ -31,20 +30,9 @@ export function selectionColumn<T>(): ColumnDef<T> {
     header: ({ table }) => (
       <Checkbox
         aria-label="Seleccionar todos los registros de esta página"
-        checked={
-          table.getIsAllPageRowsSelected()
-            ? true
-            : table.getIsSomePageRowsSelected()
-              ? "indeterminate"
-              : false
-        }
-        disabled={
-          !table.getRowModel().rows.length ||
-          !table.getRowModel().rows.some((row) => row.getCanSelect())
-        }
-        onCheckedChange={(checked) =>
-          table.toggleAllPageRowsSelected(checked === true)
-        }
+        checked={table.getIsAllPageRowsSelected() ? true : table.getIsSomePageRowsSelected() ? "indeterminate" : false}
+        disabled={!table.getRowModel().rows.length || !table.getRowModel().rows.some((row) => row.getCanSelect())}
+        onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked === true)}
       />
     ),
     cell: ({ row }) => (

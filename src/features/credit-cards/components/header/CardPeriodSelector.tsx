@@ -8,9 +8,7 @@ export function CardPeriodSelector() {
   return (
     <MonthYearPicker
       value={{ month, year }}
-      onChange={({ month: nextMonth, year: nextYear }) =>
-        setPeriod(nextMonth, nextYear)
-      }
+      onChange={({ month: nextMonth, year: nextYear }) => setPeriod(nextMonth, nextYear)}
       ariaLabel="Período de tarjetas"
       className="w-auto min-w-40"
     />

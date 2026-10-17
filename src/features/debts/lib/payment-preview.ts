@@ -14,17 +14,11 @@ const EPSILON = 0.005;
 const cents = (value: number) => Math.round(value * 100) / 100;
 
 /** What a payment leaves behind: balance after it and the status the debt will have (board Registrar pago). */
-export function previewPayment(
-  balance: number,
-  amount: number,
-): PaymentPreview {
+export function previewPayment(balance: number, amount: number): PaymentPreview {
   const current = Math.max(balance, 0);
-  const applied = Number.isFinite(amount)
-    ? Math.min(Math.max(amount, 0), current)
-    : 0;
+  const applied = Number.isFinite(amount) ? Math.min(Math.max(amount, 0), current) : 0;
   const after = cents(Math.max(current - applied, 0));
-  const outcome: PaymentOutcome =
-    applied < EPSILON ? "pending" : after < EPSILON ? "paid" : "in_progress";
+  const outcome: PaymentOutcome = applied < EPSILON ? "pending" : after < EPSILON ? "paid" : "in_progress";
   return {
     current,
     applied,

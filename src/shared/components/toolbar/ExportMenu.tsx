@@ -2,12 +2,7 @@ import type { ReactNode } from "react";
 import { ChevronDown, Ellipsis } from "lucide-react";
 
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
 export interface ExportMenuItem {
   label: string;
@@ -17,15 +12,7 @@ export interface ExportMenuItem {
   onSelect?: () => void;
 }
 
-export function ExportMenu({
-  items,
-  label = "Exportar",
-  iconOnly = false,
-}: {
-  items: ExportMenuItem[];
-  label?: string;
-  iconOnly?: boolean;
-}) {
+export function ExportMenu({ items, label = "Exportar", iconOnly = false }: { items: ExportMenuItem[]; label?: string; iconOnly?: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -1,10 +1,7 @@
 import { ShareEditor } from "../components/ShareEditor";
 import type { DraftFormSectionProps } from "../types/draft-form";
 
-export function FixedCostDraftSharingSection({
-  value,
-  onChange,
-}: DraftFormSectionProps) {
+export function FixedCostDraftSharingSection({ value, onChange }: DraftFormSectionProps) {
   return (
     <ShareEditor
       value={value.sharedWith}

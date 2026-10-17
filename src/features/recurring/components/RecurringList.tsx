@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
-import {
-  useDeleteExpense,
-  useExpenses,
-  useSaveExpense,
-} from "@/features/expenses/hooks/expenses";
+import { useDeleteExpense, useExpenses, useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { useGenerateRecurring } from "@/features/recurring/hooks/recurring";
 import { usePeriod } from "@/shared/stores/period.store";
 import { toast } from "sonner";
@@ -34,50 +30,22 @@ import { useMe } from "@/shared/api/hooks/catalogs";
 import { RecurringDialog } from "./RecurringDialog";
 import { Button } from "@/ui/button";
 import { Switch } from "@/ui/switch";
-import {
-  CalendarPlus,
-  Copy,
-  Download,
-  Plus,
-  SquareArrowOutUpRight,
-  Trash2,
-} from "lucide-react";
+import { CalendarPlus, Copy, Download, Plus, SquareArrowOutUpRight, Trash2 } from "lucide-react";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { BulkActionsToolbar } from "@/shared/components/toolbar/BulkActionsToolbar";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import { useCsvExport } from "@/shared/hooks/useCsvExport";
 import { SlidersHorizontal } from "lucide-react";
 import type { ColumnVisibilityOption } from "@/shared/components/toolbar";
-import {
-  countActiveExpenseFilters,
-  PERSON_ALL,
-} from "@/features/expenses/lib/expense-filters";
+import { countActiveExpenseFilters, PERSON_ALL } from "@/features/expenses/lib/expense-filters";
 import { RecurringViewSettings } from "./RecurringViewSettings";
-import {
-  AppliedFilterChips,
-  type AppliedFilterChip,
-} from "@/shared/components/filters/AppliedFilterChips";
+import { AppliedFilterChips, type AppliedFilterChip } from "@/shared/components/filters/AppliedFilterChips";
 import { AppliedViewSummary } from "@/shared/components/toolbar/AppliedViewSummary";
 import { AppliedGroupChips } from "@/shared/components/toolbar/AppliedGroupChips";
 import { AppliedSortChip } from "@/shared/components/toolbar/AppliedSortChip";
 
-const FILTER_KEYS = [
-  "q",
-  "person",
-  "currency",
-  "type",
-  "method",
-  "period",
-  "status",
-] as const;
-const TEMPLATE_FILTER_FIELDS = [
-  "person",
-  "q",
-  "currency",
-  "type",
-  "method",
-  "period",
-] as const;
+const FILTER_KEYS = ["q", "person", "currency", "type", "method", "period", "status"] as const;
+const TEMPLATE_FILTER_FIELDS = ["person", "q", "currency", "type", "method", "period"] as const;
 type RecurringGroupBy = "origin" | "period" | "person" | "currency" | "active";
 const GROUP_OPTIONS: { value: RecurringGroupBy; label: string }[] = [
   { value: "origin", label: "Origen" },
@@ -99,17 +67,10 @@ const PERIOD_MONTHS: Record<string, number> = {
   semiannual: 6,
   annual: 12,
 };
-const originLabel = (target: string) =>
-  target === "fixed_cost"
-    ? "Costos fijos"
-    : target === "subscription"
-      ? "Plataformas"
-      : "Tarjetas";
+const originLabel = (target: string) => (target === "fixed_cost" ? "Costos fijos" : target === "subscription" ? "Plataformas" : "Tarjetas");
 const nextGenerationDate = (year: number, month: number, day: number) => {
   const date = new Date(Date.UTC(year, month, 1));
-  const lastDay = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0),
-  ).getUTCDate();
+  const lastDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
   date.setUTCDate(Math.min(day, lastDay));
   return date.toISOString().slice(0, 10);
 };
@@ -123,17 +84,10 @@ const nativeTotals = (items: RecurringExpense[]) =>
     { PEN: 0, USD: 0 },
   );
 const formatTotals = (totals: { PEN: number; USD: number }) =>
-  [
-    totals.PEN > 0 && formatCurrency(totals.PEN, "PEN"),
-    totals.USD > 0 && formatCurrency(totals.USD, "USD"),
-  ]
-    .filter(Boolean)
-    .join(" + ") || "S/ 0.00";
+  [totals.PEN > 0 && formatCurrency(totals.PEN, "PEN"), totals.USD > 0 && formatCurrency(totals.USD, "USD")].filter(Boolean).join(" + ") || "S/ 0.00";
 
 function RecurringListView() {
-  const { data: recurring = [], isLoading } = useExpenses(
-    EXPENSE_RESOURCES.recurring,
-  );
+  const { data: recurring = [], isLoading } = useExpenses(EXPENSE_RESOURCES.recurring);
   const people = usePeople().data ?? [];
   const personName = nameById(people);
   const [hideEmpty, setHideEmpty] = useHideEmptyGroups("recurring-templates");
@@ -143,34 +97,22 @@ function RecurringListView() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<RecurringExpense>();
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(() => new Set());
   const [showSubtotals, setShowSubtotals] = useState(true);
   const [collapsedGroups, setCollapsedGroups] = useState(false);
   const [showCount, setShowCount] = useState(true);
   const [showSum, setShowSum] = useState(true);
   const [deleteSelectedOpen, setDeleteSelectedOpen] = useState(false);
   const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(FILTER_KEYS);
-  const [originFilters, setOriginFilters] = useUrlFilters<{ origin?: string }>([
-    "origin",
-  ]);
-  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>([
-    "group",
-  ]);
-  const [sortParams, setSortParams] = useUrlFilters<{ sort?: string }>([
-    "sort",
-  ]);
+  const [originFilters, setOriginFilters] = useUrlFilters<{ origin?: string }>(["origin"]);
+  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
+  const [sortParams, setSortParams] = useUrlFilters<{ sort?: string }>(["sort"]);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const sort = SORT_OPTIONS.some((option) => option.value === sortParams.sort)
-    ? sortParams.sort!
-    : "day";
-  const groupBy = (groupParams.group?.split(",") ?? []).filter(
-    (field): field is RecurringGroupBy =>
-      GROUP_OPTIONS.some((option) => option.value === field),
+  const sort = SORT_OPTIONS.some((option) => option.value === sortParams.sort) ? sortParams.sort! : "day";
+  const groupBy = (groupParams.group?.split(",") ?? []).filter((field): field is RecurringGroupBy =>
+    GROUP_OPTIONS.some((option) => option.value === field),
   );
-  const setGroupBy = (next: RecurringGroupBy[]) =>
-    setGroupParams(next.length ? { group: next.join(",") } : {});
+  const setGroupBy = (next: RecurringGroupBy[]) => setGroupParams(next.length ? { group: next.join(",") } : {});
   const [view, setView] = useViewMode("recurring-templates", "table");
   const month = usePeriod((state) => state.month);
   const year = usePeriod((state) => state.year);
@@ -179,23 +121,12 @@ function RecurringListView() {
     const { status, ...expenseFilters } = filters;
     const visible = applyExpenseFilters(recurring, expenseFilters, me);
     return visible
-      .filter(
-        (item) =>
-          !originFilters.origin || item.targetType === originFilters.origin,
-      )
-      .filter((item) =>
-        status === "active"
-          ? item.isActive
-          : status === "paused"
-            ? !item.isActive
-            : true,
-      )
+      .filter((item) => !originFilters.origin || item.targetType === originFilters.origin)
+      .filter((item) => (status === "active" ? item.isActive : status === "paused" ? !item.isActive : true))
       .sort((left, right) => {
-        if (sort === "name")
-          return left.description.localeCompare(right.description);
+        if (sort === "name") return left.description.localeCompare(right.description);
         if (sort === "amount") return right.amount - left.amount;
-        if (sort === "period")
-          return (left.period ?? "").localeCompare(right.period ?? "");
+        if (sort === "period") return (left.period ?? "").localeCompare(right.period ?? "");
         return left.dayOfMonth - right.dayOfMonth;
       });
   }, [recurring, filters, originFilters.origin, me, sort]);
@@ -209,32 +140,18 @@ function RecurringListView() {
     { PEN: 0, USD: 0 },
   );
   const annual = { PEN: monthly.PEN * 12, USD: monthly.USD * 12 };
-  const nextDate = active
-    .map((item) => nextGenerationDate(year, month, item.dayOfMonth))
-    .sort()[0];
-  const nextCount = active.filter(
-    (item) => nextGenerationDate(year, month, item.dayOfMonth) === nextDate,
-  ).length;
+  const nextDate = active.map((item) => nextGenerationDate(year, month, item.dayOfMonth)).sort()[0];
+  const nextCount = active.filter((item) => nextGenerationDate(year, month, item.dayOfMonth) === nextDate).length;
   const totals = nativeTotals(filtered);
   const selectedItems = filtered.filter((item) => selected.has(item.id));
-  const selectedActive =
-    selectedItems.length > 0 && selectedItems.every((item) => item.isActive);
+  const selectedActive = selectedItems.length > 0 && selectedItems.every((item) => item.isActive);
   useEffect(() => {
     const ids = new Set(recurring.map((item) => item.id));
     setSelected((current) => new Set([...current].filter((id) => ids.has(id))));
   }, [recurring]);
   const csv = useCsvExport({
     filename: `recurrentes-plantillas-${year}-${String(month).padStart(2, "0")}`,
-    headers: [
-      "Plantilla",
-      "Origen",
-      "Monto",
-      "Moneda",
-      "Frecuencia",
-      "Persona",
-      "Día de cobro",
-      "Activa",
-    ],
+    headers: ["Plantilla", "Origen", "Monto", "Moneda", "Frecuencia", "Persona", "Día de cobro", "Activa"],
     rows: selectedItems.map((item) => [
       item.description,
       originLabel(item.targetType),
@@ -252,11 +169,7 @@ function RecurringListView() {
       { month, year },
       {
         onSuccess: ({ created, skipped }) => {
-          const missing = skipped.filter(
-            (item) =>
-              item.reason === "missing_card" ||
-              item.reason === "missing_category",
-          ).length;
+          const missing = skipped.filter((item) => item.reason === "missing_card" || item.reason === "missing_category").length;
           toast.success(
             created.length
               ? `${created.length} gastos creados como pendientes en ${getMonthName(month)}`
@@ -333,13 +246,9 @@ function RecurringListView() {
               month: "2-digit",
               year: "numeric",
               timeZone: "UTC",
-            }).format(
-              new Date(nextGenerationDate(year, month, item.dayOfMonth)),
-            )}
+            }).format(new Date(nextGenerationDate(year, month, item.dayOfMonth)))}
           </span>
-          <span className="text-xs text-muted-foreground">
-            Cobro día {String(item.dayOfMonth).padStart(2, "0")}
-          </span>
+          <span className="text-xs text-muted-foreground">Cobro día {String(item.dayOfMonth).padStart(2, "0")}</span>
         </span>
       ),
     },
@@ -377,11 +286,7 @@ function RecurringListView() {
               note: originLabel(item.targetType),
               onSelect: () =>
                 window.location.assign(
-                  item.targetType === "fixed_cost"
-                    ? "/costos-fijos"
-                    : item.targetType === "subscription"
-                      ? "/plataformas"
-                      : "/tarjetas",
+                  item.targetType === "fixed_cost" ? "/costos-fijos" : item.targetType === "subscription" ? "/plataformas" : "/tarjetas",
                 ),
             },
           ]}
@@ -400,27 +305,21 @@ function RecurringListView() {
     },
   ];
   const settingsColumns = columns.filter((column) => column.key !== "actions");
-  const columnVisibilityOptions: ColumnVisibilityOption[] = settingsColumns.map(
-    (column) => ({
-      id: column.key,
-      label: column.header,
-      visible: !hiddenColumns.has(column.key),
-      disabled: column.key === "description",
-      onVisibleChange: (visible) =>
-        setHiddenColumns((current) => {
-          const next = new Set(current);
-          if (visible) next.delete(column.key);
-          else next.add(column.key);
-          return next;
-        }),
-    }),
-  );
-  const visibleColumnCount = columnVisibilityOptions.filter(
-    (column) => column.visible,
-  ).length;
-  const visibleColumns = columns.filter(
-    (column) => !hiddenColumns.has(column.key),
-  );
+  const columnVisibilityOptions: ColumnVisibilityOption[] = settingsColumns.map((column) => ({
+    id: column.key,
+    label: column.header,
+    visible: !hiddenColumns.has(column.key),
+    disabled: column.key === "description",
+    onVisibleChange: (visible) =>
+      setHiddenColumns((current) => {
+        const next = new Set(current);
+        if (visible) next.delete(column.key);
+        else next.add(column.key);
+        return next;
+      }),
+  }));
+  const visibleColumnCount = columnVisibilityOptions.filter((column) => column.visible).length;
+  const visibleColumns = columns.filter((column) => !hiddenColumns.has(column.key));
   const filterCount = countActiveExpenseFilters(filters, FILTER_KEYS);
   const canResetView =
     filterCount > 0 ||
@@ -454,8 +353,7 @@ function RecurringListView() {
       )}
       {showSum && (
         <span>
-          SUM{" "}
-          <strong className="text-foreground">{formatTotals(totals)}</strong>
+          SUM <strong className="text-foreground">{formatTotals(totals)}</strong>
         </span>
       )}
     </div>
@@ -465,9 +363,7 @@ function RecurringListView() {
       key: "currency",
       label: `Moneda: ${filters.currency
         .split(",")
-        .map((currency) =>
-          currency === "USD" ? "Dólares (USD)" : "Soles (PEN)",
-        )
+        .map((currency) => (currency === "USD" ? "Dólares (USD)" : "Soles (PEN)"))
         .join(", ")}`,
       onRemove: () => setFilters({ ...filters, currency: undefined }),
     },
@@ -497,9 +393,7 @@ function RecurringListView() {
       label: `Estado: ${filters.status === "active" ? "Activa" : "Pausada"}`,
       onRemove: () => setFilters({ ...filters, status: undefined }),
     },
-    filters.person
-      ?.split(",")
-      .some((person) => person && person !== PERSON_ALL) && {
+    filters.person?.split(",").some((person) => person && person !== PERSON_ALL) && {
       key: "person",
       label: `Persona: ${filters.person
         .split(",")
@@ -523,55 +417,28 @@ function RecurringListView() {
   ].filter((item): item is AppliedFilterChip => !!item);
   const appliedSummary =
     appliedFilters.length > 0 || groupBy.length > 0 || sort !== "day" ? (
-      <AppliedViewSummary
-        onAddFilter={() => setFiltersOpen(true)}
-        onReset={resetView}
-        resetDisabled={!canResetView}
-      >
+      <AppliedViewSummary onAddFilter={() => setFiltersOpen(true)} onReset={resetView} resetDisabled={!canResetView}>
         <span className="eyebrow shrink-0">Filtros</span>
         <AppliedFilterChips items={appliedFilters} tone="brand" />
-        <AppliedGroupChips
-          value={groupBy}
-          options={GROUP_OPTIONS}
-          onChange={setGroupBy}
-        />
+        <AppliedGroupChips value={groupBy} options={GROUP_OPTIONS} onChange={setGroupBy} />
         {sort !== "day" && (
           <AppliedSortChip
-            label={
-              SORT_OPTIONS.find((option) => option.value === sort)?.label ??
-              sort
-            }
-            descending={
-              SORT_OPTIONS.find((option) => option.value === sort)
-                ?.descending ?? false
-            }
+            label={SORT_OPTIONS.find((option) => option.value === sort)?.label ?? sort}
+            descending={SORT_OPTIONS.find((option) => option.value === sort)?.descending ?? false}
             onRemove={() => setSortParams({})}
           />
         )}
       </AppliedViewSummary>
     ) : undefined;
 
-  const metric = (
-    label: string,
-    value: string,
-    detail: string,
-    activeCard = false,
-  ) => (
-    <div
-      className={`min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5 ${activeCard ? "bg-brand/5 ring-2 ring-brand/30" : ""}`}
-    >
+  const metric = (label: string, value: string, detail: string, activeCard = false) => (
+    <div className={`min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5 ${activeCard ? "bg-brand/5 ring-2 ring-brand/30" : ""}`}>
       <div className="flex items-center justify-between gap-2">
         <div className="eyebrow truncate">{label}</div>
-        {activeCard && (
-          <span className="text-xs font-medium text-brand">Mostrando</span>
-        )}
+        {activeCard && <span className="text-xs font-medium text-brand">Mostrando</span>}
       </div>
-      <div className="mt-1 truncate text-2xl font-semibold tracking-tight tabular-nums">
-        {value}
-      </div>
-      <div className="mt-1 truncate text-xs text-muted-foreground">
-        {detail}
-      </div>
+      <div className="mt-1 truncate text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
+      <div className="mt-1 truncate text-xs text-muted-foreground">{detail}</div>
     </div>
   );
 
@@ -598,27 +465,10 @@ function RecurringListView() {
         }
       >
         <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {metric(
-            "Plantillas",
-            String(recurring.length),
-            `${active.length} activas · ${recurring.length - active.length} pausadas`,
-            true,
-          )}
-          {metric(
-            "Costo mensual",
-            formatTotals(monthly),
-            "de plantillas activas",
-          )}
-          {metric(
-            "Costo anual",
-            formatTotals(annual),
-            "12 meses al ritmo actual",
-          )}
-          {metric(
-            "Próxima generación",
-            nextDate ?? "—",
-            `${nextCount} recurrentes nuevos`,
-          )}
+          {metric("Plantillas", String(recurring.length), `${active.length} activas · ${recurring.length - active.length} pausadas`, true)}
+          {metric("Costo mensual", formatTotals(monthly), "de plantillas activas")}
+          {metric("Costo anual", formatTotals(annual), "12 meses al ritmo actual")}
+          {metric("Próxima generación", nextDate ?? "—", `${nextCount} recurrentes nuevos`)}
         </section>
       </IndicatorsDisclosure>
 
@@ -633,9 +483,7 @@ function RecurringListView() {
           filterOpen={filtersOpen}
           onFilterOpenChange={setFiltersOpen}
           activeMarkers
-          extraFilterCount={
-            Number(!!filters.status) + Number(!!originFilters.origin)
-          }
+          extraFilterCount={Number(!!filters.status) + Number(!!originFilters.origin)}
           onClearFilters={() => {
             setFilters({});
             setOriginFilters({});
@@ -680,13 +528,7 @@ function RecurringListView() {
               />
               <RecurringViewSettings
                 trigger={
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Ajustes de vista"
-                    title="Ajustes de vista"
-                  >
+                  <Button type="button" variant="ghost" size="icon" aria-label="Ajustes de vista" title="Ajustes de vista">
                     <SlidersHorizontal className="size-4" />
                   </Button>
                 }
@@ -698,15 +540,9 @@ function RecurringListView() {
                 groupOptions={GROUP_OPTIONS}
                 sort={sort}
                 sortOptions={SORT_OPTIONS}
-                onSortChange={(next) =>
-                  setSortParams(next === "day" ? {} : { sort: next })
-                }
+                onSortChange={(next) => setSortParams(next === "day" ? {} : { sort: next })}
                 onGroupByChange={(next) =>
-                  setGroupBy(
-                    next.filter((field): field is RecurringGroupBy =>
-                      GROUP_OPTIONS.some((option) => option.value === field),
-                    ),
-                  )
+                  setGroupBy(next.filter((field): field is RecurringGroupBy => GROUP_OPTIONS.some((option) => option.value === field)))
                 }
                 subtotals={showSubtotals}
                 onSubtotalsChange={setShowSubtotals}
@@ -722,13 +558,7 @@ function RecurringListView() {
                 onReset={resetView}
               />
               <ViewModeToggle value={view} onChange={setView} />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={generateMonth}
-                disabled={generate.isPending}
-              >
+              <Button type="button" variant="outline" size="sm" onClick={generateMonth} disabled={generate.isPending}>
                 <CalendarPlus className="size-4" />
                 <span className="hidden sm:inline">Generar este mes</span>
               </Button>
@@ -745,11 +575,7 @@ function RecurringListView() {
         <EmptyState
           variant={recurring.length ? "filters" : "empty"}
           title={recurring.length ? "Sin resultados" : "Aún no hay plantillas"}
-          description={
-            recurring.length
-              ? "Prueba con otros filtros."
-              : "Crea una plantilla para generar recurrentes automáticamente."
-          }
+          description={recurring.length ? "Prueba con otros filtros." : "Crea una plantilla para generar recurrentes automáticamente."}
           action={
             !recurring.length && (
               <Button type="button" size="sm" onClick={openCreate}>
@@ -788,12 +614,9 @@ function RecurringListView() {
           }}
           groupLabel={(key, field) => {
             if (field === "origin") return originLabel(key);
-            if (field === "person")
-              return key === "none" ? "Sin persona" : personName(key);
-            if (field === "currency")
-              return key === "USD" ? "Dólares (USD)" : "Soles (PEN)";
-            if (field === "active")
-              return key === "active" ? "Activas" : "Pausadas";
+            if (field === "person") return key === "none" ? "Sin persona" : personName(key);
+            if (field === "currency") return key === "USD" ? "Dólares (USD)" : "Soles (PEN)";
+            if (field === "active") return key === "active" ? "Activas" : "Pausadas";
             return SUBSCRIPTION_PERIOD_LABELS[key] ?? key;
           }}
           summaryForGroup={
@@ -805,22 +628,15 @@ function RecurringListView() {
           }
           footer={footer}
           collapsiblePrimaryGroups={collapsedGroups}
-          initialOpenPrimaryGroups={
-            collapsedGroups ? 0 : Number.MAX_SAFE_INTEGER
-          }
+          initialOpenPrimaryGroups={collapsedGroups ? 0 : Number.MAX_SAFE_INTEGER}
           selected={selected}
           onSelectedChange={setSelected}
           tableClassName="recurring-templates-table"
         />
       )}
 
-      <BulkActionsToolbar
-        count={selectedItems.length}
-        onClear={() => setSelected(new Set())}
-      >
-        <span className="text-xs text-muted-foreground">
-          {formatTotals(nativeTotals(selectedItems))}
-        </span>
+      <BulkActionsToolbar count={selectedItems.length} onClear={() => setSelected(new Set())}>
+        <span className="text-xs text-muted-foreground">{formatTotals(nativeTotals(selectedItems))}</span>
         <Button
           type="button"
           variant="ghost"
@@ -854,13 +670,7 @@ function RecurringListView() {
         <Button type="button" variant="ghost" size="sm" onClick={csv.exportCsv}>
           <Download className="size-4" /> Exportar
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="text-destructive"
-          onClick={() => setDeleteSelectedOpen(true)}
-        >
+        <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteSelectedOpen(true)}>
           <Trash2 className="size-4" /> Eliminar
         </Button>
       </BulkActionsToolbar>
@@ -877,11 +687,7 @@ function RecurringListView() {
         }}
       />
 
-      <RecurringDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        recurring={editing}
-      />
+      <RecurringDialog open={dialogOpen} onOpenChange={setDialogOpen} recurring={editing} />
     </div>
   );
 }

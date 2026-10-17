@@ -17,47 +17,26 @@ import { formatAttachmentSize } from "../lib/attachment-size";
 import { uploadedLabel } from "../lib/attachment-view";
 
 export interface AttachmentFileCardProps {
-  file: Pick<
-    AttachmentRecord,
-    "name" | "contentType" | "kind" | "sizeBytes" | "url"
-  > &
-    Partial<Pick<AttachmentRecord, "createdAt">>;
+  file: Pick<AttachmentRecord, "name" | "contentType" | "kind" | "sizeBytes" | "url"> & Partial<Pick<AttachmentRecord, "createdAt">>;
   uploading?: boolean;
   onRemove?: () => void;
   onPreview?: () => void;
   removeDisabled?: boolean;
 }
 
-export function AttachmentFileCard({
-  file,
-  uploading,
-  onRemove,
-  onPreview,
-  removeDisabled,
-}: AttachmentFileCardProps) {
+export function AttachmentFileCard({ file, uploading, onRemove, onPreview, removeDisabled }: AttachmentFileCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
-  const isImage =
-    !!file.url &&
-    file.contentType.toLowerCase().startsWith("image/") &&
-    !imageFailed;
+  const isImage = !!file.url && file.contentType.toLowerCase().startsWith("image/") && !imageFailed;
   const Icon = getFileIcon(file.contentType, file.name);
 
   return (
     <>
-      <Attachment
-        state={uploading ? "uploading" : "done"}
-        className="w-full flex-nowrap rounded-lg"
-      >
+      <Attachment state={uploading ? "uploading" : "done"} className="w-full flex-nowrap rounded-lg">
         <AttachmentMedia variant={isImage ? "image" : "icon"}>
           {uploading ? (
             <LoaderCircle aria-hidden="true" className="animate-spin" />
           ) : isImage ? (
-            <img
-              src={file.url ?? ""}
-              alt=""
-              loading="lazy"
-              onError={() => setImageFailed(true)}
-            />
+            <img src={file.url ?? ""} alt="" loading="lazy" onError={() => setImageFailed(true)} />
           ) : (
             <Icon aria-hidden="true" />
           )}
@@ -73,13 +52,8 @@ export function AttachmentFileCard({
         <AttachmentContent>
           <AttachmentTitle title={file.name}>{file.name}</AttachmentTitle>
           <AttachmentDescription>
-            {uploading
-              ? "Subiendo…"
-              : (ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind)}{" "}
-            · {formatAttachmentSize(file.sizeBytes)}
-            {!uploading && file.createdAt
-              ? ` · ${uploadedLabel(file.createdAt)}`
-              : ""}
+            {uploading ? "Subiendo…" : (ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind)} · {formatAttachmentSize(file.sizeBytes)}
+            {!uploading && file.createdAt ? ` · ${uploadedLabel(file.createdAt)}` : ""}
           </AttachmentDescription>
           {uploading && (
             <div

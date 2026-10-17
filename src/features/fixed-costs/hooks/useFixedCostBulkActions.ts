@@ -6,15 +6,9 @@ import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { expenseKeys } from "@/features/expenses/hooks/expenses";
-import {
-  deleteExpense,
-  saveExpense,
-} from "@/features/expenses/services/expense.service";
+import { deleteExpense, saveExpense } from "@/features/expenses/services/expense.service";
 import { FIXED_COST_BULK_LABELS } from "../constants/bulk-actions";
-import type {
-  FixedCostBulkAction,
-  FixedCostBulkFailure,
-} from "../types/fixed-cost-types";
+import type { FixedCostBulkAction, FixedCostBulkFailure } from "../types/fixed-cost-types";
 
 export function useFixedCostBulkActions(items: FixedCost[], scopeKey: string) {
   const queryClient = useQueryClient();
@@ -31,27 +25,13 @@ export function useFixedCostBulkActions(items: FixedCost[], scopeKey: string) {
   useEffect(() => {
     const ids = new Set(items.map((item) => item.id));
     setSelection((current) => {
-      const next = Object.fromEntries(
-        Object.entries(current).filter(
-          ([id, selected]) => selected && ids.has(id),
-        ),
-      );
-      return Object.keys(next).length === Object.keys(current).length
-        ? current
-        : next;
+      const next = Object.fromEntries(Object.entries(current).filter(([id, selected]) => selected && ids.has(id)));
+      return Object.keys(next).length === Object.keys(current).length ? current : next;
     });
   }, [items]);
 
   const mutation = useMutation({
-    mutationFn: async ({
-      action,
-      records,
-      status,
-    }: {
-      action: FixedCostBulkAction;
-      records: FixedCost[];
-      status?: string;
-    }) => {
+    mutationFn: async ({ action, records, status }: { action: FixedCostBulkAction; records: FixedCost[]; status?: string }) => {
       const succeeded: string[] = [];
       const failed: FixedCostBulkFailure[] = [];
       const perform = (record: FixedCost) => {
@@ -84,26 +64,14 @@ export function useFixedCostBulkActions(items: FixedCost[], scopeKey: string) {
     },
     onSuccess: async ({ succeeded, failed, action }) => {
       setFailures(failed);
-      setSelection((current) =>
-        Object.fromEntries(
-          Object.entries(current).filter(([id]) => !succeeded.includes(id)),
+      setSelection((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !succeeded.includes(id))));
+      await Promise.all(
+        [expenseKeys.resource(resource), ["summary"], ["commitments"], ["history"], ["attachments"]].map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
         ),
       );
-      await Promise.all(
-        [
-          expenseKeys.resource(resource),
-          ["summary"],
-          ["commitments"],
-          ["history"],
-          ["attachments"],
-        ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
-      );
-      if (succeeded.length)
-        toast.success(`${succeeded.length} ${FIXED_COST_BULK_LABELS[action]}`);
-      if (failed.length)
-        toast.error(
-          `${failed.length} registros no se pudieron procesar. Puedes reintentar su selección.`,
-        );
+      if (succeeded.length) toast.success(`${succeeded.length} ${FIXED_COST_BULK_LABELS[action]}`);
+      if (failed.length) toast.error(`${failed.length} registros no se pudieron procesar. Puedes reintentar su selección.`);
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
@@ -119,12 +87,7 @@ export function useFixedCostBulkActions(items: FixedCost[], scopeKey: string) {
       setFailures([]);
     },
     run: async (action: FixedCostBulkAction, status?: string) => {
-      if (
-        mutation.isPending ||
-        !selectedItems.length ||
-        (action === "status" && !status)
-      )
-        return;
+      if (mutation.isPending || !selectedItems.length || (action === "status" && !status)) return;
       setFailures([]);
       try {
         await mutation.mutateAsync({ action, records: selectedItems, status });

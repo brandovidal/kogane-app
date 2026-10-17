@@ -19,12 +19,8 @@ type PaletteItem = FlatLink & { section?: string; run?: () => void };
 
 const readRecent = (): string[] => {
   try {
-    const parsed: unknown = JSON.parse(
-      localStorage.getItem(RECENT_KEY) ?? "[]",
-    );
-    return Array.isArray(parsed)
-      ? parsed.filter((item): item is string => typeof item === "string")
-      : [];
+    const parsed: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]");
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
   } catch {
     return [];
   }
@@ -44,8 +40,7 @@ const GO_TO_TODAY: PaletteItem = {
   href: "#hoy",
   label: "Ir a hoy",
   group: "Período",
-  run: () =>
-    periodStore.getState().setPeriod(getCurrentMonth(), getCurrentYear()),
+  run: () => periodStore.getState().setPeriod(getCurrentMonth(), getCurrentYear()),
 };
 
 // Ctrl+K (or ⌘K): jump to any screen or card by typing part of its name (D41)
@@ -84,18 +79,11 @@ function CommandPaletteView() {
   const results = useMemo<PaletteItem[]>(() => {
     const links = flattenNav(NAV, cards);
     const term = normalize(query);
-    if (term)
-      return [...links, GO_TO_TODAY].filter((link) =>
-        normalize(`${link.group ?? ""} ${link.label}`).includes(term),
-      );
+    if (term) return [...links, GO_TO_TODAY].filter((link) => normalize(`${link.group ?? ""} ${link.label}`).includes(term));
     // Without a search: what was opened lately, the actions, then every screen
-    const recents = recent
-      .map((href) => links.find((link) => link.href === href))
-      .filter((link): link is FlatLink => Boolean(link && !link.action));
+    const recents = recent.map((href) => links.find((link) => link.href === href)).filter((link): link is FlatLink => Boolean(link && !link.action));
     const actions = [...links.filter((link) => link.action), GO_TO_TODAY];
-    const rest = links.filter(
-      (link) => !link.action && !recents.includes(link),
-    );
+    const rest = links.filter((link) => !link.action && !recents.includes(link));
     return [
       ...recents.map((link) => ({ ...link, section: "Recientes" })),
       ...actions.map((link) => ({ ...link, section: "Acciones" })),
@@ -109,8 +97,7 @@ function CommandPaletteView() {
   const go = (link: PaletteItem, newTab = false) => {
     setOpen(false);
     if (link.run) link.run();
-    else if (link.action === "new-expense")
-      newExpenseStore.getState().openWith();
+    else if (link.action === "new-expense") newExpenseStore.getState().openWith();
     else {
       rememberLink(link.href);
       if (newTab) window.open(link.href, "_blank", "noopener");
@@ -135,29 +122,20 @@ function CommandPaletteView() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === "ArrowDown")
-                setSelected((current) =>
-                  Math.min(current + 1, results.length - 1),
-                );
-              if (event.key === "ArrowUp")
-                setSelected((current) => Math.max(current - 1, 0));
-              if (event.key === "Enter" && results[selected])
-                go(results[selected], event.ctrlKey || event.metaKey);
+              if (event.key === "ArrowDown") setSelected((current) => Math.min(current + 1, results.length - 1));
+              if (event.key === "ArrowUp") setSelected((current) => Math.max(current - 1, 0));
+              if (event.key === "Enter" && results[selected]) go(results[selected], event.ctrlKey || event.metaKey);
             }}
             placeholder="Buscar o ir a… (ej: borrador, io, deudas)"
             className="h-11 flex-1 bg-transparent text-sm outline-none"
           />
-          <kbd className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">
-            Esc
-          </kbd>
+          <kbd className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">Esc</kbd>
         </div>
         <ul className="max-h-80 overflow-y-auto p-1">
           {results.map((link, index) => (
             <li key={`${link.section ?? ""}:${link.href}`}>
               {link.section && link.section !== results[index - 1]?.section && (
-                <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {link.section}
-                </p>
+                <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{link.section}</p>
               )}
               <button
                 type="button"
@@ -166,19 +144,11 @@ function CommandPaletteView() {
                 className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${index === selected ? "bg-muted" : ""}`}
               >
                 <span>{link.label}</span>
-                {link.group && (
-                  <span className="text-xs text-muted-foreground">
-                    {link.group}
-                  </span>
-                )}
+                {link.group && <span className="text-xs text-muted-foreground">{link.group}</span>}
               </button>
             </li>
           ))}
-          {!results.length && (
-            <li className="px-3 py-6 text-center text-sm text-muted-foreground">
-              Sin resultados
-            </li>
-          )}
+          {!results.length && <li className="px-3 py-6 text-center text-sm text-muted-foreground">Sin resultados</li>}
         </ul>
         <div className="hidden items-center gap-4 border-t px-3 py-2 text-[11px] text-muted-foreground sm:flex">
           <span>↑↓ navegar</span>

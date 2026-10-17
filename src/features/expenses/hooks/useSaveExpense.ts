@@ -12,8 +12,7 @@ const invalidateFor = (resource: ExpenseResource) => [
 ];
 
 export const useSaveExpense = (resource: ExpenseResource) =>
-  useApiMutation(
-    ({ id, body }: { id?: string; body: ExpenseInputDto }) =>
-      saveExpense(resource, { id, body }),
-    { invalidate: invalidateFor(resource), success: "Guardado" },
-  );
+  useApiMutation(({ id, body }: { id?: string; body: ExpenseInputDto }) => saveExpense(resource, { id, body }), {
+    invalidate: invalidateFor(resource),
+    success: "Guardado",
+  });

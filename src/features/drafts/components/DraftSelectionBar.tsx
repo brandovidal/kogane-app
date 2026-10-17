@@ -25,41 +25,21 @@ export function DraftSelectionBar({
     >
       <div className="min-w-0 flex-1">
         <b className="text-sm">
-          {summary.count}{" "}
-          {summary.count === 1 ? "seleccionado" : "seleccionados"}
+          {summary.count} {summary.count === 1 ? "seleccionado" : "seleccionados"}
         </b>
         {summary.incomplete > 0 && (
           <p className="text-xs text-amber-600 dark:text-amber-400">
-            {summary.incomplete}{" "}
-            {summary.incomplete === 1
-              ? "incompleto no se guardará"
-              : "incompletos no se guardarán"}
+            {summary.incomplete} {summary.incomplete === 1 ? "incompleto no se guardará" : "incompletos no se guardarán"}
           </p>
         )}
       </div>
-      <Button
-        size="sm"
-        onClick={onSaveReady}
-        disabled={busy || summary.ready.length === 0}
-      >
+      <Button size="sm" onClick={onSaveReady} disabled={busy || summary.ready.length === 0}>
         <Check className="size-4" /> Guardar listos ({summary.ready.length})
       </Button>
-      <Button
-        size="sm"
-        variant="outline"
-        className="text-destructive hover:text-destructive"
-        onClick={onDiscard}
-        disabled={busy}
-      >
+      <Button size="sm" variant="outline" className="text-destructive hover:text-destructive" onClick={onDiscard} disabled={busy}>
         <Trash2 className="size-4" /> Descartar
       </Button>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="size-8"
-        aria-label="Quitar selección"
-        onClick={onClear}
-      >
+      <Button size="icon" variant="ghost" className="size-8" aria-label="Quitar selección" onClick={onClear}>
         <X className="size-4" />
       </Button>
     </div>

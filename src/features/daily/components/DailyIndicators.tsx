@@ -7,35 +7,17 @@ import { formatDayMonth } from "@/shared/lib/dates";
 import { elapsedDays, summarizeDaily } from "../lib/daily-summary";
 import { useEffect, useState } from "react";
 
-function Metric({
-  label,
-  value,
-  note,
-  selected = false,
-}: {
-  label: string;
-  value: string;
-  note: string;
-  selected?: boolean;
-}) {
+function Metric({ label, value, note, selected = false }: { label: string; value: string; note: string; selected?: boolean }) {
   return (
     <div
       className={`min-w-0 rounded-xl border px-4 py-3.5 ${selected ? "border-brand/50 bg-brand/10 ring-2 ring-brand/15 dark:bg-indigo-300/10" : "border-border/80 bg-card"}`}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="eyebrow truncate">{label}</div>
-        {selected && (
-          <span className="shrink-0 text-xs font-medium text-brand">
-            Mostrando
-          </span>
-        )}
+        {selected && <span className="shrink-0 text-xs font-medium text-brand">Mostrando</span>}
       </div>
-      <div className="mt-1.5 truncate text-2xl font-semibold tracking-tight tabular-nums">
-        {value}
-      </div>
-      <div className="mt-1.5 truncate text-xs text-muted-foreground">
-        {note}
-      </div>
+      <div className="mt-1.5 truncate text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
+      <div className="mt-1.5 truncate text-xs text-muted-foreground">{note}</div>
     </div>
   );
 }
@@ -54,12 +36,7 @@ export function DailyIndicators({
 }) {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => setNow(new Date()), []);
-  const summary = summarizeDaily(
-    expenses,
-    month,
-    year,
-    now ?? new Date(year, month - 1, 1),
-  );
+  const summary = summarizeDaily(expenses, month, year, now ?? new Date(year, month - 1, 1));
   const days = now ? elapsedDays(month, year, now) : 0;
   const biggest = summary.biggest;
   const count = `${summary.count} ${summary.count === 1 ? "gasto" : "gastos"}`;
@@ -79,14 +56,9 @@ export function DailyIndicators({
       ariaLabel="indicadores del mes"
       summary={summaryLabel}
       collapsedLabel="Expandir"
-      collapsedContent={
-        <IndicatorsCollapsedSummary summary={summaryLabel} metrics={metrics} />
-      }
+      collapsedContent={<IndicatorsCollapsedSummary summary={summaryLabel} metrics={metrics} />}
     >
-      <section
-        className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
-        aria-label="Indicadores del mes"
-      >
+      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores del mes">
         <Metric
           label="Total del mes"
           value={formatPlatformTotals(summary.total)}
@@ -96,20 +68,12 @@ export function DailyIndicators({
         <Metric
           label="Promedio diario"
           value={formatCurrency(average)}
-          note={
-            days
-              ? `${days} ${days === 1 ? "día transcurrido" : "días transcurridos"}`
-              : "—"
-          }
+          note={days ? `${days} ${days === 1 ? "día transcurrido" : "días transcurridos"}` : "—"}
         />
         <Metric
           label="Mayor gasto"
           value={biggest?.description ?? "—"}
-          note={
-            biggest
-              ? `${formatCurrency(biggest.amountInPen ?? biggest.amount)} · ${formatDayMonth(biggest.spentAt)}`
-              : "Sin gastos"
-          }
+          note={biggest ? `${formatCurrency(biggest.amountInPen ?? biggest.amount)} · ${formatDayMonth(biggest.spentAt)}` : "Sin gastos"}
         />
         <Metric
           label="Hoy"
@@ -117,9 +81,7 @@ export function DailyIndicators({
           note={
             summary.today.count === 0
               ? "Sin gastos hoy"
-              : `${summary.today.count} ${summary.today.count === 1 ? "gasto" : "gastos"} · ${
-                  summary.today.total <= average ? "bajo" : "sobre"
-                } el promedio`
+              : `${summary.today.count} ${summary.today.count === 1 ? "gasto" : "gastos"} · ${summary.today.total <= average ? "bajo" : "sobre"} el promedio`
           }
         />
       </section>

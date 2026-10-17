@@ -73,9 +73,7 @@ export function PlatformCalendarView({
           <div className="flex items-baseline gap-2">
             <h2 className="font-semibold capitalize">{monthName}</h2>
             <span className="text-sm text-muted-foreground">
-              {monthCharges.length}{" "}
-              {monthCharges.length === 1 ? "cobro" : "cobros"} ·{" "}
-              {formatPlatformTotals(sumPlatformAmounts(monthCharges))}
+              {monthCharges.length} {monthCharges.length === 1 ? "cobro" : "cobros"} · {formatPlatformTotals(sumPlatformAmounts(monthCharges))}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -84,9 +82,7 @@ export function PlatformCalendarView({
               className="rounded px-2 py-1 text-sm hover:bg-accent"
               onClick={() => {
                 const now = new Date();
-                periodStore
-                  .getState()
-                  .setPeriod(now.getMonth() + 1, now.getFullYear());
+                periodStore.getState().setPeriod(now.getMonth() + 1, now.getFullYear());
               }}
             >
               Hoy
@@ -119,38 +115,15 @@ export function PlatformCalendarView({
             const day = index - offset + 1;
             const inMonth = day > 0 && day <= days;
             const key = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const shown = inMonth
-              ? day
-              : day <= 0
-                ? new Date(year, month - 1, day).getDate()
-                : day - days;
+            const shown = inMonth ? day : day <= 0 ? new Date(year, month - 1, day).getDate() : day - days;
             return (
-              <div
-                key={index}
-                className={cn(
-                  "platform-calendar-day",
-                  !inMonth && "text-muted-foreground/40",
-                  key === todayKey && "bg-muted/40",
-                )}
-              >
-                <span className="text-xs font-medium tabular-nums">
-                  {shown}
-                </span>
+              <div key={index} className={cn("platform-calendar-day", !inMonth && "text-muted-foreground/40", key === todayKey && "bg-muted/40")}>
+                <span className="text-xs font-medium tabular-nums">{shown}</span>
                 {inMonth &&
                   (byDay.get(day) ?? []).map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => onOpen(item)}
-                      className="platform-calendar-charge"
-                    >
+                    <button key={item.id} type="button" onClick={() => onOpen(item)} className="platform-calendar-charge">
                       <span className="truncate">{item.description}</span>
-                      <span className="shrink-0 tabular-nums">
-                        {formatPlatformCurrency(
-                          platformNativeAmount(item),
-                          item.currency,
-                        )}
-                      </span>
+                      <span className="shrink-0 tabular-nums">{formatPlatformCurrency(platformNativeAmount(item), item.currency)}</span>
                     </button>
                   ))}
               </div>
@@ -172,37 +145,21 @@ export function PlatformCalendarView({
               >
                 <PlatformMark name={item.description} className="size-8" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">
-                    {item.description}
-                  </span>
+                  <span className="block truncate text-sm font-medium">{item.description}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {formatDayMonth(date)} ·{" "}
-                    {daysUntilDue(date, todayKey) === 0
-                      ? "hoy"
-                      : `en ${daysUntilDue(date, todayKey)} días`}
+                    {formatDayMonth(date)} · {daysUntilDue(date, todayKey) === 0 ? "hoy" : `en ${daysUntilDue(date, todayKey)} días`}
                   </span>
                 </span>
-                <span className="text-sm font-semibold tabular-nums">
-                  {formatPlatformCurrency(
-                    platformNativeAmount(item),
-                    item.currency,
-                  )}
-                </span>
+                <span className="text-sm font-semibold tabular-nums">{formatPlatformCurrency(platformNativeAmount(item), item.currency)}</span>
               </button>
             ))
           ) : (
-            <p className="border-t py-4 text-sm text-muted-foreground">
-              Sin cobros programados
-            </p>
+            <p className="border-t py-4 text-sm text-muted-foreground">Sin cobros programados</p>
           )}
         </div>
         <div className="flex justify-between border-t pt-3 text-xs">
           <span className="text-muted-foreground">Total 90 días</span>
-          <span className="font-semibold tabular-nums">
-            {formatPlatformTotals(
-              sumPlatformAmounts(upcoming.map(({ item }) => item)),
-            )}
-          </span>
+          <span className="font-semibold tabular-nums">{formatPlatformTotals(sumPlatformAmounts(upcoming.map(({ item }) => item)))}</span>
         </div>
       </aside>
     </div>

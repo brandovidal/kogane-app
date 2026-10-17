@@ -1,14 +1,7 @@
 import type { DraftFields } from "@/features/drafts/hooks/drafts";
 
 // Destinations offered in the web form (D40); "discard" is only for the bot
-export const FORM_DESTINATIONS = [
-  "daily",
-  "credit_card",
-  "fixed_cost",
-  "subscription",
-  "receivable",
-  "payable",
-] as const;
+export const FORM_DESTINATIONS = ["daily", "credit_card", "fixed_cost", "subscription", "receivable", "payable"] as const;
 
 // Which optional fields each destination uses (the same rules as REQUIRED_FIELDS_BY_DESTINATION in kogane-api)
 export const FIELDS_BY_DESTINATION: Record<
@@ -94,11 +87,8 @@ export const emptyDraftFields = (): DraftFields => ({
 
 // Only what the destination uses travels to kogane-api; empty texts become null
 export function toDraftBody(fields: DraftFields): DraftFields {
-  const rules =
-    FIELDS_BY_DESTINATION[fields.destination ?? "daily"] ??
-    FIELDS_BY_DESTINATION.daily;
-  const text = (value: string | null | undefined) =>
-    value && value.trim() ? value.trim() : null;
+  const rules = FIELDS_BY_DESTINATION[fields.destination ?? "daily"] ?? FIELDS_BY_DESTINATION.daily;
+  const text = (value: string | null | undefined) => (value && value.trim() ? value.trim() : null);
   return {
     ...fields,
     description: text(fields.description),
@@ -119,11 +109,7 @@ export function toDraftBody(fields: DraftFields): DraftFields {
 }
 
 // Rows of the split without a person yet are left out; none left means not shared
-function shareableWith(
-  fields: DraftFields,
-  shareable: boolean,
-): DraftFields["sharedWith"] {
-  const shares =
-    fields.sharedWith?.shares.filter((share) => share.personId) ?? [];
+function shareableWith(fields: DraftFields, shareable: boolean): DraftFields["sharedWith"] {
+  const shares = fields.sharedWith?.shares.filter((share) => share.personId) ?? [];
   return shareable && shares.length ? { shares } : null;
 }

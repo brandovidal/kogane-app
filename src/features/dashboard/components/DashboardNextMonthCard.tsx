@@ -7,26 +7,15 @@ import { Skeleton } from "@/ui/skeleton";
 import { Progress } from "@/ui/progress";
 import { useNextMonthForecast } from "../hooks/useNextMonthForecast";
 
-export function DashboardNextMonthCard({
-  month,
-  year,
-}: {
-  month: number;
-  year: number;
-}) {
+export function DashboardNextMonthCard({ month, year }: { month: number; year: number }) {
   const forecast = useNextMonthForecast(month, year);
   const percent = forecast.commitmentPercent;
 
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <CardTitle className="text-sm">
-          Siguiente mes · {getMonthName(forecast.month)}
-        </CardTitle>
-        <a
-          href="/calendario"
-          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-        >
+        <CardTitle className="text-sm">Siguiente mes · {getMonthName(forecast.month)}</CardTitle>
+        <a href="/calendario" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
           Calendario <ArrowRight className="size-3" />
         </a>
       </CardHeader>
@@ -39,10 +28,7 @@ export function DashboardNextMonthCard({
           </div>
         ) : forecast.isError ? (
           <div className="flex min-h-36 flex-col items-start justify-center gap-2 text-sm">
-            <p className="text-muted-foreground">
-              No se pudo cargar la previsión de{" "}
-              {getMonthName(forecast.month).toLowerCase()}.
-            </p>
+            <p className="text-muted-foreground">No se pudo cargar la previsión de {getMonthName(forecast.month).toLowerCase()}.</p>
             <Button variant="outline" size="sm" onClick={forecast.retry}>
               Reintentar
             </Button>
@@ -56,41 +42,27 @@ export function DashboardNextMonthCard({
                 className="bg-muted [&_[data-slot=progress-indicator]]:bg-primary"
               />
               <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                <span>
-                  {percent == null
-                    ? "Registra tu sueldo para ver el compromiso"
-                    : `${percent}% del sueldo comprometido`}
-                </span>
-                <span className="shrink-0 font-medium tabular-nums text-foreground">
-                  {formatCurrency(forecast.committed)}
-                </span>
+                <span>{percent == null ? "Registra tu sueldo para ver el compromiso" : `${percent}% del sueldo comprometido`}</span>
+                <span className="shrink-0 font-medium tabular-nums text-foreground">{formatCurrency(forecast.committed)}</span>
               </div>
             </div>
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between gap-2">
                 <dt className="text-muted-foreground">Tarjetas (cuotas)</dt>
-                <dd className="tabular-nums">
-                  {formatCurrency(forecast.cards)}
-                </dd>
+                <dd className="tabular-nums">{formatCurrency(forecast.cards)}</dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-muted-foreground">Costos fijos</dt>
-                <dd className="tabular-nums">
-                  {formatCurrency(forecast.fixed)}
-                </dd>
+                <dd className="tabular-nums">{formatCurrency(forecast.fixed)}</dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-muted-foreground">Préstamos</dt>
-                <dd className="tabular-nums">
-                  {formatCurrency(forecast.loans)}
-                </dd>
+                <dd className="tabular-nums">{formatCurrency(forecast.loans)}</dd>
               </div>
             </dl>
             <div className="flex items-center justify-between border-t pt-2 text-sm">
               <span className="font-medium">Libre del sueldo (est.)</span>
-              <span
-                className={`font-semibold tabular-nums ${forecast.available < 0 ? "text-destructive" : "text-emerald-400"}`}
-              >
+              <span className={`font-semibold tabular-nums ${forecast.available < 0 ? "text-destructive" : "text-emerald-400"}`}>
                 {formatCurrency(forecast.available)}
               </span>
             </div>

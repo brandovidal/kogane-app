@@ -28,10 +28,7 @@ export function DataViewTable<T>({
       })),
     [columns],
   );
-  const selection = useMemo(
-    () => Object.fromEntries([...(selected ?? [])].map((id) => [id, true])),
-    [selected],
-  );
+  const selection = useMemo(() => Object.fromEntries([...(selected ?? [])].map((id) => [id, true])), [selected]);
   const table = useDataTable({
     items,
     columns: definitions,

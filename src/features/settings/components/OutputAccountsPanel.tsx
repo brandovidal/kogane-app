@@ -7,30 +7,10 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Switch } from "@/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
-import {
-  ACCOUNT_TYPE_LABELS,
-  accountBody,
-  accountErrors,
-  emptyAccountForm,
-  type AccountForm,
-  type AccountType,
-} from "../lib/account-form";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ACCOUNT_TYPE_LABELS, accountBody, accountErrors, emptyAccountForm, type AccountForm, type AccountType } from "../lib/account-form";
 
 type Account = NonNullable<ReturnType<typeof useAccounts>["data"]>[number];
 
@@ -51,11 +31,7 @@ export function OutputAccountsPanel() {
         </CardTitle>
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Switch
-              checked={onlyActive}
-              onCheckedChange={setOnlyActive}
-              aria-label="Solo activas"
-            />
+            <Switch checked={onlyActive} onCheckedChange={setOnlyActive} aria-label="Solo activas" />
             Solo activas
           </label>
           <Button size="sm" onClick={() => setEditing(null)}>
@@ -65,15 +41,12 @@ export function OutputAccountsPanel() {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-xs text-muted-foreground">
-          Sirven para decir desde dónde pagaste una cuota, un recibo o un estado
-          de cuenta. No llevan saldo. Si ya tienen pagos se archivan en vez de
+          Sirven para decir desde dónde pagaste una cuota, un recibo o un estado de cuenta. No llevan saldo. Si ya tienen pagos se archivan en vez de
           borrarse.
         </p>
         {visible.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">
-            {accounts.length === 0
-              ? "Aún no tienes cuentas de salida."
-              : "No hay cuentas activas."}
+            {accounts.length === 0 ? "Aún no tienes cuentas de salida." : "No hay cuentas activas."}
           </p>
         ) : (
           <div className="rounded-md border">
@@ -90,28 +63,17 @@ export function OutputAccountsPanel() {
               </TableHeader>
               <TableBody>
                 {visible.map((account) => (
-                  <TableRow
-                    key={account.id}
-                    className={account.isActive ? "" : "opacity-60"}
-                  >
+                  <TableRow key={account.id} className={account.isActive ? "" : "opacity-60"}>
                     <TableCell className="font-medium">
                       <span className="inline-flex items-center gap-2">
                         {account.color && (
-                          <i
-                            aria-hidden="true"
-                            className="inline-block size-2.5 rounded-full"
-                            style={{ background: account.color }}
-                          />
+                          <i aria-hidden="true" className="inline-block size-2.5 rounded-full" style={{ background: account.color }} />
                         )}
                         {account.name}
                       </span>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {ACCOUNT_TYPE_LABELS[account.type]}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {account.bank ?? "—"}
-                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{ACCOUNT_TYPE_LABELS[account.type]}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{account.bank ?? "—"}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{account.currency}</Badge>
                     </TableCell>
@@ -147,24 +109,13 @@ export function OutputAccountsPanel() {
             </Table>
           </div>
         )}
-        {editing !== undefined && (
-          <AccountDialog
-            account={editing}
-            onClose={() => setEditing(undefined)}
-          />
-        )}
+        {editing !== undefined && <AccountDialog account={editing} onClose={() => setEditing(undefined)} />}
       </CardContent>
     </Card>
   );
 }
 
-function AccountDialog({
-  account,
-  onClose,
-}: {
-  account: Account | null;
-  onClose: () => void;
-}) {
+function AccountDialog({ account, onClose }: { account: Account | null; onClose: () => void }) {
   const save = useSaveAccount();
   const [form, setForm] = useState<AccountForm>(
     account
@@ -184,10 +135,7 @@ function AccountDialog({
   const submit = () => {
     setTried(true);
     if (Object.keys(errors).length) return;
-    save.mutate(
-      { id: account?.id, ...accountBody(form) },
-      { onSuccess: onClose },
-    );
+    save.mutate({ id: account?.id, ...accountBody(form) }, { onSuccess: onClose });
   };
 
   return (
@@ -212,22 +160,13 @@ function AccountDialog({
           <label className="text-sm font-medium" htmlFor="account-name">
             Nombre
           </label>
-          <Input
-            id="account-name"
-            value={form.name}
-            onChange={(e) => set({ name: e.target.value })}
-          />
-          {tried && errors.name && (
-            <p className="text-xs text-destructive">{errors.name}</p>
-          )}
+          <Input id="account-name" value={form.name} onChange={(e) => set({ name: e.target.value })} />
+          {tried && errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo</label>
-            <Select
-              value={form.type}
-              onValueChange={(type) => set({ type: type as AccountType })}
-            >
+            <Select value={form.type} onValueChange={(type) => set({ type: type as AccountType })}>
               <SelectTrigger aria-label="Tipo">
                 <SelectValue />
               </SelectTrigger>
@@ -242,12 +181,7 @@ function AccountDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Moneda</label>
-            <Select
-              value={form.currency}
-              onValueChange={(currency) =>
-                set({ currency: currency as AccountForm["currency"] })
-              }
-            >
+            <Select value={form.currency} onValueChange={(currency) => set({ currency: currency as AccountForm["currency"] })}>
               <SelectTrigger aria-label="Moneda">
                 <SelectValue />
               </SelectTrigger>
@@ -263,14 +197,8 @@ function AccountDialog({
             <label className="text-sm font-medium" htmlFor="account-bank">
               Banco
             </label>
-            <Input
-              id="account-bank"
-              value={form.bank}
-              onChange={(e) => set({ bank: e.target.value })}
-            />
-            {tried && errors.bank && (
-              <p className="text-xs text-destructive">{errors.bank}</p>
-            )}
+            <Input id="account-bank" value={form.bank} onChange={(e) => set({ bank: e.target.value })} />
+            {tried && errors.bank && <p className="text-xs text-destructive">{errors.bank}</p>}
           </div>
         )}
         <div className="space-y-1.5">

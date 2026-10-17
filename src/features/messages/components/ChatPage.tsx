@@ -6,21 +6,10 @@ import { Button } from "@/ui/button";
 import { pressButton, sendMessage } from "@/features/messages/hooks/messages";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
-import {
-  applyReplies,
-  clearHistory,
-  loadHistory,
-  newMessageId,
-  saveHistory,
-  type ChatMessage,
-} from "@/features/messages/lib/chat";
+import { applyReplies, clearHistory, loadHistory, newMessageId, saveHistory, type ChatMessage } from "@/features/messages/lib/chat";
 import { chatDayLabel, startsNewDay } from "@/features/messages/lib/chat-view";
 import { makeImagePreview } from "@/features/messages/lib/image-preview";
-import {
-  ChatInput,
-  type ChatInputHandle,
-  type ChatInputValue,
-} from "./ChatInput";
+import { ChatInput, type ChatInputHandle, type ChatInputValue } from "./ChatInput";
 import { ChatEmptyState, type ChatStarter } from "./ChatEmptyState";
 import { MessageBubble } from "./MessageBubble";
 
@@ -43,20 +32,11 @@ function ChatPageView() {
   }, [messages]);
 
   // Saving from the chat creates records and moves Borrador: refresh the other screens
-  const refreshData = () =>
-    ["drafts", "expenses", "summary", "debts"].forEach((key) =>
-      queryClient.invalidateQueries({ queryKey: [key] }),
-    );
+  const refreshData = () => ["drafts", "expenses", "summary", "debts"].forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
 
-  const send = async ({
-    text,
-    file,
-    attachment,
-    durationSeconds,
-  }: ChatInputValue) => {
+  const send = async ({ text, file, attachment, durationSeconds }: ChatInputValue) => {
     const id = newMessageId();
-    const previewUrl =
-      attachment === "image" && file ? await makeImagePreview(file) : undefined;
+    const previewUrl = attachment === "image" && file ? await makeImagePreview(file) : undefined;
     const own: ChatMessage = {
       id,
       author: "user",
@@ -79,11 +59,7 @@ function ChatPageView() {
       setMessages((current) => applyReplies(current, result.replies));
       refreshData();
     } catch (error) {
-      setMessages((current) =>
-        current.map((message) =>
-          message.id === id ? { ...message, failed: true } : message,
-        ),
-      );
+      setMessages((current) => current.map((message) => (message.id === id ? { ...message, failed: true } : message)));
       toast.error(errorMessage(error));
     } finally {
       setBusy(false);
@@ -94,9 +70,7 @@ function ChatPageView() {
     setBusy(true);
     try {
       const result = await pressButton(data);
-      setMessages((current) =>
-        applyReplies(current, result.replies, message.id),
-      );
+      setMessages((current) => applyReplies(current, result.replies, message.id));
       if (result.notice) toast(result.notice);
       refreshData();
     } catch (error) {
@@ -121,13 +95,7 @@ function ChatPageView() {
     <div className="-m-4 flex h-[calc(100vh-4rem)] flex-col md:-m-6">
       <div className="flex items-center justify-between border-b px-4 py-2 text-xs text-muted-foreground">
         <span>El historial se guarda solo en este navegador</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs"
-          onClick={reset}
-          disabled={!messages.length}
-        >
+        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={reset} disabled={!messages.length}>
           <Trash2 className="mr-1 h-3.5 w-3.5" /> Limpiar
         </Button>
       </div>
@@ -138,34 +106,20 @@ function ChatPageView() {
           <div className="mx-auto w-full max-w-[820px] space-y-3">
             {messages.map((message, index) => (
               <div key={message.id} className="space-y-3">
-                {startsNewDay(
-                  messages[index - 1]?.createdAt,
-                  message.createdAt,
-                ) && (
+                {startsNewDay(messages[index - 1]?.createdAt, message.createdAt) && (
                   <p className="flex justify-center">
-                    <span className="rounded-full bg-foreground/5 px-3 py-0.5 text-xs text-muted-foreground">
-                      {chatDayLabel(message.createdAt)}
-                    </span>
+                    <span className="rounded-full bg-foreground/5 px-3 py-0.5 text-xs text-muted-foreground">{chatDayLabel(message.createdAt)}</span>
                   </p>
                 )}
                 <MessageBubble message={message} onPress={press} busy={busy} />
               </div>
             ))}
-            {busy && (
-              <p className="text-xs text-muted-foreground">
-                Kogane está escribiendo…
-              </p>
-            )}
+            {busy && <p className="text-xs text-muted-foreground">Kogane está escribiendo…</p>}
             <div ref={endRef} />
           </div>
         )}
       </div>
-      <ChatInput
-        ref={inputRef}
-        onSend={send}
-        disabled={busy}
-        showSuggestions={messages.length > 0}
-      />
+      <ChatInput ref={inputRef} onSend={send} disabled={busy} showSuggestions={messages.length > 0} />
     </div>
   );
 }

@@ -6,11 +6,7 @@ import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { Button } from "@/ui/button";
 import { getStatementFile } from "../services/statement.service";
 
-export function ViewStatementFileButton({
-  statementId,
-}: {
-  statementId: string;
-}) {
+export function ViewStatementFileButton({ statementId }: { statementId: string }) {
   const [loading, setLoading] = useState(false);
 
   const open = async () => {

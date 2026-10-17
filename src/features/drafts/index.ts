@@ -21,9 +21,4 @@ export {
   useDiscardDraft,
   useRetryDraft,
 } from "./hooks/drafts";
-export {
-  FORM_DESTINATIONS,
-  FIELDS_BY_DESTINATION,
-  emptyDraftFields,
-  toDraftBody,
-} from "./lib/draft-form";
+export { FORM_DESTINATIONS, FIELDS_BY_DESTINATION, emptyDraftFields, toDraftBody } from "./lib/draft-form";

@@ -9,33 +9,22 @@ const ACCEPT: Record<ImportSource, string[]> = {
 
 export const acceptAttr = (source: ImportSource) => ACCEPT[source].join(",");
 
-const extensionOf = (name: string) =>
-  name.includes(".") ? `.${name.split(".").pop()!.toLowerCase()}` : "";
+const extensionOf = (name: string) => (name.includes(".") ? `.${name.split(".").pop()!.toLowerCase()}` : "");
 
-export const fileBadge = (name: string) =>
-  extensionOf(name).replace(".", "").toUpperCase().slice(0, 4) || "—";
+export const fileBadge = (name: string) => extensionOf(name).replace(".", "").toUpperCase().slice(0, 4) || "—";
 
 // Validación del archivo antes de subirlo (board I5): null cuando es válido
-export function validateUploadFile(
-  file: Pick<File, "name" | "size">,
-  source: ImportSource,
-): string | null {
+export function validateUploadFile(file: Pick<File, "name" | "size">, source: ImportSource): string | null {
   if (!ACCEPT[source].includes(extensionOf(file.name)))
-    return source === "statement"
-      ? "Formato no compatible · usa un PDF"
-      : "Formato no compatible · usa el ZIP o los CSV de Notion";
+    return source === "statement" ? "Formato no compatible · usa un PDF" : "Formato no compatible · usa el ZIP o los CSV de Notion";
   if (file.size > MAX_UPLOAD_BYTES) return "El archivo pesa más de 20 MB";
   return null;
 }
 
-const normalize = (value: string) =>
-  value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const normalize = (value: string) => value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 // Tarjeta detectada por el nombre del archivo («IO-septiembre-2026.pdf» → IO): la más larga que aparece
-export function detectCard<T extends { id: string; name: string }>(
-  fileName: string,
-  cards: T[],
-): T | null {
+export function detectCard<T extends { id: string; name: string }>(fileName: string, cards: T[]): T | null {
   const tokens = normalize(fileName)
     .replace(/\.[a-z0-9]+$/, "")
     .split(/[^a-z0-9]+/)
@@ -52,15 +41,10 @@ export function detectCard<T extends { id: string; name: string }>(
   return best;
 }
 
-export const PROCESSING_STEPS = [
-  "Leyendo el PDF",
-  "Detectando movimientos",
-  "Comparando con Kogane",
-] as const;
+export const PROCESSING_STEPS = ["Leyendo el PDF", "Detectando movimientos", "Comparando con Kogane"] as const;
 
 // Progreso estimado mientras la API responde: sube rápido y se detiene en 90 % hasta terminar
 export const estimateProgress = (elapsedMs: number, expectedMs = 12000) =>
   Math.min(90, Math.round(90 * (1 - Math.exp((-3 * elapsedMs) / expectedMs))));
 
-export const currentStep = (progress: number) =>
-  progress < 35 ? 0 : progress < 70 ? 1 : 2;
+export const currentStep = (progress: number) => (progress < 35 ? 0 : progress < 70 ? 1 : 2);

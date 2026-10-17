@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { ListOrdered, SlidersHorizontal, X } from "lucide-react";
-import {
-  countActiveExpenseFilters,
-  hasActiveFilters,
-  usesPanel,
-} from "../../lib/expense-filters";
+import { countActiveExpenseFilters, hasActiveFilters, usesPanel } from "../../lib/expense-filters";
 import type { ExpenseFilterKey } from "../../types/expense-filters";
 import { INSTALLMENT_FILTER_OPTIONS } from "../../constants/expense-filters";
 import type { ExpenseFiltersProps } from "../../types/expense-filter-props";
@@ -55,19 +51,12 @@ export function ExpenseFilters({
     setInternalOpen(next);
     onFilterOpenChange?.(next);
   };
-  const set = (key: ExpenseFilterKey, next: string | undefined) =>
-    onChange({ ...value, [key]: next || undefined });
+  const set = (key: ExpenseFilterKey, next: string | undefined) => onChange({ ...value, [key]: next || undefined });
   const has = (key: ExpenseFilterKey) => fields.includes(key);
   const panel = usesPanel(fields);
   const count = countActiveExpenseFilters(value, fields) + extraFilterCount;
 
-  const personControl = has("person") && (
-    <PersonFilterFields
-      value={value.person}
-      onChange={(next) => set("person", next)}
-      width="w-56"
-    />
-  );
+  const personControl = has("person") && <PersonFilterFields value={value.person} onChange={(next) => set("person", next)} width="w-56" />;
 
   const controls = (
     <ExpenseFilterFields
@@ -122,15 +111,7 @@ export function ExpenseFilters({
           countLabel={countLabel}
           compactCountInTitle={compactCountInTitle}
           count={count}
-          onClear={
-            onClearFilters ??
-            (() =>
-              onChange(
-                personInPanel
-                  ? { q: value.q }
-                  : { person: value.person, q: value.q },
-              ))
-          }
+          onClear={onClearFilters ?? (() => onChange(personInPanel ? { q: value.q } : { person: value.person, q: value.q }))}
         >
           {controls}
           {panelExtraFields}
@@ -172,17 +153,13 @@ export function ExpenseFilters({
         primaryControls ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
             {search}
-            <div className="w-full min-w-0 sm:w-max sm:shrink-0">
-              {primaryControls}
-            </div>
+            <div className="w-full min-w-0 sm:w-max sm:shrink-0">{primaryControls}</div>
           </div>
         ) : (
           search
         )
       }
-      primaryClassName={
-        primaryControls ? "sm:min-w-[min(100%,32rem)]" : undefined
-      }
+      primaryClassName={primaryControls ? "sm:min-w-[min(100%,32rem)]" : undefined}
       actions={actions}
       applied={appliedFilters}
       view={viewToggle}

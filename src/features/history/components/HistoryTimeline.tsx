@@ -4,12 +4,7 @@ import { groupHistoryByDay } from "../lib/history-timeline";
 import type { HistoryTimelineProps } from "../types/history-timeline";
 import { HistoryTimelineItem } from "./HistoryTimelineItem";
 
-export function HistoryTimeline({
-  entries,
-  labels,
-  showRecord,
-  compact = false,
-}: HistoryTimelineProps) {
+export function HistoryTimeline({ entries, labels, showRecord, compact = false }: HistoryTimelineProps) {
   const groups = groupHistoryByDay(entries);
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Lima",
@@ -21,17 +16,11 @@ export function HistoryTimeline({
   return (
     <div className="space-y-6">
       {groups.map((group) => (
-        <section
-          key={group.day}
-          aria-label={group.label}
-          className={compact ? "space-y-3" : "space-y-4"}
-        >
+        <section key={group.day} aria-label={group.label} className={compact ? "space-y-3" : "space-y-4"}>
           {compact ? (
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               <time dateTime={group.day === "unknown" ? undefined : group.day}>
-                {group.day === today
-                  ? `Hoy · ${compactDate(group.day)}`
-                  : group.label}
+                {group.day === today ? `Hoy · ${compactDate(group.day)}` : group.label}
               </time>
             </h3>
           ) : (
@@ -40,11 +29,7 @@ export function HistoryTimeline({
                 <CalendarDays />
               </MarkerIcon>
               <MarkerContent>
-                <time
-                  dateTime={group.day === "unknown" ? undefined : group.day}
-                >
-                  {group.label}
-                </time>
+                <time dateTime={group.day === "unknown" ? undefined : group.day}>{group.label}</time>
               </MarkerContent>
             </Marker>
           )}
@@ -56,13 +41,7 @@ export function HistoryTimeline({
             }
           >
             {group.entries.map((entry) => (
-              <HistoryTimelineItem
-                key={entry.id}
-                entry={entry}
-                labels={labels}
-                showRecord={showRecord}
-                compact={compact}
-              />
+              <HistoryTimelineItem key={entry.id} entry={entry} labels={labels} showRecord={showRecord} compact={compact} />
             ))}
           </ol>
         </section>

@@ -5,10 +5,7 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { summarizeDebts } from "../lib/debt-summary";
 import type { Direction } from "../lib/debt-filters";
 
-const WORDS: Record<
-  Direction,
-  { open: string; done: string; item: string; items: string }
-> = {
+const WORDS: Record<Direction, { open: string; done: string; item: string; items: string }> = {
   owed_to_me: {
     open: "Por cobrar",
     done: "Cobrado",
@@ -23,51 +20,25 @@ const WORDS: Record<
   },
 };
 
-function Metric({
-  label,
-  value,
-  note,
-  tone,
-}: {
-  label: string;
-  value: string;
-  note: string;
-  tone?: string;
-}) {
+function Metric({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string }) {
   return (
     <div className="min-w-0 rounded-xl border border-border/80 bg-card px-4 py-3.5">
       <div className="eyebrow truncate">{label}</div>
-      <div
-        className={`mt-1 truncate text-2xl font-semibold tracking-tight tabular-nums ${tone ?? ""}`}
-      >
-        {value}
-      </div>
+      <div className={`mt-1 truncate text-2xl font-semibold tracking-tight tabular-nums ${tone ?? ""}`}>{value}</div>
       <div className="mt-1 truncate text-xs text-muted-foreground">{note}</div>
     </div>
   );
 }
 
 /** Indicators of the month: what is left, what is paid, what is late and the biggest balance. */
-export function DebtIndicators({
-  debts,
-  direction,
-}: {
-  debts: Debt[];
-  direction: Direction;
-}) {
+export function DebtIndicators({ debts, direction }: { debts: Debt[]; direction: Direction }) {
   const words = WORDS[direction];
   const summary = summarizeDebts(debts);
   const count = `${summary.count} ${summary.count === 1 ? words.item : words.items}`;
   const largest = summary.largest;
   return (
-    <IndicatorsDisclosure
-      ariaLabel="indicadores del mes"
-      summary={`${formatPlatformTotals(summary.balance)} · ${count}`}
-    >
-      <section
-        className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
-        aria-label="Indicadores del mes"
-      >
+    <IndicatorsDisclosure ariaLabel="indicadores del mes" summary={`${formatPlatformTotals(summary.balance)} · ${count}`}>
+      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores del mes">
         <Metric
           label={words.open}
           value={formatPlatformTotals(summary.balance)}

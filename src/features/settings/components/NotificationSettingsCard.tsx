@@ -1,25 +1,12 @@
 import { Bell } from "lucide-react";
 
-import {
-  useNotificationSettings,
-  useUpdateNotificationSettings,
-} from "@/features/notifications/hooks/notifications";
+import { useNotificationSettings, useUpdateNotificationSettings } from "@/features/notifications/hooks/notifications";
 import type { NotificationKind } from "@/shared/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Switch } from "@/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
-import {
-  NOTIFICATION_KIND_LABELS,
-  NOTIFICATION_KINDS,
-} from "@/features/notifications/lib/notification-view";
+import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS } from "@/features/notifications/lib/notification-view";
 
 type Channel = "telegram" | "web";
 
@@ -28,8 +15,7 @@ export function NotificationSettingsCard() {
   const settings = useNotificationSettings().data;
   const update = useUpdateNotificationSettings();
 
-  const toggle = (kind: NotificationKind, channel: Channel, value: boolean) =>
-    update.mutate({ [kind]: { [channel]: value } });
+  const toggle = (kind: NotificationKind, channel: Channel, value: boolean) => update.mutate({ [kind]: { [channel]: value } });
 
   return (
     <Card>
@@ -38,10 +24,7 @@ export function NotificationSettingsCard() {
           <Bell className="h-4 w-4" />
           Notificaciones
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Qué avisos llegan al bot de Telegram y a la campana de la web. En el
-          bot también con /avisos.
-        </p>
+        <p className="text-sm text-muted-foreground">Qué avisos llegan al bot de Telegram y a la campana de la web. En el bot también con /avisos.</p>
       </CardHeader>
       <CardContent>
         <Table>

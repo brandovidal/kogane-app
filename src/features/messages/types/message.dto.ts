@@ -1,8 +1,6 @@
 import type { Schemas } from "@/shared/api/client";
 
-export type ConversationResult = NonNullable<
-  Schemas["ConversationResultResponseDto"]["data"]
->;
+export type ConversationResult = NonNullable<Schemas["ConversationResultResponseDto"]["data"]>;
 export type BotReply = ConversationResult["replies"][number];
 
 export interface OutgoingMessageDto {

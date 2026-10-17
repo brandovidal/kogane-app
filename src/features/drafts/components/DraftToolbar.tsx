@@ -1,13 +1,7 @@
 import { Filter, Layers } from "lucide-react";
 import { Button, buttonVariants } from "@/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { PersonSelect } from "@/features/settings/components/PersonSelect";
 import { cn } from "@/shared/utils/cn";
@@ -53,11 +47,7 @@ function Segmented<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="inline-flex rounded-lg bg-muted p-0.5 text-xs"
-    >
+    <div role="radiogroup" aria-label={label} className="inline-flex rounded-lg bg-muted p-0.5 text-xs">
       {options.map(([key, text]) => (
         <button
           key={key}
@@ -67,9 +57,7 @@ function Segmented<T extends string>({
           onClick={() => onChange(key)}
           className={cn(
             "rounded-md px-2.5 py-1 font-medium transition-colors",
-            value === key
-              ? "bg-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground",
+            value === key ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
           )}
         >
           {text}
@@ -93,56 +81,27 @@ export function DraftToolbar({
   onGroupByChange: (groupBy: DraftGroupBy) => void;
   showState?: boolean;
 }) {
-  const set = <K extends keyof DraftFilters>(key: K, value: DraftFilters[K]) =>
-    onFiltersChange({ ...filters, [key]: value });
+  const set = <K extends keyof DraftFilters>(key: K, value: DraftFilters[K]) => onFiltersChange({ ...filters, [key]: value });
   const count = activeFilterCount(filters);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <SearchField
-        value={filters.q}
-        onChange={(q) => set("q", q)}
-        placeholder="Buscar"
-        shortcut="/"
-        className="w-full sm:w-64"
-      />
+      <SearchField value={filters.q} onChange={(q) => set("q", q)} placeholder="Buscar" shortcut="/" className="w-full sm:w-64" />
       <Popover>
-        <PopoverTrigger
-          type="button"
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-            "gap-1.5",
-          )}
-        >
+        <PopoverTrigger type="button" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}>
           <Filter className="size-4" /> Filtros
-          {count > 0 && (
-            <span className="rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-              {count}
-            </span>
-          )}
+          {count > 0 && <span className="rounded-full bg-primary px-1.5 text-xs text-primary-foreground">{count}</span>}
         </PopoverTrigger>
         <PopoverContent align="start" className="w-72 space-y-3">
           {showState && (
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">
-                Estado
-              </p>
-              <Segmented
-                label="Estado"
-                value={filters.state}
-                options={STATES}
-                onChange={(state) => set("state", state)}
-              />
+              <p className="text-xs font-medium text-muted-foreground">Estado</p>
+              <Segmented label="Estado" value={filters.state} options={STATES} onChange={(state) => set("state", state)} />
             </div>
           )}
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">Destino</p>
-            <Select
-              value={filters.destination ?? ALL}
-              onValueChange={(value) =>
-                set("destination", value === ALL ? null : value)
-              }
-            >
+            <Select value={filters.destination ?? ALL} onValueChange={(value) => set("destination", value === ALL ? null : value)}>
               <SelectTrigger aria-label="Destino">
                 <SelectValue />
               </SelectTrigger>
@@ -158,32 +117,15 @@ export function DraftToolbar({
           </div>
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">Persona</p>
-            <PersonSelect
-              allowEmpty
-              value={filters.personId}
-              onChange={(personId) => set("personId", personId)}
-              placeholder="Todas"
-            />
+            <PersonSelect allowEmpty value={filters.personId} onChange={(personId) => set("personId", personId)} placeholder="Todas" />
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={!hasActiveFilters(filters)}
-            onClick={() => onFiltersChange(EMPTY_DRAFT_FILTERS)}
-          >
+          <Button variant="ghost" size="sm" disabled={!hasActiveFilters(filters)} onClick={() => onFiltersChange(EMPTY_DRAFT_FILTERS)}>
             Limpiar
           </Button>
         </PopoverContent>
       </Popover>
-      <Select
-        value={groupBy}
-        onValueChange={(value) => onGroupByChange(value as DraftGroupBy)}
-      >
-        <SelectTrigger
-          size="sm"
-          aria-label="Agrupar"
-          className="w-auto gap-1.5"
-        >
+      <Select value={groupBy} onValueChange={(value) => onGroupByChange(value as DraftGroupBy)}>
+        <SelectTrigger size="sm" aria-label="Agrupar" className="w-auto gap-1.5">
           <Layers className="size-4" />
           <SelectValue />
         </SelectTrigger>
@@ -195,12 +137,7 @@ export function DraftToolbar({
           ))}
         </SelectContent>
       </Select>
-      <Segmented
-        label="Origen"
-        value={filters.origin}
-        options={ORIGINS}
-        onChange={(origin) => set("origin", origin)}
-      />
+      <Segmented label="Origen" value={filters.origin} options={ORIGINS} onChange={(origin) => set("origin", origin)} />
     </div>
   );
 }

@@ -3,21 +3,8 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import type { ImportRowStatus } from "@/shared/api/types";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { ROW_STATUS } from "@/features/imports/constants/import-options";
 import { useImportRowsTab } from "../hooks/useImportRowsTab";
 import { IMPORT_STATUS_ALL } from "../constants/import-options";
@@ -25,18 +12,7 @@ import { ImportRowStatusBadge } from "../components/ImportRowStatusBadge";
 import { amountOf, importRowFileName } from "../lib/import-view";
 
 export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
-  const {
-    page,
-    setPage,
-    q,
-    setQ,
-    status,
-    setStatus,
-    data,
-    pages,
-    issues,
-    statuses,
-  } = useImportRowsTab(batchId, tab);
+  const { page, setPage, q, setQ, status, setStatus, data, pages, issues, statuses } = useImportRowsTab(batchId, tab);
 
   return (
     <div className="space-y-3">
@@ -56,11 +32,7 @@ export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
         <Select
           value={status ?? IMPORT_STATUS_ALL}
           onValueChange={(value) => {
-            setStatus(
-              value === IMPORT_STATUS_ALL
-                ? undefined
-                : (value as ImportRowStatus),
-            );
+            setStatus(value === IMPORT_STATUS_ALL ? undefined : (value as ImportRowStatus));
             setPage(1);
           }}
         >
@@ -78,9 +50,7 @@ export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
         </Select>
       </div>
 
-      {data && data.items.length === 0 && (
-        <p className="text-sm text-muted-foreground">Nada que mostrar.</p>
-      )}
+      {data && data.items.length === 0 && <p className="text-sm text-muted-foreground">Nada que mostrar.</p>}
 
       {data && data.items.length > 0 && (
         <>
@@ -90,14 +60,8 @@ export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
                 <TableRow>
                   <TableHead>Estado</TableHead>
                   <TableHead>{issues ? "Mensaje" : "Descripción"}</TableHead>
-                  {!issues && (
-                    <TableHead className="text-right">Monto</TableHead>
-                  )}
-                  {!issues && (
-                    <TableHead>
-                      {applied ? "Guardado en" : "Se guardará en"}
-                    </TableHead>
-                  )}
+                  {!issues && <TableHead className="text-right">Monto</TableHead>}
+                  {!issues && <TableHead>{applied ? "Guardado en" : "Se guardará en"}</TableHead>}
                   <TableHead>Origen</TableHead>
                 </TableRow>
               </TableHeader>
@@ -107,23 +71,10 @@ export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
                     <TableCell>
                       <ImportRowStatusBadge status={row.status} />
                     </TableCell>
-                    <TableCell className="max-w-md">
-                      {issues ? row.message : row.description}
-                    </TableCell>
-                    {!issues && (
-                      <TableCell className="text-right tabular-nums">
-                        {amountOf(row)}
-                      </TableCell>
-                    )}
-                    {!issues && (
-                      <TableCell className="text-sm">
-                        {row.destination}
-                      </TableCell>
-                    )}
-                    <TableCell
-                      className="max-w-48 truncate text-xs text-muted-foreground"
-                      title={`${row.file}:${row.line}`}
-                    >
+                    <TableCell className="max-w-md">{issues ? row.message : row.description}</TableCell>
+                    {!issues && <TableCell className="text-right tabular-nums">{amountOf(row)}</TableCell>}
+                    {!issues && <TableCell className="text-sm">{row.destination}</TableCell>}
+                    <TableCell className="max-w-48 truncate text-xs text-muted-foreground" title={`${row.file}:${row.line}`}>
                       {importRowFileName(row.file)}:{row.line}
                     </TableCell>
                   </TableRow>
@@ -136,12 +87,8 @@ export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
             {data.items.map((row) => (
               <div key={row.id} className="rounded-md border p-3 text-sm">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="font-medium">
-                    {issues ? row.message : row.description}
-                  </span>
-                  {!issues && (
-                    <span className="tabular-nums">{amountOf(row)}</span>
-                  )}
+                  <span className="font-medium">{issues ? row.message : row.description}</span>
+                  {!issues && <span className="tabular-nums">{amountOf(row)}</span>}
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <ImportRowStatusBadge status={row.status} />
@@ -159,14 +106,7 @@ export function ImportRowsTab({ batchId, tab, applied }: ImportRowsTabProps) {
               {data.total} filas · página {page} de {pages}
             </span>
             <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                aria-label="Anterior"
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-              >
+              <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Anterior" disabled={page <= 1} onClick={() => setPage(page - 1)}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <Button

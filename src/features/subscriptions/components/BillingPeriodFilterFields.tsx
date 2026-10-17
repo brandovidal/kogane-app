@@ -1,10 +1,7 @@
 import { CalendarClock } from "lucide-react";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
 import { entriesOf } from "@/shared/utils/entries";
-import {
-  ShortFilterFields,
-  type ShortFilterFieldsProps,
-} from "@/shared/components/filters/ShortFilterFields";
+import { ShortFilterFields, type ShortFilterFieldsProps } from "@/shared/components/filters/ShortFilterFields";
 
 type Props = Omit<ShortFilterFieldsProps, "options" | "allLabel" | "icon"> & {
   allLabel?: string;

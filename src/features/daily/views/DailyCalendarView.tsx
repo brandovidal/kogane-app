@@ -7,14 +7,9 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { cn } from "@/shared/utils/cn";
 import { Button } from "@/ui/button";
 import { dayLabel } from "../lib/day-label";
-import {
-  buildMonthGrid,
-  WEEKDAY_HEADERS,
-  type DayCell,
-} from "../lib/month-grid";
+import { buildMonthGrid, WEEKDAY_HEADERS, type DayCell } from "../lib/month-grid";
 
-const localDay = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const localDay = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 // Calendario (board DiaCalendario): the month by weeks with each day's total, and a panel with the expenses of the chosen day
 export function DailyCalendar({
@@ -35,10 +30,7 @@ export function DailyCalendar({
   useEffect(() => setToday(new Date()), []);
   const todayKey = today ? localDay(today) : null;
 
-  const weeks = useMemo(
-    () => buildMonthGrid(year, month, expenses),
-    [year, month, expenses],
-  );
+  const weeks = useMemo(() => buildMonthGrid(year, month, expenses), [year, month, expenses]);
   const cells = weeks.flat();
   const [chosen, setChosen] = useState<string | null>(null);
   const selectedKey =
@@ -46,9 +38,7 @@ export function DailyCalendar({
       ? chosen
       : todayKey && cells.some((cell) => cell.day === todayKey && cell.inMonth)
         ? todayKey
-        : (cells.find((cell) => cell.inMonth && cell.expenses.length)?.day ??
-          cells.find((cell) => cell.inMonth)?.day ??
-          null);
+        : (cells.find((cell) => cell.inMonth && cell.expenses.length)?.day ?? cells.find((cell) => cell.inMonth)?.day ?? null);
   const selected = cells.find((cell) => cell.day === selectedKey);
 
   return (
@@ -56,11 +46,7 @@ export function DailyCalendar({
       <div role="grid" aria-label="Calendario de gastos" className="space-y-1">
         <div role="row" className="grid grid-cols-7 gap-1">
           {WEEKDAY_HEADERS.map((weekday) => (
-            <div
-              key={weekday}
-              role="columnheader"
-              className="px-1 text-center text-xs text-muted-foreground"
-            >
+            <div key={weekday} role="columnheader" className="px-1 text-center text-xs text-muted-foreground">
               {weekday}
             </div>
           ))}
@@ -80,19 +66,13 @@ export function DailyCalendar({
         ))}
       </div>
 
-      <aside
-        aria-label="Gastos del día"
-        className="space-y-3 rounded-xl border p-4"
-      >
+      <aside aria-label="Gastos del día" className="space-y-3 rounded-xl border p-4">
         {selected ? (
           <>
             <div>
-              <h3 className="text-sm font-semibold">
-                {dayLabel(selected.day, today)}
-              </h3>
+              <h3 className="text-sm font-semibold">{dayLabel(selected.day, today)}</h3>
               <p className="text-xs text-muted-foreground">
-                {selected.expenses.length}{" "}
-                {selected.expenses.length === 1 ? "gasto" : "gastos"}
+                {selected.expenses.length} {selected.expenses.length === 1 ? "gasto" : "gastos"}
               </p>
             </div>
             {selected.expenses.length ? (
@@ -104,26 +84,18 @@ export function DailyCalendar({
                       onClick={() => onEdit(expense)}
                       className="flex w-full items-center justify-between gap-2 py-2 text-left text-sm hover:text-primary"
                     >
-                      <span className="min-w-0 truncate">
-                        {expense.description}
-                      </span>
-                      <span className="shrink-0 tabular-nums">
-                        {formatCurrency(expense.amount, expense.currency)}
-                      </span>
+                      <span className="min-w-0 truncate">{expense.description}</span>
+                      <span className="shrink-0 tabular-nums">{formatCurrency(expense.amount, expense.currency)}</span>
                     </button>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                Sin gastos este día.
-              </p>
+              <p className="text-sm text-muted-foreground">Sin gastos este día.</p>
             )}
             <div className="flex items-center justify-between border-t pt-2 text-sm font-medium">
               <span>Total del día</span>
-              <span className="tabular-nums">
-                {formatPlatformTotals(selected.totals)}
-              </span>
+              <span className="tabular-nums">{formatPlatformTotals(selected.totals)}</span>
             </div>
             <Button size="sm" variant="outline" onClick={onNewExpense}>
               <Plus aria-hidden="true" /> Nuevo gasto
@@ -135,17 +107,7 @@ export function DailyCalendar({
   );
 }
 
-function DayButton({
-  cell,
-  today,
-  selected,
-  onSelect,
-}: {
-  cell: DayCell<DailyExpense>;
-  today: boolean;
-  selected: boolean;
-  onSelect: () => void;
-}) {
+function DayButton({ cell, today, selected, onSelect }: { cell: DayCell<DailyExpense>; today: boolean; selected: boolean; onSelect: () => void }) {
   return (
     <button
       type="button"
@@ -163,9 +125,7 @@ function DayButton({
     >
       <span className="font-medium tabular-nums">{cell.date}</span>
       {cell.expenses.length > 0 && (
-        <span className="w-full truncate text-[11px] tabular-nums text-muted-foreground">
-          {formatPlatformTotals(cell.totals)}
-        </span>
+        <span className="w-full truncate text-[11px] tabular-nums text-muted-foreground">{formatPlatformTotals(cell.totals)}</span>
       )}
     </button>
   );

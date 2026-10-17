@@ -1,20 +1,6 @@
-import {
-  Archive,
-  Eye,
-  FileText,
-  MoreHorizontal,
-  Pencil,
-  Plus,
-  Wallet,
-} from "lucide-react";
+import { Archive, Eye, FileText, MoreHorizontal, Pencil, Plus, Wallet } from "lucide-react";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import type { CardOverviewRow } from "../types/card-overview";
 
 export interface CardActions {
@@ -24,22 +10,11 @@ export interface CardActions {
 }
 
 /** ⋯ menu of a card in the overview: detail, payment, expense, statements, edit, archive. */
-export function CardActionsMenu({
-  row,
-  actions,
-}: {
-  row: CardOverviewRow;
-  actions: CardActions;
-}) {
+export function CardActionsMenu({ row, actions }: { row: CardOverviewRow; actions: CardActions }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8"
-          aria-label={`Acciones de ${row.card.name}`}
-        >
+        <Button variant="ghost" size="icon" className="size-8" aria-label={`Acciones de ${row.card.name}`}>
           <MoreHorizontal aria-hidden="true" className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -52,11 +27,7 @@ export function CardActionsMenu({
         <DropdownMenuItem asChild>
           <a href={`${row.href}&vista=pago`}>
             <Wallet aria-hidden="true" /> Registrar pago
-            {row.payDay ? (
-              <span className="ml-auto text-xs text-muted-foreground">
-                Vence día {row.payDay}
-              </span>
-            ) : null}
+            {row.payDay ? <span className="ml-auto text-xs text-muted-foreground">Vence día {row.payDay}</span> : null}
           </a>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => actions.onNewExpense(row)}>
@@ -71,10 +42,7 @@ export function CardActionsMenu({
         <DropdownMenuItem onSelect={() => actions.onEdit(row)}>
           <Pencil aria-hidden="true" /> Editar tarjeta
         </DropdownMenuItem>
-        <DropdownMenuItem
-          variant="destructive"
-          onSelect={() => actions.onArchive(row)}
-        >
+        <DropdownMenuItem variant="destructive" onSelect={() => actions.onArchive(row)}>
           <Archive aria-hidden="true" /> Archivar
         </DropdownMenuItem>
       </DropdownMenuContent>

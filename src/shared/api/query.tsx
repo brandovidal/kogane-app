@@ -8,10 +8,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
-      retry: (failureCount, error) =>
-        error instanceof ApiError && error.status === 503
-          ? false
-          : failureCount < 1,
+      retry: (failureCount, error) => (error instanceof ApiError && error.status === 503 ? false : failureCount < 1),
       refetchOnWindowFocus: false,
     },
   },

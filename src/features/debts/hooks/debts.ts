@@ -46,18 +46,12 @@ export const useDebt = (id: string | null) =>
 // Contraste con la tarjeta (D114): only when a card and a month are chosen
 export const useCardCheck = (query: CardCheckQuery | null) =>
   useQuery({
-    queryKey: debtKeys.cardCheck(
-      query ?? { paymentMethodId: "", month: 0, year: 0 },
-    ),
+    queryKey: debtKeys.cardCheck(query ?? { paymentMethodId: "", month: 0, year: 0 }),
     queryFn: () => getCardCheck(query!),
     enabled: !!query,
   });
 
-export const useCardChecks = (
-  paymentMethodIds: string[],
-  month: number,
-  year: number,
-) =>
+export const useCardChecks = (paymentMethodIds: string[], month: number, year: number) =>
   useQueries({
     queries: paymentMethodIds.map((paymentMethodId) => {
       const query = { paymentMethodId, month, year };
@@ -77,10 +71,10 @@ export const useCreateDebt = () =>
   });
 
 export const useUpdateDebt = () =>
-  useApiMutation(
-    ({ id, body }: { id: string; body: UpdateDebtDto }) => updateDebt(id, body),
-    { invalidate, success: "Deuda actualizada" },
-  );
+  useApiMutation(({ id, body }: { id: string; body: UpdateDebtDto }) => updateDebt(id, body), {
+    invalidate,
+    success: "Deuda actualizada",
+  });
 
 export const useDeleteDebt = () =>
   useApiMutation((id: string) => deleteDebt(id), {
@@ -89,11 +83,10 @@ export const useDeleteDebt = () =>
   });
 
 export const useAddDebtPayment = () =>
-  useApiMutation(
-    ({ id, body }: { id: string; body: DebtPaymentDto }) =>
-      addDebtPayment(id, body),
-    { invalidate, success: "Abono guardado" },
-  );
+  useApiMutation(({ id, body }: { id: string; body: DebtPaymentDto }) => addDebtPayment(id, body), {
+    invalidate,
+    success: "Abono guardado",
+  });
 
 const BULK_MESSAGES: Record<DebtBulk["action"], string> = {
   pay: "Pagadas",
@@ -111,18 +104,13 @@ export const useBulkDebts = () =>
   useApiMutation((body: DebtBulk) => bulkDebts(body), {
     invalidate,
     success: (result) => {
-      const skipped = result.skipped.length
-        ? ` · ${result.skipped.length} sin cambios`
-        : "";
+      const skipped = result.skipped.length ? ` · ${result.skipped.length} sin cambios` : "";
       return `${BULK_MESSAGES[result.action]}: ${result.affected}${skipped}`;
     },
   });
 
 // "Arrastrar saldos pendientes": what would move (dry run, for the confirmation)
-export const useCarryOverPreview = (
-  query: Omit<DebtCarryOverDto, "dryRun">,
-  enabled: boolean,
-) =>
+export const useCarryOverPreview = (query: Omit<DebtCarryOverDto, "dryRun">, enabled: boolean) =>
   useQuery({
     queryKey: ["debts", "carry-over", query] as const,
     queryFn: () => carryOverDebts({ ...query, dryRun: true }),
@@ -131,14 +119,8 @@ export const useCarryOverPreview = (
   });
 
 export const useCarryOverDebts = () =>
-  useApiMutation(
-    (body: Omit<DebtCarryOverDto, "dryRun">) =>
-      carryOverDebts({ ...body, dryRun: false }),
-    {
-      invalidate,
-      success: (result) =>
-        result.affected === 1
-          ? "1 saldo pendiente pasó al mes en curso"
-          : `${result.affected} saldos pendientes pasaron al mes en curso`,
-    },
-  );
+  useApiMutation((body: Omit<DebtCarryOverDto, "dryRun">) => carryOverDebts({ ...body, dryRun: false }), {
+    invalidate,
+    success: (result) =>
+      result.affected === 1 ? "1 saldo pendiente pasó al mes en curso" : `${result.affected} saldos pendientes pasaron al mes en curso`,
+  });

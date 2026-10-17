@@ -46,21 +46,11 @@ export function ShortFilterFields({
 }: ShortFilterFieldsProps) {
   const [open, setOpen] = useState(false);
   const isMulti = mode === "multi";
-  const selected = useMemo(
-    () => (isMulti ? (value?.split(",").filter(Boolean) ?? []) : []),
-    [isMulti, value],
-  );
-  const selectedOptions = isMulti
-    ? options.filter((option) => selected.includes(option.value))
-    : [];
-  const singleOption = !isMulti
-    ? options.find((option) => option.value === value)
-    : undefined;
-  const allSelected =
-    isMulti && options.length > 0 && selectedOptions.length === options.length;
-  const active = isMulti
-    ? selected.length > 0 && !allSelected
-    : Boolean(singleOption);
+  const selected = useMemo(() => (isMulti ? (value?.split(",").filter(Boolean) ?? []) : []), [isMulti, value]);
+  const selectedOptions = isMulti ? options.filter((option) => selected.includes(option.value)) : [];
+  const singleOption = !isMulti ? options.find((option) => option.value === value) : undefined;
+  const allSelected = isMulti && options.length > 0 && selectedOptions.length === options.length;
+  const active = isMulti ? selected.length > 0 && !allSelected : Boolean(singleOption);
   const triggerSummary = isMulti
     ? allSelected
       ? allLabel
@@ -70,8 +60,7 @@ export function ShortFilterFields({
           ? `${selectedOptions.length} seleccionados`
           : selectedOptions.map((option) => option.label).join(", ")
     : (singleOption?.label ?? allLabel);
-  const allPartial =
-    isMulti && selected.length > 0 && selectedOptions.length < options.length;
+  const allPartial = isMulti && selected.length > 0 && selectedOptions.length < options.length;
   const selectedCount = isMulti ? selectedOptions.length : Number(active);
 
   const toggle = (optionValue: string) => {
@@ -94,32 +83,18 @@ export function ShortFilterFields({
       aria-hidden="true"
       className={cn(
         "inline-flex size-4.5 shrink-0 items-center justify-center rounded-full border transition-colors",
-        checked
-          ? "border-foreground bg-foreground text-background"
-          : "border-muted-foreground/60 bg-transparent",
+        checked ? "border-foreground bg-foreground text-background" : "border-muted-foreground/60 bg-transparent",
       )}
     >
-      {partial ? (
-        <Minus className="size-3" strokeWidth={2.5} />
-      ) : (
-        checked && <Check className="size-3" strokeWidth={2.5} />
-      )}
+      {partial ? <Minus className="size-3" strokeWidth={2.5} /> : checked && <Check className="size-3" strokeWidth={2.5} />}
     </span>
   );
 
   return (
     <div className={cn("min-w-0 space-y-1.5", containerClassName)}>
       <div className={labelClassName}>
-        <FieldLabel
-          icon={activeMarker ? undefined : icon}
-          className={active && activeMarker ? "text-foreground" : undefined}
-        >
-          {activeMarker && active && (
-            <span
-              aria-hidden="true"
-              className="mr-0.5 size-2 rounded-full bg-brand"
-            />
-          )}
+        <FieldLabel icon={activeMarker ? undefined : icon} className={active && activeMarker ? "text-foreground" : undefined}>
+          {activeMarker && active && <span aria-hidden="true" className="mr-0.5 size-2 rounded-full bg-brand" />}
           {label}
         </FieldLabel>
       </div>
@@ -135,40 +110,22 @@ export function ShortFilterFields({
             triggerClassName,
           )}
         >
-          <span
-            className={cn(
-              "min-w-0 flex-1 truncate text-left",
-              active && "text-brand",
-            )}
-          >
-            {triggerSummary}
-          </span>
+          <span className={cn("min-w-0 flex-1 truncate text-left", active && "text-brand")}>{triggerSummary}</span>
           <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
         </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          className="w-(--anchor-width) min-w-56 overflow-hidden p-1"
-        >
+        <PopoverContent align="start" className="w-(--anchor-width) min-w-56 overflow-hidden p-1">
           <div className="max-h-72 overflow-y-auto">
             {isMulti ? (
               <>
                 <button
                   type="button"
                   aria-pressed={allSelected}
-                  onClick={() =>
-                    onChange(
-                      allSelected
-                        ? undefined
-                        : options.map((option) => option.value).join(","),
-                    )
-                  }
+                  onClick={() => onChange(allSelected ? undefined : options.map((option) => option.value).join(","))}
                   className="flex min-h-9 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-accent"
                 >
                   {renderMark(allSelected, allPartial)}
                   <span className="min-w-0 flex-1 truncate">{allLabel}</span>
-                  <span className="text-xs tabular-nums text-muted-foreground">
-                    {options.length}
-                  </span>
+                  <span className="text-xs tabular-nums text-muted-foreground">{options.length}</span>
                 </button>
                 <div className="my-1 border-t" />
                 {options.map((option) => {
@@ -187,20 +144,10 @@ export function ShortFilterFields({
                       {renderMark(checked)}
                       {option.decoration}
                       {option.color && (
-                        <span
-                          aria-hidden="true"
-                          className="size-1.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: option.color }}
-                        />
+                        <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: option.color }} />
                       )}
-                      <span className="min-w-0 flex-1 truncate">
-                        {option.label}
-                      </span>
-                      {option.count != null && (
-                        <span className="text-xs tabular-nums text-muted-foreground">
-                          {option.count}
-                        </span>
-                      )}
+                      <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                      {option.count != null && <span className="text-xs tabular-nums text-muted-foreground">{option.count}</span>}
                     </button>
                   );
                 })}
@@ -235,15 +182,9 @@ export function ShortFilterFields({
                     >
                       {option.decoration}
                       {option.color && (
-                        <span
-                          aria-hidden="true"
-                          className="size-1.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: option.color }}
-                        />
+                        <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: option.color }} />
                       )}
-                      <span className="min-w-0 flex-1 truncate">
-                        {option.label}
-                      </span>
+                      <span className="min-w-0 flex-1 truncate">{option.label}</span>
                       {checked && <Check className="size-4 shrink-0" />}
                     </button>
                   );
@@ -253,11 +194,7 @@ export function ShortFilterFields({
           </div>
           {isMulti && (
             <div className="flex items-center justify-between border-t px-2 pt-2 text-xs text-muted-foreground">
-              <span>
-                {selectedCount
-                  ? `${selectedCount} de ${options.length} seleccionados`
-                  : `Sin filtro · se muestran todos`}
-              </span>
+              <span>{selectedCount ? `${selectedCount} de ${options.length} seleccionados` : `Sin filtro · se muestran todos`}</span>
               <button
                 type="button"
                 className="font-medium text-foreground disabled:cursor-default disabled:opacity-50"

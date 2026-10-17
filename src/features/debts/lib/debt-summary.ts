@@ -2,18 +2,14 @@ import type { Debt } from "@/shared/api/types";
 
 type CurrencyTotals = Partial<Record<"PEN" | "USD", number>>;
 
-const key = (currency: string): "PEN" | "USD" =>
-  currency === "USD" ? "USD" : "PEN";
+const key = (currency: string): "PEN" | "USD" => (currency === "USD" ? "USD" : "PEN");
 
 function add(totals: CurrencyTotals, currency: string, value: number) {
   totals[key(currency)] = (totals[key(currency)] ?? 0) + value;
 }
 
 /** Soles per unit of the debt's own currency (1 for PEN). */
-const penFactor = (debt: Debt) =>
-  debt.amount > 0 && debt.amountInPen != null
-    ? debt.amountInPen / debt.amount
-    : 1;
+const penFactor = (debt: Debt) => (debt.amount > 0 && debt.amountInPen != null ? debt.amountInPen / debt.amount : 1);
 
 export interface DebtSummary {
   count: number;
@@ -44,18 +40,9 @@ export function summarizeDebts(debts: Debt[]): DebtSummary {
     }
     paidPen += debt.paidAmount * penFactor(debt);
     totalPen += debt.amount * penFactor(debt);
-    if (
-      debt.balance > 0 &&
-      (!largest ||
-        debt.balance * penFactor(debt) > largest.balance * penFactor(largest))
-    )
-      largest = debt;
+    if (debt.balance > 0 && (!largest || debt.balance * penFactor(debt) > largest.balance * penFactor(largest))) largest = debt;
   }
-  const largestShare = largest
-    ? Math.round(
-        (largest.balance / (balance[key(largest.currency)] || 1)) * 100,
-      )
-    : 0;
+  const largestShare = largest ? Math.round((largest.balance / (balance[key(largest.currency)] || 1)) * 100) : 0;
   return {
     count: debts.length,
     balance,

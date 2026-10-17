@@ -1,10 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/ui/collapsible";
 import { Marker, MarkerContent, MarkerIcon } from "@/ui/marker";
 import { Badge } from "@/ui/badge";
 import { cn } from "@/shared/utils/cn";
@@ -16,12 +12,7 @@ export interface MoreFiltersProps {
   children: ReactNode;
 }
 
-export function MoreFilters({
-  activeCount = 0,
-  defaultOpen = false,
-  activeCountDisplay = "badge",
-  children,
-}: MoreFiltersProps) {
+export function MoreFilters({ activeCount = 0, defaultOpen = false, activeCountDisplay = "badge", children }: MoreFiltersProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -42,21 +33,12 @@ export function MoreFilters({
             )}
           </MarkerContent>
           {activeCountDisplay === "badge" && activeCount > 0 && (
-            <Badge
-              variant="secondary"
-              className="shrink-0 text-xs tabular-nums"
-              aria-label={`${activeCount} filtros adicionales activos`}
-            >
+            <Badge variant="secondary" className="shrink-0 text-xs tabular-nums" aria-label={`${activeCount} filtros adicionales activos`}>
               {activeCount} activos
             </Badge>
           )}
           <MarkerIcon>
-            <ChevronDown
-              className={cn(
-                "size-4 transition-transform motion-reduce:transition-none",
-                open && "rotate-180",
-              )}
-            />
+            <ChevronDown className={cn("size-4 transition-transform motion-reduce:transition-none", open && "rotate-180")} />
           </MarkerIcon>
         </Marker>
       </CollapsibleTrigger>

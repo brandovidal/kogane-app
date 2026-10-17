@@ -8,10 +8,7 @@ import { PLATFORM_PERIOD_COLORS } from "../constants/platforms";
 import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
 import { SUBSCRIPTION_STATUSES } from "../constants/subscriptions";
 import { PlatformMark } from "../components/PlatformMark";
-import {
-  formatPlatformCurrency,
-  platformNativeAmount,
-} from "./platform-summary";
+import { formatPlatformCurrency, platformNativeAmount } from "./platform-summary";
 import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
 import { nextPlatformChargeDate } from "./platform-summary";
 
@@ -56,13 +53,9 @@ export function getPlatformColumns({
       key: "period",
       header: "Periodo",
       className: "min-w-[105px] w-[12%]",
-      accessor: (item) =>
-        SUBSCRIPTION_PERIOD_LABELS[item.period] ?? item.period,
+      accessor: (item) => SUBSCRIPTION_PERIOD_LABELS[item.period] ?? item.period,
       cell: (item) => (
-        <Badge
-          variant="secondary"
-          className={PLATFORM_PERIOD_COLORS[item.period]}
-        >
+        <Badge variant="secondary" className={PLATFORM_PERIOD_COLORS[item.period]}>
           {SUBSCRIPTION_PERIOD_LABELS[item.period] ?? item.period}
         </Badge>
       ),
@@ -74,11 +67,7 @@ export function getPlatformColumns({
       className: "min-w-[110px] w-[12%] text-right",
       calculationType: false,
       accessor: platformNativeAmount,
-      cell: (item) => (
-        <span className="font-semibold">
-          {formatPlatformCurrency(item.amount, item.currency)}
-        </span>
-      ),
+      cell: (item) => <span className="font-semibold">{formatPlatformCurrency(item.amount, item.currency)}</span>,
     },
     {
       key: "status",
@@ -102,9 +91,7 @@ export function getPlatformColumns({
           .toUpperCase();
         return (
           <span className="inline-flex items-center gap-2 text-sm">
-            <span className="inline-flex size-6 items-center justify-center rounded-full bg-muted text-[10px] font-semibold">
-              {initials}
-            </span>
+            <span className="inline-flex size-6 items-center justify-center rounded-full bg-muted text-[10px] font-semibold">{initials}</span>
             {name}
           </span>
         );
@@ -117,17 +104,12 @@ export function getPlatformColumns({
       accessor: (item) => nextPlatformChargeDate(item, todayKey),
       cell: (item) => {
         const date = nextPlatformChargeDate(item, todayKey);
-        if (!date)
-          return <span className="text-sm text-muted-foreground">—</span>;
+        if (!date) return <span className="text-sm text-muted-foreground">—</span>;
         const days = todayKey ? daysUntilDue(date, todayKey) : null;
         return (
           <span className="flex flex-col text-sm tabular-nums">
             <span>{formatDate(date)}</span>
-            {days != null && (
-              <span className="text-xs text-amber-500">
-                {days === 0 ? "hoy" : `en ${days} días`}
-              </span>
-            )}
+            {days != null && <span className="text-xs text-amber-500">{days === 0 ? "hoy" : `en ${days} días`}</span>}
           </span>
         );
       },
@@ -138,10 +120,7 @@ export function getPlatformColumns({
       className: "min-w-[140px] w-[12%]",
       accessor: (item) => item.notes,
       cell: (item) => (
-        <span
-          className="block max-w-48 truncate text-sm text-muted-foreground"
-          title={item.notes ?? undefined}
-        >
+        <span className="block max-w-48 truncate text-sm text-muted-foreground" title={item.notes ?? undefined}>
           {item.notes || "—"}
         </span>
       ),

@@ -33,10 +33,7 @@ export function CarryOverDialog({
   const affected = preview.data?.affected ?? 0;
 
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={(next) => !carry.isPending && onOpenChange(next)}
-    >
+    <AlertDialog open={open} onOpenChange={(next) => !carry.isPending && onOpenChange(next)}>
       <AlertDialogContent className="sm:max-w-md" aria-busy={carry.isPending}>
         <AlertDialogHeader>
           <AlertDialogTitle>Arrastrar saldos pendientes</AlertDialogTitle>
@@ -51,21 +48,13 @@ export function CarryOverDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={carry.isPending}>
-            Cancelar
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={carry.isPending}>Cancelar</AlertDialogCancel>
           <Button
             type="button"
             disabled={carry.isPending || preview.isLoading || affected === 0}
-            onClick={() =>
-              carry.mutate(query, { onSuccess: () => onOpenChange(false) })
-            }
+            onClick={() => carry.mutate(query, { onSuccess: () => onOpenChange(false) })}
           >
-            {carry.isPending ? (
-              <LoaderCircle className="mr-1 size-4 animate-spin" />
-            ) : (
-              <MoveRight className="mr-1 size-4" />
-            )}
+            {carry.isPending ? <LoaderCircle className="mr-1 size-4 animate-spin" /> : <MoveRight className="mr-1 size-4" />}
             Arrastrar al mes en curso
           </Button>
         </AlertDialogFooter>

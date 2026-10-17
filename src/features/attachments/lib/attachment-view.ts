@@ -20,27 +20,13 @@ export function attachmentsSummary(files: SizedFile[]): string {
   return `${files.length} ${noun} · ${formatAttachmentSize(total)}`;
 }
 
-const MONTHS = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
-];
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 // «hoy», «ayer», «hace 2 días» y, pasada una semana, «el 2 oct 2026» (board 14b)
 export function uploadedLabel(createdAt: string, now = new Date()): string {
   const created = new Date(createdAt);
   if (Number.isNaN(created.getTime())) return "";
-  const startOfDay = (date: Date) =>
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  const startOfDay = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
   const days = Math.round((startOfDay(now) - startOfDay(created)) / 86_400_000);
   if (days <= 0) return "subido hoy";
   if (days === 1) return "subido ayer";

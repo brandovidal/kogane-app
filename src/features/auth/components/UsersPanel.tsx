@@ -2,25 +2,11 @@ import { useState } from "react";
 import { Check, Copy, LogIn, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  useAuthConfig,
-  useImpersonate,
-  useInviteUser,
-  useMe,
-  useRevokeInvite,
-  useUpdateUser,
-  useUsers,
-} from "@/features/auth/hooks/auth";
+import { useAuthConfig, useImpersonate, useInviteUser, useMe, useRevokeInvite, useUpdateUser, useUsers } from "@/features/auth/hooks/auth";
 import { formatDate } from "@/shared/lib/dates";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -31,13 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/ui/alert-dialog";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 const ROLE_LABELS: Record<string, string> = {
   superadmin: "Superadmin",
@@ -112,17 +92,8 @@ export function UsersPanel() {
               );
             }}
           >
-            <Input
-              type="email"
-              placeholder="correo@ejemplo.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Select
-              value={role}
-              onValueChange={(value) => setRole(value as "member" | "admin")}
-            >
+            <Input type="email" placeholder="correo@ejemplo.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Select value={role} onValueChange={(value) => setRole(value as "member" | "admin")}>
               <SelectTrigger aria-label="Rol">
                 <SelectValue />
               </SelectTrigger>
@@ -140,34 +111,20 @@ export function UsersPanel() {
               <p>
                 {created.emailed ? (
                   <>
-                    Correo enviado a{" "}
-                    <span className="font-medium">{created.email}</span>.{" "}
+                    Correo enviado a <span className="font-medium">{created.email}</span>.{" "}
                   </>
                 ) : (
                   <>
-                    Enlace para{" "}
-                    <span className="font-medium">{created.email}</span>
+                    Enlace para <span className="font-medium">{created.email}</span>
                     {mail ? " (el correo no salió: pásalo tú)" : ""}:{" "}
                   </>
                 )}
                 (se muestra una sola vez)
               </p>
               <div className="flex gap-2">
-                <Input
-                  readOnly
-                  value={created.url}
-                  onFocus={(event) => event.currentTarget.select()}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => copy(created.url)}
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
+                <Input readOnly value={created.url} onFocus={(event) => event.currentTarget.select()} />
+                <Button type="button" variant="outline" onClick={() => copy(created.url)}>
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
@@ -178,17 +135,13 @@ export function UsersPanel() {
                 <li key={item.id} className="flex items-center gap-2 px-3 py-2">
                   <span className="min-w-0 flex-1 truncate">{item.email}</span>
                   <Badge variant="outline">{ROLE_LABELS[item.role]}</Badge>
-                  <span className="text-xs text-muted-foreground">
-                    vence {formatDate(item.expiresAt)}
-                  </span>
+                  <span className="text-xs text-muted-foreground">vence {formatDate(item.expiresAt)}</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-destructive"
                     aria-label={`Eliminar invitación de ${item.email}`}
-                    onClick={() =>
-                      setInviteToRevoke({ id: item.id, email: item.email })
-                    }
+                    onClick={() => setInviteToRevoke({ id: item.id, email: item.email })}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -209,10 +162,7 @@ export function UsersPanel() {
               const isSuper = user.role === "superadmin";
               const self = user.id === me.id;
               return (
-                <li
-                  key={user.id}
-                  className="flex flex-wrap items-center gap-2 px-3 py-2"
-                >
+                <li key={user.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium">
                       {user.name}
@@ -235,10 +185,7 @@ export function UsersPanel() {
                         })
                       }
                     >
-                      <SelectTrigger
-                        className="h-8 w-27.5"
-                        aria-label={`Rol de ${user.name}`}
-                      >
+                      <SelectTrigger className="h-8 w-27.5" aria-label={`Rol de ${user.name}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -247,11 +194,7 @@ export function UsersPanel() {
                       </SelectContent>
                     </Select>
                   )}
-                  <Badge
-                    variant={user.status === "active" ? "secondary" : "outline"}
-                  >
-                    {STATUS_LABELS[user.status] ?? user.status}
-                  </Badge>
+                  <Badge variant={user.status === "active" ? "secondary" : "outline"}>{STATUS_LABELS[user.status] ?? user.status}</Badge>
                   {!isSuper && !self && (
                     <Button
                       variant="outline"
@@ -261,10 +204,7 @@ export function UsersPanel() {
                         update.mutate({
                           id: user.id,
                           body: {
-                            status:
-                              user.status === "disabled"
-                                ? "active"
-                                : "disabled",
+                            status: user.status === "disabled" ? "active" : "disabled",
                           },
                         })
                       }
@@ -272,23 +212,21 @@ export function UsersPanel() {
                       {user.status === "disabled" ? "Activar" : "Desactivar"}
                     </Button>
                   )}
-                  {me.role === "superadmin" &&
-                    !self &&
-                    user.status === "active" && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        title="Entrar como este usuario durante unas horas (queda en el historial)"
-                        disabled={impersonate.isPending}
-                        onClick={() =>
-                          impersonate.mutate(user.id, {
-                            onSuccess: () => window.location.replace("/"),
-                          })
-                        }
-                      >
-                        <LogIn className="mr-1.5 h-3.5 w-3.5" /> Entrar como
-                      </Button>
-                    )}
+                  {me.role === "superadmin" && !self && user.status === "active" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      title="Entrar como este usuario durante unas horas (queda en el historial)"
+                      disabled={impersonate.isPending}
+                      onClick={() =>
+                        impersonate.mutate(user.id, {
+                          onSuccess: () => window.location.replace("/"),
+                        })
+                      }
+                    >
+                      <LogIn className="mr-1.5 h-3.5 w-3.5" /> Entrar como
+                    </Button>
+                  )}
                 </li>
               );
             })}
@@ -296,22 +234,16 @@ export function UsersPanel() {
         </CardContent>
       </Card>
 
-      <AlertDialog
-        open={!!inviteToRevoke}
-        onOpenChange={(open) => !open && setInviteToRevoke(null)}
-      >
+      <AlertDialog open={!!inviteToRevoke} onOpenChange={(open) => !open && setInviteToRevoke(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar esta invitación?</AlertDialogTitle>
             <AlertDialogDescription>
-              Se cancelará la invitación de {inviteToRevoke?.email}. El enlace
-              dejará de funcionar y la persona necesitará una invitación nueva.
+              Se cancelará la invitación de {inviteToRevoke?.email}. El enlace dejará de funcionar y la persona necesitará una invitación nueva.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={revoke.isPending}>
-              Cancelar
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={revoke.isPending}>Cancelar</AlertDialogCancel>
             <Button
               variant="destructive"
               disabled={revoke.isPending}

@@ -4,13 +4,10 @@ import { isLongValue, truncateValue } from "../lib/history-view";
 // Texto largo del historial (notas): corta con «Ver completo» / «Ver menos»
 export function HistoryExpandableText({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
-  if (!isLongValue(text))
-    return <span className="whitespace-pre-wrap wrap-anywhere">{text}</span>;
+  if (!isLongValue(text)) return <span className="whitespace-pre-wrap wrap-anywhere">{text}</span>;
   return (
     <span className="min-w-0">
-      <span className="whitespace-pre-wrap wrap-anywhere">
-        {open ? text : truncateValue(text)}
-      </span>{" "}
+      <span className="whitespace-pre-wrap wrap-anywhere">{open ? text : truncateValue(text)}</span>{" "}
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}

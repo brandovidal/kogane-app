@@ -12,13 +12,9 @@ export const FIXED_COST_VIEWS = [
 
 export type FixedCostView = (typeof FIXED_COST_VIEWS)[number]["value"];
 
-export const isFixedCostView = (value: unknown): value is FixedCostView =>
-  FIXED_COST_VIEWS.some((view) => view.value === value);
+export const isFixedCostView = (value: unknown): value is FixedCostView => FIXED_COST_VIEWS.some((view) => view.value === value);
 
-export const FIXED_COST_VIEW_PERIOD: Record<
-  FixedCostView,
-  "month" | "year" | "all"
-> = {
+export const FIXED_COST_VIEW_PERIOD: Record<FixedCostView, "month" | "year" | "all"> = {
   mes: "month",
   estado: "month",
   todos: "year",
@@ -34,8 +30,7 @@ export const PAYABLE_HORIZONS = [
 
 export type PayableHorizon = (typeof PAYABLE_HORIZONS)[number]["value"];
 
-export const isPayableHorizon = (value: unknown): value is PayableHorizon =>
-  PAYABLE_HORIZONS.some((horizon) => horizon.value === value);
+export const isPayableHorizon = (value: unknown): value is PayableHorizon => PAYABLE_HORIZONS.some((horizon) => horizon.value === value);
 
 export function monthKeyIndex(value: string | undefined) {
   const match = /^(\d{4})-(\d{2})$/.exec(value ?? "");
@@ -46,21 +41,13 @@ export function monthKeyIndex(value: string | undefined) {
   return year * 12 + month - 1;
 }
 
-export const monthIndexKey = (index: number) =>
-  `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`;
+export const monthIndexKey = (index: number) => `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`;
 
-export const monthIndexLabel = (index: number) =>
-  `${getMonthName((index % 12) + 1).slice(0, 3)} ${Math.floor(index / 12)}`;
+export const monthIndexLabel = (index: number) => `${getMonthName((index % 12) + 1).slice(0, 3)} ${Math.floor(index / 12)}`;
 
-export const costMonthIndex = (
-  cost: Pick<FixedCost, "paymentMonth" | "paymentYear">,
-) => cost.paymentYear * 12 + cost.paymentMonth - 1;
+export const costMonthIndex = (cost: Pick<FixedCost, "paymentMonth" | "paymentYear">) => cost.paymentYear * 12 + cost.paymentMonth - 1;
 
-export function filterByMonthRange(
-  costs: FixedCost[],
-  from?: string,
-  to?: string,
-) {
+export function filterByMonthRange(costs: FixedCost[], from?: string, to?: string) {
   const start = monthKeyIndex(from);
   const end = monthKeyIndex(to);
   if (start == null && end == null) return costs;
@@ -74,8 +61,7 @@ export function monthRangeLabel(from?: string, to?: string) {
   const start = monthKeyIndex(from);
   const end = monthKeyIndex(to);
   if (start != null && end != null) {
-    if (Math.floor(start / 12) === Math.floor(end / 12))
-      return `${getMonthName((start % 12) + 1).slice(0, 3)} – ${monthIndexLabel(end)}`;
+    if (Math.floor(start / 12) === Math.floor(end / 12)) return `${getMonthName((start % 12) + 1).slice(0, 3)} – ${monthIndexLabel(end)}`;
     return `${monthIndexLabel(start)} – ${monthIndexLabel(end)}`;
   }
   if (start != null) return `Desde ${monthIndexLabel(start)}`;
@@ -116,8 +102,7 @@ export const FIXED_COST_SORTS = [
   },
 ] as const;
 
-export const findFixedCostSort = (value: string | undefined) =>
-  FIXED_COST_SORTS.find((sort) => sort.value === value);
+export const findFixedCostSort = (value: string | undefined) => FIXED_COST_SORTS.find((sort) => sort.value === value);
 
 export function parseInstallment(installment: string | null | undefined) {
   const match = /^(\d{1,3})\/(\d{1,3})$/.exec(installment?.trim() ?? "");
@@ -162,24 +147,17 @@ export function urgencyOf(cost: FixedCost, todayKey: string): UrgencyGroup {
 }
 
 export function payableByUrgency(costs: FixedCost[], todayKey: string) {
-  const order = new Map(
-    URGENCY_GROUPS.map((group, index) => [group.value, index]),
-  );
+  const order = new Map(URGENCY_GROUPS.map((group, index) => [group.value, index]));
   return costs
     .filter((cost) => !isCompletedFixedCost(cost))
     .sort(
       (a, b) =>
-        (order.get(urgencyOf(a, todayKey)) ?? 0) -
-          (order.get(urgencyOf(b, todayKey)) ?? 0) ||
+        (order.get(urgencyOf(a, todayKey)) ?? 0) - (order.get(urgencyOf(b, todayKey)) ?? 0) ||
         (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999"),
     );
 }
 
-export function filterPayableByHorizon(
-  costs: FixedCost[],
-  todayKey: string,
-  horizon: PayableHorizon,
-) {
+export function filterPayableByHorizon(costs: FixedCost[], todayKey: string, horizon: PayableHorizon) {
   if (horizon === "all") return costs;
   return costs.filter((cost) => {
     const days = cost.dueDate ? daysUntilDue(cost.dueDate, todayKey) : null;
@@ -206,14 +184,9 @@ export function installmentSeries(costs: FixedCost[]): InstallmentSeries[] {
   for (const cost of costs) {
     const plan = parseInstallment(cost.installment);
     if (!plan) continue;
-    const key = [
-      cost.description.trim().toLowerCase(),
-      cost.personId ?? "",
-      plan.total,
-    ].join("|");
+    const key = [cost.description.trim().toLowerCase(), cost.personId ?? "", plan.total].join("|");
     const previous = latest.get(key);
-    if (!previous || costMonthIndex(cost) > costMonthIndex(previous))
-      latest.set(key, cost);
+    if (!previous || costMonthIndex(cost) > costMonthIndex(previous)) latest.set(key, cost);
   }
   return [...latest.entries()]
     .map(([key, cost]) => {
@@ -236,15 +209,10 @@ export function installmentSeries(costs: FixedCost[]): InstallmentSeries[] {
     .sort((a, b) => a.endIndex - b.endIndex);
 }
 
-export const monthGroupKey = (cost: FixedCost) =>
-  monthIndexKey(costMonthIndex(cost));
+export const monthGroupKey = (cost: FixedCost) => monthIndexKey(costMonthIndex(cost));
 
 /** Orders year-view months by urgency, keeping chronological order within each tier. */
-export function compareFixedCostMonthGroups(
-  left: FixedCost[],
-  right: FixedCost[],
-  today = new Date(),
-) {
+export function compareFixedCostMonthGroups(left: FixedCost[], right: FixedCost[], today = new Date()) {
   const currentIndex = today.getFullYear() * 12 + today.getMonth();
   const priority = (costs: FixedCost[]) => {
     const monthIndex = costMonthIndex(costs[0]);
@@ -254,10 +222,7 @@ export function compareFixedCostMonthGroups(
     if (monthIndex < currentIndex) return 0;
     return 2;
   };
-  return (
-    priority(left) - priority(right) ||
-    costMonthIndex(left[0]) - costMonthIndex(right[0])
-  );
+  return priority(left) - priority(right) || costMonthIndex(left[0]) - costMonthIndex(right[0]);
 }
 
 export function monthGroupLabel(key: string) {
@@ -268,8 +233,7 @@ export function monthGroupLabel(key: string) {
 
 export function relativeDueLabel(days: number | null) {
   if (days == null) return null;
-  if (days < 0)
-    return `venció hace ${Math.abs(days)} ${Math.abs(days) === 1 ? "día" : "días"}`;
+  if (days < 0) return `venció hace ${Math.abs(days)} ${Math.abs(days) === 1 ? "día" : "días"}`;
   if (days === 0) return "vence hoy";
   return `en ${days} ${days === 1 ? "día" : "días"}`;
 }

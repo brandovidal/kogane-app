@@ -1,10 +1,5 @@
 import { SHARED_FILTER } from "@/shared/constants/expense-filters";
-import {
-  PERSON_ALL,
-  PERSON_FILTER_LABELS,
-  PERSON_ME,
-  PERSON_UNASSIGNED,
-} from "@/shared/constants/person-filter";
+import { PERSON_ALL, PERSON_FILTER_LABELS, PERSON_ME, PERSON_UNASSIGNED } from "@/shared/constants/person-filter";
 import type { ExpenseFilterKey } from "../types/expense-filters";
 
 export { PERSON_ALL, PERSON_FILTER_LABELS, PERSON_ME, PERSON_UNASSIGNED };
@@ -35,23 +30,10 @@ export const PANEL_FILTER_KEYS: ExpenseFilterKey[] = [
 ];
 export const PANEL_FILTER_THRESHOLD = 3;
 
-export const PRIMARY_PANEL_FILTER_KEYS: readonly ExpenseFilterKey[] = [
-  "month",
-  "year",
-  "person",
-  "category",
-  "status",
-];
+export const PRIMARY_PANEL_FILTER_KEYS: readonly ExpenseFilterKey[] = ["month", "year", "person", "category", "status"];
 
-export const PRIMARY_FIELDS = PRIMARY_PANEL_FILTER_KEYS.filter(
-  (field) => field === "person" || field === "category",
-);
+export const PRIMARY_FIELDS = PRIMARY_PANEL_FILTER_KEYS.filter((field) => field === "person" || field === "category");
 
 export const ADDITIONAL_FIELDS = PANEL_FILTER_KEYS.filter(
-  (field) =>
-    field !== "category" &&
-    field !== "status" &&
-    field !== "period" &&
-    field !== "month" &&
-    field !== "year",
+  (field) => field !== "category" && field !== "status" && field !== "period" && field !== "month" && field !== "year",
 );

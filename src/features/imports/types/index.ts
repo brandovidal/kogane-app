@@ -1,8 +1,4 @@
-export type {
-  ImportSource,
-  HistoryItem,
-  ImportRowsParams,
-} from "./import-types";
+export type { ImportSource, HistoryItem, ImportRowsParams } from "./import-types";
 export type {
   ImportUploadCardProps,
   ImportHistoryCardProps,

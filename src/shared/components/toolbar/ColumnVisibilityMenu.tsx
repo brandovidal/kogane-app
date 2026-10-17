@@ -1,15 +1,6 @@
 import type { ReactElement } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
-import {
-  ColumnVisibilityOptions,
-  type ColumnVisibilityOption,
-} from "./ColumnVisibilityOptions";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { ColumnVisibilityOptions, type ColumnVisibilityOption } from "./ColumnVisibilityOptions";
 
 export function ColumnVisibilityMenu({
   columns,

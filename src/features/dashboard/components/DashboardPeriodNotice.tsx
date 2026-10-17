@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
-import {
-  getCurrentMonth,
-  getCurrentYear,
-  getMonthName,
-} from "@/shared/lib/dates";
+import { getCurrentMonth, getCurrentYear, getMonthName } from "@/shared/lib/dates";
 import { usePeriod } from "@/shared/stores/period.store";
 
 export function DashboardPeriodNotice() {
@@ -32,18 +28,10 @@ export function DashboardPeriodNotice() {
 
   return (
     <div className={className}>
-      <Info
-        className={`size-4 shrink-0 ${isBilled ? "text-amber-400" : "text-primary"}`}
-      />
+      <Info className={`size-4 shrink-0 ${isBilled ? "text-amber-400" : "text-primary"}`} />
       <p>
         <span className="font-medium text-foreground">
-          {getMonthName(month)} {year} ·{" "}
-          {isCurrent
-            ? "en curso"
-            : isBilled
-              ? "facturado"
-              : "período seleccionado"}
-          .
+          {getMonthName(month)} {year} · {isCurrent ? "en curso" : isBilled ? "facturado" : "período seleccionado"}.
         </span>{" "}
         {detail}
       </p>

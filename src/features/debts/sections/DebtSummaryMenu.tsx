@@ -1,30 +1,14 @@
-import {
-  BellRing,
-  Copy,
-  Download,
-  MoreHorizontal,
-  RefreshCw,
-  Snowflake,
-} from "lucide-react";
+import { BellRing, Copy, Download, MoreHorizontal, RefreshCw, Snowflake } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useCollectNow } from "@/features/notifications/hooks/notifications";
 import { useSetPersonSummariesStatus } from "../hooks/personSummaries";
-import {
-  PERSON_SUMMARY_STATUS_LABELS,
-  EMPTY_PERSON_SUMMARY,
-} from "./PersonSummaryControls";
+import { PERSON_SUMMARY_STATUS_LABELS, EMPTY_PERSON_SUMMARY } from "./PersonSummaryControls";
 import type { PersonSummaryStatus } from "../types/person-summary.dto";
 import { downloadCsv } from "@/shared/lib/export-csv";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
 interface SummaryRow {
   personId: string;
@@ -49,21 +33,13 @@ export function DebtSummaryMenu({
   const setStatus = useSetPersonSummariesStatus();
   const collect = useCollectNow();
   const withBalance = rows.filter((row) => row.total > 0);
-  const drafts = rows.filter(
-    (row) =>
-      (statusOf(row.personId) ?? EMPTY_PERSON_SUMMARY.status) === "draft",
-  );
+  const drafts = rows.filter((row) => (statusOf(row.personId) ?? EMPTY_PERSON_SUMMARY.status) === "draft");
 
   const exportCsv = () =>
     downloadCsv(
       `resumen-${year}-${String(month).padStart(2, "0")}.csv`,
       ["Persona", "Estado", "Registros", "Saldo"],
-      rows.map((row) => [
-        row.name,
-        PERSON_SUMMARY_STATUS_LABELS[statusOf(row.personId) ?? "draft"],
-        row.records,
-        row.total.toFixed(2),
-      ]),
+      rows.map((row) => [row.name, PERSON_SUMMARY_STATUS_LABELS[statusOf(row.personId) ?? "draft"], row.records, row.total.toFixed(2)]),
     );
   const recalculate = () => {
     void queryClient.invalidateQueries();
@@ -81,12 +57,7 @@ export function DebtSummaryMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          aria-label="Más acciones del resumen"
-        >
+        <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Más acciones del resumen">
           <MoreHorizontal aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
@@ -126,9 +97,7 @@ export function DebtSummaryMenu({
           <span className="flex flex-col">
             Cobrar a todos por Mensajes
             <span className="text-xs text-muted-foreground">
-              {withBalance.length
-                ? `Un aviso por persona con saldo (${withBalance.length}), listo para reenviar`
-                : "Nadie tiene saldo este mes"}
+              {withBalance.length ? `Un aviso por persona con saldo (${withBalance.length}), listo para reenviar` : "Nadie tiene saldo este mes"}
             </span>
           </span>
         </DropdownMenuItem>
@@ -140,9 +109,7 @@ export function DebtSummaryMenu({
           <RefreshCw />
           <span className="flex flex-col">
             Recalcular borradores
-            <span className="text-xs text-muted-foreground">
-              Vuelve a leer los movimientos del mes
-            </span>
+            <span className="text-xs text-muted-foreground">Vuelve a leer los movimientos del mes</span>
           </span>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => void copyLink()}>

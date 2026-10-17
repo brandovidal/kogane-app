@@ -19,11 +19,7 @@ export interface PaymentStatusMenuProps {
   onChange: (status: string) => void;
 }
 
-export function PaymentStatusMenu({
-  value,
-  options,
-  onChange,
-}: PaymentStatusMenuProps) {
+export function PaymentStatusMenu({ value, options, onChange }: PaymentStatusMenuProps) {
   const groups = groupPaymentStatuses(options);
 
   return (
@@ -39,10 +35,7 @@ export function PaymentStatusMenu({
             <Fragment key={group.label}>
               {index > 0 && <DropdownMenuSeparator />}
               <DropdownMenuGroup aria-label={group.label}>
-                <DropdownMenuLabel
-                  inset
-                  className="text-xs text-muted-foreground"
-                >
+                <DropdownMenuLabel inset className="text-xs text-muted-foreground">
                   {group.label}
                 </DropdownMenuLabel>
                 {group.options.map((status) => (

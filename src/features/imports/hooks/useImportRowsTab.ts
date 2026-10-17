@@ -2,10 +2,7 @@ import { useState } from "react";
 import { useImportRows } from "@/features/imports/hooks/imports";
 import type { ImportRowStatus, ImportTab } from "@/shared/api/types";
 import { pageCount } from "@/features/imports/lib/import-view";
-import {
-  IMPORT_ISSUE_STATUSES,
-  IMPORT_ROW_STATUSES,
-} from "../constants/import-options";
+import { IMPORT_ISSUE_STATUSES, IMPORT_ROW_STATUSES } from "../constants/import-options";
 
 export function useImportRowsTab(batchId: string, tab: ImportTab) {
   const [page, setPage] = useState(1);

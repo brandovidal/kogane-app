@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  ArrowDownUp,
-  ChevronDown,
-  Columns3,
-  Layers,
-  ListFilter,
-  SlidersHorizontal,
-} from "lucide-react";
+import { ArrowDownUp, ChevronDown, Columns3, Layers, ListFilter, SlidersHorizontal } from "lucide-react";
 import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
@@ -27,11 +20,7 @@ import {
 import type { MonthlyPeriod } from "@/shared/types/period";
 import type { ViewMode } from "@/shared/types/data-view";
 import { Button } from "@/ui/button";
-import {
-  DAILY_PANEL_FILTER_KEYS,
-  DAILY_SORT_OPTIONS,
-  type DailySort,
-} from "../../constants/daily";
+import { DAILY_PANEL_FILTER_KEYS, DAILY_SORT_OPTIONS, type DailySort } from "../../constants/daily";
 import { DailyFilterSheet } from "./DailyFilterSheet";
 import { DailyViewSettings } from "./DailyViewSettings";
 
@@ -78,45 +67,27 @@ export function DailyToolbar({
   const [filterOpen, setFilterOpen] = useState(false);
   const [showApplied, setShowApplied] = useState(false);
   const visibleColumns = columns.filter((column) => column.visible).length;
-  const filterCount = countActiveExpenseFilters(
-    filters,
-    DAILY_PANEL_FILTER_KEYS,
-  );
+  const filterCount = countActiveExpenseFilters(filters, DAILY_PANEL_FILTER_KEYS);
   const activeGroupBy = groupOptions ? groupBy : "none";
   const sortIsCustom = sort !== "date-desc";
-  const appliedCount =
-    filterCount + (sortIsCustom ? 1 : 0) + (activeGroupBy === "none" ? 0 : 1);
+  const appliedCount = filterCount + (sortIsCustom ? 1 : 0) + (activeGroupBy === "none" ? 0 : 1);
   const hasHiddenColumns = columns.some((column) => !column.visible);
   const hasCustomSettings =
-    filterCount > 0 ||
-    !!filters.q?.trim() ||
-    activeGroupBy !== "none" ||
-    view !== "table" ||
-    sortIsCustom ||
-    hasHiddenColumns;
+    filterCount > 0 || !!filters.q?.trim() || activeGroupBy !== "none" || view !== "table" || sortIsCustom || hasHiddenColumns;
   const clearFilters = () => onFiltersChange({ q: filters.q });
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div
-          role="toolbar"
-          aria-label="Herramientas de la tabla"
-          className="flex min-w-0 flex-wrap items-center gap-1"
-        >
+        <div role="toolbar" aria-label="Herramientas de la tabla" className="flex min-w-0 flex-wrap items-center gap-1">
           <SearchField
             className="w-full sm:w-56"
             placeholder="Buscar"
             shortcut="/"
             value={filters.q ?? ""}
-            onChange={(next) =>
-              onFiltersChange({ ...filters, q: next || undefined })
-            }
+            onChange={(next) => onFiltersChange({ ...filters, q: next || undefined })}
           />
-          <span
-            aria-hidden="true"
-            className="mx-1 hidden h-5 w-px bg-border sm:block"
-          />
+          <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-border sm:block" />
           <CountedToolbarButton
             label="Filtros"
             icon={<ListFilter className="size-4" />}
@@ -127,12 +98,8 @@ export function DailyToolbar({
           />
           <SortMenu
             value={sort === "date-desc" ? undefined : sort}
-            onChange={(next) =>
-              onSortChange((next ?? "date-desc") as DailySort)
-            }
-            options={DAILY_SORT_OPTIONS.filter(
-              (option) => option.value !== "date-desc",
-            )}
+            onChange={(next) => onSortChange((next ?? "date-desc") as DailySort)}
+            options={DAILY_SORT_OPTIONS.filter((option) => option.value !== "date-desc")}
             originalLabel="Fecha · más reciente"
             align="start"
             trigger={
@@ -171,11 +138,7 @@ export function DailyToolbar({
               }
             />
           )}
-          <AppliedViewToggle
-            count={appliedCount}
-            open={showApplied}
-            onOpenChange={setShowApplied}
-          />
+          <AppliedViewToggle count={appliedCount} open={showApplied} onOpenChange={setShowApplied} />
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
@@ -236,28 +199,16 @@ export function DailyToolbar({
       </div>
 
       {showApplied && appliedCount > 0 && (
-        <AppliedViewSummary
-          onAddFilter={() => setFilterOpen(true)}
-          onReset={onReset}
-          resetDisabled={!hasCustomSettings}
-        >
+        <AppliedViewSummary onAddFilter={() => setFilterOpen(true)} onReset={onReset} resetDisabled={!hasCustomSettings}>
           {sortIsCustom && (
             <AppliedSortChip
-              label={
-                DAILY_SORT_OPTIONS.find(
-                  (option) => option.value === sort,
-                )?.label.split(" · ")[0] ?? "Orden"
-              }
+              label={DAILY_SORT_OPTIONS.find((option) => option.value === sort)?.label.split(" · ")[0] ?? "Orden"}
               descending={sort.endsWith("desc")}
               onRemove={() => onSortChange("date-desc")}
             />
           )}
           {activeGroupBy !== "none" && groupOptions && (
-            <AppliedGroupChips
-              value={[activeGroupBy]}
-              options={groupOptions}
-              onChange={(next) => onGroupByChange(next[0] ?? "none")}
-            />
+            <AppliedGroupChips value={[activeGroupBy]} options={groupOptions} onChange={(next) => onGroupByChange(next[0] ?? "none")} />
           )}
           {filterCount > 0 && (
             <AppliedFilterSection label="Filtros">

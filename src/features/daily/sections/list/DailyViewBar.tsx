@@ -1,10 +1,4 @@
-import {
-  CalendarDays,
-  ChevronDown,
-  ListOrdered,
-  Plus,
-  Table2,
-} from "lucide-react";
+import { CalendarDays, ChevronDown, ListOrdered, Plus, Table2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { DailyLayout } from "../../types/daily-types";
@@ -12,12 +6,7 @@ import { DAILY_LAYOUTS } from "../../constants/daily";
 import type { ExportMenuItem } from "@/shared/components/toolbar/ExportMenu";
 import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
 import { cn } from "@/shared/utils/cn";
@@ -41,11 +30,7 @@ export function DailyViewBar({
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div
-        role="tablist"
-        aria-label="Vistas de Día a día"
-        className="flex min-w-0 items-center gap-1 overflow-x-auto"
-      >
+      <div role="tablist" aria-label="Vistas de Día a día" className="flex min-w-0 items-center gap-1 overflow-x-auto">
         {DAILY_LAYOUTS.map(({ value, label }) => {
           const Icon = layoutIcons[value];
           return (
@@ -57,8 +42,7 @@ export function DailyViewBar({
               onClick={() => onLayoutChange(value)}
               className={cn(
                 "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                layout === value &&
-                  "bg-accent text-foreground ring-1 ring-border/70",
+                layout === value && "bg-accent text-foreground ring-1 ring-border/70",
               )}
             >
               <Icon className="size-4" />
@@ -73,11 +57,7 @@ export function DailyViewBar({
           title="Más vistas: próximamente"
           aria-label="Más vistas, próximamente"
           className="shrink-0 rounded-sm border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
-          onClick={() =>
-            toast.info(
-              "La creación de vistas personalizadas estará disponible próximamente.",
-            )
-          }
+          onClick={() => toast.info("La creación de vistas personalizadas estará disponible próximamente.")}
         >
           <Plus className="size-4" />
         </Button>
@@ -96,30 +76,13 @@ export function DailyViewBar({
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                size="icon"
-                className="h-9 w-9 rounded-l-none rounded-r-sm border-l"
-                aria-label="Elegir tipo de gasto"
-              >
+              <Button type="button" size="icon" className="h-9 w-9 rounded-l-none rounded-r-sm border-l" aria-label="Elegir tipo de gasto">
                 <ChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-48">
-              {(
-                [
-                  "daily",
-                  "credit_card",
-                  "fixed_cost",
-                  "subscription",
-                  "receivable",
-                  "payable",
-                ] as const
-              ).map((destination) => (
-                <DropdownMenuItem
-                  key={destination}
-                  onSelect={() => openNewExpense({ destination })}
-                >
+              {(["daily", "credit_card", "fixed_cost", "subscription", "receivable", "payable"] as const).map((destination) => (
+                <DropdownMenuItem key={destination} onSelect={() => openNewExpense({ destination })}>
                   {DESTINATION_LABELS[destination]}
                 </DropdownMenuItem>
               ))}

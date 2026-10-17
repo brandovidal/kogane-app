@@ -22,17 +22,10 @@ export const newMessageId = () => crypto.randomUUID();
 
 // Bot replies after a message or a pressed button. "edit" replaces the message whose button was pressed (as Telegram
 // does); the rest are new messages.
-export function applyReplies(
-  messages: ChatMessage[],
-  replies: BotReply[],
-  pressedId?: string,
-): ChatMessage[] {
+export function applyReplies(messages: ChatMessage[], replies: BotReply[], pressedId?: string): ChatMessage[] {
   let next = [...messages];
   for (const reply of replies) {
-    const index =
-      reply.edit && pressedId
-        ? next.findIndex((message) => message.id === pressedId)
-        : -1;
+    const index = reply.edit && pressedId ? next.findIndex((message) => message.id === pressedId) : -1;
     if (index >= 0) {
       next[index] = {
         ...next[index],
@@ -78,11 +71,7 @@ export function saveHistory(messages: ChatMessage[]) {
         .slice(-PREVIEW_LIMIT)
         .map((message) => message.id),
     );
-    const stored = recent.map((message) =>
-      message.previewUrl && !keep.has(message.id)
-        ? { ...message, previewUrl: undefined }
-        : message,
-    );
+    const stored = recent.map((message) => (message.previewUrl && !keep.has(message.id) ? { ...message, previewUrl: undefined } : message));
     localStorage.setItem(HISTORY_KEY, JSON.stringify(stored));
   } catch {
     // private window or full storage: the chat works, it just does not remember

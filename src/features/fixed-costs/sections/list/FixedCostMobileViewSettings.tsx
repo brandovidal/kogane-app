@@ -25,24 +25,11 @@ import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filt
 import type { FixedCost } from "@/shared/api/types";
 import { SearchField } from "@/shared/components/filters/SearchField";
 import { Button } from "@/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
 import { FixedCostPeriodSelector } from "../../components/header/FixedCostPeriodSelector";
 import { FIXED_COST_STATUSES } from "../../constants/statuses";
-import {
-  FIXED_COST_PANEL_FILTER_KEYS,
-  FIXED_COST_GROUP_LABELS,
-  FIXED_COST_GROUP_OPTIONS,
-} from "../../lib/fixed-cost-filters";
-import {
-  FIXED_COST_SORTS,
-  findFixedCostSort,
-} from "../../lib/fixed-cost-views";
+import { FIXED_COST_PANEL_FILTER_KEYS, FIXED_COST_GROUP_LABELS, FIXED_COST_GROUP_OPTIONS } from "../../lib/fixed-cost-filters";
+import { FIXED_COST_SORTS, findFixedCostSort } from "../../lib/fixed-cost-views";
 import type { FixedCostGroupBy } from "../../types/fixed-cost-types";
 
 interface FixedCostMobileViewSettingsProps {
@@ -96,15 +83,12 @@ export function FixedCostMobileViewSettings({
   clearFilters,
   hasViewSettings,
 }: FixedCostMobileViewSettingsProps) {
-  const [settingsSection, setSettingsSection] = useState<
-    "overview" | "columns" | "filters" | "group" | "sort"
-  >("overview");
+  const [settingsSection, setSettingsSection] = useState<"overview" | "columns" | "filters" | "group" | "sort">("overview");
   const [columnSearch, setColumnSearch] = useState("");
   useEffect(() => {
     if (open) setSettingsSection("overview");
   }, [open]);
-  const hideable =
-    table?.getAllLeafColumns().filter((column) => column.getCanHide()) ?? [];
+  const hideable = table?.getAllLeafColumns().filter((column) => column.getCanHide()) ?? [];
   const visible = hideable.filter((column) => column.getIsVisible()).length;
   const sortOption = findFixedCostSort(sort);
   const settingsSectionTitle = {
@@ -114,13 +98,7 @@ export function FixedCostMobileViewSettings({
     group: "Agrupar",
     sort: "Orden",
   }[settingsSection];
-  const settingsRow = (
-    icon: typeof SlidersHorizontal,
-    label: string,
-    detail: string,
-    onClick: () => void,
-    disabled = false,
-  ) => {
+  const settingsRow = (icon: typeof SlidersHorizontal, label: string, detail: string, onClick: () => void, disabled = false) => {
     const Icon = icon;
     return (
       <button
@@ -132,9 +110,7 @@ export function FixedCostMobileViewSettings({
       >
         <Icon className="size-4 shrink-0 text-muted-foreground" />
         <span className="min-w-0 flex-1 truncate">{label}</span>
-        <span className="max-w-36 truncate text-xs text-muted-foreground">
-          {detail}
-        </span>
+        <span className="max-w-36 truncate text-xs text-muted-foreground">{detail}</span>
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
       </button>
     );
@@ -148,10 +124,7 @@ export function FixedCostMobileViewSettings({
         if (open) setSettingsSection("overview");
       }}
     >
-      <SheetContent
-        side="right"
-        className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0"
-      >
+      <SheetContent side="right" className="flex w-[min(26rem,calc(100vw-1rem))] flex-col gap-0 overflow-hidden p-0">
         <SheetHeader className="border-b p-5 pr-12">
           <div className="flex items-center gap-2">
             {settingsSection !== "overview" && (
@@ -167,9 +140,7 @@ export function FixedCostMobileViewSettings({
             )}
             <SheetTitle>{settingsSectionTitle}</SheetTitle>
           </div>
-          <SheetDescription>
-            Configura cómo se muestran los costos fijos en esta vista.
-          </SheetDescription>
+          <SheetDescription>Configura cómo se muestran los costos fijos en esta vista.</SheetDescription>
         </SheetHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
@@ -205,50 +176,18 @@ export function FixedCostMobileViewSettings({
                 <h3 className="eyebrow px-2 pb-1">Ajustes</h3>
                 {table &&
                   hideable.length > 0 &&
-                  settingsRow(
-                    Eye,
-                    "Columnas visibles",
-                    `${visible} de ${hideable.length}`,
-                    () => setSettingsSection("columns"),
-                  )}
-                {settingsRow(
-                  ListFilter,
-                  "Filtros",
-                  filterCount ? `${filterCount} activos` : "Ninguno",
-                  () => setSettingsSection("filters"),
-                )}
-                {canSort &&
-                  settingsRow(
-                    ArrowDownUp,
-                    "Orden",
-                    sortOption ? sortOption.label : "Predeterminado",
-                    () => setSettingsSection("sort"),
-                  )}
+                  settingsRow(Eye, "Columnas visibles", `${visible} de ${hideable.length}`, () => setSettingsSection("columns"))}
+                {settingsRow(ListFilter, "Filtros", filterCount ? `${filterCount} activos` : "Ninguno", () => setSettingsSection("filters"))}
+                {canSort && settingsRow(ArrowDownUp, "Orden", sortOption ? sortOption.label : "Predeterminado", () => setSettingsSection("sort"))}
                 {canGroup &&
                   settingsRow(
                     Layers,
                     "Agrupar",
-                    groupBy.length
-                      ? groupBy
-                          .map((field) => FIXED_COST_GROUP_LABELS[field])
-                          .join(" › ")
-                      : "Sin agrupar",
+                    groupBy.length ? groupBy.map((field) => FIXED_COST_GROUP_LABELS[field]).join(" › ") : "Sin agrupar",
                     () => setSettingsSection("group"),
                   )}
-                {settingsRow(
-                  SlidersHorizontal,
-                  "Color condicional",
-                  "Próximamente",
-                  () => {},
-                  true,
-                )}
-                {settingsRow(
-                  Columns3,
-                  "Totales del pie",
-                  "Próximamente",
-                  () => {},
-                  true,
-                )}
+                {settingsRow(SlidersHorizontal, "Color condicional", "Próximamente", () => {}, true)}
+                {settingsRow(Columns3, "Totales del pie", "Próximamente", () => {}, true)}
               </section>
 
               <div className="space-y-1 border-t pt-3">
@@ -272,11 +211,7 @@ export function FixedCostMobileViewSettings({
                   variant="ghost"
                   size="sm"
                   className="w-full justify-start gap-2"
-                  onClick={() =>
-                    toast.info(
-                      "Guardar vistas personalizadas estará disponible próximamente.",
-                    )
-                  }
+                  onClick={() => toast.info("Guardar vistas personalizadas estará disponible próximamente.")}
                 >
                   <Plus className="size-4" />
                   Guardar como nueva vista
@@ -301,18 +236,10 @@ export function FixedCostMobileViewSettings({
 
           {settingsSection === "columns" && table && (
             <>
-              <SearchField
-                placeholder="Buscar columna..."
-                value={columnSearch}
-                onChange={setColumnSearch}
-              />
+              <SearchField placeholder="Buscar columna..." value={columnSearch} onChange={setColumnSearch} />
               <h3 className="eyebrow">Columnas visibles</h3>
               {hideable
-                .filter((column) =>
-                  (column.columnDef.meta?.label ?? column.id)
-                    .toLowerCase()
-                    .includes(columnSearch.trim().toLowerCase()),
-                )
+                .filter((column) => (column.columnDef.meta?.label ?? column.id).toLowerCase().includes(columnSearch.trim().toLowerCase()))
                 .map((column) => (
                   <label
                     key={column.id}
@@ -322,33 +249,17 @@ export function FixedCostMobileViewSettings({
                     <input
                       type="checkbox"
                       checked={column.getIsVisible()}
-                      onChange={(event) =>
-                        column.toggleVisibility(event.target.checked)
-                      }
+                      onChange={(event) => column.toggleVisibility(event.target.checked)}
                       aria-label={`Mostrar columna ${column.columnDef.meta?.label ?? column.id}`}
                       className="size-4 accent-brand"
                     />
                   </label>
                 ))}
               <div className="flex justify-between border-t pt-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    hideable.forEach((column) => column.toggleVisibility(true))
-                  }
-                >
+                <Button type="button" variant="ghost" size="sm" onClick={() => hideable.forEach((column) => column.toggleVisibility(true))}>
                   Mostrar todas
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    hideable.forEach((column) => column.toggleVisibility(false))
-                  }
-                >
+                <Button type="button" variant="ghost" size="sm" onClick={() => hideable.forEach((column) => column.toggleVisibility(false))}>
                   Ocultar todas
                 </Button>
               </div>
@@ -393,21 +304,11 @@ export function FixedCostMobileViewSettings({
                 />
               </section>
               <div className="flex justify-between border-t pt-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={filterCount === 0}
-                  onClick={clearFilters}
-                >
+                <Button type="button" variant="ghost" size="sm" disabled={filterCount === 0} onClick={clearFilters}>
                   <Trash2 className="size-4" />
                   Limpiar filtros
                 </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => onOpenChange(false)}
-                >
+                <Button type="button" size="sm" onClick={() => onOpenChange(false)}>
                   Ver {shown} {shown === 1 ? "resultado" : "resultados"}
                 </Button>
               </div>
@@ -417,12 +318,7 @@ export function FixedCostMobileViewSettings({
           {settingsSection === "group" && (
             <>
               <label className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-md px-2 text-sm hover:bg-accent">
-                <input
-                  type="checkbox"
-                  checked={!groupBy.length}
-                  onChange={() => onGroupByChange([])}
-                  className="size-4 accent-brand"
-                />
+                <input type="checkbox" checked={!groupBy.length} onChange={() => onGroupByChange([])} className="size-4 accent-brand" />
                 Sin agrupar
               </label>
               {FIXED_COST_GROUP_OPTIONS.map((option) => {
@@ -435,13 +331,7 @@ export function FixedCostMobileViewSettings({
                     <input
                       type="checkbox"
                       checked={groupBy.includes(field)}
-                      onChange={(event) =>
-                        onGroupByChange(
-                          event.target.checked
-                            ? [...groupBy, field]
-                            : groupBy.filter((item) => item !== field),
-                        )
-                      }
+                      onChange={(event) => onGroupByChange(event.target.checked ? [...groupBy, field] : groupBy.filter((item) => item !== field))}
                       className="size-4 accent-brand"
                     />
                     {option.label}
@@ -474,9 +364,7 @@ export function FixedCostMobileViewSettings({
                   )}
                 >
                   {option.label}
-                  {sort === option.value && (
-                    <Check aria-hidden="true" className="size-4 text-brand" />
-                  )}
+                  {sort === option.value && <Check aria-hidden="true" className="size-4 text-brand" />}
                 </button>
               ))}
             </div>

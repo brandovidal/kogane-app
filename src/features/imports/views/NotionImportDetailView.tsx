@@ -4,18 +4,13 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import {
-  BATCH_STATUS,
-  TAB_LABELS,
-  TAB_ORDER,
-} from "@/features/imports/constants/import-options";
+import { BATCH_STATUS, TAB_LABELS, TAB_ORDER } from "@/features/imports/constants/import-options";
 import { useNotionImportDetail } from "../hooks/useNotionImportDetail";
 import { ImportSummaryTab } from "../sections/ImportSummaryTab";
 import { ImportRowsTab } from "../sections/ImportRowsTab";
 
 export function NotionImportDetailView({ id }: ImportDetailViewProps) {
-  const { batch, apply, discard, preview, confirmApply, confirmDiscard } =
-    useNotionImportDetail(id);
+  const { batch, apply, discard, preview, confirmApply, confirmDiscard } = useNotionImportDetail(id);
   if (!batch) return null;
 
   return (
@@ -24,27 +19,14 @@ export function NotionImportDetailView({ id }: ImportDetailViewProps) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-base">
             Notion · {formatDate(batch.createdAt)}
-            <Badge variant={preview ? "default" : "secondary"}>
-              {BATCH_STATUS[batch.status]}
-            </Badge>
+            <Badge variant={preview ? "default" : "secondary"}>{BATCH_STATUS[batch.status]}</Badge>
           </CardTitle>
           {preview && (
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={confirmDiscard}
-                disabled={discard.isPending}
-              >
+              <Button variant="outline" size="sm" onClick={confirmDiscard} disabled={discard.isPending}>
                 Descartar
               </Button>
-              <Button
-                size="sm"
-                onClick={confirmApply}
-                disabled={
-                  apply.isPending || batch.created + batch.updated === 0
-                }
-              >
+              <Button size="sm" onClick={confirmApply} disabled={apply.isPending || batch.created + batch.updated === 0}>
                 {apply.isPending ? "Importando…" : "Importar"}
               </Button>
             </div>

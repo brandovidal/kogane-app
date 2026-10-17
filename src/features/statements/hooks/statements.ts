@@ -21,13 +21,7 @@ const statementKeys = {
 };
 
 // A statement changes card expenses, the calendar and the month summary
-const invalidate = [
-  statementKeys.all,
-  ["expenses"],
-  ["debts"],
-  ["calendar"],
-  ["summary"],
-];
+const invalidate = [statementKeys.all, ["expenses"], ["debts"], ["calendar"], ["summary"]];
 
 export const useStatements = () =>
   useQuery({
@@ -49,22 +43,14 @@ export function useUploadStatement() {
   return useMutation({
     mutationFn: uploadStatement,
     onSuccess: async () => {
-      await Promise.all(
-        invalidate.map((queryKey) =>
-          queryClient.invalidateQueries({ queryKey }),
-        ),
-      );
+      await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
       toast.success("Estado de cuenta leído");
     },
   });
 }
 
 export const useCreateStatementRows = () =>
-  useApiMutation(
-    ({ id, rowIds }: { id: string; rowIds?: string[] }) =>
-      createStatementRows(id, rowIds),
-    { invalidate, success: "Gastos creados" },
-  );
+  useApiMutation(({ id, rowIds }: { id: string; rowIds?: string[] }) => createStatementRows(id, rowIds), { invalidate, success: "Gastos creados" });
 
 // Ignore a row, bring it back, or give it your description (null goes back to the bank text)
 export const useUpdateStatementRow = () =>
@@ -86,46 +72,29 @@ export const useUpdateStatementRow = () =>
 // Selección múltiple (D116): several purchases to a person (the additional card or who pays it); null = the statement's
 export const useAssignStatementRows = () =>
   useApiMutation(
-    ({
-      id,
-      rowIds,
-      personId,
-    }: {
-      id: string;
-      rowIds: string[];
-      personId: string | null;
-    }) => assignStatementRows(id, { rowIds, personId }),
+    ({ id, rowIds, personId }: { id: string; rowIds: string[]; personId: string | null }) => assignStatementRows(id, { rowIds, personId }),
     { invalidate, success: "Persona asignada" },
   );
 
 // Whose statement it is, when the PDF did not say or said someone else
 export const useAssignStatementPerson = () =>
-  useApiMutation(
-    ({ id, personId }: { id: string; personId: string }) =>
-      updateStatement(id, { personId }),
-    { invalidate, success: "Persona asignada" },
-  );
+  useApiMutation(({ id, personId }: { id: string; personId: string }) => updateStatement(id, { personId }), {
+    invalidate,
+    success: "Persona asignada",
+  });
 
 // Corrects the card (Oh Pay / IO / CMR…) when it was not identified right, without re-uploading the PDF: re-reconciles
 // the rows not yet turned into an expense against the new card
 export const useAssignStatementCard = () =>
-  useApiMutation(
-    ({ id, paymentMethodId }: { id: string; paymentMethodId: string }) =>
-      updateStatement(id, { paymentMethodId }),
-    { invalidate, success: "Tarjeta corregida" },
-  );
+  useApiMutation(({ id, paymentMethodId }: { id: string; paymentMethodId: string }) => updateStatement(id, { paymentMethodId }), {
+    invalidate,
+    success: "Tarjeta corregida",
+  });
 
 export const useUpdateStatementMinimum = () =>
   useApiMutation(
-    ({
-      id,
-      ...body
-    }: {
-      id: string;
-      currency?: "PEN" | "USD";
-      minimumDue?: number | null;
-      minimumAllocations?: Record<string, number> | null;
-    }) => updateStatement(id, body),
+    ({ id, ...body }: { id: string; currency?: "PEN" | "USD"; minimumDue?: number | null; minimumAllocations?: Record<string, number> | null }) =>
+      updateStatement(id, body),
     {
       invalidate: [statementKeys.all, ["debts"]],
       success: "Pago mínimo actualizado",
@@ -142,16 +111,10 @@ export interface UpdateStatementBalanceInput {
 }
 
 export const useUpdateStatementBalances = () =>
-  useApiMutation(
-    ({
-      id,
-      balances,
-    }: {
-      id: string;
-      balances: UpdateStatementBalanceInput[];
-    }) => updateStatement(id, { balances }),
-    { invalidate, success: "Saldos actualizados" },
-  );
+  useApiMutation(({ id, balances }: { id: string; balances: UpdateStatementBalanceInput[] }) => updateStatement(id, { balances }), {
+    invalidate,
+    success: "Saldos actualizados",
+  });
 
 export const useDeleteStatement = () =>
   useApiMutation((id: string) => deleteStatement(id), {

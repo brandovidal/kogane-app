@@ -1,13 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
-import {
-  createIncome,
-  deleteIncome,
-  getIncomes,
-  updateIncome,
-  type IncomeBodyDto,
-} from "../services/income.service";
+import { createIncome, deleteIncome, getIncomes, updateIncome, type IncomeBodyDto } from "../services/income.service";
 import type { Schemas } from "@/shared/api/client";
 
 // Presupuesto (P19, D78): extra incomes of the month; they add to the salary in the surplus (D65)
@@ -28,11 +22,10 @@ export const useIncomes = (month: number, year: number) =>
 const afterIncome = [["incomes"], ["summary"]];
 
 export const useSaveIncome = () =>
-  useApiMutation(
-    ({ id, body }: { id?: string; body: IncomeBody }) =>
-      id ? updateIncome(id, body) : createIncome(body),
-    { invalidate: afterIncome, success: "Ingreso guardado" },
-  );
+  useApiMutation(({ id, body }: { id?: string; body: IncomeBody }) => (id ? updateIncome(id, body) : createIncome(body)), {
+    invalidate: afterIncome,
+    success: "Ingreso guardado",
+  });
 
 export const useDeleteIncome = () =>
   useApiMutation((id: string) => deleteIncome(id), {

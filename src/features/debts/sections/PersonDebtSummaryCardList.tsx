@@ -7,11 +7,7 @@ import { formatDate, formatDayMonth, getMonthName } from "@/shared/lib/dates";
 import { Card, CardContent } from "@/ui/card";
 import type { Direction } from "@/features/debts/lib/debt-filters";
 import { CollectButton } from "./CollectButton";
-import {
-  EMPTY_PERSON_SUMMARY,
-  PersonSummaryControls,
-  type PersonSummaryData,
-} from "./PersonSummaryControls";
+import { EMPTY_PERSON_SUMMARY, PersonSummaryControls, type PersonSummaryData } from "./PersonSummaryControls";
 import { DebtReportLinks as ReportLinks } from "./DebtListControls";
 import { Button } from "@/ui/button";
 
@@ -94,41 +90,18 @@ export function PersonDebtSummaryCardList({
   return (
     <>
       {groups.map((group) => {
-        const owed = group.debts.filter(
-          (debt) => debt.direction === "owed_to_me",
-        );
+        const owed = group.debts.filter((debt) => debt.direction === "owed_to_me");
         const owe = group.debts.filter((debt) => debt.direction === "i_owe");
         const totalOwed = owed.reduce((sum, debt) => sum + debt.balance, 0);
-        const statementAdjustmentsForPerson = statementChargeAdjustments.filter(
-          (item) => item.personId === group.personId,
-        );
-        const statementAdjustmentForPerson =
-          statementAdjustmentsForPerson.reduce(
-            (sum, item) => sum + item.amount,
-            0,
-          );
+        const statementAdjustmentsForPerson = statementChargeAdjustments.filter((item) => item.personId === group.personId);
+        const statementAdjustmentForPerson = statementAdjustmentsForPerson.reduce((sum, item) => sum + item.amount, 0);
         const totalOwe = owe.reduce((sum, debt) => sum + debt.balance, 0);
-        const personalExpensesForPerson = personalExpenses.filter(
-          (item) => item.personId === group.personId,
-        );
-        const personalExpenseForPerson = personalExpensesForPerson.reduce(
-          (sum, item) => sum + item.amount,
-          0,
-        );
+        const personalExpensesForPerson = personalExpenses.filter((item) => item.personId === group.personId);
+        const personalExpenseForPerson = personalExpensesForPerson.reduce((sum, item) => sum + item.amount, 0);
         const personSummary = summaries.get(group.personId);
         const adjustmentTotal = personSummary?.adjustmentTotal ?? 0;
-        const balanceForPerson =
-          adjustmentTotal +
-          totalOwed +
-          statementAdjustmentForPerson -
-          totalOwe -
-          personalExpenseForPerson;
-        const balanceLabel =
-          balanceForPerson > 0
-            ? "Por cobrar"
-            : balanceForPerson < 0
-              ? "Por pagar"
-              : "Saldo";
+        const balanceForPerson = adjustmentTotal + totalOwed + statementAdjustmentForPerson - totalOwe - personalExpenseForPerson;
+        const balanceLabel = balanceForPerson > 0 ? "Por cobrar" : balanceForPerson < 0 ? "Por pagar" : "Saldo";
         const sourceGroups = new Map<
           string,
           {
@@ -152,9 +125,7 @@ export function PersonDebtSummaryCardList({
             );
           const isLoan = /pr[eé]stamo/i.test(description);
           const isIsilIoInstallment = /\bisil\b/i.test(description);
-          const cardName = debt.paymentMethodId
-            ? cardNames.get(debt.paymentMethodId)
-            : undefined;
+          const cardName = debt.paymentMethodId ? cardNames.get(debt.paymentMethodId) : undefined;
           const sourceName = cardName
             ? /cmr|falabella/i.test(cardName)
               ? "CMR (Falabella)"
@@ -166,8 +137,7 @@ export function PersonDebtSummaryCardList({
                 : isLoan
                   ? "Préstamo"
                   : description;
-          const collapsible =
-            Boolean(cardName) || isIsilIoInstallment || isPlatform || isLoan;
+          const collapsible = Boolean(cardName) || isIsilIoInstallment || isPlatform || isLoan;
           const key = collapsible ? sourceName : debt.id;
           const sourceGroup = sourceGroups.get(key) ?? {
             key,
@@ -188,9 +158,7 @@ export function PersonDebtSummaryCardList({
           sourceGroups.set(key, sourceGroup);
         }
         for (const adjustment of statementAdjustmentsForPerson) {
-          const sourceName = /cmr|falabella/i.test(adjustment.cardName)
-            ? "CMR (Falabella)"
-            : adjustment.cardName;
+          const sourceName = /cmr|falabella/i.test(adjustment.cardName) ? "CMR (Falabella)" : adjustment.cardName;
           const key = sourceName;
           const sourceGroup = sourceGroups.get(key) ?? {
             key,
@@ -231,28 +199,17 @@ export function PersonDebtSummaryCardList({
           sourceGroups.set(key, sourceGroup);
         }
         const summaryGroups = [...sourceGroups.values()];
-        const sourceSummaryLine = (
-          sourceGroup: (typeof summaryGroups)[number],
-          expandable = false,
-        ) => {
+        const sourceSummaryLine = (sourceGroup: (typeof summaryGroups)[number], expandable = false) => {
           const cardId =
-            sourceGroup.debts.find((debt) => debt.paymentMethodId)
-              ?.paymentMethodId ??
+            sourceGroup.debts.find((debt) => debt.paymentMethodId)?.paymentMethodId ??
             sourceGroup.adjustments[0]?.cardId ??
-            sourceGroup.personalExpenses.find(
-              (expense) => expense.paymentMethodId,
-            )?.paymentMethodId ??
-            [...cardNames].find(
-              ([, name]) =>
-                name.toLowerCase() === sourceGroup.name.toLowerCase(),
-            )?.[0];
+            sourceGroup.personalExpenses.find((expense) => expense.paymentMethodId)?.paymentMethodId ??
+            [...cardNames].find(([, name]) => name.toLowerCase() === sourceGroup.name.toLowerCase())?.[0];
           const dueDate = cardId ? cardDueDates.get(cardId) : undefined;
           return (
             <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t pt-2 text-sm">
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-medium">
-                {expandable && (
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
-                )}
+                {expandable && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />}
                 <span className="min-w-0 truncate">{sourceGroup.name}</span>
                 {dueDate && (
                   <span
@@ -261,34 +218,19 @@ export function PersonDebtSummaryCardList({
                     aria-label={`Fecha límite de pago: ${formatDate(dueDate)}`}
                   >
                     <CalendarClock aria-hidden="true" className="size-3" />
-                    <time dateTime={dueDate.slice(0, 10)}>
-                      {formatDayMonth(dueDate)}
-                    </time>
+                    <time dateTime={dueDate.slice(0, 10)}>{formatDayMonth(dueDate)}</time>
                   </span>
                 )}
               </span>
               <span className="text-right text-xs text-muted-foreground">
-                {sourceGroup.debts.length +
-                  sourceGroup.adjustments.length +
-                  (sourceGroup.personalExpenses?.length ?? 0)}{" "}
-                {sourceGroup.debts.length +
-                  sourceGroup.adjustments.length +
-                  (sourceGroup.personalExpenses?.length ?? 0) ===
-                1
+                {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0)}{" "}
+                {sourceGroup.debts.length + sourceGroup.adjustments.length + (sourceGroup.personalExpenses?.length ?? 0) === 1
                   ? "registro"
                   : "registros"}
               </span>
               <span className="flex flex-col items-end text-right text-xs tabular-nums">
-                {sourceGroup.owed > 0 && (
-                  <span className="text-amber-300">
-                    + {formatCurrency(sourceGroup.owed)}
-                  </span>
-                )}
-                {sourceGroup.owe > 0 && (
-                  <span className="text-muted-foreground">
-                    − {formatCurrency(sourceGroup.owe)}
-                  </span>
-                )}
+                {sourceGroup.owed > 0 && <span className="text-amber-300">+ {formatCurrency(sourceGroup.owed)}</span>}
+                {sourceGroup.owe > 0 && <span className="text-muted-foreground">− {formatCurrency(sourceGroup.owe)}</span>}
               </span>
             </div>
           );
@@ -302,21 +244,13 @@ export function PersonDebtSummaryCardList({
                   <p className="text-xs text-muted-foreground">
                     {showCollections && (
                       <span className="text-muted-foreground">
-                        Me debe{" "}
-                        <strong className="font-medium text-amber-300">
-                          {formatCurrency(
-                            totalOwed + statementAdjustmentForPerson,
-                          )}
-                        </strong>
+                        Me debe <strong className="font-medium text-amber-300">{formatCurrency(totalOwed + statementAdjustmentForPerson)}</strong>
                       </span>
                     )}
                     {showCollections && showDebts && " · "}
                     {showDebts && (
                       <span className="text-muted-foreground">
-                        Le debo{" "}
-                        <strong className="font-medium">
-                          {formatCurrency(totalOwe + personalExpenseForPerson)}
-                        </strong>
+                        Le debo <strong className="font-medium">{formatCurrency(totalOwe + personalExpenseForPerson)}</strong>
                       </span>
                     )}
                   </p>
@@ -334,18 +268,12 @@ export function PersonDebtSummaryCardList({
               </div>
               {(personSummary?.cutoffDate || personSummary?.collectBy) && (
                 <p className="text-xs text-muted-foreground">
-                  {personSummary.cutoffDate &&
-                    `Corte ${formatDayMonth(personSummary.cutoffDate)}`}
+                  {personSummary.cutoffDate && `Corte ${formatDayMonth(personSummary.cutoffDate)}`}
                   {personSummary.cutoffDate && personSummary.collectBy && " · "}
-                  {personSummary.collectBy &&
-                    `Cobrar hasta ${formatDayMonth(personSummary.collectBy)}`}
+                  {personSummary.collectBy && `Cobrar hasta ${formatDayMonth(personSummary.collectBy)}`}
                 </p>
               )}
-              {personSummary?.note && (
-                <p className="text-xs italic text-muted-foreground">
-                  {personSummary.note}
-                </p>
-              )}
+              {personSummary?.note && <p className="text-xs italic text-muted-foreground">{personSummary.note}</p>}
               <div className="space-y-2">
                 {summaryGroups.map((sourceGroup) =>
                   sourceGroup.collapsible ? (
@@ -355,56 +283,34 @@ export function PersonDebtSummaryCardList({
                       </summary>
                       <div className="mb-2 space-y-2 border-l pl-5">
                         {sourceGroup.debts.map((debt) => (
-                          <div
-                            key={debt.id}
-                            className="flex items-center justify-between gap-2 text-sm"
-                          >
+                          <div key={debt.id} className="flex items-center justify-between gap-2 text-sm">
                             <div className="min-w-0">
                               <div className="flex min-w-0 items-center gap-1">
                                 <p className="truncate">
                                   {debt.description}
-                                  {debt.installment
-                                    ? ` ${debt.installment}`
-                                    : ""}
+                                  {debt.installment ? ` ${debt.installment}` : ""}
                                 </p>
-                                <CopyFieldButton
-                                  value={`${debt.description}${debt.installment ? ` ${debt.installment}` : ""}`}
-                                  label="descripción"
-                                />
+                                <CopyFieldButton value={`${debt.description}${debt.installment ? ` ${debt.installment}` : ""}`} label="descripción" />
                               </div>
                               <p className="text-xs text-muted-foreground">
-                                {getMonthName(debt.paymentMonth)}{" "}
-                                {debt.paymentYear}
+                                {getMonthName(debt.paymentMonth)} {debt.paymentYear}
                               </p>
                             </div>
                             <span className="flex shrink-0 items-center gap-1 font-medium tabular-nums">
                               {formatCurrency(debt.balance)}
-                              <CopyFieldButton
-                                value={formatCurrency(debt.balance)}
-                                label="monto"
-                              />
+                              <CopyFieldButton value={formatCurrency(debt.balance)} label="monto" />
                             </span>
                           </div>
                         ))}
                         {sourceGroup.adjustments.map((adjustment) => (
-                          <div
-                            key={adjustment.key}
-                            className="flex items-center justify-between gap-2 text-sm"
-                          >
+                          <div key={adjustment.key} className="flex items-center justify-between gap-2 text-sm">
                             <div className="min-w-0">
                               <div className="flex min-w-0 items-center gap-1">
-                                <p className="truncate">
-                                  {adjustment.description}
-                                </p>
-                                <CopyFieldButton
-                                  value={adjustment.description}
-                                  label="descripción"
-                                />
+                                <p className="truncate">{adjustment.description}</p>
+                                <CopyFieldButton value={adjustment.description} label="descripción" />
                               </div>
                               <p className="text-xs text-muted-foreground">
-                                Comparado con estado de cuenta ·{" "}
-                                {getMonthName(adjustment.periodMonth)}{" "}
-                                {adjustment.periodYear}
+                                Comparado con estado de cuenta · {getMonthName(adjustment.periodMonth)} {adjustment.periodYear}
                               </p>
                             </div>
                             <span
@@ -420,64 +326,38 @@ export function PersonDebtSummaryCardList({
                           </div>
                         ))}
                         {sourceGroup.personalExpenses?.map((expense) => (
-                          <div
-                            key={expense.id}
-                            className="flex items-center justify-between gap-2 text-sm"
-                          >
+                          <div key={expense.id} className="flex items-center justify-between gap-2 text-sm">
                             <div className="flex min-w-0 items-center gap-1">
                               <p className="truncate">{expense.description}</p>
-                              <CopyFieldButton
-                                value={expense.description}
-                                label="descripción"
-                              />
+                              <CopyFieldButton value={expense.description} label="descripción" />
                             </div>
                             <span className="flex shrink-0 items-center gap-1 font-medium tabular-nums">
                               {formatCurrency(expense.amount)}
-                              <CopyFieldButton
-                                value={formatCurrency(expense.amount)}
-                                label="monto"
-                              />
+                              <CopyFieldButton value={formatCurrency(expense.amount)} label="monto" />
                             </span>
                           </div>
                         ))}
                       </div>
                     </details>
                   ) : (
-                    <div key={sourceGroup.key}>
-                      {sourceSummaryLine(sourceGroup)}
-                    </div>
+                    <div key={sourceGroup.key}>{sourceSummaryLine(sourceGroup)}</div>
                   ),
                 )}
                 {personSummary?.adjustments.map((item, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-2 border-t pt-2 text-sm"
-                  >
-                    <span className="truncate">
-                      Ajuste · {item.description}
-                    </span>
+                  <div key={index} className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-2 border-t pt-2 text-sm">
+                    <span className="truncate">Ajuste · {item.description}</span>
                     <span className="text-right text-xs tabular-nums">
-                      {item.amount < 0 ? "−" : "+"}{" "}
-                      {formatCurrency(Math.abs(item.amount))}
+                      {item.amount < 0 ? "−" : "+"} {formatCurrency(Math.abs(item.amount))}
                     </span>
                   </div>
                 ))}
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem_9rem] items-center gap-2 border-t-2 pt-2 text-sm font-semibold">
                   <span>{balanceLabel}</span>
                   <span className="text-right text-xs font-normal text-muted-foreground">
-                    {group.debts.length +
-                      statementAdjustmentsForPerson.length +
-                      personalExpensesForPerson.length}{" "}
-                    {group.debts.length +
-                      statementAdjustmentsForPerson.length +
-                      personalExpensesForPerson.length ===
-                    1
-                      ? "registro"
-                      : "registros"}
+                    {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length}{" "}
+                    {group.debts.length + statementAdjustmentsForPerson.length + personalExpensesForPerson.length === 1 ? "registro" : "registros"}
                   </span>
-                  <span className="text-right font-bold tabular-nums text-primary">
-                    {formatCurrency(Math.abs(balanceForPerson))}
-                  </span>
+                  <span className="text-right font-bold tabular-nums text-primary">{formatCurrency(Math.abs(balanceForPerson))}</span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">

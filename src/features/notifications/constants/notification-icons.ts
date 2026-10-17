@@ -1,15 +1,4 @@
-import {
-  AlertTriangle,
-  CalendarClock,
-  Check,
-  CreditCard,
-  HandCoins,
-  PieChart,
-  Repeat,
-  ScanSearch,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
+import { AlertTriangle, CalendarClock, Check, CreditCard, HandCoins, PieChart, Repeat, ScanSearch, Sparkles, type LucideIcon } from "lucide-react";
 
 import type { NotificationKind } from "@/shared/api/types";
 

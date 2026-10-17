@@ -50,35 +50,16 @@ export function ImportListDialog({
           </Button>
           <Button
             disabled={!file || !preview?.ready || isPending}
-            onClick={() =>
-              file &&
-              mutate(
-                { file, apply: true },
-                { onSuccess: () => onOpenChange(false) },
-              )
-            }
+            onClick={() => file && mutate({ file, apply: true }, { onSuccess: () => onOpenChange(false) })}
           >
-            {preview?.ready
-              ? `Importar ${preview.ready} ${preview.ready === 1 ? "fila" : "filas"}`
-              : "Importar"}
+            {preview?.ready ? `Importar ${preview.ready} ${preview.ready === 1 ? "fila" : "filas"}` : "Importar"}
           </Button>
         </>
       }
     >
       <div className="space-y-4 py-2">
-        <input
-          ref={input}
-          type="file"
-          accept=".csv,text/csv"
-          className="sr-only"
-          onChange={(event) => pick(event.target.files?.[0] ?? null)}
-        />
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full justify-start"
-          onClick={() => input.current?.click()}
-        >
+        <input ref={input} type="file" accept=".csv,text/csv" className="sr-only" onChange={(event) => pick(event.target.files?.[0] ?? null)} />
+        <Button type="button" variant="outline" className="w-full justify-start" onClick={() => input.current?.click()}>
           <Upload className="mr-2 size-4" />
           {file ? file.name : "Elegir archivo CSV"}
         </Button>
@@ -91,8 +72,7 @@ export function ImportListDialog({
               </span>
               {preview.withIssues > 0 && (
                 <span className="inline-flex items-center gap-1 text-amber-300">
-                  <AlertTriangle className="size-4" /> {preview.withIssues} con
-                  problemas
+                  <AlertTriangle className="size-4" /> {preview.withIssues} con problemas
                 </span>
               )}
               <span className="text-muted-foreground">de {preview.total}</span>
@@ -104,22 +84,15 @@ export function ImportListDialog({
                     <span className="font-medium">
                       Línea {row.line}
                       {row.description ? ` · ${row.description}` : ""}
-                      {row.amount != null
-                        ? ` · ${formatCurrency(row.amount)}`
-                        : ""}
+                      {row.amount != null ? ` · ${formatCurrency(row.amount)}` : ""}
                     </span>
-                    <span className="block text-muted-foreground">
-                      {row.issues.join(" · ")}
-                    </span>
+                    <span className="block text-muted-foreground">{row.issues.join(" · ")}</span>
                   </li>
                 ))}
               </ul>
             )}
             {preview.withIssues > 0 && preview.ready > 0 && (
-              <p className="text-xs text-muted-foreground">
-                Las filas con problemas no se crean: corrígelas en el archivo y
-                vuelve a subirlo.
-              </p>
+              <p className="text-xs text-muted-foreground">Las filas con problemas no se crean: corrígelas en el archivo y vuelve a subirlo.</p>
             )}
           </div>
         )}

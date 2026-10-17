@@ -8,18 +8,9 @@ export interface ViewToggleProps {
   showLabels?: boolean;
 }
 
-export function ViewToggle({
-  view: viewProp,
-  value,
-  onChange,
-  showLabels = false,
-}: ViewToggleProps) {
+export function ViewToggle({ view: viewProp, value, onChange, showLabels = false }: ViewToggleProps) {
   const view = value ?? viewProp ?? "table";
-  const option = (
-    mode: "table" | "cards",
-    label: string,
-    Icon: typeof Table2,
-  ) => (
+  const option = (mode: "table" | "cards", label: string, Icon: typeof Table2) => (
     <Button
       type="button"
       variant={view === mode ? "secondary" : "ghost"}

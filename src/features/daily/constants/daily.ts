@@ -14,9 +14,7 @@ export const DAILY_FILTERS: ExpenseFilterKey[] = [
 ];
 
 /** Filters shown in the panel and applied-filter summary (search is separate). */
-export const DAILY_PANEL_FILTER_KEYS = DAILY_FILTERS.filter(
-  (key) => key !== "q",
-);
+export const DAILY_PANEL_FILTER_KEYS = DAILY_FILTERS.filter((key) => key !== "q");
 
 export const DAILY_LAYOUTS = [
   { value: "list", label: "Lista" },

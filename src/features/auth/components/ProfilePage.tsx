@@ -2,27 +2,17 @@ import { useEffect, useState, type SubmitEvent } from "react";
 import { toast } from "sonner";
 
 import { googleLinkUrl } from "@/features/auth/services/google.service";
-import {
-  useAuthConfig,
-  useMe,
-  useUpdateProfile,
-} from "@/features/auth/hooks/auth";
+import { useAuthConfig, useMe, useUpdateProfile } from "@/features/auth/hooks/auth";
 import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { withQuery } from "@/shared/api/query";
 import { Button } from "@/ui/button";
 import { ProfileAccountCard } from "./profile/ProfileAccountCard";
 import { ProfileAppSettingsCard } from "./profile/ProfileAppSettingsCard";
-import {
-  ProfilePersonalDataCard,
-  type ProfileDraft,
-  validateProfileDraft,
-} from "./profile/ProfilePersonalDataCard";
+import { ProfilePersonalDataCard, type ProfileDraft, validateProfileDraft } from "./profile/ProfilePersonalDataCard";
 import { ProfilePasswordCard } from "./profile/ProfilePasswordCard";
 import { ProfileTelegramCard } from "./profile/ProfileTelegramCard";
 
-function makeDraft(
-  user: NonNullable<ReturnType<typeof useMe>["data"]>,
-): ProfileDraft {
+function makeDraft(user: NonNullable<ReturnType<typeof useMe>["data"]>): ProfileDraft {
   return {
     name: user.name,
     nickname: user.nickname ?? "",
@@ -37,8 +27,7 @@ function changedFields(draft: ProfileDraft, saved: ProfileDraft) {
     draft.name.trim() !== saved.name.trim(),
     draft.nickname.trim() !== saved.nickname.trim(),
     draft.phone !== saved.phone,
-    draft.documentNumber !== saved.documentNumber ||
-      draft.clearDocument !== saved.clearDocument,
+    draft.documentNumber !== saved.documentNumber || draft.clearDocument !== saved.clearDocument,
   ].filter(Boolean).length;
 }
 
@@ -96,18 +85,15 @@ function ProfilePageView() {
       const messages: Record<string, string> = {
         cancelled: "Se canceló la vinculación de Google.",
         email: "El correo de Google debe ser el mismo de tu cuenta de Kogane.",
-        linked:
-          "Esa cuenta de Google ya está vinculada a otra cuenta de Kogane.",
-        session:
-          "Tu sesión venció. Vuelve a iniciar sesión e inténtalo de nuevo.",
+        linked: "Esa cuenta de Google ya está vinculada a otra cuenta de Kogane.",
+        session: "Tu sesión venció. Vuelve a iniciar sesión e inténtalo de nuevo.",
       };
       setGoogleNotice({
         kind: "error",
         text: messages[failure] ?? "No se pudo vincular Google.",
       });
     }
-    if (result || failure)
-      window.history.replaceState(null, "", window.location.pathname);
+    if (result || failure) window.history.replaceState(null, "", window.location.pathname);
   }, []);
 
   if (!me) return null;
@@ -131,11 +117,7 @@ function ProfilePageView() {
         name: draft.name.trim(),
         nickname: draft.nickname.trim() || null,
         phone: draft.phone.trim() || null,
-        ...(draft.documentNumber.trim()
-          ? { documentNumber: draft.documentNumber.trim() }
-          : draft.clearDocument
-            ? { documentNumber: null }
-            : {}),
+        ...(draft.documentNumber.trim() ? { documentNumber: draft.documentNumber.trim() } : draft.clearDocument ? { documentNumber: null } : {}),
       },
       {
         onSuccess: () => {
@@ -203,28 +185,16 @@ function ProfilePageView() {
           className={`sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur ${errorCount ? "border-destructive/50" : "border-primary/40"}`}
         >
           <p className="flex items-center gap-2 text-sm">
-            <span
-              aria-hidden="true"
-              className={`size-2 rounded-full ${errorCount ? "bg-destructive" : "bg-amber-400"}`}
-            />
+            <span aria-hidden="true" className={`size-2 rounded-full ${errorCount ? "bg-destructive" : "bg-amber-400"}`} />
             {errorCount
               ? `Corrige ${errorCount} ${errorCount === 1 ? "campo" : "campos"} para guardar`
               : `Tienes ${changeCount} ${changeCount === 1 ? "cambio" : "cambios"} sin guardar`}
           </p>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={discardChanges}
-              disabled={update.isPending}
-            >
+            <Button type="button" variant="outline" onClick={discardChanges} disabled={update.isPending}>
               Descartar
             </Button>
-            <Button
-              type="submit"
-              form="profile-personal-form"
-              disabled={!canSave || update.isPending}
-            >
+            <Button type="submit" form="profile-personal-form" disabled={!canSave || update.isPending}>
               {update.isPending ? "Guardando…" : "Guardar cambios"}
             </Button>
           </div>

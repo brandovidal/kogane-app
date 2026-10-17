@@ -1,15 +1,8 @@
 import { api, unwrap } from "@/shared/api/client";
 import type { ExpenseByResource, ExpenseResource } from "@/shared/api/types";
-import type {
-  ExpenseInputDto,
-  ExpenseListQuery,
-  MoveSeriesDto,
-} from "./dto/expense.dto";
+import type { ExpenseInputDto, ExpenseListQuery, MoveSeriesDto } from "./dto/expense.dto";
 
-export async function getExpenses<R extends ExpenseResource>(
-  resource: R,
-  query: ExpenseListQuery = {},
-): Promise<ExpenseByResource[R][]> {
+export async function getExpenses<R extends ExpenseResource>(resource: R, query: ExpenseListQuery = {}): Promise<ExpenseByResource[R][]> {
   return (await unwrap(
     api.GET("/v1/expenses/{resource}", {
       params: { path: { resource }, query },
@@ -17,10 +10,7 @@ export async function getExpenses<R extends ExpenseResource>(
   )) as ExpenseByResource[R][];
 }
 
-export async function getExpense<R extends ExpenseResource>(
-  resource: R,
-  id: string,
-): Promise<ExpenseByResource[R]> {
+export async function getExpense<R extends ExpenseResource>(resource: R, id: string): Promise<ExpenseByResource[R]> {
   return (await unwrap(
     api.GET("/v1/expenses/{resource}/{id}", {
       params: { path: { resource, id } },
@@ -28,10 +18,7 @@ export async function getExpense<R extends ExpenseResource>(
   )) as ExpenseByResource[R];
 }
 
-export async function saveExpense(
-  resource: ExpenseResource,
-  input: { id?: string; body: ExpenseInputDto },
-) {
+export async function saveExpense(resource: ExpenseResource, input: { id?: string; body: ExpenseInputDto }) {
   if (input.id)
     return unwrap(
       api.PATCH("/v1/expenses/{resource}/{id}", {
@@ -57,9 +44,7 @@ export function deleteExpense(resource: ExpenseResource, id: string) {
 }
 
 export function previewMoveSeries(input: MoveSeriesDto) {
-  return unwrap(
-    api.POST("/v1/expense-moves", { body: { ...input, dryRun: true } }),
-  );
+  return unwrap(api.POST("/v1/expense-moves", { body: { ...input, dryRun: true } }));
 }
 
 export function moveSeries(input: MoveSeriesDto) {

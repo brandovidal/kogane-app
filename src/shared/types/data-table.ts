@@ -39,10 +39,7 @@ export interface DataTableBasicProps<T> {
   emptyMessage?: ReactNode;
   footer?: ReactNode;
   calculationStorageKey?: string;
-  calculationDefaults?: Record<
-    string,
-    import("./data-table-calculation").DataTableCalculation
-  >;
+  calculationDefaults?: Record<string, import("./data-table-calculation").DataTableCalculation>;
   calculationState?: DataTableCalculationState;
   rowClassName?: (row: T) => string | undefined;
   rowIsSelected?: (row: T) => boolean;
@@ -75,7 +72,4 @@ interface DataTableOptions<T> {
 }
 
 /** Server rows are already paginated, sorted and filtered; total is required for navigation. */
-export type UseDataTableOptions<T> = DataTableOptions<T> &
-  (
-    { mode?: "client"; rowCount?: never } | { mode: "server"; rowCount: number }
-  );
+export type UseDataTableOptions<T> = DataTableOptions<T> & ({ mode?: "client"; rowCount?: never } | { mode: "server"; rowCount: number });

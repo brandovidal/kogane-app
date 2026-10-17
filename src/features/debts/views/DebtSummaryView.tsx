@@ -11,15 +11,8 @@ import { getMonthName } from "@/shared/lib/dates";
 import { useDebtSummaryData } from "../hooks/useDebtSummaryData";
 import { usePersonSummaries } from "../hooks/personSummaries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import {
-  DEBT_FILTER_KEYS,
-  type DebtFilterValues,
-} from "@/features/debts/lib/debt-filters";
-import {
-  ActiveDebtFilterChips,
-  DebtFilterSheet,
-  DebtReportLinks as ReportLinks,
-} from "../sections/DebtListControls";
+import { DEBT_FILTER_KEYS, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
+import { ActiveDebtFilterChips, DebtFilterSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";
 import { DebtMovementTypeSheet } from "../sections/DebtMovementTypeSheet";
 import { StatementMinimumSection } from "../sections/StatementMinimumSection";
 import { PersonDebtSummaryCardList } from "../sections/PersonDebtSummaryCardList";
@@ -27,21 +20,12 @@ import { DebtSummaryMenu } from "../sections/DebtSummaryMenu";
 import { DebtSummaryMonthlyTable } from "../sections/DebtSummaryMonthlyTable";
 import { CardMinimumCoverageSection } from "../sections/CardMinimumCoverageSection";
 
-export function DebtSummaryView({
-  month,
-  year,
-}: {
-  month: number;
-  year: number;
-}) {
+export function DebtSummaryView({ month, year }: { month: number; year: number }) {
   const defaults: DebtFilterValues = {
     month: String(month),
     year: String(year),
   };
-  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(
-    DEBT_FILTER_KEYS,
-    defaults,
-  );
+  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS, defaults);
   const [view, setView] = useViewMode("debt-summary", "cards");
   const [summaryView, setSummaryView] = useState("consolidated");
   const [showCollections, setShowCollections] = useState(true);
@@ -54,15 +38,9 @@ export function DebtSummaryView({
     showCollections,
     showDebts,
   });
-  const personSummaries = usePersonSummaries(
-    summary.selectedMonth,
-    summary.selectedYear,
-  );
-  const summariesByPerson = new Map(
-    (personSummaries.data ?? []).map((item) => [item.personId, item]),
-  );
-  const periodMonth =
-    filters.month && filters.month !== "until" ? Number(filters.month) : null;
+  const personSummaries = usePersonSummaries(summary.selectedMonth, summary.selectedYear);
+  const summariesByPerson = new Map((personSummaries.data ?? []).map((item) => [item.personId, item]));
+  const periodMonth = filters.month && filters.month !== "until" ? Number(filters.month) : null;
   const periodYear = Number(filters.year ?? year);
   if (summary.isLoading) return null;
   const {
@@ -166,31 +144,21 @@ export function DebtSummaryView({
           {showCollections && (
             <span>
               <span className="text-muted-foreground">Cobros</span>{" "}
-              <strong className="font-semibold tabular-nums text-amber-300">
-                {formatCurrency(totalToCollect)}
-              </strong>
+              <strong className="font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</strong>
             </span>
           )}
           <span>
             <span className="text-muted-foreground">Lo que debo</span>{" "}
-            <strong className="font-medium tabular-nums text-muted-foreground">
-              {formatCurrency(totalToPay)}
-            </strong>
+            <strong className="font-medium tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</strong>
           </span>
           <span className="font-semibold text-primary">
-            {netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"}{" "}
-            {formatCurrency(Math.abs(netTotal))}
+            {netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"} {formatCurrency(Math.abs(netTotal))}
           </span>
         </div>
       )}
-      {(!groups.length && !creditCards.length) ||
-      (!showCollections && !showDebts) ? (
+      {(!groups.length && !creditCards.length) || (!showCollections && !showDebts) ? (
         !showCollections && !showDebts ? (
-          <EmptyState
-            variant="filters"
-            title="Nada que mostrar"
-            description="Activa Cobros (+), Deudas (−) o ambos en los filtros."
-          />
+          <EmptyState variant="filters" title="Nada que mostrar" description="Activa Cobros (+), Deudas (−) o ambos en los filtros." />
         ) : (
           <EmptyState
             variant="period"
@@ -209,39 +177,27 @@ export function DebtSummaryView({
           />
         )
       ) : (
-        <Tabs
-          value={summaryView}
-          onValueChange={setSummaryView}
-          className="w-full"
-        >
+        <Tabs value={summaryView} onValueChange={setSummaryView} className="w-full">
           <TabsList className="w-full justify-start sm:w-auto">
             <TabsTrigger value="consolidated">Consolidado</TabsTrigger>
-            <TabsTrigger
-              value="minimum"
-              className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary"
-            >
+            <TabsTrigger value="minimum" className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
               Tarjeta (pago mínimo)
             </TabsTrigger>
           </TabsList>
           <TabsContent value={summaryView} className="mt-4 space-y-3">
             {summaryView === "minimum" ? (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Estados de cuenta y pagos mínimos de tus tarjetas.
-                </p>
+                <p className="text-sm text-muted-foreground">Estados de cuenta y pagos mínimos de tus tarjetas.</p>
                 {!showCollections ? (
                   <Card>
                     <CardContent className="p-4 text-sm text-muted-foreground">
-                      El filtro está mostrando solo deudas. El pago mínimo
-                      corresponde a cobros del estado de cuenta; selecciona
-                      Cobros (+) para verlo.
+                      El filtro está mostrando solo deudas. El pago mínimo corresponde a cobros del estado de cuenta; selecciona Cobros (+) para
+                      verlo.
                     </CardContent>
                   </Card>
                 ) : (
                   <StatementMinimumSection
-                    cards={creditCards.filter((_, index) =>
-                      Boolean(statementChecks[index]?.data?.statementId),
-                    )}
+                    cards={creditCards.filter((_, index) => Boolean(statementChecks[index]?.data?.statementId))}
                     isLoading={statementChecks.some((check) => check.isLoading)}
                     hasCreditCards={creditCards.length > 0}
                     month={selectedMonth}
@@ -270,24 +226,13 @@ export function DebtSummaryView({
                 ) : (
                   <DebtSummaryMonthlyTable
                     rows={byMonth}
-                    recordCount={
-                      shown.length +
-                      (summaryView === "consolidated"
-                        ? personalExpenses.length
-                        : 0)
-                    }
+                    recordCount={shown.length + (summaryView === "consolidated" ? personalExpenses.length : 0)}
                     totalToCollect={totalToCollect}
                     totalToPay={totalToPay}
                     netTotal={netTotal}
                   />
                 )}
-                {showCollections && (
-                  <CardMinimumCoverageSection
-                    items={minimumCoverage}
-                    month={selectedMonth}
-                    year={selectedYear}
-                  />
-                )}
+                {showCollections && <CardMinimumCoverageSection items={minimumCoverage} month={selectedMonth} year={selectedYear} />}
               </>
             )}
           </TabsContent>

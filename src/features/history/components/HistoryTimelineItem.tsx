@@ -1,15 +1,7 @@
 import { Badge } from "@/ui/badge";
 import { cn } from "@/shared/utils/cn";
-import {
-  HISTORY_ACTION_STYLES,
-  HISTORY_SOURCE_ICONS,
-} from "../constants/history-ui";
-import {
-  ACTION_LABELS,
-  ENTITY_LABELS,
-  SOURCE_LABELS,
-  fieldLabel,
-} from "../lib/history-view";
+import { HISTORY_ACTION_STYLES, HISTORY_SOURCE_ICONS } from "../constants/history-ui";
+import { ACTION_LABELS, ENTITY_LABELS, SOURCE_LABELS, fieldLabel } from "../lib/history-view";
 import { formatHistoryTime } from "../lib/history-timeline";
 import type { HistoryEntry } from "@/shared/api/types";
 import { HistoryChanges } from "./HistoryChanges";
@@ -21,24 +13,14 @@ interface HistoryTimelineItemProps {
   compact?: boolean;
 }
 
-export function HistoryTimelineItem({
-  entry,
-  labels,
-  showRecord,
-  compact = false,
-}: HistoryTimelineItemProps) {
+export function HistoryTimelineItem({ entry, labels, showRecord, compact = false }: HistoryTimelineItemProps) {
   const action = HISTORY_ACTION_STYLES[entry.action];
   const ActionIcon = action.icon;
   const SourceIcon = HISTORY_SOURCE_ICONS[entry.source];
-  const title =
-    compact && entry.action === "update" && entry.changes.length === 1
-      ? fieldLabel(entry.changes[0].field)
-      : ACTION_LABELS[entry.action];
+  const title = compact && entry.action === "update" && entry.changes.length === 1 ? fieldLabel(entry.changes[0].field) : ACTION_LABELS[entry.action];
 
   return (
-    <li
-      className={cn("relative last:pb-0", compact ? "pb-3 pl-8" : "pb-4 pl-10")}
-    >
+    <li className={cn("relative last:pb-0", compact ? "pb-3 pl-8" : "pb-4 pl-10")}>
       <span
         aria-hidden="true"
         className={cn(
@@ -49,25 +31,9 @@ export function HistoryTimelineItem({
       >
         <ActionIcon className="size-3.5" />
       </span>
-      <article
-        className={cn(
-          "min-w-0",
-          compact ? "space-y-2" : "space-y-4 rounded-lg border bg-card p-4",
-        )}
-      >
-        <header
-          className={cn(
-            compact
-              ? "flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
-              : "space-y-2",
-          )}
-        >
-          <div
-            className={cn(
-              "flex flex-wrap items-center gap-2",
-              compact ? "w-full" : "justify-between",
-            )}
-          >
+      <article className={cn("min-w-0", compact ? "space-y-2" : "space-y-4 rounded-lg border bg-card p-4")}>
+        <header className={cn(compact ? "flex flex-wrap items-center justify-between gap-x-3 gap-y-1" : "space-y-2")}>
+          <div className={cn("flex flex-wrap items-center gap-2", compact ? "w-full" : "justify-between")}>
             {compact ? (
               <span className="text-sm font-semibold">{title}</span>
             ) : (
@@ -81,13 +47,7 @@ export function HistoryTimelineItem({
                 {SOURCE_LABELS[entry.source]}
               </span>
             )}
-            <time
-              dateTime={entry.createdAt}
-              className={cn(
-                "text-xs tabular-nums text-muted-foreground",
-                compact && "ml-auto",
-              )}
-            >
+            <time dateTime={entry.createdAt} className={cn("text-xs tabular-nums text-muted-foreground", compact && "ml-auto")}>
               {formatHistoryTime(entry.createdAt)}
             </time>
           </div>

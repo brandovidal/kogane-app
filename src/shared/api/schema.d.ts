@@ -1803,8 +1803,7 @@ export interface components {
            * @description NOT_CONFIGURED without bot token; ERROR if Telegram failed to deliver recently
            * @enum {string}
            */
-          webhook:
-            "OK" | "NOT_SET" | "ERROR" | "UNAVAILABLE" | "NOT_CONFIGURED";
+          webhook: "OK" | "NOT_SET" | "ERROR" | "UNAVAILABLE" | "NOT_CONFIGURED";
           /** @description Updates Telegram is still trying to deliver */
           pendingUpdates: number | null;
           lastError: string | null;
@@ -2008,15 +2007,7 @@ export interface components {
     DebtBulkDto: {
       ids: string[];
       /** @enum {string} */
-      action:
-        | "pay"
-        | "prepaid"
-        | "cashback"
-        | "partial"
-        | "clone"
-        | "reset"
-        | "card"
-        | "delete";
+      action: "pay" | "prepaid" | "cashback" | "partial" | "clone" | "reset" | "card" | "delete";
       /** @description partial: the amount to spread */
       amount?: number;
       /** Format: date */
@@ -2038,15 +2029,7 @@ export interface components {
       message: string;
       data: {
         /** @enum {string} */
-        action:
-          | "pay"
-          | "prepaid"
-          | "cashback"
-          | "partial"
-          | "clone"
-          | "reset"
-          | "card"
-          | "delete";
+        action: "pay" | "prepaid" | "cashback" | "partial" | "clone" | "reset" | "card" | "delete";
         /** @description Debts changed, created or deleted */
         affected: number;
         /** @description Amount registered as payments */
@@ -2307,12 +2290,7 @@ export interface components {
       data: {
         id: string;
         /** @enum {string} */
-        refType:
-          | "commitment"
-          | "fixed_cost"
-          | "contribution"
-          | "expense"
-          | "debt_payment";
+        refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
         refId: string;
         /** @enum {string} */
         kind: "boleta" | "recibo" | "contrato" | "factura" | "otro";
@@ -2334,12 +2312,7 @@ export interface components {
       data: {
         id: string;
         /** @enum {string} */
-        refType:
-          | "commitment"
-          | "fixed_cost"
-          | "contribution"
-          | "expense"
-          | "debt_payment";
+        refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
         refId: string;
         /** @enum {string} */
         kind: "boleta" | "recibo" | "contrato" | "factura" | "otro";
@@ -2501,30 +2474,13 @@ export interface components {
         items: {
           id: string;
           /** @enum {string} */
-          kind:
-            | "due"
-            | "card_close"
-            | "daily_close"
-            | "weekly"
-            | "budget"
-            | "anomaly"
-            | "recurring"
-            | "statement"
-            | "collect";
+          kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
           title: string;
           body: string;
           amount: number | null;
           /** @enum {string|null} */
           refType:
-            | "fixed_cost"
-            | "subscription"
-            | "card_statement"
-            | "credit_card_expense"
-            | "daily_expense"
-            | "debt"
-            | "category"
-            | "statement"
-            | null;
+            "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
           refId: string | null;
           /** Format: date-time */
           eventDate: string | null;
@@ -2547,30 +2503,13 @@ export interface components {
       data: {
         id: string;
         /** @enum {string} */
-        kind:
-          | "due"
-          | "card_close"
-          | "daily_close"
-          | "weekly"
-          | "budget"
-          | "anomaly"
-          | "recurring"
-          | "statement"
-          | "collect";
+        kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
         title: string;
         body: string;
         amount: number | null;
         /** @enum {string|null} */
         refType:
-          | "fixed_cost"
-          | "subscription"
-          | "card_statement"
-          | "credit_card_expense"
-          | "daily_expense"
-          | "debt"
-          | "category"
-          | "statement"
-          | null;
+          "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
         refId: string | null;
         /** Format: date-time */
         eventDate: string | null;
@@ -2629,15 +2568,7 @@ export interface components {
       message: string;
       data: {
         /** @enum {string} */
-        job:
-          | "recurring"
-          | "due-reminders"
-          | "daily-close"
-          | "weekly"
-          | "upcoming-refresh"
-          | "files-cleanup"
-          | "collect-month"
-          | "collect-late";
+        job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup" | "collect-month" | "collect-late";
         /** @description Created in this run (existing ones are never repeated) */
         notifications: number;
         details?: {
@@ -2666,14 +2597,7 @@ export interface components {
         /** Format: date */
         date: string;
         /** @enum {string} */
-        kind:
-          | "card_close"
-          | "card_due"
-          | "fixed_cost"
-          | "subscription"
-          | "debt_owed_to_me"
-          | "debt_i_owe"
-          | "recurring";
+        kind: "card_close" | "card_due" | "fixed_cost" | "subscription" | "debt_owed_to_me" | "debt_i_owe" | "recurring";
         /** @description Card, expense or debt description */
         name: string;
         personName: string | null;
@@ -2685,15 +2609,7 @@ export interface components {
         status: "pending" | "paid" | "late";
         /** @enum {string|null} */
         refType:
-          | "fixed_cost"
-          | "subscription"
-          | "card_statement"
-          | "credit_card_expense"
-          | "daily_expense"
-          | "debt"
-          | "category"
-          | "statement"
-          | null;
+          "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
         refId: string | null;
         color: string | null;
       }[];
@@ -2708,14 +2624,7 @@ export interface components {
         /** Format: date */
         date: string;
         /** @enum {string} */
-        kind:
-          | "card_close"
-          | "card_due"
-          | "fixed_cost"
-          | "subscription"
-          | "debt_owed_to_me"
-          | "debt_i_owe"
-          | "recurring";
+        kind: "card_close" | "card_due" | "fixed_cost" | "subscription" | "debt_owed_to_me" | "debt_i_owe" | "recurring";
         /** @description Card, expense or debt description */
         name: string;
         personName: string | null;
@@ -2727,15 +2636,7 @@ export interface components {
         status: "pending" | "paid" | "late";
         /** @enum {string|null} */
         refType:
-          | "fixed_cost"
-          | "subscription"
-          | "card_statement"
-          | "credit_card_expense"
-          | "daily_expense"
-          | "debt"
-          | "category"
-          | "statement"
-          | null;
+          "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
         refId: string | null;
         color: string | null;
       }[];
@@ -2811,8 +2712,7 @@ export interface components {
       message: string;
       data: {
         /** @enum {string} */
-        outcome:
-          "paid" | "already_paid" | "nothing_to_pay" | "not_found" | "partial";
+        outcome: "paid" | "already_paid" | "nothing_to_pay" | "not_found" | "partial";
         /** @description The payment registered; null when nothing was paid */
         paymentId: string | null;
       };
@@ -2869,16 +2769,7 @@ export interface components {
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
             othersShare: number;
             /** @enum {string} */
-            paymentStatus:
-              | "not_started"
-              | "pending"
-              | "partially_paid"
-              | "deposited"
-              | "waived"
-              | "paid"
-              | "amortized"
-              | "cashback"
-              | "skipped";
+            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
             installment: string | null;
             paymentMonth: number;
             paymentYear: number;
@@ -2910,22 +2801,12 @@ export interface components {
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
             othersShare: number;
             /** @enum {string} */
-            paymentStatus:
-              | "not_started"
-              | "pending"
-              | "partially_paid"
-              | "deposited"
-              | "waived"
-              | "paid"
-              | "amortized"
-              | "cashback"
-              | "skipped";
+            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
             installment: string | null;
             paymentMonth: number;
             paymentYear: number;
             /** @enum {string} */
-            period:
-              "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
             /** @enum {string} */
             kind: "platform" | "service" | "annual" | "other";
             supplyNumber: string | null;
@@ -2955,16 +2836,7 @@ export interface components {
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
             othersShare: number;
             /** @enum {string} */
-            paymentStatus:
-              | "not_started"
-              | "pending"
-              | "partially_paid"
-              | "deposited"
-              | "waived"
-              | "paid"
-              | "amortized"
-              | "cashback"
-              | "skipped";
+            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
             installment: string | null;
             paymentMonth: number;
             paymentYear: number;
@@ -2997,8 +2869,7 @@ export interface components {
             /** @enum {string} */
             kind: "platform" | "service" | "annual" | "other";
             /** @enum {string} */
-            period:
-              "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
             supplyNumber: string | null;
             /** @description Shared with people: each month their cobro is created with the row (D73, P30) */
             sharedWith: {
@@ -3068,16 +2939,7 @@ export interface components {
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
             othersShare: number;
             /** @enum {string} */
-            paymentStatus:
-              | "not_started"
-              | "pending"
-              | "partially_paid"
-              | "deposited"
-              | "waived"
-              | "paid"
-              | "amortized"
-              | "cashback"
-              | "skipped";
+            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
             installment: string | null;
             paymentMonth: number;
             paymentYear: number;
@@ -3109,22 +2971,12 @@ export interface components {
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
             othersShare: number;
             /** @enum {string} */
-            paymentStatus:
-              | "not_started"
-              | "pending"
-              | "partially_paid"
-              | "deposited"
-              | "waived"
-              | "paid"
-              | "amortized"
-              | "cashback"
-              | "skipped";
+            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
             installment: string | null;
             paymentMonth: number;
             paymentYear: number;
             /** @enum {string} */
-            period:
-              "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
             /** @enum {string} */
             kind: "platform" | "service" | "annual" | "other";
             supplyNumber: string | null;
@@ -3154,16 +3006,7 @@ export interface components {
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
             othersShare: number;
             /** @enum {string} */
-            paymentStatus:
-              | "not_started"
-              | "pending"
-              | "partially_paid"
-              | "deposited"
-              | "waived"
-              | "paid"
-              | "amortized"
-              | "cashback"
-              | "skipped";
+            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
             installment: string | null;
             paymentMonth: number;
             paymentYear: number;
@@ -3196,8 +3039,7 @@ export interface components {
             /** @enum {string} */
             kind: "platform" | "service" | "annual" | "other";
             /** @enum {string} */
-            period:
-              "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
             supplyNumber: string | null;
             /** @description Shared with people: each month their cobro is created with the row (D73, P30) */
             sharedWith: {
@@ -3255,16 +3097,7 @@ export interface components {
           paymentYear: number;
           paymentMethodId?: string | null;
           /** @enum {string} */
-          paymentStatus?:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           /** Format: date */
           paymentDate?: string | null;
           /** Format: date */
@@ -3290,23 +3123,13 @@ export interface components {
           paymentMonth: number;
           paymentYear: number;
           /** @enum {string} */
-          period:
-            "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+          period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
           /** @enum {string} */
           kind?: "platform" | "service" | "annual" | "other";
           supplyNumber?: string | null;
           paymentMethodId?: string | null;
           /** @enum {string} */
-          paymentStatus?:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           /** Format: date */
           paymentDate?: string | null;
           /** Format: date */
@@ -3331,16 +3154,7 @@ export interface components {
           paymentYear: number;
           paymentMethodId: string;
           /** @enum {string} */
-          paymentStatus?:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           /** Format: date */
           processDate?: string | null;
         }
@@ -3360,8 +3174,7 @@ export interface components {
           /** @enum {string} */
           kind?: "platform" | "service" | "annual" | "other";
           /** @enum {string} */
-          period?:
-            "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+          period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
           supplyNumber?: string | null;
           sharedWith?: {
             shares: {
@@ -3418,16 +3231,7 @@ export interface components {
           paymentYear?: number;
           paymentMethodId?: string | null;
           /** @enum {string} */
-          paymentStatus?:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           /** Format: date */
           paymentDate?: string | null;
           /** Format: date */
@@ -3453,23 +3257,13 @@ export interface components {
           paymentMonth?: number;
           paymentYear?: number;
           /** @enum {string} */
-          period?:
-            "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+          period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
           /** @enum {string} */
           kind?: "platform" | "service" | "annual" | "other";
           supplyNumber?: string | null;
           paymentMethodId?: string | null;
           /** @enum {string} */
-          paymentStatus?:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           /** Format: date */
           paymentDate?: string | null;
           /** Format: date */
@@ -3494,16 +3288,7 @@ export interface components {
           paymentYear?: number;
           paymentMethodId?: string;
           /** @enum {string} */
-          paymentStatus?:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           /** Format: date */
           processDate?: string | null;
         }
@@ -3523,8 +3308,7 @@ export interface components {
           /** @enum {string} */
           kind?: "platform" | "service" | "annual" | "other";
           /** @enum {string} */
-          period?:
-            "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+          period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
           supplyNumber?: string | null;
           sharedWith?: {
             shares: {
@@ -3661,11 +3445,7 @@ export interface components {
           recurringId: string;
           description: string;
           /** @enum {string} */
-          reason:
-            | "already_generated"
-            | "not_due"
-            | "missing_card"
-            | "missing_category";
+          reason: "already_generated" | "not_due" | "missing_card" | "missing_category";
         }[];
       };
     };
@@ -3775,8 +3555,7 @@ export interface components {
         updatedAt: string;
         name: string;
         /** @enum {string} */
-        type:
-          "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
+        type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
         code: string | null;
         aliases: string[];
         isActive: boolean;
@@ -3810,8 +3589,7 @@ export interface components {
         updatedAt: string;
         name: string;
         /** @enum {string} */
-        type:
-          "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
+        type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
         code: string | null;
         aliases: string[];
         isActive: boolean;
@@ -4163,15 +3941,7 @@ export interface components {
     };
     DraftFieldsDto: {
       /** @enum {string|null} */
-      destination?:
-        | "daily"
-        | "fixed_cost"
-        | "subscription"
-        | "credit_card"
-        | "receivable"
-        | "payable"
-        | "discard"
-        | null;
+      destination?: "daily" | "fixed_cost" | "subscription" | "credit_card" | "receivable" | "payable" | "discard" | null;
       description?: string | null;
       amount?: number | null;
       /** @enum {string|null} */
@@ -4182,8 +3952,7 @@ export interface components {
       expenseType?: "essential" | "guilty_pleasure" | null;
       installment?: string | null;
       /** @enum {string|null} */
-      period?:
-        "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual" | null;
+      period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual" | null;
       /** @enum {string|null} */
       kind?: "platform" | "service" | "annual" | "other" | null;
       supplyNumber?: string | null;
@@ -4710,14 +4479,7 @@ export interface components {
         /** @enum {string} */
         kind: "loan" | "investment";
         /** @enum {string} */
-        subtype:
-          | "loan"
-          | "land"
-          | "property"
-          | "vehicle"
-          | "stocks"
-          | "crypto"
-          | "other";
+        subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
         entity: string | null;
         currency: string;
         totalAmount: number | null;
@@ -4773,14 +4535,7 @@ export interface components {
         /** @enum {string} */
         kind: "loan" | "investment";
         /** @enum {string} */
-        subtype:
-          | "loan"
-          | "land"
-          | "property"
-          | "vehicle"
-          | "stocks"
-          | "crypto"
-          | "other";
+        subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
         entity: string | null;
         currency: string;
         totalAmount: number | null;
@@ -4833,16 +4588,7 @@ export interface components {
           paymentDate: string | null;
           amount: number;
           /** @enum {string} */
-          paymentStatus:
-            | "not_started"
-            | "pending"
-            | "partially_paid"
-            | "deposited"
-            | "waived"
-            | "paid"
-            | "amortized"
-            | "cashback"
-            | "skipped";
+          paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
           attachmentCount: number;
         }[];
         contributions: {
@@ -4862,14 +4608,7 @@ export interface components {
     CreateCommitmentDto: {
       name: string;
       /** @enum {string} */
-      subtype:
-        | "loan"
-        | "land"
-        | "property"
-        | "vehicle"
-        | "stocks"
-        | "crypto"
-        | "other";
+      subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
       entity?: string | null;
       /** @enum {string} */
       currency?: "PEN" | "USD";
@@ -4901,14 +4640,7 @@ export interface components {
     UpdateCommitmentDto: {
       name?: string;
       /** @enum {string} */
-      subtype?:
-        | "loan"
-        | "land"
-        | "property"
-        | "vehicle"
-        | "stocks"
-        | "crypto"
-        | "other";
+      subtype?: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
       entity?: string | null;
       /** @enum {string} */
       currency?: "PEN" | "USD";
@@ -5271,12 +5003,7 @@ export interface components {
       message: string;
       data: {
         /** @enum {string} */
-        target:
-          | "daily-expenses"
-          | "platforms"
-          | "recurring-expenses"
-          | "receivables"
-          | "payables";
+        target: "daily-expenses" | "platforms" | "recurring-expenses" | "receivables" | "payables";
         applied: boolean;
         total: number;
         /** @description Rows that would be created (preview) */
@@ -5758,12 +5485,7 @@ export interface operations {
   AttachmentsController_list_v1: {
     parameters: {
       query: {
-        refType:
-          | "commitment"
-          | "fixed_cost"
-          | "contribution"
-          | "expense"
-          | "debt_payment";
+        refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
         refId: string;
       };
       header?: never;
@@ -5798,12 +5520,7 @@ export interface operations {
            */
           file: string;
           /** @enum {string} */
-          refType:
-            | "commitment"
-            | "fixed_cost"
-            | "contribution"
-            | "expense"
-            | "debt_payment";
+          refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
           refId: string;
           /** @enum {string} */
           kind?: "boleta" | "recibo" | "contrato" | "factura" | "otro";
@@ -6054,10 +5771,7 @@ export interface operations {
         year?: number;
         until?: string;
         person?: string;
-        state?:
-          | ("pending" | "partial" | "prepaid" | "paid" | "cashback")
-          | ("upcoming" | "due" | "late")
-          | "open";
+        state?: ("pending" | "partial" | "prepaid" | "paid" | "cashback") | ("upcoming" | "due" | "late") | "open";
         card?: string;
         origin?: "shared" | "loan";
         q?: string;
@@ -6083,16 +5797,7 @@ export interface operations {
   NotificationsController_history_v1: {
     parameters: {
       query?: {
-        kind?:
-          | "due"
-          | "card_close"
-          | "daily_close"
-          | "weekly"
-          | "budget"
-          | "anomaly"
-          | "recurring"
-          | "statement"
-          | "collect";
+        kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
         unread?: "true" | "false";
         limit?: number;
         offset?: number;
@@ -6261,15 +5966,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        job:
-          | "recurring"
-          | "due-reminders"
-          | "daily-close"
-          | "weekly"
-          | "upcoming-refresh"
-          | "files-cleanup"
-          | "collect-month"
-          | "collect-late";
+        job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup" | "collect-month" | "collect-late";
       };
       cookie?: never;
     };
@@ -6434,12 +6131,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        resource:
-          | "daily-expenses"
-          | "fixed-costs"
-          | "subscriptions"
-          | "credit-card-expenses"
-          | "recurring-expenses";
+        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
       };
       cookie?: never;
     };
@@ -6460,12 +6152,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        resource:
-          | "daily-expenses"
-          | "fixed-costs"
-          | "subscriptions"
-          | "credit-card-expenses"
-          | "recurring-expenses";
+        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
       };
       cookie?: never;
     };
@@ -6491,12 +6178,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        resource:
-          | "daily-expenses"
-          | "fixed-costs"
-          | "subscriptions"
-          | "credit-card-expenses"
-          | "recurring-expenses";
+        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
         id: string;
       };
       cookie?: never;
@@ -6518,12 +6200,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        resource:
-          | "daily-expenses"
-          | "fixed-costs"
-          | "subscriptions"
-          | "credit-card-expenses"
-          | "recurring-expenses";
+        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
         id: string;
       };
       cookie?: never;
@@ -6543,12 +6220,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        resource:
-          | "daily-expenses"
-          | "fixed-costs"
-          | "subscriptions"
-          | "credit-card-expenses"
-          | "recurring-expenses";
+        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
         id: string;
       };
       cookie?: never;
@@ -7955,13 +7627,7 @@ export interface operations {
     parameters: {
       query?: {
         /** @description A group of screens in the app */
-        module?:
-          | "expenses"
-          | "debts"
-          | "commitments"
-          | "budget"
-          | "settings"
-          | "imports";
+        module?: "expenses" | "debts" | "commitments" | "budget" | "settings" | "imports";
         /** @description The table: exp_fixed_costs, cat_people… */
         entity?: string;
         /** @description One record (with entity) */
@@ -8489,12 +8155,7 @@ export interface operations {
     parameters: {
       query: {
         /** @description The list: daily-expenses, platforms, recurring-expenses, receivables or payables */
-        target:
-          | "daily-expenses"
-          | "platforms"
-          | "recurring-expenses"
-          | "receivables"
-          | "payables";
+        target: "daily-expenses" | "platforms" | "recurring-expenses" | "receivables" | "payables";
         /** @description Create the ready rows; without it only a preview */
         apply?: string;
       };
@@ -8614,8 +8275,7 @@ export interface operations {
   ImportsController_rows_v1: {
     parameters: {
       query?: {
-        tab?:
-          "cards" | "fixed_costs" | "platforms" | "debts" | "budget" | "issues";
+        tab?: "cards" | "fixed_costs" | "platforms" | "debts" | "budget" | "issues";
         status?: "new" | "changed" | "unchanged" | "blocked" | "warning";
         /** @description Search in the description */
         q?: string;

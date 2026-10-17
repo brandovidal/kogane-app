@@ -5,11 +5,7 @@ import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { z } from "zod";
-import {
-  useBudgetGroups,
-  useDeleteBudgetGroup,
-  useSaveBudgetGroup,
-} from "@/shared/api/hooks/catalogs";
+import { useBudgetGroups, useDeleteBudgetGroup, useSaveBudgetGroup } from "@/shared/api/hooks/catalogs";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
 import type { BudgetGroup } from "@/shared/api/types";
 
@@ -27,11 +23,7 @@ interface BudgetGroupDialogProps {
   group?: BudgetGroup;
 }
 
-export function BudgetGroupDialog({
-  open,
-  onOpenChange,
-  group,
-}: BudgetGroupDialogProps) {
+export function BudgetGroupDialog({ open, onOpenChange, group }: BudgetGroupDialogProps) {
   const saveBudgetGroup = useSaveBudgetGroup();
   const groups = useBudgetGroups().data ?? [];
   const isEdit = !!group;
@@ -72,10 +64,7 @@ export function BudgetGroupDialog({
   }, [open, group, reset, groups.length]);
 
   const onSubmit = (data: CreateBudgetGroup) => {
-    saveBudgetGroup.mutate(
-      { ...data, id: group?.id },
-      { onSuccess: () => onOpenChange(false) },
-    );
+    saveBudgetGroup.mutate({ ...data, id: group?.id }, { onSuccess: () => onOpenChange(false) });
   };
 
   return (
@@ -83,29 +72,18 @@ export function BudgetGroupDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={isEdit ? "Editar grupo" : "Nuevo grupo presupuestario"}
-      description={
-        isEdit
-          ? "Modifica los datos del grupo"
-          : "Crea un nuevo grupo para organizar tu presupuesto"
-      }
+      description={isEdit ? "Modifica los datos del grupo" : "Crea un nuevo grupo para organizar tu presupuesto"}
       footer={
         <>
           {group && (
-            <Button
-              variant="ghost"
-              className="mr-auto text-destructive"
-              onClick={() => setConfirmDelete(true)}
-            >
+            <Button variant="ghost" className="mr-auto text-destructive" onClick={() => setConfirmDelete(true)}>
               Eliminar
             </Button>
           )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            disabled={saveBudgetGroup.isPending}
-          >
+          <Button onClick={handleSubmit(onSubmit)} disabled={saveBudgetGroup.isPending}>
             {isEdit ? "Guardar" : "Crear"}
           </Button>
         </>
@@ -114,13 +92,8 @@ export function BudgetGroupDialog({
       <form className="space-y-4 py-2" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Nombre *</label>
-          <Input
-            {...register("name")}
-            placeholder="Ej: Costos Fijos, Ahorros..."
-          />
-          {errors.name && (
-            <p className="text-xs text-destructive">{errors.name.message}</p>
-          )}
+          <Input {...register("name")} placeholder="Ej: Costos Fijos, Ahorros..." />
+          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
         </div>
 
         <div className="grid grid-cols-3 gap-3">
@@ -130,24 +103,12 @@ export function BudgetGroupDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Porcentaje (%)</label>
-            <Input
-              type="number"
-              {...register("percentage", { valueAsNumber: true })}
-              placeholder="25"
-            />
-            {errors.percentage && (
-              <p className="text-xs text-destructive">
-                {errors.percentage.message}
-              </p>
-            )}
+            <Input type="number" {...register("percentage", { valueAsNumber: true })} placeholder="25" />
+            {errors.percentage && <p className="text-xs text-destructive">{errors.percentage.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Orden</label>
-            <Input
-              type="number"
-              {...register("order", { valueAsNumber: true })}
-              placeholder="1"
-            />
+            <Input type="number" {...register("order", { valueAsNumber: true })} placeholder="1" />
           </div>
         </div>
       </form>

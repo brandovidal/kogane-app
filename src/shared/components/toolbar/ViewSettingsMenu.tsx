@@ -1,10 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
 export interface ViewSettingsMenuProps {
   trigger: ReactElement;
@@ -30,14 +25,8 @@ export function ViewSettingsMenu({
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent
-        align={align}
-        sideOffset={sideOffset}
-        className={className}
-      >
-        <DropdownMenuLabel className="px-2.5 pb-2 text-sm font-semibold">
-          {title}
-        </DropdownMenuLabel>
+      <DropdownMenuContent align={align} sideOffset={sideOffset} className={className}>
+        <DropdownMenuLabel className="px-2.5 pb-2 text-sm font-semibold">{title}</DropdownMenuLabel>
         {children}
       </DropdownMenuContent>
     </DropdownMenu>

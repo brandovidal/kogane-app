@@ -1,25 +1,11 @@
 import { useState, type ComponentType } from "react";
-import {
-  ArrowRightLeft,
-  CalendarArrowDown,
-  CalendarArrowUp,
-  Check,
-  Copy,
-  History,
-  MoreHorizontal,
-  Paperclip,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { ArrowRightLeft, CalendarArrowDown, CalendarArrowUp, Check, Copy, History, MoreHorizontal, Paperclip, Pencil, Trash2 } from "lucide-react";
 
 import type { AttachmentRefType } from "@/shared/api/types";
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
 import { AttachmentsDialog } from "@/features/attachments/components/dialogs/AttachmentsDialog";
 import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import {
-  PaymentStatusMenu,
-  type PaymentStatusMenuProps,
-} from "./PaymentStatusMenu";
+import { PaymentStatusMenu, type PaymentStatusMenuProps } from "./PaymentStatusMenu";
 
 import { Button } from "@/ui/button";
 import {
@@ -101,12 +87,7 @@ export function RowActions({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            aria-label={`Acciones de ${label}`}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Acciones de ${label}`}>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -121,34 +102,24 @@ export function RowActions({
               <Copy /> Duplicar
             </DropdownMenuItem>
           )}
-          {extraItems?.map(
-            ({ label: text, icon: Icon, onSelect, hint, note }) => (
-              <DropdownMenuItem
-                key={text}
-                onSelect={onSelect}
-                disabled={!!hint}
-              >
-                <Icon />
-                {hint || note ? (
-                  <span className="flex flex-col">
-                    {text}
-                    <span className="text-xs text-muted-foreground">
-                      {hint ?? note}
-                    </span>
-                  </span>
-                ) : (
-                  text
-                )}
-              </DropdownMenuItem>
-            ),
+          {extraItems?.map(({ label: text, icon: Icon, onSelect, hint, note }) => (
+            <DropdownMenuItem key={text} onSelect={onSelect} disabled={!!hint}>
+              <Icon />
+              {hint || note ? (
+                <span className="flex flex-col">
+                  {text}
+                  <span className="text-xs text-muted-foreground">{hint ?? note}</span>
+                </span>
+              ) : (
+                text
+              )}
+            </DropdownMenuItem>
+          ))}
+          {status && !isPaidStatus(status.value) && status.options.includes("paid") && (
+            <DropdownMenuItem onSelect={() => status.onChange("paid")}>
+              <Check /> Marcar como pagado
+            </DropdownMenuItem>
           )}
-          {status &&
-            !isPaidStatus(status.value) &&
-            status.options.includes("paid") && (
-              <DropdownMenuItem onSelect={() => status.onChange("paid")}>
-                <Check /> Marcar como pagado
-              </DropdownMenuItem>
-            )}
           {status && <PaymentStatusMenu {...status} />}
           {(onNextMonth || onPreviousMonth || onMove) && (
             <>
@@ -163,11 +134,7 @@ export function RowActions({
                       <CalendarArrowDown />
                       <span className="flex flex-col">
                         Mover al mes anterior
-                        {monthLabels?.previous && (
-                          <span className="text-xs text-muted-foreground">
-                            {monthLabels.previous}
-                          </span>
-                        )}
+                        {monthLabels?.previous && <span className="text-xs text-muted-foreground">{monthLabels.previous}</span>}
                       </span>
                     </DropdownMenuItem>
                   )}
@@ -176,11 +143,7 @@ export function RowActions({
                       <CalendarArrowUp />
                       <span className="flex flex-col">
                         Mover al siguiente mes
-                        {monthLabels?.next && (
-                          <span className="text-xs text-muted-foreground">
-                            {monthLabels.next}
-                          </span>
-                        )}
+                        {monthLabels?.next && <span className="text-xs text-muted-foreground">{monthLabels.next}</span>}
                       </span>
                     </DropdownMenuItem>
                   )}
@@ -194,50 +157,27 @@ export function RowActions({
             </>
           )}
           {files && (
-            <DropdownMenuItem
-              onSelect={() =>
-                onOpenFiles ? onOpenFiles() : setFilesOpen(true)
-              }
-            >
+            <DropdownMenuItem onSelect={() => (onOpenFiles ? onOpenFiles() : setFilesOpen(true))}>
               <Paperclip /> Archivos
             </DropdownMenuItem>
           )}
           {history && (
-            <DropdownMenuItem
-              onSelect={() =>
-                onOpenHistory ? onOpenHistory() : setHistoryOpen(true)
-              }
-            >
+            <DropdownMenuItem onSelect={() => (onOpenHistory ? onOpenHistory() : setHistoryOpen(true))}>
               <History /> Historial
             </DropdownMenuItem>
           )}
           {onDelete && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={() => setDeleteOpen(true)}
-              >
+              <DropdownMenuItem variant="destructive" onSelect={() => setDeleteOpen(true)}>
                 <Trash2 /> Eliminar
               </DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      {history && historyOpen && (
-        <HistoryDialog
-          title={label}
-          {...history}
-          onClose={() => setHistoryOpen(false)}
-        />
-      )}
-      {files && filesOpen && (
-        <AttachmentsDialog
-          title={label}
-          {...files}
-          onClose={() => setFilesOpen(false)}
-        />
-      )}
+      {history && historyOpen && <HistoryDialog title={label} {...history} onClose={() => setHistoryOpen(false)} />}
+      {files && filesOpen && <AttachmentsDialog title={label} {...files} onClose={() => setFilesOpen(false)} />}
       {onDelete && (
         <DeleteConfirmationDialog
           open={deleteOpen}

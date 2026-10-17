@@ -1,30 +1,14 @@
 import { useState } from "react";
 import { Check, ExternalLink, Send } from "lucide-react";
-import {
-  useTelegramLink,
-  useUnlinkTelegram,
-  type useMe,
-} from "@/features/auth/hooks/auth";
+import { useTelegramLink, useUnlinkTelegram, type useMe } from "@/features/auth/hooks/auth";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 
-export function ProfileTelegramCard({
-  user,
-}: {
-  user: NonNullable<ReturnType<typeof useMe>["data"]>;
-}) {
+export function ProfileTelegramCard({ user }: { user: NonNullable<ReturnType<typeof useMe>["data"]> }) {
   const telegramLink = useTelegramLink();
   const unlink = useUnlinkTelegram();
-  const [link, setLink] = useState<{ url: string; expiresAt: string } | null>(
-    null,
-  );
+  const [link, setLink] = useState<{ url: string; expiresAt: string } | null>(null);
 
   return (
     <Card>
@@ -32,9 +16,7 @@ export function ProfileTelegramCard({
         <CardTitle className="text-base">Telegram</CardTitle>
         <CardDescription>
           El bot guarda lo que le mandes en tu cuenta, no en la de otros.{" "}
-          {user.telegramLinked
-            ? "Este chat ya está vinculado."
-            : "Vincula tu chat para usarlo."}
+          {user.telegramLinked ? "Este chat ya está vinculado." : "Vincula tu chat para usarlo."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -55,11 +37,7 @@ export function ProfileTelegramCard({
             disabled={telegramLink.isPending}
           >
             <Send aria-hidden="true" className="size-4" />
-            {telegramLink.isPending
-              ? "Generando enlace…"
-              : user.telegramLinked
-                ? "Vincular otro chat"
-                : "Vincular Telegram"}
+            {telegramLink.isPending ? "Generando enlace…" : user.telegramLinked ? "Vincular otro chat" : "Vincular Telegram"}
           </Button>
           {user.telegramLinked && (
             <Button

@@ -1,13 +1,8 @@
-import type {
-  INSTALLMENT_FILTER,
-  SHARED_FILTER,
-} from "../constants/expense-filters";
+import type { INSTALLMENT_FILTER, SHARED_FILTER } from "../constants/expense-filters";
 
-type InstallmentFilterValue =
-  (typeof INSTALLMENT_FILTER)[keyof typeof INSTALLMENT_FILTER];
+type InstallmentFilterValue = (typeof INSTALLMENT_FILTER)[keyof typeof INSTALLMENT_FILTER];
 type SharedFilterValue = (typeof SHARED_FILTER)[keyof typeof SHARED_FILTER];
-type SharedFilterSelection =
-  SharedFilterValue | `${SharedFilterValue},${SharedFilterValue}`;
+type SharedFilterSelection = SharedFilterValue | `${SharedFilterValue},${SharedFilterValue}`;
 
 export interface ExpenseFilterValues {
   person?: string; // Comma-separated person ids; PERSON_ME and PERSON_UNASSIGNED are special values.

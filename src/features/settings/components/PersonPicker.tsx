@@ -18,35 +18,21 @@ interface PersonPickerProps extends CatalogSelectProps {
 // The person of a record (Costos fijos, Plataformas, Tarjetas, Recurrentes, Cobros…): the people marked for this page,
 // then the others, and "Nueva persona" without leaving the form. Picking someone who is not marked yet, or creating
 // one, marks them for this page so the next form already offers them (Configuración ▸ Personas)
-export function PersonPicker({
-  value,
-  onChange,
-  placeholder = "Selecciona persona",
-  className,
-  disabled,
-  module,
-}: PersonPickerProps) {
+export function PersonPicker({ value, onChange, placeholder = "Selecciona persona", className, disabled, module }: PersonPickerProps) {
   const people = usePeople().data ?? [];
   const savePerson = useSavePerson();
   const [creating, setCreating] = useState(false);
   const pageLabel = module ? PERSON_MODULE_LABELS[module] : null;
 
-  const visible = people.filter(
-    (person) => person.isActive || person.id === value,
-  );
+  const visible = people.filter((person) => person.isActive || person.id === value);
   const options = visible.map((person) => {
-    const available =
-      !module || person.isDefault || person.appearsIn.includes(module);
+    const available = !module || person.isDefault || person.appearsIn.includes(module);
     return {
       value: person.id,
       label: person.name,
       decoration: <NameAvatar name={person.name} />,
       searchTerms: person.aliases,
-      group: !module
-        ? undefined
-        : available
-          ? `Disponibles en ${pageLabel}`
-          : `Otras · se marcarán en ${pageLabel}`,
+      group: !module ? undefined : available ? `Disponibles en ${pageLabel}` : `Otras · se marcarán en ${pageLabel}`,
     };
   });
   // The groups appear in this order: the page's people first
@@ -55,12 +41,7 @@ export function PersonPicker({
   const pick = (id: string | null) => {
     if (!id) return onChange(null);
     const person = people.find((candidate) => candidate.id === id);
-    if (
-      module &&
-      person &&
-      !person.isDefault &&
-      !person.appearsIn.includes(module)
-    ) {
+    if (module && person && !person.isDefault && !person.appearsIn.includes(module)) {
       savePerson.mutate(
         {
           id: person.id,
@@ -121,15 +102,7 @@ export function PersonPicker({
 }
 
 // The minimum to start using someone; the rest (document, other pages) is completed in Configuración ▸ Personas
-function QuickPersonDialog({
-  module,
-  onClose,
-  onCreated,
-}: {
-  module?: PersonModule;
-  onClose: () => void;
-  onCreated: (id: string) => void;
-}) {
+function QuickPersonDialog({ module, onClose, onCreated }: { module?: PersonModule; onClose: () => void; onCreated: (id: string) => void }) {
   const savePerson = useSavePerson();
   const [name, setName] = useState("");
   const [alias, setAlias] = useState("");
@@ -159,10 +132,7 @@ function QuickPersonDialog({
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button
-            onClick={create}
-            disabled={!name.trim() || savePerson.isPending}
-          >
+          <Button onClick={create} disabled={!name.trim() || savePerson.isPending}>
             Crear y usar
           </Button>
         </>
@@ -175,13 +145,7 @@ function QuickPersonDialog({
           if (name.trim()) create();
         }}
       >
-        <Input
-          autoFocus
-          placeholder="Nombre"
-          aria-label="Nombre"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
+        <Input autoFocus placeholder="Nombre" aria-label="Nombre" value={name} onChange={(event) => setName(event.target.value)} />
         <Input
           placeholder="Alias para el bot (opcional)"
           aria-label="Alias para el bot"

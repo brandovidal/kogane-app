@@ -7,13 +7,7 @@ import { PaymentMethodSelect } from "@/features/settings/components/PaymentMetho
 import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { useCreateDebt, useUpdateDebt } from "@/features/debts/hooks/debts";
 import type { Debt } from "@/shared/api/types";
 import { DEBT_DIRECTION_LABELS } from "@/features/debts/constants/debts";
@@ -22,9 +16,7 @@ import { usePeriod } from "@/shared/stores/period.store";
 const debtFormSchema = z.object({
   direction: z.enum(["owed_to_me", "i_owe"]),
   description: z.string().trim().min(1, "Escribe un concepto"),
-  amount: z
-    .number({ error: "Monto requerido" })
-    .positive("Monto debe ser positivo"),
+  amount: z.number({ error: "Monto requerido" }).positive("Monto debe ser positivo"),
   personId: z.string().min(1, "Persona requerida"),
   installments: z.number().int().min(1).max(120),
   dueDate: z.string(),
@@ -45,12 +37,7 @@ interface DebtDialogProps {
 }
 
 // One row per installment (D60): "3 cuotas de 400" creates three installments from the month on screen
-export function DebtDialog({
-  open,
-  onOpenChange,
-  direction,
-  debt,
-}: DebtDialogProps) {
+export function DebtDialog({ open, onOpenChange, direction, debt }: DebtDialogProps) {
   const createDebt = useCreateDebt();
   const updateDebt = useUpdateDebt();
   const month = usePeriod((s) => s.month);
@@ -154,10 +141,7 @@ export function DebtDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button
-            onClick={onSubmit}
-            disabled={createDebt.isPending || updateDebt.isPending}
-          >
+          <Button onClick={onSubmit} disabled={createDebt.isPending || updateDebt.isPending}>
             {debt ? "Guardar cambios" : "Crear"}
           </Button>
         </>
@@ -167,12 +151,7 @@ export function DebtDialog({
         {!debt && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo</label>
-            <Select
-              value={watch("direction")}
-              onValueChange={(v) =>
-                setValue("direction", v as DebtForm["direction"])
-              }
-            >
+            <Select value={watch("direction")} onValueChange={(v) => setValue("direction", v as DebtForm["direction"])}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -188,64 +167,28 @@ export function DebtDialog({
         )}
         <div className="space-y-1.5">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              {watch("direction") === "i_owe"
-                ? "A quién le debes"
-                : "Quién te debe"}{" "}
-              *
-            </label>
-            <PersonPicker
-              value={watch("personId")}
-              onChange={(id) =>
-                setValue("personId", id ?? "", { shouldValidate: true })
-              }
-            />
-            {errors.personId && (
-              <p className="text-xs text-destructive">
-                {errors.personId.message}
-              </p>
-            )}
+            <label className="text-sm font-medium">{watch("direction") === "i_owe" ? "A quién le debes" : "Quién te debe"} *</label>
+            <PersonPicker value={watch("personId")} onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })} />
+            {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Descripción *</label>
-          <Input
-            {...register("description")}
-            placeholder="Ej: BCP, Stream, préstamo…"
-          />
-          {errors.description && (
-            <p className="text-xs text-destructive">
-              {errors.description.message}
-            </p>
-          )}
+          <Input {...register("description")} placeholder="Ej: BCP, Stream, préstamo…" />
+          {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              {!debt && installments > 1 ? "Monto por cuota *" : "Monto *"}
-            </label>
-            <Input
-              type="number"
-              step="0.01"
-              {...register("amount", { valueAsNumber: true })}
-            />
-            {errors.amount && (
-              <p className="text-xs text-destructive">
-                {errors.amount.message}
-              </p>
-            )}
+            <label className="text-sm font-medium">{!debt && installments > 1 ? "Monto por cuota *" : "Monto *"}</label>
+            <Input type="number" step="0.01" {...register("amount", { valueAsNumber: true })} />
+            {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
           {!debt && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Cuotas</label>
-              <Input
-                type="number"
-                min={1}
-                max={120}
-                {...register("installments", { valueAsNumber: true })}
-              />
+              <Input type="number" min={1} max={120} {...register("installments", { valueAsNumber: true })} />
             </div>
           )}
         </div>
@@ -256,9 +199,7 @@ export function DebtDialog({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">
-            Tarjeta o cuenta con que se pagó
-          </label>
+          <label className="text-sm font-medium">Tarjeta o cuenta con que se pagó</label>
           <PaymentMethodSelect
             allowEmpty
             value={watch("paymentMethodId")}

@@ -22,11 +22,7 @@ export function AttachmentsDialog({
       title={`Archivos de ${title}`}
       icon={<Paperclip aria-hidden="true" className="size-4 text-primary" />}
       description="Boleta, recibo o contrato de este registro."
-      footer={
-        <p className="mr-auto text-xs text-muted-foreground">
-          Los cambios se guardan al instante
-        </p>
-      }
+      footer={<p className="mr-auto text-xs text-muted-foreground">Los cambios se guardan al instante</p>}
     >
       <AttachmentsPanel refType={refType} refId={refId} dropzone />
     </ResponsiveDialog>

@@ -1,13 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  CalendarPlus,
-  InboxIcon,
-  ListFilter,
-  Plus,
-  SearchX,
-  X,
-  type LucideIcon,
-} from "lucide-react";
+import { CalendarPlus, InboxIcon, ListFilter, Plus, SearchX, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 
 type EmptyStateVariant = "empty" | "period" | "filters" | "search";
@@ -64,9 +56,7 @@ export function EmptyState({
         <span
           className={cn(
             "relative flex size-14 items-center justify-center rounded-2xl",
-            tone === "success"
-              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
-              : "bg-muted/60 text-muted-foreground",
+            tone === "success" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300" : "bg-muted/60 text-muted-foreground",
           )}
         >
           <Icon aria-hidden="true" className="size-6" />
@@ -79,14 +69,10 @@ export function EmptyState({
       )}
       <div className="space-y-1">
         <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-        <p className="mx-auto max-w-lg text-sm leading-6 text-muted-foreground">
-          {description}
-        </p>
+        <p className="mx-auto max-w-lg text-sm leading-6 text-muted-foreground">{description}</p>
       </div>
       {children}
-      {action && (
-        <div className="mt-1 flex flex-wrap justify-center gap-2">{action}</div>
-      )}
+      {action && <div className="mt-1 flex flex-wrap justify-center gap-2">{action}</div>}
     </section>
   );
 }

@@ -29,12 +29,7 @@ export type CommitmentPatch = UpdateCommitmentDto;
 export type ContributionBody = ContributionDto;
 
 // The installments are fixed costs: they move the month, the budget and the calendar too
-const invalidate = [
-  commitmentKeys.all,
-  ["expenses", "fixed-costs"],
-  ["summary"],
-  ["calendar"],
-];
+const invalidate = [commitmentKeys.all, ["expenses", "fixed-costs"], ["summary"], ["calendar"]];
 
 // Loans and investments with their progress (P27, D99)
 export const useCommitments = (filter: CommitmentFilter = {}) =>
@@ -58,11 +53,7 @@ export const useCreateCommitment = () =>
   });
 
 export const useUpdateCommitment = () =>
-  useApiMutation(
-    ({ id, body }: { id: string; body: CommitmentPatch }) =>
-      updateCommitment(id, body),
-    { invalidate, success: "Guardado" },
-  );
+  useApiMutation(({ id, body }: { id: string; body: CommitmentPatch }) => updateCommitment(id, body), { invalidate, success: "Guardado" });
 
 export const useDeleteCommitment = () =>
   useApiMutation((id: string) => deleteCommitment(id), {
@@ -73,30 +64,20 @@ export const useDeleteCommitment = () =>
 export const useCreateInstallments = () =>
   useApiMutation((id: string) => createInstallments(id), {
     invalidate,
-    success: ({ created }) =>
-      created ? `${created} cuota(s) creadas` : "No faltaba ninguna cuota",
+    success: ({ created }) => (created ? `${created} cuota(s) creadas` : "No faltaba ninguna cuota"),
   });
 
 export const useSaveContribution = () =>
   useApiMutation(
-    ({
-      id,
-      contributionId,
-      body,
-    }: {
-      id: string;
-      contributionId?: string;
-      body: ContributionBody;
-    }) => saveContribution(id, body, contributionId),
-    { invalidate: [commitmentKeys.all], success: "Aporte guardado" },
+    ({ id, contributionId, body }: { id: string; contributionId?: string; body: ContributionBody }) => saveContribution(id, body, contributionId),
+    {
+      invalidate: [commitmentKeys.all],
+      success: "Aporte guardado",
+    },
   );
 
 export const useDeleteContribution = () =>
-  useApiMutation(
-    ({ id, contributionId }: { id: string; contributionId: string }) =>
-      deleteContribution(id, contributionId),
-    {
-      invalidate: [commitmentKeys.all, attachmentKeys.all],
-      success: "Aporte eliminado",
-    },
-  );
+  useApiMutation(({ id, contributionId }: { id: string; contributionId: string }) => deleteContribution(id, contributionId), {
+    invalidate: [commitmentKeys.all, attachmentKeys.all],
+    success: "Aporte eliminado",
+  });

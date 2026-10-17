@@ -28,7 +28,4 @@ export type { SearchFieldProps } from "./SearchField";
 export { SearchField } from "./SearchField";
 export type { RecordSearchFieldProps } from "./RecordSearchField";
 export { RecordSearchField } from "./RecordSearchField";
-export {
-  PeriodFilterFields,
-  type PeriodFilterFieldsProps,
-} from "./PeriodFilterFields";
+export { PeriodFilterFields, type PeriodFilterFieldsProps } from "./PeriodFilterFields";

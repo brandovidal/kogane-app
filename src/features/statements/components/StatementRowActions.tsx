@@ -3,12 +3,7 @@ import { Check, Eye, MoreHorizontal, Pencil, RotateCcw, X } from "lucide-react";
 import type { StatementRow } from "@/shared/api/types";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 
 import { rowName } from "@/features/statements/lib/statement-view";
 
@@ -23,15 +18,7 @@ interface StatementRowActionsProps {
 }
 
 // ⋯ of a statement row (Nuevos and Coinciden): edit your description, save it as an expense, ignore or bring it back
-export function StatementRowActions({
-  row,
-  onEdit,
-  onSave,
-  onIgnore,
-  onRestore,
-  onReview,
-  saving,
-}: StatementRowActionsProps) {
+export function StatementRowActions({ row, onEdit, onSave, onIgnore, onRestore, onReview, saving }: StatementRowActionsProps) {
   const created = row.result === "created";
 
   if (row.locked) return <Badge variant="outline">Anulado · bloqueado</Badge>;
@@ -39,12 +26,7 @@ export function StatementRowActions({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          aria-label={`Acciones de ${rowName(row)}`}
-        >
+        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Acciones de ${rowName(row)}`}>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

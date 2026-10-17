@@ -11,16 +11,7 @@ import { Button } from "@/ui/button";
 import { PaymentBalancePreview } from "./PaymentBalancePreview";
 import { Checkbox } from "@/ui/checkbox";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/ui/select";
 
 type PaymentKind = "payment" | "prepaid" | "cashback";
 type PaymentScope = "total" | "partial";
@@ -40,23 +31,11 @@ interface RegisterPaymentDialogProps {
 
 // "Registrar pago" (D114): like Nuevo gasto, for what a person paid. Their installments up to the month on screen come
 // checked; less than their balance is an abono spread oldest first
-export function RegisterPaymentDialog({
-  open,
-  onOpenChange,
-  debts,
-  period,
-}: RegisterPaymentDialogProps) {
+export function RegisterPaymentDialog({ open, onOpenChange, debts, period }: RegisterPaymentDialogProps) {
   const bulk = useBulkDebts();
-  const methods =
-    usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
+  const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
   const people = useMemo(
-    () => [
-      ...new Map(
-        debts
-          .filter((debt) => debt.balance > 0)
-          .map((debt) => [debt.personId, debt.person.name]),
-      ).entries(),
-    ],
+    () => [...new Map(debts.filter((debt) => debt.balance > 0).map((debt) => [debt.personId, debt.person.name])).entries()],
     [debts],
   );
   const [personId, setPersonId] = useState<string>("");
@@ -67,20 +46,13 @@ export function RegisterPaymentDialog({
   const [paidAt, setPaidAt] = useState(toIsoDate(new Date()));
   const [methodId, setMethodId] = useState<string | null>(null);
 
-  const theirs = debts.filter(
-    (debt) => debt.personId === personId && debt.balance > 0,
-  );
+  const theirs = debts.filter((debt) => debt.personId === personId && debt.balance > 0);
   const selected = theirs.filter((debt) => checked.has(debt.id));
   const balance = selected.reduce((sum, debt) => sum + debt.balance, 0);
   const selectedMethod = methods.find((method) => method.id === methodId);
-  const canAmortize =
-    selectedMethod?.type === "credit_card" &&
-    selectedMethod.supportsAmortization;
-  const canCashback =
-    selectedMethod?.type === "credit_card" && selectedMethod.supportsCashback;
-  const upToPeriod = (debt: Debt) =>
-    debt.paymentYear * 12 + debt.paymentMonth <=
-    period.year * 12 + period.month;
+  const canAmortize = selectedMethod?.type === "credit_card" && selectedMethod.supportsAmortization;
+  const canCashback = selectedMethod?.type === "credit_card" && selectedMethod.supportsCashback;
+  const upToPeriod = (debt: Debt) => debt.paymentYear * 12 + debt.paymentMonth <= period.year * 12 + period.month;
 
   useEffect(() => {
     if (!open) return;
@@ -92,10 +64,7 @@ export function RegisterPaymentDialog({
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps -- only when it opens
 
   useEffect(() => {
-    const due = debts.filter(
-      (debt) =>
-        debt.personId === personId && debt.balance > 0 && upToPeriod(debt),
-    );
+    const due = debts.filter((debt) => debt.personId === personId && debt.balance > 0 && upToPeriod(debt));
     setChecked(new Set(due.map((debt) => debt.id)));
     setAmount(due.reduce((sum, debt) => sum + debt.balance, 0).toFixed(2));
   }, [personId]); // eslint-disable-line react-hooks/exhaustive-deps -- the person decides what comes checked
@@ -105,9 +74,7 @@ export function RegisterPaymentDialog({
     if (on) next.add(id);
     else next.delete(id);
     setChecked(next);
-    const total = theirs
-      .filter((debt) => next.has(debt.id))
-      .reduce((sum, debt) => sum + debt.balance, 0);
+    const total = theirs.filter((debt) => next.has(debt.id)).reduce((sum, debt) => sum + debt.balance, 0);
     setAmount(total.toFixed(2));
     setScope("total");
   };
@@ -118,16 +85,11 @@ export function RegisterPaymentDialog({
     value > 0 &&
     value <= balance + 0.005 &&
     !!methodId &&
-    (kind === "payment"
-      ? scope === "total"
-        ? value >= balance - 0.005
-        : value < balance - 0.005
-      : Math.abs(value - balance) <= 0.005);
+    (kind === "payment" ? (scope === "total" ? value >= balance - 0.005 : value < balance - 0.005) : Math.abs(value - balance) <= 0.005);
 
   const changeAmount = (next: string) => {
     setAmount(next);
-    if (kind === "payment")
-      setScope(Number(next) < balance ? "partial" : "total");
+    if (kind === "payment") setScope(Number(next) < balance ? "partial" : "total");
   };
   const changeKind = (next: PaymentKind) => {
     setKind(next);
@@ -198,11 +160,7 @@ export function RegisterPaymentDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Aplicación del pago</label>
-            <Select
-              value={scope}
-              disabled={kind !== "payment"}
-              onValueChange={(next) => setScope(next as PaymentScope)}
-            >
+            <Select value={scope} disabled={kind !== "payment"} onValueChange={(next) => setScope(next as PaymentScope)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -217,10 +175,7 @@ export function RegisterPaymentDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de movimiento</label>
-            <Select
-              value={kind}
-              onValueChange={(next) => changeKind(next as PaymentKind)}
-            >
+            <Select value={kind} onValueChange={(next) => changeKind(next as PaymentKind)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -228,12 +183,8 @@ export function RegisterPaymentDialog({
                 <SelectGroup>
                   <SelectLabel>Movimiento</SelectLabel>
                   <SelectItem value="payment">Pago habitual</SelectItem>
-                  {canAmortize && (
-                    <SelectItem value="prepaid">Amortización</SelectItem>
-                  )}
-                  {canCashback && (
-                    <SelectItem value="cashback">Cashback</SelectItem>
-                  )}
+                  {canAmortize && <SelectItem value="prepaid">Amortización</SelectItem>}
+                  {canCashback && <SelectItem value="cashback">Cashback</SelectItem>}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -250,33 +201,20 @@ export function RegisterPaymentDialog({
         </p>
 
         <div className="max-h-56 space-y-1 overflow-y-auto rounded-md border p-2">
-          {theirs.length === 0 && (
-            <p className="p-2 text-sm text-muted-foreground">
-              No tiene cuotas con saldo.
-            </p>
-          )}
+          {theirs.length === 0 && <p className="p-2 text-sm text-muted-foreground">No tiene cuotas con saldo.</p>}
           {theirs.map((debt) => (
-            <label
-              key={debt.id}
-              className="flex items-center justify-between gap-2 rounded px-1 py-1 text-sm hover:bg-muted/50"
-            >
+            <label key={debt.id} className="flex items-center justify-between gap-2 rounded px-1 py-1 text-sm hover:bg-muted/50">
               <span className="flex min-w-0 items-center gap-2">
-                <Checkbox
-                  checked={checked.has(debt.id)}
-                  onCheckedChange={(on) => toggle(debt.id, on === true)}
-                />
+                <Checkbox checked={checked.has(debt.id)} onCheckedChange={(on) => toggle(debt.id, on === true)} />
                 <span className="truncate">
                   {debt.description}
                   {debt.installment ? ` ${debt.installment}` : ""} ·{" "}
                   <span className="text-muted-foreground">
-                    {getMonthName(debt.paymentMonth).slice(0, 3)}{" "}
-                    {debt.paymentYear}
+                    {getMonthName(debt.paymentMonth).slice(0, 3)} {debt.paymentYear}
                   </span>
                 </span>
               </span>
-              <span className="shrink-0 tabular-nums">
-                {formatCurrency(debt.balance)}
-              </span>
+              <span className="shrink-0 tabular-nums">{formatCurrency(debt.balance)}</span>
             </label>
           ))}
         </div>
@@ -284,24 +222,12 @@ export function RegisterPaymentDialog({
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Monto</label>
-            <Input
-              type="number"
-              step="0.01"
-              value={amount}
-              disabled={kind !== "payment"}
-              onChange={(e) => changeAmount(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Saldo {formatCurrency(balance)}
-            </p>
+            <Input type="number" step="0.01" value={amount} disabled={kind !== "payment"} onChange={(e) => changeAmount(e.target.value)} />
+            <p className="text-xs text-muted-foreground">Saldo {formatCurrency(balance)}</p>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Fecha</label>
-            <Input
-              type="date"
-              value={paidAt}
-              onChange={(e) => setPaidAt(e.target.value)}
-            />
+            <Input type="date" value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
@@ -318,11 +244,7 @@ export function RegisterPaymentDialog({
                     .filter((method) => method.type === "credit_card")
                     .map((method) => (
                       <SelectItem key={method.id} value={method.id}>
-                        <PaymentMethodLabel
-                          name={method.name}
-                          type={method.type}
-                          color={method.color}
-                        />
+                        <PaymentMethodLabel name={method.name} type={method.type} color={method.color} />
                       </SelectItem>
                     ))}
                 </SelectGroup>
@@ -333,11 +255,7 @@ export function RegisterPaymentDialog({
                     .filter((method) => method.type !== "credit_card")
                     .map((method) => (
                       <SelectItem key={method.id} value={method.id}>
-                        <PaymentMethodLabel
-                          name={method.name}
-                          type={method.type}
-                          color={method.color}
-                        />
+                        <PaymentMethodLabel name={method.name} type={method.type} color={method.color} />
                       </SelectItem>
                     ))}
                 </SelectGroup>
@@ -345,15 +263,12 @@ export function RegisterPaymentDialog({
             </Select>
             {!methodId && (
               <p className="text-xs text-muted-foreground">
-                Selecciona cómo se realizó el pago. Los movimientos especiales
-                se configuran por tarjeta en Cuentas y tarjetas.
+                Selecciona cómo se realizó el pago. Los movimientos especiales se configuran por tarjeta en Cuentas y tarjetas.
               </p>
             )}
           </div>
         </div>
-        {kind === "payment" && (
-          <PaymentBalancePreview balance={balance} amount={value} />
-        )}
+        {kind === "payment" && <PaymentBalancePreview balance={balance} amount={value} />}
       </div>
     </ResponsiveDialog>
   );

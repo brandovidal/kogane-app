@@ -1,11 +1,6 @@
 import { FileText, HandCoins, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { CardPeriodSelector } from "../../components/header/CardPeriodSelector";
 
 export function CardDetailHeader({
@@ -24,12 +19,7 @@ export function CardDetailHeader({
       <div className="flex w-full justify-end sm:hidden">
         <CardPeriodSelector />
       </div>
-      <Button
-        size="sm"
-        className="card-primary-button"
-        disabled={!canRegisterPayment}
-        onClick={onRegisterPayment}
-      >
+      <Button size="sm" className="card-primary-button" disabled={!canRegisterPayment} onClick={onRegisterPayment}>
         <HandCoins className="mr-1.5 size-4" />
         Registrar pago
       </Button>
@@ -39,11 +29,7 @@ export function CardDetailHeader({
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label="Más opciones de tarjeta"
-          >
+          <Button variant="outline" size="icon-sm" aria-label="Más opciones de tarjeta">
             <MoreHorizontal className="size-4" />
           </Button>
         </DropdownMenuTrigger>

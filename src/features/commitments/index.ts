@@ -3,11 +3,7 @@ export { CommitmentCard } from "./components/CommitmentCard";
 export { CommitmentDetail } from "./components/CommitmentDetail";
 export { CommitmentForm } from "./components/CommitmentForm";
 export { CommitmentsPage } from "./components/CommitmentsPage";
-export {
-  COMMITMENT_KIND_LABELS,
-  COMMITMENT_SUBTYPE_LABELS,
-  COMMITMENT_STATUS_LABELS,
-} from "./constants/commitments";
+export { COMMITMENT_KIND_LABELS, COMMITMENT_SUBTYPE_LABELS, COMMITMENT_STATUS_LABELS } from "./constants/commitments";
 export {
   useCommitments,
   useCommitment,
@@ -18,10 +14,6 @@ export {
   useSaveContribution,
   useDeleteContribution,
 } from "./hooks/commitments";
-export type {
-  CommitmentBody,
-  CommitmentPatch,
-  ContributionBody,
-} from "./hooks/commitments";
+export type { CommitmentBody, CommitmentPatch, ContributionBody } from "./hooks/commitments";
 export type { CommitmentTotals } from "./lib/commitment-view";
 export { totalsOf, currentLabel, percentPaid } from "./lib/commitment-view";

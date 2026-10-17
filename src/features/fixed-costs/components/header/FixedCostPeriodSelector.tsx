@@ -1,27 +1,12 @@
 import { useState } from "react";
-import {
-  CalendarDays,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import {
-  getCurrentMonth,
-  getCurrentYear,
-  getMonthName,
-} from "@/shared/lib/dates";
+import { getCurrentMonth, getCurrentYear, getMonthName } from "@/shared/lib/dates";
 import { cn } from "@/shared/utils/cn";
 import { Button } from "@/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
 import { useFixedCostPeriodMode } from "../../hooks/useFixedCostPeriodMode";
-import {
-  FIXED_COST_VIEW_PERIOD,
-  isFixedCostView,
-  monthIndexKey,
-  monthKeyIndex,
-  monthRangeLabel,
-} from "../../lib/fixed-cost-views";
+import { FIXED_COST_VIEW_PERIOD, isFixedCostView, monthIndexKey, monthKeyIndex, monthRangeLabel } from "../../lib/fixed-cost-views";
 
 type PeriodValues = {
   month?: string;
@@ -61,28 +46,22 @@ export function FixedCostPeriodSelector({
     month: currentMonth,
     year: currentYear,
   };
-  const [urlValues, setUrlValues] = useUrlFilters<PeriodValues>(
-    isControlled ? [] : PERIOD_KEYS,
-    { month: String(initialValue.month), year: String(initialValue.year) },
-  );
+  const [urlValues, setUrlValues] = useUrlFilters<PeriodValues>(isControlled ? [] : PERIOD_KEYS, {
+    month: String(initialValue.month),
+    year: String(initialValue.year),
+  });
   const values = isControlled
     ? {
         month: String(controlledValue.month),
         year: String(controlledValue.year),
       }
     : urlValues;
-  const [{ vista }] = useUrlFilters<{ vista?: string }>(
-    isControlled ? [] : ["vista"],
-  );
+  const [{ vista }] = useUrlFilters<{ vista?: string }>(isControlled ? [] : ["vista"]);
   const view = isFixedCostView(vista) ? vista : "mes";
   const scope = FIXED_COST_VIEW_PERIOD[view];
   const [open, setOpen] = useState(false);
   const derivedMode = useFixedCostPeriodMode(values, scope);
-  const mode = isControlled
-    ? modes?.length === 1
-      ? modes[0]
-      : "month"
-    : derivedMode;
+  const mode = isControlled ? (modes?.length === 1 ? modes[0] : "month") : derivedMode;
   const availableModes = modes ?? MODES.map((option) => option.value);
   const month = Number(values.month) || currentMonth;
   const year = Number(values.year) || currentYear;
@@ -105,8 +84,7 @@ export function FixedCostPeriodSelector({
       month: String((index % 12) + 1),
       year: String(Math.floor(index / 12)),
     });
-  const setYear = (nextYear: number) =>
-    write({ month: undefined, year: String(nextYear) });
+  const setYear = (nextYear: number) => write({ month: undefined, year: String(nextYear) });
   const setRange = (from: number, to: number) =>
     write({
       month: undefined,
@@ -118,8 +96,7 @@ export function FixedCostPeriodSelector({
     setRangeStart(null);
     if (next === "month") setMonth(year * 12 + month - 1);
     if (next === "year") setYear(year);
-    if (next === "range")
-      setRange(year * 12 + month - 3, year * 12 + month - 1);
+    if (next === "range") setRange(year * 12 + month - 3, year * 12 + month - 1);
     if (next === "all") write({ month: undefined, year: undefined });
   };
   const label =
@@ -133,21 +110,13 @@ export function FixedCostPeriodSelector({
   const fromIndex = monthKeyIndex(values.desde);
   const toIndex = monthKeyIndex(values.hasta);
   const monthState = (index: number) => {
-    if (mode === "month")
-      return index === year * 12 + month - 1 ? "edge" : null;
+    if (mode === "month") return index === year * 12 + month - 1 ? "edge" : null;
     if (mode === "range") {
       if (rangeStart != null) return index === rangeStart ? "edge" : null;
       if (index === fromIndex || index === toIndex) return "edge";
-      if (
-        fromIndex != null &&
-        toIndex != null &&
-        index > fromIndex &&
-        index < toIndex
-      )
-        return "inside";
+      if (fromIndex != null && toIndex != null && index > fromIndex && index < toIndex) return "inside";
     }
-    if (mode === "year")
-      return Math.floor(index / 12) === year ? "inside" : null;
+    if (mode === "year") return Math.floor(index / 12) === year ? "inside" : null;
     return null;
   };
   const pickMonth = (index: number) => {
@@ -188,14 +157,8 @@ export function FixedCostPeriodSelector({
         </PopoverTrigger>
         <PopoverContent align="end" className="w-80 space-y-3 rounded-xl p-3">
           {scope === "month" && availableModes.length > 1 && (
-            <div
-              role="radiogroup"
-              aria-label="Tipo de período"
-              className="grid grid-cols-4 gap-1 rounded-lg bg-muted p-1"
-            >
-              {MODES.filter((option) =>
-                availableModes.includes(option.value),
-              ).map((option) => (
+            <div role="radiogroup" aria-label="Tipo de período" className="grid grid-cols-4 gap-1 rounded-lg bg-muted p-1">
+              {MODES.filter((option) => availableModes.includes(option.value)).map((option) => (
                 <button
                   key={option.value}
                   type="button"
@@ -204,8 +167,7 @@ export function FixedCostPeriodSelector({
                   onClick={() => changeMode(option.value)}
                   className={cn(
                     "h-7 rounded-md text-xs font-medium text-muted-foreground transition-colors",
-                    mode === option.value &&
-                      "bg-background text-foreground shadow-sm",
+                    mode === option.value && "bg-background text-foreground shadow-sm",
                   )}
                 >
                   {option.label}
@@ -220,24 +182,18 @@ export function FixedCostPeriodSelector({
               size="icon"
               className="size-8"
               aria-label="Año anterior"
-              onClick={() =>
-                mode === "year" ? setYear(year - 1) : setGridYear(gridYear - 1)
-              }
+              onClick={() => (mode === "year" ? setYear(year - 1) : setGridYear(gridYear - 1))}
             >
               <ChevronLeft className="size-4" />
             </Button>
-            <span className="text-sm font-semibold tabular-nums">
-              {mode === "year" ? year : gridYear}
-            </span>
+            <span className="text-sm font-semibold tabular-nums">{mode === "year" ? year : gridYear}</span>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               className="size-8"
               aria-label="Año siguiente"
-              onClick={() =>
-                mode === "year" ? setYear(year + 1) : setGridYear(gridYear + 1)
-              }
+              onClick={() => (mode === "year" ? setYear(year + 1) : setGridYear(gridYear + 1))}
             >
               <ChevronRight className="size-4" />
             </Button>
@@ -257,16 +213,12 @@ export function FixedCostPeriodSelector({
                       className={cn(
                         "relative h-9 rounded-md text-sm transition-colors hover:bg-accent",
                         state === "inside" && "rounded-none bg-brand/15",
-                        state === "edge" &&
-                          "bg-brand font-semibold text-background hover:bg-brand",
+                        state === "edge" && "bg-brand font-semibold text-background hover:bg-brand",
                       )}
                     >
                       {getMonthName(offset + 1).slice(0, 3)}
                       {index === nowIndex && state !== "edge" && (
-                        <span
-                          aria-hidden="true"
-                          className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-brand"
-                        />
+                        <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-brand" />
                       )}
                     </button>
                   );
@@ -274,9 +226,7 @@ export function FixedCostPeriodSelector({
               </div>
               {mode === "range" && (
                 <p className="text-xs text-muted-foreground">
-                  {rangeStart == null
-                    ? "Elige el mes de inicio y luego el de fin."
-                    : "Ahora elige el mes de fin."}
+                  {rangeStart == null ? "Elige el mes de inicio y luego el de fin." : "Ahora elige el mes de fin."}
                 </p>
               )}
             </>

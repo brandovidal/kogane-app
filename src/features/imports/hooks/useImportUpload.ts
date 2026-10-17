@@ -23,8 +23,7 @@ export function useImportUpload(onRead: (key: string) => void) {
   const upload = source === "notion" ? notion : statement;
   const error = upload.error instanceof ApiError ? upload.error : null;
   const reason = (error?.details as { reason?: string } | undefined)?.reason;
-  const needsPassword =
-    source === "statement" && error?.code === "STATEMENT_PASSWORD";
+  const needsPassword = source === "statement" && error?.code === "STATEMENT_PASSWORD";
   const needsCard = source === "statement" && files.length > 0;
   const cardMissing = needsCard && !cardId;
   const progress = useEstimatedProgress(upload.isPending);
@@ -70,9 +69,7 @@ export function useImportUpload(onRead: (key: string) => void) {
   const selectFiles = (value: File[]) => {
     notion.reset();
     statement.reset();
-    const invalid = value
-      .map((file) => validateUploadFile(file, source))
-      .find(Boolean);
+    const invalid = value.map((file) => validateUploadFile(file, source)).find(Boolean);
     setFileError(invalid ?? null);
     setFiles(value);
     if (invalid || source !== "statement" || !value[0]) return;

@@ -1,7 +1,4 @@
-import {
-  DropdownMenuCheckboxItem,
-  DropdownMenuSeparator,
-} from "@/ui/dropdown-menu";
+import { DropdownMenuCheckboxItem, DropdownMenuSeparator } from "@/ui/dropdown-menu";
 
 export interface ColumnVisibilityOption {
   id: string;
@@ -11,13 +8,7 @@ export interface ColumnVisibilityOption {
   onVisibleChange: (visible: boolean) => void;
 }
 
-export function ColumnVisibilityOptions({
-  columns,
-  className,
-}: {
-  columns: readonly ColumnVisibilityOption[];
-  className?: string;
-}) {
+export function ColumnVisibilityOptions({ columns, className }: { columns: readonly ColumnVisibilityOption[]; className?: string }) {
   const visibleCount = columns.filter((column) => column.visible).length;
 
   return (
@@ -38,9 +29,7 @@ export function ColumnVisibilityOptions({
       <DropdownMenuCheckboxItem
         checked={visibleCount === columns.length}
         onSelect={(event) => event.preventDefault()}
-        onCheckedChange={() =>
-          columns.forEach((column) => column.onVisibleChange(true))
-        }
+        onCheckedChange={() => columns.forEach((column) => column.onVisibleChange(true))}
         className={className}
       >
         Mostrar todas

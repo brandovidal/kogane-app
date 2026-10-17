@@ -1,16 +1,6 @@
 import { useState } from "react";
 import { HistoryDialog } from "@/features/history/components/HistoryDialog";
-import {
-  BellRing,
-  ChevronRight,
-  Eye,
-  HandCoins,
-  History,
-  MoreHorizontal,
-  Pencil,
-  RotateCcw,
-  Trash2,
-} from "lucide-react";
+import { BellRing, ChevronRight, Eye, HandCoins, History, MoreHorizontal, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import { useDeleteDebt, useBulkDebts } from "@/features/debts/hooks/debts";
 import { useRemindDebts } from "@/features/notifications/hooks/notifications";
 import type { Debt } from "@/shared/api/types";
@@ -33,26 +23,10 @@ import {
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { Progress } from "@/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
-import {
-  debtBadgeStatus,
-  groupByPersonAndType,
-} from "@/features/debts/lib/debt-filters";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { debtBadgeStatus, groupByPersonAndType } from "@/features/debts/lib/debt-filters";
 
 export function DebtGridSection({
   debts,
@@ -94,9 +68,7 @@ export function DebtGridSection({
               </Badge>
             )}
           </span>
-          {debt.notes && (
-            <p className="text-xs italic text-muted-foreground">{debt.notes}</p>
-          )}
+          {debt.notes && <p className="text-xs italic text-muted-foreground">{debt.notes}</p>}
         </div>
       ),
     },
@@ -105,17 +77,13 @@ export function DebtGridSection({
       header: "Saldo",
       role: "amount",
       cell: (debt) => {
-        const progress =
-          debt.amount > 0 ? (debt.paidAmount / debt.amount) * 100 : 0;
+        const progress = debt.amount > 0 ? (debt.paidAmount / debt.amount) * 100 : 0;
         return (
           <div className="min-w-35 space-y-1">
-            <span className="font-semibold tabular-nums">
-              {formatCurrency(debt.balance)}
-            </span>
+            <span className="font-semibold tabular-nums">{formatCurrency(debt.balance)}</span>
             <Progress value={progress} className="h-1.5" />
             <p className="text-xs text-muted-foreground">
-              Pagado {formatCurrency(debt.paidAmount)} de{" "}
-              {formatCurrency(debt.amount)}
+              Pagado {formatCurrency(debt.paidAmount)} de {formatCurrency(debt.amount)}
             </p>
           </div>
         );
@@ -141,15 +109,8 @@ export function DebtGridSection({
       cell: (debt) => (
         <span className="inline-flex items-center gap-1">
           <StatusBadge status={debtBadgeStatus(debt.status)} />
-          {debt.balance > 0 && debt.timing === "late" && (
-            <StatusBadge status="late" label={DEBT_TIMING_LABELS.late} />
-          )}
-          {debt.balance > 0 && debt.timing === "upcoming" && (
-            <StatusBadge
-              status="not_started"
-              label={DEBT_TIMING_LABELS.upcoming}
-            />
-          )}
+          {debt.balance > 0 && debt.timing === "late" && <StatusBadge status="late" label={DEBT_TIMING_LABELS.late} />}
+          {debt.balance > 0 && debt.timing === "upcoming" && <StatusBadge status="not_started" label={DEBT_TIMING_LABELS.upcoming} />}
         </span>
       ),
     },
@@ -161,20 +122,13 @@ export function DebtGridSection({
       cell: (debt) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              aria-label={`Acciones de ${debt.description}`}
-            >
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Acciones de ${debt.description}`}>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild>
-              <a
-                href={`/detalle-deuda?id=${encodeURIComponent(debt.id)}&from=${debt.direction === "owed_to_me" ? "cobros" : "deudas"}`}
-              >
+              <a href={`/detalle-deuda?id=${encodeURIComponent(debt.id)}&from=${debt.direction === "owed_to_me" ? "cobros" : "deudas"}`}>
                 <Eye /> Ver detalle
               </a>
             </DropdownMenuItem>
@@ -182,10 +136,7 @@ export function DebtGridSection({
               <Pencil /> Editar datos
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={() => onPay(debt)}
-              disabled={debt.balance <= 0}
-            >
+            <DropdownMenuItem onSelect={() => onPay(debt)} disabled={debt.balance <= 0}>
               <HandCoins /> Registrar pago
             </DropdownMenuItem>
             {debt.status !== "pending" && (
@@ -193,20 +144,14 @@ export function DebtGridSection({
                 <RotateCcw /> Corregir estado
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem
-              onSelect={() => remind.mutate({ ids: [debt.id] })}
-              disabled={debt.balance <= 0 || remind.isPending}
-            >
+            <DropdownMenuItem onSelect={() => remind.mutate({ ids: [debt.id] })} disabled={debt.balance <= 0 || remind.isPending}>
               <BellRing /> Recordar pago
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setHistoryOf(debt)}>
               <History /> Historial
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              onSelect={() => setDeleting(debt)}
-            >
+            <DropdownMenuItem variant="destructive" onSelect={() => setDeleting(debt)}>
               <Trash2 /> Borrar
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -216,8 +161,7 @@ export function DebtGridSection({
   ];
   if (groupTypes) {
     const groups = groupByPersonAndType(debts, cardNames);
-    const ownDebts =
-      groups.find((group) => group.type === "Deuda propia")?.debts ?? [];
+    const ownDebts = groups.find((group) => group.type === "Deuda propia")?.debts ?? [];
     const summaries = groups.filter((group) => group.type !== "Deuda propia");
     const toggleGroup = (key: string) =>
       setExpandedGroups((current) => {
@@ -228,23 +172,16 @@ export function DebtGridSection({
       });
     const toggleSelection = (items: Debt[], checked: boolean) => {
       const next = new Set(selected);
-      items.forEach((item) =>
-        checked ? next.add(item.id) : next.delete(item.id),
-      );
+      items.forEach((item) => (checked ? next.add(item.id) : next.delete(item.id)));
       onSelectedChange(next);
     };
     const renderDebtRow = (debt: Debt) => (
-      <TableRow
-        key={debt.id}
-        data-state={selected.has(debt.id) ? "selected" : undefined}
-      >
+      <TableRow key={debt.id} data-state={selected.has(debt.id) ? "selected" : undefined}>
         <TableCell>
           <Checkbox
             aria-label={`Seleccionar ${debt.description}`}
             checked={selected.has(debt.id)}
-            onCheckedChange={(checked) =>
-              toggleSelection([debt], checked === true)
-            }
+            onCheckedChange={(checked) => toggleSelection([debt], checked === true)}
           />
         </TableCell>
         {columns.map((column) => (
@@ -264,16 +201,13 @@ export function DebtGridSection({
                   <Checkbox
                     aria-label="Seleccionar todas las deudas de la persona"
                     checked={
-                      debts.length > 0 &&
-                      debts.every((debt) => selected.has(debt.id))
+                      debts.length > 0 && debts.every((debt) => selected.has(debt.id))
                         ? true
                         : debts.some((debt) => selected.has(debt.id))
                           ? "indeterminate"
                           : false
                     }
-                    onCheckedChange={(checked) =>
-                      toggleSelection(debts, checked === true)
-                    }
+                    onCheckedChange={(checked) => toggleSelection(debts, checked === true)}
                   />
                 </TableHead>
                 {columns.map((column) => (
@@ -287,44 +221,22 @@ export function DebtGridSection({
               {ownDebts.map(renderDebtRow)}
               {summaries.map((group) => {
                 const isPlatform = group.type === "Plataformas";
-                const title = /cmr|falabella/i.test(group.type)
-                  ? "CMR (Falabella)"
-                  : isPlatform
-                    ? "Plataformas · Stream"
-                    : group.type;
+                const title = /cmr|falabella/i.test(group.type) ? "CMR (Falabella)" : isPlatform ? "Plataformas · Stream" : group.type;
                 const expanded = expandedGroups.has(group.key);
-                const allSelected = group.debts.every((debt) =>
-                  selected.has(debt.id),
-                );
-                const someSelected = group.debts.some((debt) =>
-                  selected.has(debt.id),
-                );
+                const allSelected = group.debts.every((debt) => selected.has(debt.id));
+                const someSelected = group.debts.some((debt) => selected.has(debt.id));
                 return (
                   <>
-                    <TableRow
-                      key={`${group.key}:summary`}
-                      className="bg-muted/30"
-                    >
+                    <TableRow key={`${group.key}:summary`} className="bg-muted/30">
                       <TableCell>
                         <Checkbox
                           aria-label={`Seleccionar ${title}`}
-                          checked={
-                            allSelected
-                              ? true
-                              : someSelected
-                                ? "indeterminate"
-                                : false
-                          }
-                          onCheckedChange={(checked) =>
-                            toggleSelection(group.debts, checked === true)
-                          }
+                          checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                          onCheckedChange={(checked) => toggleSelection(group.debts, checked === true)}
                         />
                       </TableCell>
                       {columns.map((column) => (
-                        <TableCell
-                          key={column.key}
-                          className={column.className}
-                        >
+                        <TableCell key={column.key} className={column.className}>
                           {column.role === "title" ? (
                             <button
                               type="button"
@@ -332,9 +244,7 @@ export function DebtGridSection({
                               aria-expanded={expanded}
                               onClick={() => toggleGroup(group.key)}
                             >
-                              <ChevronRight
-                                className={`h-4 w-4 transition-transform ${expanded ? "rotate-90" : ""}`}
-                              />
+                              <ChevronRight className={`h-4 w-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
                               {title}
                               <Badge variant="outline" className="text-xs">
                                 {group.debts.length}
@@ -343,12 +253,9 @@ export function DebtGridSection({
                           ) : column.role === "amount" ? (
                             <div className="font-semibold tabular-nums">
                               {formatCurrency(group.total)}
-                              <p className="text-xs font-normal text-muted-foreground">
-                                Saldo conjunto
-                              </p>
+                              <p className="text-xs font-normal text-muted-foreground">Saldo conjunto</p>
                             </div>
-                          ) : column.role === "actions" ? null : column.key ===
-                            "person" ? (
+                          ) : column.role === "actions" ? null : column.key === "person" ? (
                             <span className="text-sm">{group.name}</span>
                           ) : (
                             <span className="text-muted-foreground">—</span>
@@ -363,15 +270,10 @@ export function DebtGridSection({
             </TableBody>
           </Table>
         </div>
-        <AlertDialog
-          open={!!deleting}
-          onOpenChange={(open) => !open && setDeleting(null)}
-        >
+        <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                ¿Borrar «{deleting?.description}»?
-              </AlertDialogTitle>
+              <AlertDialogTitle>¿Borrar «{deleting?.description}»?</AlertDialogTitle>
               <AlertDialogDescription>
                 {deleting && deleting.paidAmount > 0
                   ? `Tiene ${formatCurrency(deleting.paidAmount)} pagados: se borran con ella. No se puede deshacer.`
@@ -394,36 +296,17 @@ export function DebtGridSection({
           </AlertDialogContent>
         </AlertDialog>
         <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
-        {historyOf && (
-          <HistoryDialog
-            title={historyOf.description}
-            entity="exp_debts"
-            id={historyOf.id}
-            onClose={() => setHistoryOf(null)}
-          />
-        )}
+        {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
       </>
     );
   }
   return (
     <>
-      <DataView
-        items={debts}
-        columns={columns}
-        rowKey={(debt) => debt.id}
-        view={view}
-        selected={selected}
-        onSelectedChange={onSelectedChange}
-      />
-      <AlertDialog
-        open={!!deleting}
-        onOpenChange={(open) => !open && setDeleting(null)}
-      >
+      <DataView items={debts} columns={columns} rowKey={(debt) => debt.id} view={view} selected={selected} onSelectedChange={onSelectedChange} />
+      <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              ¿Borrar «{deleting?.description}»?
-            </AlertDialogTitle>
+            <AlertDialogTitle>¿Borrar «{deleting?.description}»?</AlertDialogTitle>
             <AlertDialogDescription>
               {deleting && deleting.paidAmount > 0
                 ? `Tiene ${formatCurrency(deleting.paidAmount)} pagados: se borran con ella. No se puede deshacer.`
@@ -446,49 +329,27 @@ export function DebtGridSection({
         </AlertDialogContent>
       </AlertDialog>
       <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
-      {historyOf && (
-        <HistoryDialog
-          title={historyOf.description}
-          entity="exp_debts"
-          id={historyOf.id}
-          onClose={() => setHistoryOf(null)}
-        />
-      )}
+      {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
     </>
   );
 }
 
-function ResetDebtDialog({
-  debt,
-  onClose,
-}: {
-  debt: Debt | null;
-  onClose: () => void;
-}) {
+function ResetDebtDialog({ debt, onClose }: { debt: Debt | null; onClose: () => void }) {
   const resetDebt = useBulkDebts();
   return (
     <AlertDialog open={!!debt} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            ¿Volver «{debt?.description}» a No iniciado?
-          </AlertDialogTitle>
+          <AlertDialogTitle>¿Volver «{debt?.description}» a No iniciado?</AlertDialogTitle>
           <AlertDialogDescription>
-            Se eliminarán los pagos registrados de esta cuota y el saldo volverá
-            al total. Puedes registrar el pago correcto después.
+            Se eliminarán los pagos registrados de esta cuota y el saldo volverá al total. Puedes registrar el pago correcto después.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             disabled={resetDebt.isPending}
-            onClick={() =>
-              debt &&
-              resetDebt.mutate(
-                { ids: [debt.id], action: "reset" },
-                { onSuccess: onClose },
-              )
-            }
+            onClick={() => debt && resetDebt.mutate({ ids: [debt.id], action: "reset" }, { onSuccess: onClose })}
           >
             Volver a No iniciado
           </AlertDialogAction>

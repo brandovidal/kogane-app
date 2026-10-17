@@ -11,8 +11,7 @@ export function useImportHistoryActions() {
   const deleting = discard.isPending || removeStatement.isPending;
   const confirmRemove = () => {
     if (!deletingItem || deleting) return;
-    const mutation =
-      deletingItem.source === "notion" ? discard : removeStatement;
+    const mutation = deletingItem.source === "notion" ? discard : removeStatement;
     mutation.mutate(deletingItem.id, {
       onSuccess: () => setDeletingItem(null),
     });

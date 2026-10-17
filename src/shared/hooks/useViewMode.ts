@@ -3,10 +3,7 @@ import type { ViewMode } from "@/shared/types/data-view";
 import { VIEW_STORAGE_PREFIX } from "@/shared/constants/view";
 
 // The view of each page, remembered in this browser (a convenience: without storage it uses the default)
-export function useViewMode(
-  page: string,
-  initial: ViewMode,
-): [ViewMode, (mode: ViewMode) => void] {
+export function useViewMode(page: string, initial: ViewMode): [ViewMode, (mode: ViewMode) => void] {
   const [mode, setMode] = useState<ViewMode>(initial);
   useEffect(() => {
     try {

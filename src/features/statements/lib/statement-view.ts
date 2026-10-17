@@ -5,23 +5,13 @@ import { formatCurrency } from "@/shared/lib/currency";
 
 export type StatementTab = "new" | "matched" | "missing";
 
-export function rowsOf(
-  statement: Statement,
-  tab: Exclude<StatementTab, "missing">,
-): StatementRow[] {
-  if (tab === "new")
-    return statement.rows.filter(
-      (row) => row.result === "new" || row.result === "ignored",
-    );
-  return statement.rows.filter(
-    (row) => row.result === "matched" || row.result === "created",
-  );
+export function rowsOf(statement: Statement, tab: Exclude<StatementTab, "missing">): StatementRow[] {
+  if (tab === "new") return statement.rows.filter((row) => row.result === "new" || row.result === "ignored");
+  return statement.rows.filter((row) => row.result === "matched" || row.result === "created");
 }
 
 // What a tab adds up to, per currency (the two are never mixed): only currencies that have something are returned
-export function totalsOf(
-  items: { amount: number; currency?: string | null }[],
-): { currency: "PEN" | "USD"; amount: number }[] {
+export function totalsOf(items: { amount: number; currency?: string | null }[]): { currency: "PEN" | "USD"; amount: number }[] {
   const cents = { PEN: 0, USD: 0 };
   const seen = { PEN: false, USD: false };
   for (const item of items) {
@@ -29,24 +19,19 @@ export function totalsOf(
     cents[currency] += Math.round(item.amount * 100);
     seen[currency] = true;
   }
-  return (["PEN", "USD"] as const)
-    .filter((currency) => seen[currency])
-    .map((currency) => ({ currency, amount: cents[currency] / 100 }));
+  return (["PEN", "USD"] as const).filter((currency) => seen[currency]).map((currency) => ({ currency, amount: cents[currency] / 100 }));
 }
 
 export function countsOf(statement: Statement) {
   return {
     new: statement.rows.filter((row) => row.result === "new").length,
-    matched: statement.rows.filter(
-      (row) => row.result === "matched" || row.result === "created",
-    ).length,
+    matched: statement.rows.filter((row) => row.result === "matched" || row.result === "created").length,
     missing: statement.missing.length,
   };
 }
 
 // "Cuadra" when the total of the bank and what Kogane has for that card and month are the same (to the cent)
-export const totalsMatch = (statement: Pick<Statement, "difference">) =>
-  statement.difference != null && Math.abs(statement.difference) < 0.01;
+export const totalsMatch = (statement: Pick<Statement, "difference">) => statement.difference != null && Math.abs(statement.difference) < 0.01;
 
 // The error of an upload, in the words of the form
 export function uploadErrorText(code: string, reason?: string): string {
@@ -73,20 +58,13 @@ export const ROW_RESULT_LABELS: Record<StatementRow["result"], string> = {
 };
 
 // Your description when you gave one, else the text of the bank
-export const rowName = (row: Pick<StatementRow, "label" | "description">) =>
-  row.label || row.description;
+export const rowName = (row: Pick<StatementRow, "label" | "description">) => row.label || row.description;
 
 // What the confirmation says before saving one row: a matched one warns that it may already be registered
 // collectFrom: the person whose purchase it is, when it also becomes their cobro (D116)
-export function confirmCreateText(
-  row: StatementRow,
-  where: string,
-  collectFrom?: string,
-): { title: string; description: string } {
+export function confirmCreateText(row: StatementRow, where: string, collectFrom?: string): { title: string; description: string } {
   const what = `${rowName(row)} · ${formatCurrency(row.amount, row.currency)}`;
-  const collect = collectFrom
-    ? ` A nombre de ${collectFrom}, con su cobro en Cobros por el mismo monto.`
-    : "";
+  const collect = collectFrom ? ` A nombre de ${collectFrom}, con su cobro en Cobros por el mismo monto.` : "";
   if (row.result === "matched") {
     return {
       title: "¿Guardarlo de todas formas?",

@@ -3,19 +3,9 @@ import { KeyRound } from "lucide-react";
 import { useChangePassword, type useMe } from "@/features/auth/hooks/auth";
 import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 import { Button } from "@/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 
-export function ProfilePasswordCard({
-  user,
-}: {
-  user: NonNullable<ReturnType<typeof useMe>["data"]>;
-}) {
+export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typeof useMe>["data"]> }) {
   const changePassword = useChangePassword();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -26,10 +16,7 @@ export function ProfilePasswordCard({
       <CardHeader className="pb-4">
         <CardTitle className="text-base">Contraseña</CardTitle>
         <CardDescription>
-          {user.hasPassword
-            ? "Cámbiala cuando quieras."
-            : "Define una para entrar sin Google."}{" "}
-          Mínimo 10 caracteres.
+          {user.hasPassword ? "Cámbiala cuando quieras." : "Define una para entrar sin Google."} Mínimo 10 caracteres.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -55,25 +42,17 @@ export function ProfilePasswordCard({
           variant="outline"
           className="w-full"
           disabled={!valid || changePassword.isPending}
-          onClick={() =>
-            changePassword.mutate(
-              { current: current || undefined, next },
-              { onSuccess: () => (setCurrent(""), setNext("")) },
-            )
-          }
+          onClick={() => changePassword.mutate({ current: current || undefined, next }, { onSuccess: () => (setCurrent(""), setNext("")) })}
         >
           <KeyRound aria-hidden="true" className="size-4" />
           {changePassword.isPending ? "Guardando…" : "Guardar contraseña"}
         </Button>
         {user.hasPassword && (
           <details className="rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
-            <summary className="cursor-pointer font-medium">
-              ¿Olvidaste tu contraseña actual?
-            </summary>
+            <summary className="cursor-pointer font-medium">¿Olvidaste tu contraseña actual?</summary>
             <p className="mt-2 leading-5 text-muted-foreground">
-              Pídele al administrador una nueva invitación para el correo de
-              esta cuenta. Al abrirla podrás definir otra contraseña; Kogane no
-              envía enlaces de recuperación automáticamente.
+              Pídele al administrador una nueva invitación para el correo de esta cuenta. Al abrirla podrás definir otra contraseña; Kogane no envía
+              enlaces de recuperación automáticamente.
             </p>
           </details>
         )}

@@ -2,14 +2,7 @@ import type { ImportSummaryTabProps } from "../types/import-types";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { monthMatches } from "@/features/imports/lib/import-view";
 import { importSummaryOf } from "../lib/import-summary";
 
@@ -29,19 +22,12 @@ export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
 
       <div>
         <p className="mb-2 text-sm">
-          <span className="font-medium">
-            Por mes frente al Resumen de Notion:
-          </span>{" "}
-          <span
-            className={
-              matching === months.length ? "text-emerald-600" : "text-amber-600"
-            }
-          >
+          <span className="font-medium">Por mes frente al Resumen de Notion:</span>{" "}
+          <span className={matching === months.length ? "text-emerald-600" : "text-amber-600"}>
             {matching} de {months.length} cuadran
           </span>
           <span className="block text-xs text-muted-foreground">
-            Notion suma las filas enlazadas a cada Resumen (costos fijos y
-            tarjetas), no el mes de pago.
+            Notion suma las filas enlazadas a cada Resumen (costos fijos y tarjetas), no el mes de pago.
           </span>
         </p>
         <div className="max-h-96 overflow-auto rounded-md border">
@@ -61,21 +47,11 @@ export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
                   <TableCell>
                     {getMonthName(month.month)} {month.year}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {month.salary != null ? formatCurrency(month.salary) : "—"}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatCurrency(month.linked)}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatCurrency(month.notionSpent ?? 0)}
-                  </TableCell>
+                  <TableCell className="text-right tabular-nums">{month.salary != null ? formatCurrency(month.salary) : "—"}</TableCell>
+                  <TableCell className="text-right tabular-nums">{formatCurrency(month.linked)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{formatCurrency(month.notionSpent ?? 0)}</TableCell>
                   <TableCell>
-                    {monthMatches(month) ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    ) : (
-                      <XCircle className="h-4 w-4 text-amber-600" />
-                    )}
+                    {monthMatches(month) ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <XCircle className="h-4 w-4 text-amber-600" />}
                   </TableCell>
                 </TableRow>
               ))}
@@ -84,12 +60,7 @@ export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
         </div>
       </div>
 
-      <div className="text-xs text-muted-foreground">
-        Archivos:{" "}
-        {batch.summary.files
-          .map((file) => `${file.base} (${file.rows})`)
-          .join(" · ")}
-      </div>
+      <div className="text-xs text-muted-foreground">Archivos: {batch.summary.files.map((file) => `${file.base} (${file.rows})`).join(" · ")}</div>
     </div>
   );
 }

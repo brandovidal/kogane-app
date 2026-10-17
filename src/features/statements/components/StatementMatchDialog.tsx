@@ -1,35 +1,13 @@
 import { Pencil, Plus } from "lucide-react";
 
 import { useExpense } from "@/features/expenses/hooks/expenses";
-import {
-  nameById,
-  usePaymentMethods,
-  usePeople,
-} from "@/shared/api/hooks/catalogs";
-import {
-  EXPENSE_RESOURCES,
-  type Statement,
-  type StatementRow,
-} from "@/shared/api/types";
+import { nameById, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
+import { EXPENSE_RESOURCES, type Statement, type StatementRow } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 export interface StatementMatchDialogProps {
   statement: Statement;
@@ -39,26 +17,13 @@ export interface StatementMatchDialogProps {
   onCreate: (row: StatementRow) => void;
 }
 
-export function StatementMatchDialog({
-  statement,
-  row,
-  onClose,
-  onEdit,
-  onCreate,
-}: StatementMatchDialogProps) {
-  const query = useExpense(
-    EXPENSE_RESOURCES.creditCard,
-    row.expenseId ?? undefined,
-  );
+export function StatementMatchDialog({ statement, row, onClose, onEdit, onCreate }: StatementMatchDialogProps) {
+  const query = useExpense(EXPENSE_RESOURCES.creditCard, row.expenseId ?? undefined);
   const expense = query.data;
   const personName = nameById(usePeople().data);
   const cardName = nameById(usePaymentMethods().data);
-  const period = (month: number, year: number) =>
-    `${getMonthName(month)} ${year}`;
-  const otherPeriod =
-    expense &&
-    (expense.paymentMonth !== statement.paymentMonth ||
-      expense.paymentYear !== statement.paymentYear);
+  const period = (month: number, year: number) => `${getMonthName(month)} ${year}`;
+  const otherPeriod = expense && (expense.paymentMonth !== statement.paymentMonth || expense.paymentYear !== statement.paymentYear);
   const comparisons = expense
     ? [
         {
@@ -103,27 +68,16 @@ export function StatementMatchDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>
-            {row.result === "created"
-              ? "Registro creado desde el estado"
-              : "Revisar coincidencia"}
-          </DialogTitle>
+          <DialogTitle>{row.result === "created" ? "Registro creado desde el estado" : "Revisar coincidencia"}</DialogTitle>
           <DialogDescription>
-            Compara el movimiento del PDF con el gasto vinculado en Kogane antes
-            de editarlo o crear otro. La fecha de compra y el mes de pago pueden
+            Compara el movimiento del PDF con el gasto vinculado en Kogane antes de editarlo o crear otro. La fecha de compra y el mes de pago pueden
             ser distintos.
           </DialogDescription>
         </DialogHeader>
-        {query.isPending && (
-          <p className="text-sm text-muted-foreground">
-            Cargando el gasto vinculado…
-          </p>
-        )}
+        {query.isPending && <p className="text-sm text-muted-foreground">Cargando el gasto vinculado…</p>}
         {query.isError && (
           <div className="space-y-2" role="alert">
-            <p className="text-sm text-destructive">
-              No se pudo cargar el gasto vinculado.
-            </p>
+            <p className="text-sm text-destructive">No se pudo cargar el gasto vinculado.</p>
             <Button variant="outline" onClick={() => query.refetch()}>
               Reintentar
             </Button>
@@ -132,15 +86,9 @@ export function StatementMatchDialog({
         {expense && (
           <>
             {otherPeriod && (
-              <p
-                className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm"
-                role="status"
-              >
-                El gasto de Kogane pertenece a{" "}
-                {period(expense.paymentMonth, expense.paymentYear)}; el estado
-                corresponde a{" "}
-                {period(statement.paymentMonth, statement.paymentYear)}. Revisa
-                el mes y la cuota antes de crear otro gasto.
+              <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm" role="status">
+                El gasto de Kogane pertenece a {period(expense.paymentMonth, expense.paymentYear)}; el estado corresponde a{" "}
+                {period(statement.paymentMonth, statement.paymentYear)}. Revisa el mes y la cuota antes de crear otro gasto.
               </p>
             )}
             <div className="overflow-x-auto rounded-lg border">
@@ -155,23 +103,16 @@ export function StatementMatchDialog({
                 <TableBody>
                   {comparisons.map((item) => (
                     <TableRow key={item.label}>
-                      <TableCell className="text-muted-foreground">
-                        {item.label}
-                      </TableCell>
-                      <TableCell className="min-w-36 whitespace-normal wrap-break-word">
-                        {item.pdf}
-                      </TableCell>
-                      <TableCell className="min-w-36 whitespace-normal wrap-break-word">
-                        {item.saved}
-                      </TableCell>
+                      <TableCell className="text-muted-foreground">{item.label}</TableCell>
+                      <TableCell className="min-w-36 whitespace-normal wrap-break-word">{item.pdf}</TableCell>
+                      <TableCell className="min-w-36 whitespace-normal wrap-break-word">{item.saved}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
             <p className="text-xs text-muted-foreground">
-              Editar el gasto actualiza el registro existente. Crear otro
-              mantiene el gasto vinculado y añade uno nuevo tras confirmar.
+              Editar el gasto actualiza el registro existente. Crear otro mantiene el gasto vinculado y añade uno nuevo tras confirmar.
             </p>
           </>
         )}

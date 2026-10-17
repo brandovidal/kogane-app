@@ -2,15 +2,7 @@
 export { periodFromParams } from "./period";
 export { safeReturnPath, loginUrl } from "./auth-redirect";
 export { formatCurrency, convertToPEN, calculateAmountInPEN } from "./currency";
-export {
-  getMonthName,
-  getCurrentMonth,
-  getCurrentYear,
-  localTodayKey,
-  formatDate,
-  formatDayMonth,
-  toIsoDate,
-} from "./dates";
+export { getMonthName, getCurrentMonth, getCurrentYear, localTodayKey, formatDate, formatDayMonth, toIsoDate } from "./dates";
 export type { CsvOptions } from "./export-csv";
 export { downloadCsv } from "./export-csv";
 export { getFileIcon } from "./file-icons";

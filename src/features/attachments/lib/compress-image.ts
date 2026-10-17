@@ -4,23 +4,12 @@ const MAX_BYTES = ATTACHMENT_MAX_MB * 1024 * 1024;
 
 function canvasToBlob(canvas: HTMLCanvasElement, quality: number) {
   return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (blob) =>
-        blob
-          ? resolve(blob)
-          : reject(new Error("No se pudo comprimir la imagen.")),
-      "image/jpeg",
-      quality,
-    );
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("No se pudo comprimir la imagen."))), "image/jpeg", quality);
   });
 }
 
 export async function compressImage(file: File): Promise<File> {
-  if (
-    !file.type.startsWith("image/") ||
-    file.type === "image/gif" ||
-    file.type === "image/svg+xml"
-  ) {
+  if (!file.type.startsWith("image/") || file.type === "image/gif" || file.type === "image/svg+xml") {
     throw new Error("Este formato no se puede comprimir desde el navegador.");
   }
 
@@ -28,8 +17,7 @@ export async function compressImage(file: File): Promise<File> {
   try {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
-    if (!context)
-      throw new Error("No se pudo preparar la imagen para comprimirla.");
+    if (!context) throw new Error("No se pudo preparar la imagen para comprimirla.");
 
     let scale = Math.min(1, 2400 / Math.max(bitmap.width, bitmap.height));
     let blob: Blob | undefined;

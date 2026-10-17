@@ -63,23 +63,15 @@ export function pendingCounts(entries: PendingEntry[], today: Date) {
   };
 }
 
-export function filterPending(
-  entries: PendingEntry[],
-  filter: PendingFilter,
-  today: Date,
-): PendingEntry[] {
+export function filterPending(entries: PendingEntry[], filter: PendingFilter, today: Date): PendingEntry[] {
   if (filter === "late") return entries.filter((e) => isLate(e, today));
   if (filter === "soon") return entries.filter((e) => isSoon(e, today));
   return entries;
 }
 
 /** Most overdue first (late filter) or nearest due date first (soon). */
-export function sortByUrgency(
-  entries: PendingEntry[],
-  today: Date,
-): PendingEntry[] {
-  const order = (entry: PendingEntry) =>
-    daysUntil(entry.dueDate, today) ?? Number.MAX_SAFE_INTEGER;
+export function sortByUrgency(entries: PendingEntry[], today: Date): PendingEntry[] {
+  const order = (entry: PendingEntry) => daysUntil(entry.dueDate, today) ?? Number.MAX_SAFE_INTEGER;
   return [...entries].sort((a, b) => order(a) - order(b));
 }
 
@@ -99,18 +91,11 @@ export interface PendingGroup {
   nextDueDate: string | null;
 }
 
-const sum = (entries: PendingEntry[]) =>
-  entries.reduce((total, entry) => total + (entry.amount ?? 0), 0);
+const sum = (entries: PendingEntry[]) => entries.reduce((total, entry) => total + (entry.amount ?? 0), 0);
 
 /** Pending (not paid) items of one section grouped by kind, most urgent group first. */
-export function groupSection(
-  entries: PendingEntry[],
-  section: PendingSection,
-  today: Date,
-): PendingGroup[] {
-  const pending = entries.filter(
-    (entry) => !entry.paid && SECTION_OF[entry.kind] === section,
-  );
+export function groupSection(entries: PendingEntry[], section: PendingSection, today: Date): PendingGroup[] {
+  const pending = entries.filter((entry) => !entry.paid && SECTION_OF[entry.kind] === section);
   const kinds = [...new Set(pending.map((entry) => entry.kind))];
   return kinds
     .map((kind) => {
@@ -129,8 +114,7 @@ export function groupSection(
       };
     })
     .sort((a, b) => {
-      const order = (group: PendingGroup) =>
-        daysUntil(group.nextDueDate, today) ?? Number.MAX_SAFE_INTEGER;
+      const order = (group: PendingGroup) => daysUntil(group.nextDueDate, today) ?? Number.MAX_SAFE_INTEGER;
       return order(a) - order(b);
     });
 }
@@ -144,13 +128,8 @@ export interface SectionSummary {
   withoutAmount: boolean;
 }
 
-export function summarizeSection(
-  entries: PendingEntry[],
-  section: PendingSection,
-): SectionSummary {
-  const pending = entries.filter(
-    (entry) => !entry.paid && SECTION_OF[entry.kind] === section,
-  );
+export function summarizeSection(entries: PendingEntry[], section: PendingSection): SectionSummary {
+  const pending = entries.filter((entry) => !entry.paid && SECTION_OF[entry.kind] === section);
   return {
     section,
     total: sum(pending),
@@ -170,21 +149,12 @@ export interface PersonGroup {
 }
 
 /** "Por cobrar": collections grouped by person, biggest balance first. */
-export function groupByPerson(
-  entries: PendingEntry[],
-  today: Date,
-): PersonGroup[] {
-  const pending = entries.filter(
-    (entry) => !entry.paid && entry.kind === "collect",
-  );
-  const names = [
-    ...new Set(pending.map((entry) => entry.person ?? "Sin nombre")),
-  ];
+export function groupByPerson(entries: PendingEntry[], today: Date): PersonGroup[] {
+  const pending = entries.filter((entry) => !entry.paid && entry.kind === "collect");
+  const names = [...new Set(pending.map((entry) => entry.person ?? "Sin nombre"))];
   return names
     .map((person) => {
-      const items = pending.filter(
-        (entry) => (entry.person ?? "Sin nombre") === person,
-      );
+      const items = pending.filter((entry) => (entry.person ?? "Sin nombre") === person);
       const dated = items
         .map((entry) => entry.dueDate)
         .filter((date): date is string => !!date)

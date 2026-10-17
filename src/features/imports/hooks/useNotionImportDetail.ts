@@ -1,8 +1,4 @@
-import {
-  useApplyImport,
-  useDiscardImport,
-  useImport,
-} from "@/features/imports/hooks/imports";
+import { useApplyImport, useDiscardImport, useImport } from "@/features/imports/hooks/imports";
 
 export function useNotionImportDetail(id: string) {
   const batch = useImport(id).data;
@@ -24,8 +20,7 @@ export function useNotionImportDetail(id: string) {
   };
 
   const confirmDiscard = () => {
-    if (batch && window.confirm("¿Descartar sin importar?"))
-      discard.mutate(batch.id);
+    if (batch && window.confirm("¿Descartar sin importar?")) discard.mutate(batch.id);
   };
   return { batch, apply, discard, preview, confirmApply, confirmDiscard };
 }

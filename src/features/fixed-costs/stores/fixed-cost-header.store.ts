@@ -7,14 +7,10 @@ interface FixedCostHeaderState {
   setShown: (shown: number | null, noun?: FixedCostHeaderState["noun"]) => void;
 }
 
-export const fixedCostHeaderStore = createStore<FixedCostHeaderState>()(
-  (set) => ({
-    shown: null,
-    noun: "registro",
-    setShown: (shown, noun = "registro") => set({ shown, noun }),
-  }),
-);
+export const fixedCostHeaderStore = createStore<FixedCostHeaderState>()((set) => ({
+  shown: null,
+  noun: "registro",
+  setShown: (shown, noun = "registro") => set({ shown, noun }),
+}));
 
-export const useFixedCostHeader = <T>(
-  selector: (state: FixedCostHeaderState) => T,
-) => useStore(fixedCostHeaderStore, selector);
+export const useFixedCostHeader = <T>(selector: (state: FixedCostHeaderState) => T) => useStore(fixedCostHeaderStore, selector);

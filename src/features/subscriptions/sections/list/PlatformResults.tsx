@@ -4,10 +4,7 @@ import { DataTableComplex } from "@/shared/components/data-display/DataTableComp
 import { DataTablePagination } from "@/shared/components/data-display/DataTablePagination";
 import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
 import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
-import {
-  formatPlatformTotals,
-  sumPlatformAmounts,
-} from "../../lib/platform-summary";
+import { formatPlatformTotals, sumPlatformAmounts } from "../../lib/platform-summary";
 import { Button } from "@/ui/button";
 import { PlatformCalendarView } from "../../views/PlatformCalendarView";
 import { PlatformCardsView } from "../../views/PlatformCardsView";
@@ -64,20 +61,14 @@ export function PlatformResults({
       </span>
       <span>
         <span className="mr-2 text-[10px] uppercase tracking-wider">Sum</span>
-        <strong className="text-foreground tabular-nums">
-          {formatPlatformTotals(sumPlatformAmounts(items))}
-        </strong>
+        <strong className="text-foreground tabular-nums">{formatPlatformTotals(sumPlatformAmounts(items))}</strong>
       </span>
     </div>
   );
   const empty = (
     <EmptyState
       title={total ? "Sin resultados" : "Aún no hay plataformas"}
-      description={
-        total
-          ? "Prueba con otros filtros o cambia el período."
-          : "Agrega tu primera plataforma para ver sus cobros aquí."
-      }
+      description={total ? "Prueba con otros filtros o cambia el período." : "Agrega tu primera plataforma para ver sus cobros aquí."}
       action={
         !total && (
           <Button type="button" size="sm" onClick={onCreate}>
@@ -96,9 +87,7 @@ export function PlatformResults({
         </p>
       );
     if (!items.length && total) return empty;
-    const visibleItems = tableState.table
-      .getRowModel()
-      .rows.map((row) => row.original);
+    const visibleItems = tableState.table.getRowModel().rows.map((row) => row.original);
     return (
       <div className="space-y-4">
         {view === "cards" ? (
@@ -116,13 +105,7 @@ export function PlatformResults({
             onStatusChange={actions.onStatusChange}
           />
         ) : (
-          <PlatformPeriodView
-            items={visibleItems}
-            personName={personName}
-            todayKey={localTodayKey()}
-            onOpen={onEdit}
-            onCreate={onCreate}
-          />
+          <PlatformPeriodView items={visibleItems} personName={personName} todayKey={localTodayKey()} onOpen={onEdit} onCreate={onCreate} />
         )}
         {items.length > 0 && <DataTablePagination table={tableState.table} />}
       </div>
@@ -137,13 +120,7 @@ export function PlatformResults({
         </p>
       );
     return items.length || !total ? (
-      <PlatformCalendarView
-        items={items}
-        upcomingItems={calendarItems}
-        month={month}
-        year={year}
-        onOpen={onEdit}
-      />
+      <PlatformCalendarView items={items} upcomingItems={calendarItems} month={month} year={year} onOpen={onEdit} />
     ) : (
       empty
     );
@@ -164,13 +141,7 @@ export function PlatformResults({
         emptyMessage={empty}
       />
     );
-  if (loading)
-    return (
-      <DataLoadingSkeleton
-        variant={layout === "table" ? "table" : "cards"}
-        columns={tableState.columns.length}
-      />
-    );
+  if (loading) return <DataLoadingSkeleton variant={layout === "table" ? "table" : "cards"} columns={tableState.columns.length} />;
   if (error)
     return (
       <p role="alert" className="py-8 text-center text-sm text-destructive">
@@ -186,25 +157,15 @@ export function PlatformResults({
         rowKey={(item) => item.id}
         view={layout}
         groupBy={effectiveGroup}
-        groupKey={(item, field) =>
-          field === "person" ? (item.personId ?? "none") : item.period
-        }
+        groupKey={(item, field) => (field === "person" ? (item.personId ?? "none") : item.period)}
         groupLabel={(key, field) =>
-          field === "person"
-            ? key === "none"
-              ? "Sin persona"
-              : personName(key)
-            : (SUBSCRIPTION_PERIOD_LABELS[key] ?? key)
+          field === "person" ? (key === "none" ? "Sin persona" : personName(key)) : (SUBSCRIPTION_PERIOD_LABELS[key] ?? key)
         }
         summaryForGroup={
           !isGrouped
             ? undefined
             : (groupItems) => ({
-                label: (
-                  <span className="text-sm font-semibold tabular-nums">
-                    {formatPlatformTotals(sumPlatformAmounts(groupItems))}
-                  </span>
-                ),
+                label: <span className="text-sm font-semibold tabular-nums">{formatPlatformTotals(sumPlatformAmounts(groupItems))}</span>,
               })
         }
         footer={totalsFooter}

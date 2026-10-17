@@ -1,8 +1,5 @@
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
-import {
-  reviewCardCharges,
-  type CardReviewDto,
-} from "../services/card-review.service";
+import { reviewCardCharges, type CardReviewDto } from "../services/card-review.service";
 
 export const useReviewCardCharges = () =>
   useApiMutation((body: CardReviewDto) => reviewCardCharges(body), {

@@ -1,16 +1,10 @@
 import { SETTINGS_MENU_LINKS } from "../constants/menu";
-import {
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/ui/dropdown-menu";
+import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/ui/dropdown-menu";
 
 // Links of the user menu: the settings of everyone, then the administration block (header board 13)
 export function SettingsMenuItems({ isAdmin }: { isAdmin: boolean }) {
   const general = SETTINGS_MENU_LINKS.filter((link) => !link.adminOnly);
-  const admin = isAdmin
-    ? SETTINGS_MENU_LINKS.filter((link) => link.adminOnly)
-    : [];
+  const admin = isAdmin ? SETTINGS_MENU_LINKS.filter((link) => link.adminOnly) : [];
 
   return (
     <>
@@ -33,9 +27,7 @@ export function SettingsMenuItems({ isAdmin }: { isAdmin: boolean }) {
               <a href={href}>
                 <Icon aria-hidden="true" />
                 {label}
-                <span className="ml-auto text-xs text-muted-foreground">
-                  Admin
-                </span>
+                <span className="ml-auto text-xs text-muted-foreground">Admin</span>
               </a>
             </DropdownMenuItem>
           ))}

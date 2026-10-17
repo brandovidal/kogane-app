@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  CalendarClock,
-  NotebookPen,
-  ReceiptText,
-  UsersRound,
-} from "lucide-react";
+import { CalendarClock, NotebookPen, ReceiptText, UsersRound } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { FixedCostDraftGeneralSection } from "../sections/FixedCostDraftGeneralSection";
 import { FixedCostDraftScheduleSection } from "../sections/FixedCostDraftScheduleSection";
@@ -15,11 +10,7 @@ import type { DraftFormSectionProps } from "../types/draft-form";
 export function FixedCostDraftTabs(props: DraftFormSectionProps) {
   const [activeTab, setActiveTab] = useState("general");
   useEffect(() => {
-    if (
-      props.missingFields.some((field) =>
-        ["installment", "spentAt"].includes(field),
-      )
-    ) {
+    if (props.missingFields.some((field) => ["installment", "spentAt"].includes(field))) {
       setActiveTab("schedule");
     } else if (props.missingFields.length) {
       setActiveTab("general");

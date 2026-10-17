@@ -14,21 +14,10 @@ import { formatCurrency } from "@/shared/lib/currency";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Switch } from "@/ui/switch";
 
-import {
-  NOTIFICATION_KIND_LABELS,
-  NOTIFICATION_KINDS,
-  notificationLink,
-  timeAgo,
-} from "@/features/notifications/lib/notification-view";
+import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS, notificationLink, timeAgo } from "@/features/notifications/lib/notification-view";
 
 const PAGE_SIZE = 20;
 const ALL = "__all__";
@@ -83,41 +72,26 @@ function NotificationsPageView() {
           />
           Solo sin leer
         </label>
-        <Button
-          variant="outline"
-          size="sm"
-          className="ml-auto"
-          onClick={() => markAllRead.mutate()}
-        >
+        <Button variant="outline" size="sm" className="ml-auto" onClick={() => markAllRead.mutate()}>
           <CheckCheck className="mr-1 h-3.5 w-3.5" /> Marcar todas como leídas
         </Button>
       </div>
 
       {!isLoading && items.length === 0 && (
-        <EmptyState
-          title="Sin notificaciones"
-          description="Aquí llegan los avisos del calendario, el presupuesto y los cargos raros."
-        />
+        <EmptyState title="Sin notificaciones" description="Aquí llegan los avisos del calendario, el presupuesto y los cargos raros." />
       )}
 
       <div className="space-y-2">
         {items.map((notification) => (
-          <Card
-            key={notification.id}
-            className={notification.readAt ? "opacity-80" : "border-primary/40"}
-          >
+          <Card key={notification.id} className={notification.readAt ? "opacity-80" : "border-primary/40"}>
             <CardContent className="flex items-start gap-3 py-3">
-              <span
-                className={`mt-2 h-2 w-2 shrink-0 rounded-full ${notification.readAt ? "bg-transparent" : "bg-primary"}`}
-              />
+              <span className={`mt-2 h-2 w-2 shrink-0 rounded-full ${notification.readAt ? "bg-transparent" : "bg-primary"}`} />
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <a
                     href={notificationLink(notification)}
                     className={`text-sm hover:underline ${notification.readAt ? "" : "font-semibold"}`}
-                    onClick={() =>
-                      !notification.readAt && markRead.mutate(notification.id)
-                    }
+                    onClick={() => !notification.readAt && markRead.mutate(notification.id)}
                   >
                     {notification.title}
                   </a>
@@ -130,29 +104,18 @@ function NotificationsPageView() {
                     </Badge>
                   )}
                 </div>
-                <p className="whitespace-pre-line text-sm text-muted-foreground">
-                  {notification.body}
-                </p>
+                <p className="whitespace-pre-line text-sm text-muted-foreground">{notification.body}</p>
                 <p className="text-xs text-muted-foreground">
                   {timeAgo(notification.createdAt)}
-                  {notification.amount != null &&
-                    ` · ${formatCurrency(notification.amount)}`}
+                  {notification.amount != null && ` · ${formatCurrency(notification.amount)}`}
                 </p>
               </div>
               {notification.readAt ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => markUnread.mutate(notification.id)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => markUnread.mutate(notification.id)}>
                   Marcar no leída
                 </Button>
               ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => markRead.mutate(notification.id)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => markRead.mutate(notification.id)}>
                   Marcar leída
                 </Button>
               )}
@@ -163,25 +126,13 @@ function NotificationsPageView() {
 
       {total > PAGE_SIZE && (
         <div className="flex items-center justify-end gap-2 text-sm">
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={page === 0}
-            onClick={() => setPage(page - 1)}
-            aria-label="Anterior"
-          >
+          <Button variant="outline" size="icon" disabled={page === 0} onClick={() => setPage(page - 1)} aria-label="Anterior">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span>
             {page + 1} de {pages}
           </span>
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={page + 1 >= pages}
-            onClick={() => setPage(page + 1)}
-            aria-label="Siguiente"
-          >
+          <Button variant="outline" size="icon" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)} aria-label="Siguiente">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

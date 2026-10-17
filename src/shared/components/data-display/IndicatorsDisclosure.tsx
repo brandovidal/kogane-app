@@ -1,11 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/ui/collapsible";
 
 export interface IndicatorsDisclosureProps {
   children: ReactNode;
@@ -40,20 +36,10 @@ export function IndicatorsDisclosure({
           {!open && collapsedContent ? (
             <div className="min-w-0 flex-1">{collapsedContent}</div>
           ) : !open ? (
-            <span className="truncate text-sm tabular-nums text-muted-foreground">
-              {summary}
-            </span>
+            <span className="truncate text-sm tabular-nums text-muted-foreground">{summary}</span>
           ) : null}
-          <span className="shrink-0 text-xs text-muted-foreground">
-            {open ? expandedLabel : collapsedLabel}
-          </span>
-          <ChevronDown
-            aria-hidden="true"
-            className={cn(
-              "size-4 shrink-0 text-muted-foreground transition-transform",
-              open && "rotate-180",
-            )}
-          />
+          <span className="shrink-0 text-xs text-muted-foreground">{open ? expandedLabel : collapsedLabel}</span>
+          <ChevronDown aria-hidden="true" className={cn("size-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-180")} />
         </div>
       </CollapsibleTrigger>
       <CollapsibleContent className="pt-2">{children}</CollapsibleContent>

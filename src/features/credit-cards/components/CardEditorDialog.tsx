@@ -1,24 +1,13 @@
 import { CardStatementPassword } from "./CardStatementPassword";
 import { useEffect, useState } from "react";
-import {
-  useCardHolders,
-  useMe,
-  useSaveCardHolders,
-  useSavePaymentMethod,
-} from "@/shared/api/hooks/catalogs";
+import { useCardHolders, useMe, useSaveCardHolders, useSavePaymentMethod } from "@/shared/api/hooks/catalogs";
 import type { PaymentMethod } from "@/shared/api/types";
 import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Archive } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Textarea } from "@/ui/textarea";
 import { CARD_ISSUERS, OTHER_ISSUER } from "../constants/banks";
 import { toast } from "sonner";
@@ -49,8 +38,7 @@ const fromCard = (card?: PaymentMethod): FormState => ({
   closeDay: card?.billingCloseDay == null ? "" : String(card.billingCloseDay),
   payDay: card?.paymentDueDay == null ? "" : String(card.paymentDueDay),
 });
-const validDay = (value: string) =>
-  /^\d{1,2}$/.test(value) && Number(value) >= 1 && Number(value) <= 31;
+const validDay = (value: string) => /^\d{1,2}$/.test(value) && Number(value) >= 1 && Number(value) <= 31;
 
 export function CardEditorDialog({
   card,
@@ -68,10 +56,7 @@ export function CardEditorDialog({
   const [form, setForm] = useState(() => fromCard(card));
   const [submitted, setSubmitted] = useState(false);
   // A saved issuer outside the list is edited as "Otro"
-  const [customIssuer, setCustomIssuer] = useState(
-    () =>
-      !!card?.bank && !(CARD_ISSUERS as readonly string[]).includes(card.bank),
-  );
+  const [customIssuer, setCustomIssuer] = useState(() => !!card?.bank && !(CARD_ISSUERS as readonly string[]).includes(card.bank));
   const [savedCardId, setSavedCardId] = useState<string | null>(null);
   const saveMethod = useSavePaymentMethod();
   const saveHolders = useSaveCardHolders();
@@ -88,13 +73,9 @@ export function CardEditorDialog({
       }));
   }, [holders]);
   useEffect(() => {
-    if (!card && me)
-      setForm((previous) =>
-        previous.personId ? previous : { ...previous, personId: me },
-      );
+    if (!card && me) setForm((previous) => (previous.personId ? previous : { ...previous, personId: me }));
   }, [card, me]);
-  const set = (change: Partial<FormState>) =>
-    setForm((previous) => ({ ...previous, ...change }));
+  const set = (change: Partial<FormState>) => setForm((previous) => ({ ...previous, ...change }));
   const errors: Partial<Record<keyof FormState, boolean>> = {
     name: !form.name.trim(),
     code: !form.code.trim(),
@@ -102,10 +83,7 @@ export function CardEditorDialog({
     payDay: !validDay(form.payDay),
     last4: !!form.last4 && !/^\d{4}$/.test(form.last4),
     personId: !form.personId,
-    creditLimit:
-      !!form.creditLimit &&
-      (!Number.isFinite(Number(form.creditLimit)) ||
-        Number(form.creditLimit) < 0),
+    creditLimit: !!form.creditLimit && (!Number.isFinite(Number(form.creditLimit)) || Number(form.creditLimit) < 0),
   };
   const busy = saveMethod.isPending || saveHolders.isPending;
   const submit = async () => {
@@ -146,27 +124,17 @@ export function CardEditorDialog({
       });
       onClose();
     } catch {
-      toast.error(
-        "No se pudo guardar la tarjeta. Revisa los datos e inténtalo otra vez.",
-      );
+      toast.error("No se pudo guardar la tarjeta. Revisa los datos e inténtalo otra vez.");
     }
   };
-  const field = (
-    name: keyof FormState,
-    label: string,
-    input: React.ReactNode,
-    error?: string,
-    helper?: string,
-  ) => (
+  const field = (name: keyof FormState, label: string, input: React.ReactNode, error?: string, helper?: string) => (
     <div className="space-y-1.5">
       <label className="text-sm font-medium" htmlFor={`card-${name}`}>
         {label}
       </label>
       {input}
       {helper && <p className="text-xs text-muted-foreground">{helper}</p>}
-      {submitted && errors[name] && (
-        <p className="text-xs text-destructive">{error}</p>
-      )}
+      {submitted && errors[name] && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
   return (
@@ -174,21 +142,12 @@ export function CardEditorDialog({
       open
       onOpenChange={(open) => !open && onClose()}
       title={card ? "Editar tarjeta" : "Nueva tarjeta"}
-      description={
-        card
-          ? `Modifica los datos de ${card.name}`
-          : "Registra una tarjeta de crédito para seguir sus cierres y pagos"
-      }
+      description={card ? `Modifica los datos de ${card.name}` : "Registra una tarjeta de crédito para seguir sus cierres y pagos"}
       contentClassName="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-xl"
       footer={
         <>
           {card && onArchive && (
-            <Button
-              variant="ghost"
-              className="mr-auto text-destructive hover:text-destructive"
-              onClick={onArchive}
-              disabled={busy}
-            >
+            <Button variant="ghost" className="mr-auto text-destructive hover:text-destructive" onClick={onArchive} disabled={busy}>
               <Archive aria-hidden="true" />
               Archivar
             </Button>
@@ -205,11 +164,8 @@ export function CardEditorDialog({
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto py-2 pr-1">
         {card && (
           <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300">
-            {movements
-              ? `Esta tarjeta tiene ${movements} ${movements === 1 ? "movimiento" : "movimientos"}. `
-              : ""}
-            Cambiar los días de cierre o pago no modifica los movimientos ya
-            registrados.
+            {movements ? `Esta tarjeta tiene ${movements} ${movements === 1 ? "movimiento" : "movimientos"}. ` : ""}
+            Cambiar los días de cierre o pago no modifica los movimientos ya registrados.
           </p>
         )}
         {field(
@@ -278,12 +234,7 @@ export function CardEditorDialog({
           {field(
             "network",
             "Red",
-            <Select
-              value={form.network || "none"}
-              onValueChange={(network) =>
-                set({ network: network === "none" ? "" : network })
-              }
-            >
+            <Select value={form.network || "none"} onValueChange={(network) => set({ network: network === "none" ? "" : network })}>
               <SelectTrigger id="card-network">
                 <SelectValue placeholder="Selecciona una red" />
               </SelectTrigger>
@@ -291,9 +242,7 @@ export function CardEditorDialog({
                 <SelectItem value="none">Sin especificar</SelectItem>
                 <SelectItem value="Visa">Visa</SelectItem>
                 <SelectItem value="Mastercard">Mastercard</SelectItem>
-                <SelectItem value="American Express">
-                  American Express
-                </SelectItem>
+                <SelectItem value="American Express">American Express</SelectItem>
                 <SelectItem value="Diners Club">Diners Club</SelectItem>
               </SelectContent>
             </Select>,
@@ -301,12 +250,7 @@ export function CardEditorDialog({
           {field(
             "currency",
             "Moneda",
-            <Select
-              value={form.currency}
-              onValueChange={(currency) =>
-                set({ currency: currency as FormState["currency"] })
-              }
-            >
+            <Select value={form.currency} onValueChange={(currency) => set({ currency: currency as FormState["currency"] })}>
               <SelectTrigger id="card-currency">
                 <SelectValue />
               </SelectTrigger>
@@ -326,9 +270,7 @@ export function CardEditorDialog({
               inputMode="numeric"
               maxLength={4}
               value={form.last4}
-              onChange={(event) =>
-                set({ last4: event.target.value.replace(/\D/g, "") })
-              }
+              onChange={(event) => set({ last4: event.target.value.replace(/\D/g, "") })}
               placeholder="Ej.: 1810"
               aria-invalid={submitted && errors.last4}
             />,
@@ -339,11 +281,7 @@ export function CardEditorDialog({
             "personId",
             "Persona *",
             <div id="card-personId">
-              <PersonPicker
-                module="cards"
-                value={form.personId || null}
-                onChange={(personId) => set({ personId: personId ?? "" })}
-              />
+              <PersonPicker module="cards" value={form.personId || null} onChange={(personId) => set({ personId: personId ?? "" })} />
             </div>,
             "Selecciona una persona",
           )}
@@ -369,9 +307,7 @@ export function CardEditorDialog({
               id="card-closeDay"
               inputMode="numeric"
               value={form.closeDay}
-              onChange={(event) =>
-                set({ closeDay: event.target.value.replace(/\D/g, "") })
-              }
+              onChange={(event) => set({ closeDay: event.target.value.replace(/\D/g, "") })}
               placeholder="1–31"
               aria-invalid={submitted && errors.closeDay}
             />,
@@ -385,9 +321,7 @@ export function CardEditorDialog({
               id="card-payDay"
               inputMode="numeric"
               value={form.payDay}
-              onChange={(event) =>
-                set({ payDay: event.target.value.replace(/\D/g, "") })
-              }
+              onChange={(event) => set({ payDay: event.target.value.replace(/\D/g, "") })}
               placeholder="1–31"
               aria-invalid={submitted && errors.payDay}
             />,
@@ -407,12 +341,7 @@ export function CardEditorDialog({
             placeholder="Agrega una nota sobre esta tarjeta"
           />,
         )}
-        {card && (
-          <CardStatementPassword
-            cardId={card.id}
-            hasPassword={Boolean(card.hasStatementPassword)}
-          />
-        )}
+        {card && <CardStatementPassword cardId={card.id} hasPassword={Boolean(card.hasStatementPassword)} />}
       </div>
     </ResponsiveDialog>
   );

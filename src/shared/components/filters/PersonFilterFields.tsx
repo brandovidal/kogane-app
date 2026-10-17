@@ -1,16 +1,8 @@
 import { useMemo } from "react";
 
 import { usePeople } from "@/shared/api/hooks/catalogs";
-import {
-  PersonFilter,
-  type PersonFilterOption,
-} from "@/shared/components/filters/PersonFilter";
-import {
-  PERSON_ALL,
-  PERSON_FILTER_LABELS,
-  PERSON_ME,
-  PERSON_UNASSIGNED,
-} from "@/shared/constants/person-filter";
+import { PersonFilter, type PersonFilterOption } from "@/shared/components/filters/PersonFilter";
+import { PERSON_ALL, PERSON_FILTER_LABELS, PERSON_ME, PERSON_UNASSIGNED } from "@/shared/constants/person-filter";
 
 export interface PersonFilterFieldsProps {
   value?: string;
@@ -52,9 +44,7 @@ export function PersonFilterFields({
     ?.split(",")
     .map((person) => (useMeAlias && person === me ? PERSON_ME : person))
     .filter((person) => person !== PERSON_ALL)
-    .filter(
-      (person, index, peopleValue) => peopleValue.indexOf(person) === index,
-    );
+    .filter((person, index, peopleValue) => peopleValue.indexOf(person) === index);
   const selectedKey = selectedValue?.join(",") ?? "";
 
   const options = useMemo<PersonFilterOption[]>(() => {
@@ -72,13 +62,7 @@ export function PersonFilterFields({
     }
     personOptions.push(
       ...people
-        .filter(
-          (person) =>
-            !person.isDefault &&
-            (person.isActive ||
-              (counts?.[person.id] ?? 0) > 0 ||
-              selected.has(person.id)),
-        )
+        .filter((person) => !person.isDefault && (person.isActive || (counts?.[person.id] ?? 0) > 0 || selected.has(person.id)))
         .map((person) => ({
           value: person.id,
           name: person.name,
@@ -100,8 +84,7 @@ export function PersonFilterFields({
     return visiblePeople;
   }, [counts, includeUnassigned, people, selectedKey, useMeAlias]);
 
-  const selectedValues =
-    value && value !== PERSON_ALL ? (selectedValue ?? []) : [];
+  const selectedValues = value && value !== PERSON_ALL ? (selectedValue ?? []) : [];
 
   return (
     <PersonFilter

@@ -1,8 +1,4 @@
-import type {
-  ImportDetail,
-  ImportRowStatus,
-  ImportTab,
-} from "@/shared/api/types";
+import type { ImportDetail, ImportRowStatus, ImportTab } from "@/shared/api/types";
 
 export type ImportSource = "notion" | "statement";
 

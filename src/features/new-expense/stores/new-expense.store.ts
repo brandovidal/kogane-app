@@ -18,5 +18,4 @@ export const newExpenseStore = createStore<NewExpenseState>()((set) => ({
   close: () => set({ open: false }),
 }));
 
-export const useNewExpense = <T>(selector: (state: NewExpenseState) => T) =>
-  useStore(newExpenseStore, selector);
+export const useNewExpense = <T>(selector: (state: NewExpenseState) => T) => useStore(newExpenseStore, selector);

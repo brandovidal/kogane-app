@@ -1,26 +1,8 @@
-import {
-  Check,
-  ImageIcon,
-  MessageSquare,
-  Mic,
-  MoreHorizontal,
-  Pencil,
-  RotateCw,
-  Trash2,
-} from "lucide-react";
+import { Check, ImageIcon, MessageSquare, Mic, MoreHorizontal, Pencil, RotateCw, Trash2 } from "lucide-react";
 import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import type { DraftTab } from "@/features/drafts/hooks/drafts";
-import {
-  draftMediaKind,
-  useOpenDraftMedia,
-} from "@/features/drafts/hooks/draft-media";
+import { draftMediaKind, useOpenDraftMedia } from "@/features/drafts/hooks/draft-media";
 
 interface MenuDraft {
   id: string;
@@ -53,22 +35,14 @@ export function DraftActionsMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8"
-          aria-label={`Acciones de ${label}`}
-        >
+        <Button variant="ghost" size="icon" className="size-8" aria-label={`Acciones de ${label}`}>
           <MoreHorizontal className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         {tab === "failed" ? (
           <>
-            <DropdownMenuItem
-              onSelect={onRetry}
-              className="font-medium text-primary"
-            >
+            <DropdownMenuItem onSelect={onRetry} className="font-medium text-primary">
               <RotateCw /> Reintentar
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={onEdit}>
@@ -80,28 +54,17 @@ export function DraftActionsMenu({
             <DropdownMenuItem
               onSelect={onSave}
               disabled={tab !== "discarded" && incomplete}
-              className={
-                tab !== "discarded" && !incomplete
-                  ? "font-medium text-primary"
-                  : undefined
-              }
+              className={tab !== "discarded" && !incomplete ? "font-medium text-primary" : undefined}
             >
               <Check /> Guardar
               {tab === "discarded" ? (
-                <span className="ml-auto text-xs text-muted-foreground">
-                  Lo restaura
-                </span>
+                <span className="ml-auto text-xs text-muted-foreground">Lo restaura</span>
               ) : (
-                incomplete && (
-                  <span className="ml-auto text-xs text-muted-foreground">
-                    Falta info
-                  </span>
-                )
+                incomplete && <span className="ml-auto text-xs text-muted-foreground">Falta info</span>
               )}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={onEdit}>
-              <Pencil />{" "}
-              {tab === "review" && incomplete ? "Completar" : "Editar"}
+              <Pencil /> {tab === "review" && incomplete ? "Completar" : "Editar"}
             </DropdownMenuItem>
           </>
         )}

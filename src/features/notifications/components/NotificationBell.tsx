@@ -73,12 +73,7 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          aria-label={`Notificaciones: ${unread} sin leer`}
-        >
+        <Button variant="ghost" size="icon" className="relative" aria-label={`Notificaciones: ${unread} sin leer`}>
           <Bell className="h-4 w-4" />
           {unread > 0 && (
             <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-white">
@@ -87,34 +82,19 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-96 max-w-[calc(100vw-2rem)] p-0"
-      >
+      <DropdownMenuContent align="end" className="w-96 max-w-[calc(100vw-2rem)] p-0">
         <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-2">
           <div className="flex items-center gap-2">
             <span className="text-base font-semibold">Notificaciones</span>
-            {unread > 0 && (
-              <span className="rounded-full bg-brand/20 px-2 text-xs font-medium text-brand">
-                {unread}
-              </span>
-            )}
+            {unread > 0 && <span className="rounded-full bg-brand/20 px-2 text-xs font-medium text-brand">{unread}</span>}
           </div>
           {unread > 0 && (
-            <button
-              type="button"
-              className="text-xs text-brand hover:underline"
-              onClick={() => markAllRead.mutate()}
-            >
+            <button type="button" className="text-xs text-brand hover:underline" onClick={() => markAllRead.mutate()}>
               Marcar todo como leído
             </button>
           )}
         </div>
-        <div
-          role="tablist"
-          aria-label="Filtrar notificaciones"
-          className="mx-3 mb-2 grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
-        >
+        <div role="tablist" aria-label="Filtrar notificaciones" className="mx-3 mb-2 grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1">
           {NOTIFICATION_TABS.map((option) => (
             <button
               key={option.value}
@@ -133,9 +113,7 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
         </div>
         <div className="max-h-[26rem] overflow-y-auto px-1 pb-1">
           {groups.length === 0 && (
-            <p className="px-2 py-8 text-center text-sm text-muted-foreground">
-              {tab === "unread" ? "Todo al día" : "Sin notificaciones"}
-            </p>
+            <p className="px-2 py-8 text-center text-sm text-muted-foreground">{tab === "unread" ? "Todo al día" : "Sin notificaciones"}</p>
           )}
           {groups.map((group) => (
             <div key={group.label}>
@@ -159,24 +137,8 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
                       <Icon className="size-4" aria-hidden="true" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p
-                        className={cn(
-                          "truncate text-sm",
-                          notification.readAt
-                            ? "text-foreground/80"
-                            : "font-medium",
-                        )}
-                      >
-                        {notification.title}
-                      </p>
-                      <p
-                        className={cn(
-                          "text-xs text-muted-foreground",
-                          open ? "whitespace-pre-line" : "line-clamp-2",
-                        )}
-                      >
-                        {notification.body}
-                      </p>
+                      <p className={cn("truncate text-sm", notification.readAt ? "text-foreground/80" : "font-medium")}>{notification.title}</p>
+                      <p className={cn("text-xs text-muted-foreground", open ? "whitespace-pre-line" : "line-clamp-2")}>{notification.body}</p>
                       {open && (
                         <p className="mt-1 flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
                           {notification.readAt ? (
@@ -199,25 +161,15 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
                               className="flex items-center gap-0.5 text-brand hover:underline"
                               onClick={(event) => event.stopPropagation()}
                             >
-                              Ir a{" "}
-                              {PAGE_NAMES[notificationLink(notification)] ??
-                                "la página"}{" "}
-                              <ArrowRight className="h-3 w-3" />
+                              Ir a {PAGE_NAMES[notificationLink(notification)] ?? "la página"} <ArrowRight className="h-3 w-3" />
                             </a>
                           )}
                         </p>
                       )}
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-1.5 text-[11px] text-muted-foreground">
-                      <span className="tabular-nums">
-                        {noticeTime(notification.createdAt)}
-                      </span>
-                      {!notification.readAt && (
-                        <span
-                          className="size-1.5 rounded-full bg-brand"
-                          aria-label="Sin leer"
-                        />
-                      )}
+                      <span className="tabular-nums">{noticeTime(notification.createdAt)}</span>
+                      {!notification.readAt && <span className="size-1.5 rounded-full bg-brand" aria-label="Sin leer" />}
                     </div>
                   </DropdownMenuItem>
                 );
@@ -227,10 +179,7 @@ function NotificationBellView({ currentPath = "/" }: { currentPath?: string }) {
         </div>
         <DropdownMenuSeparator className="my-0" />
         <DropdownMenuItem asChild>
-          <a
-            href="/notificaciones"
-            className="justify-center rounded-none py-2.5 text-sm text-brand"
-          >
+          <a href="/notificaciones" className="justify-center rounded-none py-2.5 text-sm text-brand">
             Ver todas las notificaciones
           </a>
         </DropdownMenuItem>

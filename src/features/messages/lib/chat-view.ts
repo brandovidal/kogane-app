@@ -13,8 +13,7 @@ export function formatRecordingTime(totalSeconds: number): string {
   return `${Math.floor(safe / 60)}:${String(safe % 60).padStart(2, "0")}`;
 }
 
-const dayKey = (date: Date) =>
-  date.toLocaleDateString("en-CA", { timeZone: CHAT_TIME_ZONE });
+const dayKey = (date: Date) => date.toLocaleDateString("en-CA", { timeZone: CHAT_TIME_ZONE });
 
 export function chatDayLabel(iso: string, now: Date = new Date()): string {
   const date = new Date(iso);
@@ -39,9 +38,7 @@ export function chatTime(iso: string): string {
 
 // true cuando el mensaje abre un día distinto al del anterior
 export function startsNewDay(previousIso: string | undefined, iso: string) {
-  return (
-    !previousIso || dayKey(new Date(previousIso)) !== dayKey(new Date(iso))
-  );
+  return !previousIso || dayKey(new Date(previousIso)) !== dayKey(new Date(iso));
 }
 
 export function formatFileSize(bytes: number): string {

@@ -6,11 +6,7 @@ export interface NameAvatarProps {
   unassigned?: boolean;
 }
 
-export function NameAvatar({
-  name,
-  initials: customInitials,
-  unassigned = false,
-}: NameAvatarProps) {
+export function NameAvatar({ name, initials: customInitials, unassigned = false }: NameAvatarProps) {
   const generatedInitials = useInitials(name);
 
   return (

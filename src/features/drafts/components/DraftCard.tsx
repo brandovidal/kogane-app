@@ -37,17 +37,10 @@ export function DraftCard({
   const missing = missingLabels(draft);
 
   return (
-    <article
-      className={cn(
-        "flex h-full flex-col gap-3 rounded-2xl border bg-card p-4",
-        incomplete && "border-amber-500/30",
-      )}
-    >
+    <article className={cn("flex h-full flex-col gap-3 rounded-2xl border bg-card p-4", incomplete && "border-amber-500/30")}>
       <header className="space-y-0.5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="min-w-0 truncate font-semibold">
-            {draft.description ?? draft.rawText ?? "Sin descripción"}
-          </h3>
+          <h3 className="min-w-0 truncate font-semibold">{draft.description ?? draft.rawText ?? "Sin descripción"}</h3>
           <span
             className={cn(
               "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium",
@@ -60,20 +53,11 @@ export function DraftCard({
             {incomplete ? "Falta info" : "Listo"}
           </span>
         </div>
-        <p className="line-clamp-2 text-xs italic text-muted-foreground">
-          {draft.rawText ? `«${draft.rawText}»` : "«sin texto · captura»"}
-        </p>
+        <p className="line-clamp-2 text-xs italic text-muted-foreground">{draft.rawText ? `«${draft.rawText}»` : "«sin texto · captura»"}</p>
       </header>
 
-      <p
-        className={cn(
-          "text-2xl font-bold tabular-nums",
-          draft.amount == null && "text-muted-foreground",
-        )}
-      >
-        {draft.amount != null
-          ? formatCurrency(draft.amount, draft.currency ?? "PEN")
-          : "Sin monto"}
+      <p className={cn("text-2xl font-bold tabular-nums", draft.amount == null && "text-muted-foreground")}>
+        {draft.amount != null ? formatCurrency(draft.amount, draft.currency ?? "PEN") : "Sin monto"}
       </p>
 
       {incomplete && (
@@ -81,10 +65,7 @@ export function DraftCard({
           <p className="text-foreground">Para guardar completa:</p>
           <ul className="flex flex-wrap gap-1.5">
             {missing.map((label) => (
-              <li
-                key={label}
-                className="rounded-full border border-amber-500/40 px-2 py-0.5 text-amber-700 dark:text-amber-300"
-              >
+              <li key={label} className="rounded-full border border-amber-500/40 px-2 py-0.5 text-amber-700 dark:text-amber-300">
                 {label}
               </li>
             ))}
@@ -115,22 +96,11 @@ export function DraftCard({
             <Check className="size-4" /> Guardar
           </Button>
         )}
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Editar"
-          onClick={onEdit}
-        >
+        <Button variant="outline" size="icon" aria-label="Editar" onClick={onEdit}>
           <Pencil className="size-4" />
         </Button>
         {!discarded && (
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Descartar"
-            className="text-destructive hover:text-destructive"
-            onClick={onDiscard}
-          >
+          <Button variant="outline" size="icon" aria-label="Descartar" className="text-destructive hover:text-destructive" onClick={onDiscard}>
             <X className="size-4" />
           </Button>
         )}

@@ -34,16 +34,7 @@ function DailyListPageContent() {
     onDuplicate: actions.onDuplicate,
     onDelete: actions.onDelete,
   });
-  const csvHeaders = [
-    "Descripción",
-    "Fecha",
-    "Monto",
-    "Moneda",
-    "Medio de pago",
-    "Persona",
-    "Categoría",
-    "Origen",
-  ];
+  const csvHeaders = ["Descripción", "Fecha", "Monto", "Moneda", "Medio de pago", "Persona", "Categoría", "Origen"];
   const csvRows = (expenses: typeof list.sorted) =>
     expenses.map((expense) => [
       expense.description,
@@ -63,9 +54,7 @@ function DailyListPageContent() {
   const selectedCsv = useCsvExport({
     filename: `dia-a-dia-seleccion-${list.year}-${String(list.month).padStart(2, "0")}`,
     headers: csvHeaders,
-    rows: csvRows(
-      list.sorted.filter((expense) => list.selected.has(expense.id)),
-    ),
+    rows: csvRows(list.sorted.filter((expense) => list.selected.has(expense.id))),
   });
   const exportItems = [
     ...csv.items,
@@ -76,9 +65,7 @@ function DailyListPageContent() {
     },
   ];
 
-  const visibleColumns = columns.filter(
-    (column) => column.key === "actions" || !hiddenColumns.includes(column.key),
-  );
+  const visibleColumns = columns.filter((column) => column.key === "actions" || !hiddenColumns.includes(column.key));
   const columnOptions = columns
     .filter((column) => column.key !== "actions")
     .map((column) => ({
@@ -86,17 +73,10 @@ function DailyListPageContent() {
       label: column.header,
       visible: !hiddenColumns.includes(column.key),
       disabled:
-        !hiddenColumns.includes(column.key) &&
-        columns.filter(
-          (item) => item.key !== "actions" && !hiddenColumns.includes(item.key),
-        ).length <= 1,
+        !hiddenColumns.includes(column.key) && columns.filter((item) => item.key !== "actions" && !hiddenColumns.includes(item.key)).length <= 1,
       onVisibleChange: (visible: boolean) =>
         setHiddenColumns((current) =>
-          visible
-            ? current.filter((key) => key !== column.key)
-            : current.includes(column.key)
-              ? current
-              : [...current, column.key],
+          visible ? current.filter((key) => key !== column.key) : current.includes(column.key) ? current : [...current, column.key],
         ),
     }));
   const resetView = () => {
@@ -113,11 +93,7 @@ function DailyListPageContent() {
 
   return (
     <div className="space-y-4">
-      <DailyViewBar
-        layout={list.layout}
-        onLayoutChange={list.setLayout}
-        exportItems={exportItems}
-      />
+      <DailyViewBar layout={list.layout} onLayoutChange={list.setLayout} exportItems={exportItems} />
 
       <DailyIndicators
         expenses={list.sorted}
@@ -160,16 +136,8 @@ function DailyListPageContent() {
         onReset={resetView}
       />
 
-      <BulkActionsToolbar
-        count={list.selected.size}
-        onClear={() => list.setSelected(new Set())}
-      >
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={selectedCsv.exportCsv}
-        >
+      <BulkActionsToolbar count={list.selected.size} onClear={() => list.setSelected(new Set())}>
+        <Button type="button" size="sm" variant="outline" onClick={selectedCsv.exportCsv}>
           <Download aria-hidden="true" /> Exportar selección
         </Button>
       </BulkActionsToolbar>
@@ -197,19 +165,10 @@ function DailyListPageContent() {
       />
 
       {actions.origin?.draftId && (
-        <OriginMessageDialog
-          draftId={actions.origin.draftId}
-          title={actions.origin.description}
-          onClose={() => actions.setOrigin(undefined)}
-        />
+        <OriginMessageDialog draftId={actions.origin.draftId} title={actions.origin.description} onClose={() => actions.setOrigin(undefined)} />
       )}
 
-      <ImportListDialog
-        open={actions.importing}
-        onOpenChange={actions.setImporting}
-        target="daily-expenses"
-        title="Importar gastos del día a día"
-      />
+      <ImportListDialog open={actions.importing} onOpenChange={actions.setImporting} target="daily-expenses" title="Importar gastos del día a día" />
 
       <ExpenseEditDialog
         open={!!actions.editing}

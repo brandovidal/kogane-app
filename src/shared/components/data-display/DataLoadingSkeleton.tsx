@@ -2,8 +2,7 @@ import { useSkeletonItems } from "@/shared/hooks/useSkeletonItems";
 import { Skeleton } from "@/ui/skeleton";
 import { TableCell, TableRow } from "@/ui/table";
 
-type DataLoadingSkeletonVariant =
-  "summary" | "toolbar" | "table" | "table-rows" | "cards" | "board";
+type DataLoadingSkeletonVariant = "summary" | "toolbar" | "table" | "table-rows" | "cards" | "board";
 
 export function DataLoadingSkeleton({
   variant,
@@ -33,9 +32,7 @@ export function DataLoadingSkeleton({
                 Cargando registros…
               </span>
             )}
-            <Skeleton
-              className={`h-4 ${column === 0 ? "w-2/3" : column === 1 ? "w-1/2" : "w-3/4"}`}
-            />
+            <Skeleton className={`h-4 ${column === 0 ? "w-2/3" : column === 1 ? "w-1/2" : "w-3/4"}`} />
           </TableCell>
         ))}
       </TableRow>
@@ -43,16 +40,9 @@ export function DataLoadingSkeleton({
 
   if (variant === "summary")
     return (
-      <section
-        aria-label="Cargando resumen"
-        aria-busy="true"
-        className={`grid gap-2 sm:grid-cols-2 xl:grid-cols-4 ${className ?? ""}`}
-      >
+      <section aria-label="Cargando resumen" aria-busy="true" className={`grid gap-2 sm:grid-cols-2 xl:grid-cols-4 ${className ?? ""}`}>
         {items.map((item) => (
-          <div
-            key={item}
-            className="space-y-3 rounded-xl border border-border/80 bg-card px-4 py-3.5"
-          >
+          <div key={item} className="space-y-3 rounded-xl border border-border/80 bg-card px-4 py-3.5">
             <Skeleton className="h-3 w-24" />
             <Skeleton className="h-7 w-32" />
             <Skeleton className="h-3 w-20" />
@@ -63,11 +53,7 @@ export function DataLoadingSkeleton({
 
   if (variant === "toolbar")
     return (
-      <div
-        aria-label="Cargando controles"
-        aria-busy="true"
-        className={`space-y-3 ${className ?? ""}`}
-      >
+      <div aria-label="Cargando controles" aria-busy="true" className={`space-y-3 ${className ?? ""}`}>
         <div className="flex flex-wrap items-center gap-2">
           <Skeleton className="h-9 w-full sm:w-56" />
           {toolbarItems.map((item) => (
@@ -103,17 +89,9 @@ export function DataLoadingSkeleton({
 
   if (variant === "board")
     return (
-      <div
-        role="status"
-        aria-label="Cargando tablero"
-        aria-busy="true"
-        className={`grid gap-3 lg:grid-cols-3 ${className ?? ""}`}
-      >
+      <div role="status" aria-label="Cargando tablero" aria-busy="true" className={`grid gap-3 lg:grid-cols-3 ${className ?? ""}`}>
         {items.slice(0, 3).map((item) => (
-          <section
-            key={item}
-            className="min-h-96 space-y-4 rounded-2xl border bg-card/55 p-4"
-          >
+          <section key={item} className="min-h-96 space-y-4 rounded-2xl border bg-card/55 p-4">
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-4 w-20" />
@@ -137,12 +115,7 @@ export function DataLoadingSkeleton({
     );
 
   return (
-    <div
-      role="status"
-      aria-label="Cargando tabla"
-      aria-busy="true"
-      className={`overflow-hidden rounded-2xl border bg-card ${className ?? ""}`}
-    >
+    <div role="status" aria-label="Cargando tabla" aria-busy="true" className={`overflow-hidden rounded-2xl border bg-card ${className ?? ""}`}>
       <div className="flex h-11 items-center gap-4 border-b bg-muted/35 px-4">
         {columnItems.map((column) => (
           <Skeleton key={column} className="h-4 flex-1" />
@@ -152,10 +125,7 @@ export function DataLoadingSkeleton({
         {rowItems.map((row) => (
           <div key={row} className="flex h-16 items-center gap-4 px-4">
             {columnItems.map((column) => (
-              <Skeleton
-                key={column}
-                className={`h-4 ${column === 0 ? "flex-[1.5]" : "flex-1"}`}
-              />
+              <Skeleton key={column} className={`h-4 ${column === 0 ? "flex-[1.5]" : "flex-1"}`} />
             ))}
           </div>
         ))}

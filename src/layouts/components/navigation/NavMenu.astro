@@ -1,11 +1,7 @@
 ---
 import { ChevronRight } from "lucide-react";
 
-import {
-  DEFAULT_OPEN_GROUPS,
-  NAV,
-  SETTINGS_NAV,
-} from "@/shared/constants/navigation";
+import { DEFAULT_OPEN_GROUPS, NAV, SETTINGS_NAV } from "@/shared/constants/navigation";
 import { isActivePath, isGroup } from "@/shared/utils/navigation";
 import { type NavLink } from "@/shared/types/navigation";
 import { NAV_ICONS } from "@/shared/constants/nav-icons";
@@ -54,9 +50,7 @@ const childClass = (active: boolean) =>
           <span class="relative">
             <Icon className="h-4 w-4" />
           </span>
-          <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">
-            {entry.label}
-          </span>
+          <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{entry.label}</span>
         </a>
       );
     }
@@ -66,26 +60,15 @@ const childClass = (active: boolean) =>
     const open = DEFAULT_OPEN_GROUPS.includes(entry.label) || holdsCurrent;
     const hasDrafts = entry.children.some((child) => child.badge === "drafts");
     return (
-      <details
-        class="nav-group"
-        data-group={entry.label}
-        data-current={holdsCurrent ? "true" : undefined}
-        open={open}
-      >
+      <details class="nav-group" data-group={entry.label} data-current={holdsCurrent ? "true" : undefined} open={open}>
         <summary
           aria-label={entry.label}
           data-nav-tooltip-label={entry.label}
           data-nav-tooltip-description={entry.description}
           class={`${linkClass(false)} cursor-pointer list-none group-data-[compact=true]/sb:hidden [&::-webkit-details-marker]:hidden`}
         >
-          <GroupIcon
-            className={`nav-group-icon h-4 w-4${holdsCurrent ? " is-parent" : ""}`}
-          />
-          <span
-            class={`nav-label flex-1 text-left${holdsCurrent ? " text-sidebar-foreground" : ""}`}
-          >
-            {entry.label}
-          </span>
+          <GroupIcon className={`nav-group-icon h-4 w-4${holdsCurrent ? " is-parent" : ""}`} />
+          <span class={`nav-label flex-1 text-left${holdsCurrent ? " text-sidebar-foreground" : ""}`}>{entry.label}</span>
           {hasDrafts && (
             <span class="nav-summary-badge">
               <DraftCount client:idle />
@@ -109,9 +92,7 @@ const childClass = (active: boolean) =>
                   <Icon className="h-4 w-4" />
                   {child.badge === "drafts" && <DraftCount dot client:idle />}
                 </span>
-                <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">
-                  {child.label}
-                </span>
+                <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{child.label}</span>
                 {child.badge === "drafts" && (
                   <span class="nav-pill-slot group-data-[compact=true]/sb:hidden">
                     <DraftCount client:idle />
@@ -139,9 +120,7 @@ const childClass = (active: boolean) =>
           <span class="relative">
             <Icon className="h-4 w-4" />
           </span>
-          <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">
-            {SETTINGS_NAV.label}
-          </span>
+          <span class="nav-label flex-1 group-data-[compact=true]/sb:hidden">{SETTINGS_NAV.label}</span>
         </a>
       );
     })()}

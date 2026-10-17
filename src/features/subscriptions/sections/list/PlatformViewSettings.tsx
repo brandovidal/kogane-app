@@ -1,13 +1,4 @@
-import {
-  CalendarRange,
-  Columns3,
-  Eye,
-  Layers,
-  Link2,
-  ListFilter,
-  RotateCcw,
-  SlidersHorizontal,
-} from "lucide-react";
+import { CalendarRange, Columns3, Eye, Layers, Link2, ListFilter, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import {
   ColumnVisibilityOptions,
@@ -85,21 +76,14 @@ export function PlatformViewSettings({
       <DropdownMenuItem onSelect={onOpenFilters}>
         <ListFilter className="size-4" />
         Filtros
-        {filterCount > 0 && (
-          <span className="ml-auto text-xs text-brand">{filterCount}</span>
-        )}
+        {filterCount > 0 && <span className="ml-auto text-xs text-brand">{filterCount}</span>}
       </DropdownMenuItem>
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <Layers className="size-4" />
           Agrupar
           <span className="ml-auto max-w-32 truncate text-xs text-muted-foreground">
-            {groupBy
-              .map(
-                (field) =>
-                  GROUP_OPTIONS.find((option) => option.value === field)?.label,
-              )
-              .join(" › ") || "Sin agrupar"}
+            {groupBy.map((field) => GROUP_OPTIONS.find((option) => option.value === field)?.label).join(" › ") || "Sin agrupar"}
           </span>
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
@@ -116,13 +100,7 @@ export function PlatformViewSettings({
               key={value}
               checked={groupBy.includes(value)}
               onSelect={(event) => event.preventDefault()}
-              onCheckedChange={(checked) =>
-                onGroupByChange(
-                  checked
-                    ? [...groupBy, value]
-                    : groupBy.filter((item) => item !== value),
-                )
-              }
+              onCheckedChange={(checked) => onGroupByChange(checked ? [...groupBy, value] : groupBy.filter((item) => item !== value))}
             >
               {label}
             </DropdownMenuCheckboxItem>
@@ -134,16 +112,12 @@ export function PlatformViewSettings({
       <DropdownMenuItem disabled>
         <CalendarRange className="size-4" />
         Color condicional
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Próximamente
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Próximamente</span>
       </DropdownMenuItem>
       <DropdownMenuItem disabled>
         <Columns3 className="size-4" />
         Totales del pie
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Próximamente
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Próximamente</span>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem onSelect={copyViewLink}>
@@ -153,9 +127,7 @@ export function PlatformViewSettings({
       <DropdownMenuItem disabled>
         <RotateCcw className="size-4" />
         Guardar como nueva vista
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Próximamente
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Próximamente</span>
       </DropdownMenuItem>
       <DropdownMenuItem disabled={!canReset} onSelect={onReset}>
         <RotateCcw className="size-4" />

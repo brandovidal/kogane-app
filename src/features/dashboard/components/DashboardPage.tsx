@@ -24,11 +24,7 @@ function DashboardPageView() {
           setPaymentDialogOpen(true);
         }}
       />
-      <DashboardPaymentDialog
-        open={paymentDialogOpen}
-        onOpenChange={setPaymentDialogOpen}
-        initialTab={paymentTab}
-      />
+      <DashboardPaymentDialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen} initialTab={paymentTab} />
     </>
   );
 }

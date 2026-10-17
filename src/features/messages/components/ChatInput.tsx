@@ -1,29 +1,10 @@
-import {
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type Ref,
-} from "react";
-import {
-  ArrowUp,
-  ImagePlus,
-  Mic,
-  Slash,
-  Sparkles,
-  Trash2,
-  X,
-} from "lucide-react";
+import { useEffect, useImperativeHandle, useRef, useState, type KeyboardEvent, type Ref } from "react";
+import { ArrowUp, ImagePlus, Mic, Slash, Sparkles, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/ui/button";
 import { cn } from "@/shared/utils/cn";
 import { CHAT_SUGGESTIONS } from "@/features/messages/constants/chat";
-import {
-  formatFileSize,
-  formatRecordingTime,
-  matchCommands,
-} from "@/features/messages/lib/chat-view";
+import { formatFileSize, formatRecordingTime, matchCommands } from "@/features/messages/lib/chat-view";
 
 // Voice notes longer than this are rejected by the bot (MAX_AUDIO_SECONDS in kogane-api)
 const MAX_AUDIO_SECONDS = 60;
@@ -77,12 +58,7 @@ interface ChatInputProps {
 }
 
 // Text, an image with an optional caption, or a voice note (layout of lp-clemente-restaurante, D49)
-export function ChatInput({
-  ref,
-  onSend,
-  disabled,
-  showSuggestions = false,
-}: ChatInputProps) {
+export function ChatInput({ ref, onSend, disabled, showSuggestions = false }: ChatInputProps) {
   const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [recording, setRecording] = useState(false);
@@ -105,19 +81,12 @@ export function ChatInput({
   const fileRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(
-    () => () =>
-      recorderRef.current?.stream.getTracks().forEach((track) => track.stop()),
-    [],
-  );
+  useEffect(() => () => recorderRef.current?.stream.getTracks().forEach((track) => track.stop()), []);
 
   useEffect(() => {
     if (!recording) return;
     setElapsed(0);
-    const timer = setInterval(
-      () => setElapsed((Date.now() - startedAtRef.current) / 1000),
-      250,
-    );
+    const timer = setInterval(() => setElapsed((Date.now() - startedAtRef.current) / 1000), 250);
     return () => clearInterval(timer);
   }, [recording]);
 
@@ -155,15 +124,10 @@ export function ChatInput({
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
         event.preventDefault();
         const step = event.key === "ArrowDown" ? 1 : -1;
-        setActiveCommand(
-          (current) => (current + step + commands.length) % commands.length,
-        );
+        setActiveCommand((current) => (current + step + commands.length) % commands.length);
         return;
       }
-      if (
-        event.key === "Tab" ||
-        (event.key === "Enter" && text !== commands[activeCommand]?.command)
-      ) {
+      if (event.key === "Tab" || (event.key === "Enter" && text !== commands[activeCommand]?.command)) {
         event.preventDefault();
         pickCommand(commands[activeCommand].command);
         return;
@@ -194,16 +158,11 @@ export function ChatInput({
       recorderRef.current = recorder;
       startedAtRef.current = Date.now();
       recorder.start();
-      meterRef.current = startMeter(stream, (level) =>
-        setLevels((current) => [...current, level].slice(-WAVE_BARS)),
-      );
+      meterRef.current = startMeter(stream, (level) => setLevels((current) => [...current, level].slice(-WAVE_BARS)));
       setLevels([]);
       setRecording(true);
       // the bot does not read longer notes: stop at the limit
-      setTimeout(
-        () => recorder.state === "recording" && stopRecording(),
-        MAX_AUDIO_SECONDS * 1000,
-      );
+      setTimeout(() => recorder.state === "recording" && stopRecording(), MAX_AUDIO_SECONDS * 1000);
     } catch {
       toast.error("No pude usar el micrófono.");
     }
@@ -233,11 +192,7 @@ export function ChatInput({
                 key={suggestion.id}
                 type="button"
                 disabled={disabled}
-                onClick={() =>
-                  suggestion.kind === "capture"
-                    ? fileRef.current?.click()
-                    : pickCommand(suggestion.label)
-                }
+                onClick={() => (suggestion.kind === "capture" ? fileRef.current?.click() : pickCommand(suggestion.label))}
                 className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50"
               >
                 {suggestion.kind === "capture" ? (
@@ -254,27 +209,12 @@ export function ChatInput({
         )}
         {image && (
           <div className="mb-2 flex items-center gap-3 rounded-xl border bg-muted/40 p-2">
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                alt=""
-                className="size-16 shrink-0 rounded-lg object-cover"
-              />
-            )}
+            {imageUrl && <img src={imageUrl} alt="" className="size-16 shrink-0 rounded-lg object-cover" />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{image.name}</p>
-              <p className="text-xs text-muted-foreground">
-                Imagen · {formatFileSize(image.size)} · lista para enviar
-              </p>
+              <p className="text-xs text-muted-foreground">Imagen · {formatFileSize(image.size)} · lista para enviar</p>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-9 shrink-0"
-              onClick={() => setImage(null)}
-              aria-label="Quitar imagen"
-            >
+            <Button type="button" variant="ghost" size="icon" className="size-9 shrink-0" onClick={() => setImage(null)} aria-label="Quitar imagen">
               <X className="size-4" />
             </Button>
           </div>
@@ -287,24 +227,15 @@ export function ChatInput({
               className="absolute bottom-full left-0 mb-2 w-full max-w-sm overflow-hidden rounded-xl border bg-popover p-1 shadow-lg"
             >
               {commands.map((item, index) => (
-                <li
-                  key={item.command}
-                  role="option"
-                  aria-selected={index === activeCommand}
-                >
+                <li key={item.command} role="option" aria-selected={index === activeCommand}>
                   <button
                     type="button"
                     onMouseEnter={() => setActiveCommand(index)}
                     onClick={() => pickCommand(item.command)}
-                    className={cn(
-                      "flex w-full items-baseline gap-4 rounded-lg px-3 py-2 text-left text-sm",
-                      index === activeCommand && "bg-muted",
-                    )}
+                    className={cn("flex w-full items-baseline gap-4 rounded-lg px-3 py-2 text-left text-sm", index === activeCommand && "bg-muted")}
                   >
                     <span className="w-20 font-semibold">{item.command}</span>
-                    <span className="text-muted-foreground">
-                      {item.description}
-                    </span>
+                    <span className="text-muted-foreground">{item.description}</span>
                   </button>
                 </li>
               ))}
@@ -321,11 +252,7 @@ export function ChatInput({
             }}
           />
           {recording ? (
-            <div
-              className={barClass}
-              role="status"
-              aria-label="Grabando nota de voz"
-            >
+            <div className={barClass} role="status" aria-label="Grabando nota de voz">
               <Button
                 variant="ghost"
                 size="icon"
@@ -336,32 +263,16 @@ export function ChatInput({
                 <Trash2 className="size-5" />
               </Button>
               <span className="size-2 animate-pulse rounded-full bg-destructive" />
-              <span className="text-sm font-semibold tabular-nums">
-                {formatRecordingTime(elapsed)}
-              </span>
+              <span className="text-sm font-semibold tabular-nums">{formatRecordingTime(elapsed)}</span>
               <span className="flex-1 truncate text-xs text-muted-foreground">
-                <span
-                  className="flex h-8 items-center gap-0.5"
-                  aria-hidden="true"
-                >
+                <span className="flex h-8 items-center gap-0.5" aria-hidden="true">
                   {Array.from({ length: WAVE_BARS }, (_, index) => {
                     const level = levels[index - (WAVE_BARS - levels.length)];
-                    return (
-                      <i
-                        key={index}
-                        className="w-0.5 rounded-full bg-primary/70"
-                        style={{ height: 4 + (level ?? 0) * 26 }}
-                      />
-                    );
+                    return <i key={index} className="w-0.5 rounded-full bg-primary/70" style={{ height: 4 + (level ?? 0) * 26 }} />;
                   })}
                 </span>
               </span>
-              <Button
-                size="icon"
-                className="size-9 shrink-0 rounded-xl"
-                onClick={stopRecording}
-                aria-label="Detener y enviar"
-              >
+              <Button size="icon" className="size-9 shrink-0 rounded-xl" onClick={stopRecording} aria-label="Detener y enviar">
                 <ArrowUp className="size-5" />
               </Button>
             </div>
@@ -386,11 +297,7 @@ export function ChatInput({
                   setActiveCommand(0);
                 }}
                 onKeyDown={onKeyDown}
-                placeholder={
-                  image
-                    ? "Añade un texto opcional (ej: persona dany)..."
-                    : "Ej: almuerzo 25 soles con yape"
-                }
+                placeholder={image ? "Añade un texto opcional (ej: persona dany)..." : "Ej: almuerzo 25 soles con yape"}
                 disabled={disabled}
                 className="max-h-32 min-h-9 flex-1 resize-none bg-transparent px-2 py-2 text-sm focus:outline-none"
               />
@@ -423,14 +330,12 @@ export function ChatInput({
             "Toca enviar para mandar · la papelera cancela"
           ) : image ? (
             <>
-              Añade un texto opcional (ej:{" "}
-              <kbd className="rounded border px-1">persona dany</kbd>) ·{" "}
-              <kbd className="rounded border px-1">Enter</kbd> para enviar
+              Añade un texto opcional (ej: <kbd className="rounded border px-1">persona dany</kbd>) · <kbd className="rounded border px-1">Enter</kbd>{" "}
+              para enviar
             </>
           ) : (
             <>
-              <kbd className="rounded border px-1">Enter</kbd> para enviar ·{" "}
-              <kbd className="rounded border px-1">/</kbd> para comandos
+              <kbd className="rounded border px-1">Enter</kbd> para enviar · <kbd className="rounded border px-1">/</kbd> para comandos
             </>
           )}
         </p>

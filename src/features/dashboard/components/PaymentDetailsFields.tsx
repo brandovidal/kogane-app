@@ -1,21 +1,8 @@
 import { useAccounts } from "@/shared/api/hooks/catalogs";
 import { FormField as Field } from "@/shared/components/forms/FormField";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  PAY_KINDS,
-  PAY_METHODS,
-  type PayAmount,
-  type PayDetails,
-  type PayKind,
-  type PayMethod,
-} from "@/features/calendar/lib/payment-details";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { PAY_KINDS, PAY_METHODS, type PayAmount, type PayDetails, type PayKind, type PayMethod } from "@/features/calendar/lib/payment-details";
 
 const NONE = "none";
 
@@ -37,19 +24,13 @@ export function PaymentDetailsFields({
   error?: string | null;
 }) {
   const accounts = useAccounts(true).data ?? [];
-  const set = <K extends keyof PayDetails>(key: K, value: PayDetails[K]) =>
-    onDetails({ ...details, [key]: value });
+  const set = <K extends keyof PayDetails>(key: K, value: PayDetails[K]) => onDetails({ ...details, [key]: value });
 
   return (
     <div className="grid gap-3 rounded-xl border px-4 py-3 sm:grid-cols-2">
       {single && isCardStatement && (
         <Field label="Tipo de pago">
-          <Select
-            value={single.kind}
-            onValueChange={(kind) =>
-              onSingle({ ...single, kind: kind as PayKind })
-            }
-          >
+          <Select value={single.kind} onValueChange={(kind) => onSingle({ ...single, kind: kind as PayKind })}>
             <SelectTrigger aria-label="Tipo de pago">
               <SelectValue />
             </SelectTrigger>
@@ -75,20 +56,10 @@ export function PaymentDetailsFields({
         </Field>
       )}
       <Field label="Fecha del pago">
-        <Input
-          aria-label="Fecha del pago"
-          type="date"
-          value={details.paidAt}
-          onChange={(e) => set("paidAt", e.target.value)}
-        />
+        <Input aria-label="Fecha del pago" type="date" value={details.paidAt} onChange={(e) => set("paidAt", e.target.value)} />
       </Field>
       <Field label="Medio de pago">
-        <Select
-          value={details.method || NONE}
-          onValueChange={(value) =>
-            set("method", value === NONE ? "" : (value as PayMethod))
-          }
-        >
+        <Select value={details.method || NONE} onValueChange={(value) => set("method", value === NONE ? "" : (value as PayMethod))}>
           <SelectTrigger aria-label="Medio de pago">
             <SelectValue />
           </SelectTrigger>
@@ -103,12 +74,7 @@ export function PaymentDetailsFields({
         </Select>
       </Field>
       <Field label="Cuenta de salida">
-        <Select
-          value={details.accountId || NONE}
-          onValueChange={(value) =>
-            set("accountId", value === NONE ? "" : value)
-          }
-        >
+        <Select value={details.accountId || NONE} onValueChange={(value) => set("accountId", value === NONE ? "" : value)}>
           <SelectTrigger aria-label="Cuenta de salida">
             <SelectValue />
           </SelectTrigger>
@@ -125,12 +91,7 @@ export function PaymentDetailsFields({
       </Field>
       <div className="sm:col-span-2">
         <Field label="Nota">
-          <Input
-            aria-label="Nota"
-            placeholder="Opcional"
-            value={details.note}
-            onChange={(e) => set("note", e.target.value)}
-          />
+          <Input aria-label="Nota" placeholder="Opcional" value={details.note} onChange={(e) => set("note", e.target.value)} />
         </Field>
       </div>
     </div>

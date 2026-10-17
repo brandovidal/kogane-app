@@ -2,34 +2,17 @@ import { Input } from "@/ui/input";
 import { ArrowRightLeft } from "lucide-react";
 import { InstallmentFields } from "@/features/expenses/components/forms/InstallmentFields";
 import { installmentError } from "@/features/expenses/lib/installments";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
 import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
 import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import type { PersonModule } from "@/features/settings/constants";
 import { FormField as Field } from "@/shared/components/forms/FormField";
 import type { DraftFields } from "@/features/drafts/hooks/drafts";
-import {
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-} from "@/shared/constants/finance";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
-import {
-  SUBSCRIPTION_KIND_LABELS,
-  SUBSCRIPTION_PERIOD_LABELS,
-  SUBSCRIPTION_PERIODS,
-} from "@/features/subscriptions/constants/subscriptions";
-import {
-  FIELDS_BY_DESTINATION,
-  FORM_DESTINATIONS,
-} from "@/features/drafts/lib/draft-form";
+import { SUBSCRIPTION_KIND_LABELS, SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS } from "@/features/subscriptions/constants/subscriptions";
+import { FIELDS_BY_DESTINATION, FORM_DESTINATIONS } from "@/features/drafts/lib/draft-form";
 import { FixedCostDraftTabs } from "./FixedCostDraftTabs";
 import { ShareEditor } from "./ShareEditor";
 import { DailyDraftTabs } from "./DailyDraftTabs";
@@ -50,9 +33,7 @@ function personModuleOf(value: DraftFields): PersonModule | undefined {
     case "fixed_cost":
       return "fixed_costs";
     case "subscription":
-      return (value.kind ?? "platform") === "platform"
-        ? "platforms"
-        : "recurring";
+      return (value.kind ?? "platform") === "platform" ? "platforms" : "recurring";
     case "credit_card":
       return "cards";
     default:
@@ -60,41 +41,19 @@ function personModuleOf(value: DraftFields): PersonModule | undefined {
   }
 }
 
-export function DraftForm({
-  value,
-  onChange,
-  missingFields = [],
-  showDestinationField = true,
-  files = [],
-  onFilesChange,
-}: DraftFormProps) {
-  const set = <K extends keyof DraftFields>(
-    key: K,
-    fieldValue: DraftFields[K],
-  ) => onChange({ ...value, [key]: fieldValue });
-  const rules =
-    FIELDS_BY_DESTINATION[value.destination ?? "daily"] ??
-    FIELDS_BY_DESTINATION.daily;
+export function DraftForm({ value, onChange, missingFields = [], showDestinationField = true, files = [], onFilesChange }: DraftFormProps) {
+  const set = <K extends keyof DraftFields>(key: K, fieldValue: DraftFields[K]) => onChange({ ...value, [key]: fieldValue });
+  const rules = FIELDS_BY_DESTINATION[value.destination ?? "daily"] ?? FIELDS_BY_DESTINATION.daily;
   const missing = (field: string) => missingFields.includes(field);
-  const isDebt =
-    value.destination === "receivable" || value.destination === "payable";
+  const isDebt = value.destination === "receivable" || value.destination === "payable";
   const isFixedCost = value.destination === "fixed_cost";
   const isDaily = value.destination === "daily";
 
   return (
     <div className="space-y-4">
       {showDestinationField && (
-        <Field
-          label="Registrar en"
-          icon={ArrowRightLeft}
-          missing={missing("destination")}
-        >
-          <Select
-            value={value.destination ?? ""}
-            onValueChange={(v) =>
-              set("destination", v as DraftFields["destination"])
-            }
-          >
+        <Field label="Registrar en" icon={ArrowRightLeft} missing={missing("destination")}>
+          <Select value={value.destination ?? ""} onValueChange={(v) => set("destination", v as DraftFields["destination"])}>
             <SelectTrigger>
               <SelectValue placeholder="Elige dónde va" />
             </SelectTrigger>
@@ -110,11 +69,7 @@ export function DraftForm({
       )}
 
       {isFixedCost ? (
-        <FixedCostDraftTabs
-          value={value}
-          onChange={onChange}
-          missingFields={missingFields}
-        />
+        <FixedCostDraftTabs value={value} onChange={onChange} missingFields={missingFields} />
       ) : isDaily ? (
         <DailyDraftTabs
           value={value}
@@ -128,11 +83,7 @@ export function DraftForm({
           <Field
             label="Descripción"
             missing={missing("description")}
-            error={
-              missing("description")
-                ? "Escribe una descripción del gasto"
-                : undefined
-            }
+            error={missing("description") ? "Escribe una descripción del gasto" : undefined}
           >
             <Input
               value={value.description ?? ""}
@@ -145,29 +96,17 @@ export function DraftForm({
             <Field
               label={isDebt && value.installment ? "Monto por cuota" : "Monto"}
               missing={missing("amount")}
-              error={
-                missing("amount") ? "Ingresa un monto mayor a 0" : undefined
-              }
+              error={missing("amount") ? "Ingresa un monto mayor a 0" : undefined}
             >
               <Input
                 type="number"
                 step="0.01"
                 value={value.amount ?? ""}
-                onChange={(e) =>
-                  set(
-                    "amount",
-                    e.target.value === "" ? null : Number(e.target.value),
-                  )
-                }
+                onChange={(e) => set("amount", e.target.value === "" ? null : Number(e.target.value))}
               />
             </Field>
             <Field label="Moneda">
-              <Select
-                value={value.currency ?? "PEN"}
-                onValueChange={(v) =>
-                  set("currency", v as DraftFields["currency"])
-                }
-              >
+              <Select value={value.currency ?? "PEN"} onValueChange={(v) => set("currency", v as DraftFields["currency"])}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -184,28 +123,14 @@ export function DraftForm({
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Fecha">
-              <Input
-                type="date"
-                value={value.spentAt?.slice(0, 10) ?? ""}
-                onChange={(e) => set("spentAt", e.target.value || null)}
-              />
+              <Input type="date" value={value.spentAt?.slice(0, 10) ?? ""} onChange={(e) => set("spentAt", e.target.value || null)} />
             </Field>
             <Field
-              label={
-                isDebt
-                  ? "Persona"
-                  : value.sharedWith?.shares.length
-                    ? "Paga"
-                    : "Para quién"
-              }
+              label={isDebt ? "Persona" : value.sharedWith?.shares.length ? "Paga" : "Para quién"}
               missing={missing("personId")}
               error={missing("personId") ? "Elige para quién es" : undefined}
             >
-              <PersonPicker
-                module={personModuleOf(value)}
-                value={value.personId}
-                onChange={(id) => set("personId", id)}
-              />
+              <PersonPicker module={personModuleOf(value)} value={value.personId} onChange={(id) => set("personId", id)} />
             </Field>
           </div>
 
@@ -213,9 +138,7 @@ export function DraftForm({
             <Field
               label={rules.cardsOnly ? "Tarjeta" : "Medio de pago"}
               missing={missing("paymentMethodId")}
-              error={
-                missing("paymentMethodId") ? "Elige cómo pagaste" : undefined
-              }
+              error={missing("paymentMethodId") ? "Elige cómo pagaste" : undefined}
             >
               <PaymentMethodSelect
                 type={rules.cardsOnly ? "credit_card" : undefined}
@@ -229,19 +152,10 @@ export function DraftForm({
           {rules.category && (
             <div className="grid grid-cols-2 gap-3">
               <Field label="Categoría" missing={missing("categoryId")}>
-                <CategorySelect
-                  allowEmpty
-                  value={value.categoryId}
-                  onChange={(id) => set("categoryId", id)}
-                />
+                <CategorySelect allowEmpty value={value.categoryId} onChange={(id) => set("categoryId", id)} />
               </Field>
               <Field label="Tipo de gasto">
-                <Select
-                  value={value.expenseType ?? "essential"}
-                  onValueChange={(v) =>
-                    set("expenseType", v as DraftFields["expenseType"])
-                  }
-                >
+                <Select value={value.expenseType ?? "essential"} onValueChange={(v) => set("expenseType", v as DraftFields["expenseType"])}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -261,12 +175,7 @@ export function DraftForm({
             <div className="grid grid-cols-2 gap-3">
               {rules.period && (
                 <Field label="Período" missing={missing("period")}>
-                  <Select
-                    value={value.period ?? "monthly"}
-                    onValueChange={(v) =>
-                      set("period", v as DraftFields["period"])
-                    }
-                  >
+                  <Select value={value.period ?? "monthly"} onValueChange={(v) => set("period", v as DraftFields["period"])}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -282,23 +191,16 @@ export function DraftForm({
               )}
               {rules.period && (
                 <Field label="Es">
-                  <Select
-                    value={value.kind ?? "platform"}
-                    onValueChange={(v) => set("kind", v as DraftFields["kind"])}
-                  >
+                  <Select value={value.kind ?? "platform"} onValueChange={(v) => set("kind", v as DraftFields["kind"])}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(SUBSCRIPTION_KIND_LABELS).map(
-                        ([kind, label]) => (
-                          <SelectItem key={kind} value={kind}>
-                            {kind === "platform"
-                              ? "Plataforma"
-                              : `Recurrente · ${label}`}
-                          </SelectItem>
-                        ),
-                      )}
+                      {Object.entries(SUBSCRIPTION_KIND_LABELS).map(([kind, label]) => (
+                        <SelectItem key={kind} value={kind}>
+                          {kind === "platform" ? "Plataforma" : `Recurrente · ${label}`}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </Field>
@@ -311,11 +213,7 @@ export function DraftForm({
                     missing={missing("installment")}
                     error={installmentError(value.installment)}
                   />
-                  {isDebt && (
-                    <p className="text-xs text-muted-foreground">
-                      El total indica cuántas cuotas se crearán.
-                    </p>
-                  )}
+                  {isDebt && <p className="text-xs text-muted-foreground">El total indica cuántas cuotas se crearán.</p>}
                 </div>
               )}
             </div>
@@ -323,11 +221,7 @@ export function DraftForm({
 
           {rules.period && value.kind && value.kind !== "platform" && (
             <Field label="N.º de suministro">
-              <Input
-                value={value.supplyNumber ?? ""}
-                onChange={(e) => set("supplyNumber", e.target.value)}
-                placeholder="Opcional (Bitel, Enel…)"
-              />
+              <Input value={value.supplyNumber ?? ""} onChange={(e) => set("supplyNumber", e.target.value)} placeholder="Opcional (Bitel, Enel…)" />
             </Field>
           )}
 
@@ -341,11 +235,7 @@ export function DraftForm({
           )}
 
           <Field label="Nota">
-            <Input
-              value={value.notes ?? ""}
-              onChange={(e) => set("notes", e.target.value)}
-              placeholder="Opcional"
-            />
+            <Input value={value.notes ?? ""} onChange={(e) => set("notes", e.target.value)} placeholder="Opcional" />
           </Field>
         </div>
       )}

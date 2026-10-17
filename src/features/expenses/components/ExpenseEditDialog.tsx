@@ -2,24 +2,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  Banknote,
-  CalendarDays,
-  CircleCheck,
-  CreditCard,
-  FileText,
-  MessageSquareText,
-  Pencil,
-  Tags,
-  UserRound,
-} from "lucide-react";
+import { Banknote, CalendarDays, CircleCheck, CreditCard, FileText, MessageSquareText, Pencil, Tags, UserRound } from "lucide-react";
 
 import { useSaveExpense } from "@/features/expenses/hooks/expenses";
-import {
-  EXPENSE_RESOURCES,
-  type CreditCardExpense,
-  type DailyExpense,
-} from "@/shared/api/types";
+import { EXPENSE_RESOURCES, type CreditCardExpense, type DailyExpense } from "@/shared/api/types";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
 import { PersonPicker } from "@/features/settings/components/PersonPicker";
@@ -27,22 +13,12 @@ import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFiel
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { CREDIT_CARD_STATUSES } from "@/features/credit-cards/constants/statuses";
-import {
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-} from "@/shared/constants/finance";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Badge } from "@/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
 const optionalText = z
   .string()
@@ -51,9 +27,7 @@ const optionalText = z
 
 const formSchema = z.object({
   description: z.string().trim().min(1, "Descripción requerida").max(120),
-  amount: z
-    .number({ error: "Monto requerido" })
-    .positive("Monto debe ser positivo"),
+  amount: z.number({ error: "Monto requerido" }).positive("Monto debe ser positivo"),
   currency: z.enum(CURRENCIES),
   exchangeRate: z.number().positive().nullable(),
   expenseType: z.enum(["essential", "guilty_pleasure"]),
@@ -62,21 +36,8 @@ const formSchema = z.object({
   paymentMethodId: z.string().min(1, "Medio de pago requerido"),
   date: z.string(),
   merchant: optionalText,
-  installment: optionalText.refine(
-    (value) => !value || /^\d{1,3}\/\d{1,3}$/.test(value),
-    "Usa n/m, ej: 3/6",
-  ),
-  paymentStatus: z.enum([
-    "not_started",
-    "pending",
-    "partially_paid",
-    "deposited",
-    "waived",
-    "paid",
-    "amortized",
-    "cashback",
-    "skipped",
-  ]),
+  installment: optionalText.refine((value) => !value || /^\d{1,3}\/\d{1,3}$/.test(value), "Usa n/m, ej: 3/6"),
+  paymentStatus: z.enum(["not_started", "pending", "partially_paid", "deposited", "waived", "paid", "amortized", "cashback", "skipped"]),
   paymentMonth: z.number().int().min(1).max(12),
   paymentYear: z.number().int().min(2020).max(2100),
   notes: optionalText,
@@ -137,12 +98,7 @@ function toForm(target: Editable): ExpenseForm {
 
 // Editar a row of Día a día or of a card (the other tables have their own dialog). New expenses come from Nuevo gasto
 // or the chat; a split is changed from the bot with /editar (D76)
-export function ExpenseEditDialog({
-  open,
-  onOpenChange,
-  resource,
-  expense,
-}: ExpenseEditDialogProps) {
+export function ExpenseEditDialog({ open, onOpenChange, resource, expense }: ExpenseEditDialogProps) {
   const saveExpense = useSaveExpense(resource);
   const isCard = resource === EXPENSE_RESOURCES.creditCard;
 
@@ -185,10 +141,7 @@ export function ExpenseEditDialog({
           paymentYear: data.paymentYear,
         }
       : { ...common, spentAt: data.date, merchant: data.merchant };
-    saveExpense.mutate(
-      { id: expense.id, body },
-      { onSuccess: () => onOpenChange(false) },
-    );
+    saveExpense.mutate({ id: expense.id, body }, { onSuccess: () => onOpenChange(false) });
   });
 
   const shared = (expense?.othersShare ?? 0) > 0;
@@ -201,11 +154,7 @@ export function ExpenseEditDialog({
       onOpenChange={onOpenChange}
       title={isCard ? "Editar gasto de tarjeta" : "Editar gasto"}
       icon={<FileText className="size-4 text-primary" />}
-      description={
-        shared
-          ? "Es un gasto compartido: el reparto se cambia desde el bot con /editar."
-          : "Modifica los datos del gasto"
-      }
+      description={shared ? "Es un gasto compartido: el reparto se cambia desde el bot con /editar." : "Modifica los datos del gasto"}
       headerActions={
         expense ? (
           <Badge variant="secondary" className="shrink-0 gap-1.5">
@@ -231,11 +180,7 @@ export function ExpenseEditDialog({
             <FieldLabel icon={FileText}>Descripción *</FieldLabel>
           </label>
           <Input {...register("description")} />
-          {errors.description && (
-            <p className="text-xs text-destructive">
-              {errors.description.message}
-            </p>
-          )}
+          {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -243,25 +188,12 @@ export function ExpenseEditDialog({
             <label className="text-sm font-medium">
               <FieldLabel icon={Banknote}>Monto *</FieldLabel>
             </label>
-            <Input
-              type="number"
-              step="0.01"
-              {...register("amount", { valueAsNumber: true })}
-            />
-            {errors.amount && (
-              <p className="text-xs text-destructive">
-                {errors.amount.message}
-              </p>
-            )}
+            <Input type="number" step="0.01" {...register("amount", { valueAsNumber: true })} />
+            {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Moneda</label>
-            <Select
-              value={currency}
-              onValueChange={(value) =>
-                setValue("currency", value as ExpenseForm["currency"])
-              }
-            >
+            <Select value={currency} onValueChange={(value) => setValue("currency", value as ExpenseForm["currency"])}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -283,8 +215,7 @@ export function ExpenseEditDialog({
               type="number"
               step="0.001"
               {...register("exchangeRate", {
-                setValueAs: (value) =>
-                  value === "" || value == null ? null : Number(value),
+                setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
               })}
             />
           </div>
@@ -293,17 +224,13 @@ export function ExpenseEditDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
-              <FieldLabel icon={CalendarDays}>
-                {isCard ? "Fecha de proceso" : "Fecha *"}
-              </FieldLabel>
+              <FieldLabel icon={CalendarDays}>{isCard ? "Fecha de proceso" : "Fecha *"}</FieldLabel>
             </label>
             <Input type="date" {...register("date")} />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
-              <FieldLabel icon={CreditCard}>
-                {isCard ? "Tarjeta *" : "Medio de pago *"}
-              </FieldLabel>
+              <FieldLabel icon={CreditCard}>{isCard ? "Tarjeta *" : "Medio de pago *"}</FieldLabel>
             </label>
             <PaymentMethodFilterFields
               multiple={false}
@@ -313,15 +240,9 @@ export function ExpenseEditDialog({
               type={isCard ? "credit_card" : undefined}
               emptySelectionLabel="Selecciona medio de pago"
               value={watch("paymentMethodId")}
-              onChange={(id) =>
-                setValue("paymentMethodId", id ?? "", { shouldValidate: true })
-              }
+              onChange={(id) => setValue("paymentMethodId", id ?? "", { shouldValidate: true })}
             />
-            {errors.paymentMethodId && (
-              <p className="text-xs text-destructive">
-                {errors.paymentMethodId.message}
-              </p>
-            )}
+            {errors.paymentMethodId && <p className="text-xs text-destructive">{errors.paymentMethodId.message}</p>}
           </div>
         </div>
 
@@ -329,12 +250,7 @@ export function ExpenseEditDialog({
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Mes de pago</label>
-              <Select
-                value={String(watch("paymentMonth") ?? "")}
-                onValueChange={(value) =>
-                  setValue("paymentMonth", Number(value))
-                }
-              >
+              <Select value={String(watch("paymentMonth") ?? "")} onValueChange={(value) => setValue("paymentMonth", Number(value))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -349,19 +265,12 @@ export function ExpenseEditDialog({
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Año</label>
-              <Input
-                type="number"
-                {...register("paymentYear", { valueAsNumber: true })}
-              />
+              <Input type="number" {...register("paymentYear", { valueAsNumber: true })} />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Cuota</label>
               <Input {...register("installment")} placeholder="3/6" />
-              {errors.installment && (
-                <p className="text-xs text-destructive">
-                  {errors.installment.message}
-                </p>
-              )}
+              {errors.installment && <p className="text-xs text-destructive">{errors.installment.message}</p>}
             </div>
           </div>
         )}
@@ -374,15 +283,9 @@ export function ExpenseEditDialog({
             <PersonPicker
               module={isCard ? "cards" : undefined}
               value={watch("personId")}
-              onChange={(id) =>
-                setValue("personId", id ?? "", { shouldValidate: true })
-              }
+              onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })}
             />
-            {errors.personId && (
-              <p className="text-xs text-destructive">
-                {errors.personId.message}
-              </p>
-            )}
+            {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
@@ -403,12 +306,7 @@ export function ExpenseEditDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de gasto</label>
-            <Select
-              value={watch("expenseType")}
-              onValueChange={(value) =>
-                setValue("expenseType", value as ExpenseForm["expenseType"])
-              }
-            >
+            <Select value={watch("expenseType")} onValueChange={(value) => setValue("expenseType", value as ExpenseForm["expenseType"])}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -433,11 +331,7 @@ export function ExpenseEditDialog({
                 labelClassName="sr-only"
                 value={watch("paymentStatus")}
                 onChange={(status) => {
-                  if (status)
-                    setValue(
-                      "paymentStatus",
-                      status as ExpenseForm["paymentStatus"],
-                    );
+                  if (status) setValue("paymentStatus", status as ExpenseForm["paymentStatus"]);
                 }}
               />
             </div>

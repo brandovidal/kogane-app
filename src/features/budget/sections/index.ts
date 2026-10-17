@@ -1,4 +1,1 @@
-export {
-  SalaryAmountSection,
-  type SalaryAmountSectionProps,
-} from "./SalaryAmountSection";
+export { SalaryAmountSection, type SalaryAmountSectionProps } from "./SalaryAmountSection";

@@ -22,5 +22,4 @@ export const periodStore = createStore<PeriodState>()((set) => ({
     }),
 }));
 
-export const usePeriod = <T>(selector: (state: PeriodState) => T) =>
-  useStore(periodStore, selector);
+export const usePeriod = <T>(selector: (state: PeriodState) => T) => useStore(periodStore, selector);

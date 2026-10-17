@@ -7,10 +7,7 @@ import { Trash2 } from "lucide-react";
 
 import { ExpenseFilterFields } from "@/features/expenses/components/filters/ExpenseFilterFields";
 import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
-import {
-  ADDITIONAL_FIELDS,
-  PRIMARY_FIELDS,
-} from "@/features/expenses/constants/expense-filters";
+import { ADDITIONAL_FIELDS, PRIMARY_FIELDS } from "@/features/expenses/constants/expense-filters";
 import type { FixedCostFilterSheetProps } from "../../types/fixed-cost-filter-types";
 import { FixedCostPeriodSelector } from "../../components/header/FixedCostPeriodSelector";
 import { FIXED_COST_STATUSES } from "../../constants/statuses";
@@ -43,11 +40,7 @@ export function FixedCostFilterSheet({
         <>
           <SheetTitle className="flex items-center gap-2">
             Filtros
-            {appliedCount > 0 && (
-              <span className="rounded-full bg-brand/15 px-2 text-xs font-semibold text-brand">
-                {appliedCount}
-              </span>
-            )}
+            {appliedCount > 0 && <span className="rounded-full bg-brand/15 px-2 text-xs font-semibold text-brand">{appliedCount}</span>}
           </SheetTitle>
           <SheetDescription>
             Mostrando {shown} de {total} costos fijos
@@ -56,42 +49,22 @@ export function FixedCostFilterSheet({
       }
       footer={
         <>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={filterCount === 0}
-            onClick={onClear}
-          >
+          <Button type="button" variant="ghost" size="sm" disabled={filterCount === 0} onClick={onClear}>
             <Trash2 className="size-4" />
             Limpiar todo
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="h-9 px-4"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" size="sm" className="h-9 px-4" onClick={() => onOpenChange(false)}>
             Ver {shown} {shown === 1 ? "resultado" : "resultados"}
           </Button>
         </>
       }
     >
-      <RecordSearchField
-        value={filters.q ?? ""}
-        onChange={(q) => onFiltersChange({ ...filters, q: q || undefined })}
-        className="w-full sm:hidden"
-      />
+      <RecordSearchField value={filters.q ?? ""} onChange={(q) => onFiltersChange({ ...filters, q: q || undefined })} className="w-full sm:hidden" />
 
       {showPeriod && (
         <section className="space-y-2">
           <h3 className="flex items-center gap-2 text-sm font-medium">
-            {hasSelectedPeriod && (
-              <span
-                aria-hidden="true"
-                className="size-2 rounded-full bg-brand"
-              />
-            )}
+            {hasSelectedPeriod && <span aria-hidden="true" className="size-2 rounded-full bg-brand" />}
             Período
           </h3>
           <FixedCostPeriodSelector showPresets={false} />
@@ -124,11 +97,7 @@ export function FixedCostFilterSheet({
         showIcons={false}
       />
 
-      <MoreFilters
-        activeCount={additionalCount}
-        activeCountDisplay="inline"
-        defaultOpen
-      >
+      <MoreFilters activeCount={additionalCount} activeCountDisplay="inline" defaultOpen>
         <ExpenseFilterFields
           fields={ADDITIONAL_FIELDS}
           value={filters}

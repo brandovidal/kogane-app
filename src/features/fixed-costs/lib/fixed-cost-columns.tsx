@@ -15,10 +15,7 @@ const shiftedMonthLabel = (cost: FixedCost, delta: number) => {
 };
 import { FixedCostName } from "../components/list/FixedCostName";
 import { FixedCostDue } from "../components/list/FixedCostDue";
-import type {
-  CatalogName,
-  FixedCostActions,
-} from "@/features/fixed-costs/types/fixed-cost-types";
+import type { CatalogName, FixedCostActions } from "@/features/fixed-costs/types/fixed-cost-types";
 
 export function getFixedCostColumns({
   categories,
@@ -38,23 +35,14 @@ export function getFixedCostColumns({
       className: "w-[22%] min-w-[180px]",
       role: "title",
       accessor: (cost) => cost.description,
-      cell: (cost) => (
-        <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} />
-      ),
-      cardCell: (cost) => (
-        <FixedCostName
-          cost={cost}
-          onOpen={() => actions.onOpen(cost)}
-          showThumbnail={false}
-        />
-      ),
+      cell: (cost) => <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} />,
+      cardCell: (cost) => <FixedCostName cost={cost} onOpen={() => actions.onOpen(cost)} showThumbnail={false} />,
     },
     {
       key: "category",
       header: "Categoría",
       className: "w-[15%] min-w-[120px]",
-      accessor: (cost) =>
-        categories.find((item) => item.id === cost.categoryId)?.name,
+      accessor: (cost) => categories.find((item) => item.id === cost.categoryId)?.name,
       cell: (cost) => {
         const category = categories.find((item) => item.id === cost.categoryId);
         const isLoanCategory = category?.name
@@ -63,12 +51,7 @@ export function getFixedCostColumns({
           .toLowerCase()
           .includes("prestam");
         return category ? (
-          <CategoryLabel
-            name={category.name}
-            icon={category.icon}
-            color={isLoanCategory ? "#a5b4fc" : category.color}
-            className="text-sm"
-          />
+          <CategoryLabel name={category.name} icon={category.icon} color={isLoanCategory ? "#a5b4fc" : category.color} className="text-sm" />
         ) : (
           "—"
         );
@@ -82,21 +65,13 @@ export function getFixedCostColumns({
       calculationType: "number",
       formatCalculation: (value) => formatCurrency(value, "PEN"),
       accessor: (cost) => cost.amountInPen ?? cost.amount,
-      cell: (cost) => (
-        <CurrencyDisplay
-          amount={cost.amount}
-          currency={cost.currency}
-          amountInPEN={cost.amountInPen}
-          othersShare={cost.othersShare}
-        />
-      ),
+      cell: (cost) => <CurrencyDisplay amount={cost.amount} currency={cost.currency} amountInPEN={cost.amountInPen} othersShare={cost.othersShare} />,
     },
     {
       key: "status",
       header: "Estado",
       className: "w-[12%] min-w-[120px]",
-      accessor: (cost) =>
-        PAYMENT_STATUS_LABELS[cost.paymentStatus] ?? cost.paymentStatus,
+      accessor: (cost) => PAYMENT_STATUS_LABELS[cost.paymentStatus] ?? cost.paymentStatus,
       cell: (cost) => <StatusBadge status={cost.paymentStatus} />,
     },
     {
@@ -137,9 +112,7 @@ export function getFixedCostColumns({
       header: "Cuenta",
       className: "w-[12%] min-w-[100px]",
       accessor: (cost) => accountName(cost.paymentMethodId),
-      cell: (cost) => (
-        <span className="text-sm">{accountName(cost.paymentMethodId)}</span>
-      ),
+      cell: (cost) => <span className="text-sm">{accountName(cost.paymentMethodId)}</span>,
     },
     {
       key: "actions",

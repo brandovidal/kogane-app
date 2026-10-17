@@ -28,16 +28,11 @@ function GeneralSection() {
         <CardContent className="space-y-3">
           <div>
             <p className="text-sm font-medium">Tema</p>
-            <p className="text-xs text-muted-foreground">
-              Elige Claro, Oscuro o Sistema desde Apariencia en el menú de tu
-              perfil.
-            </p>
+            <p className="text-xs text-muted-foreground">Elige Claro, Oscuro o Sistema desde Apariencia en el menú de tu perfil.</p>
           </div>
           <div>
             <p className="text-sm font-medium">Moneda predeterminada</p>
-            <p className="text-xs text-muted-foreground">
-              PEN (Soles peruanos)
-            </p>
+            <p className="text-xs text-muted-foreground">PEN (Soles peruanos)</p>
           </div>
         </CardContent>
       </Card>
@@ -51,8 +46,7 @@ function GeneralSection() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            El sueldo, los grupos, los límites por categoría, los ingresos extra
-            y qué suma al presupuesto se gestionan en su propia página.
+            El sueldo, los grupos, los límites por categoría, los ingresos extra y qué suma al presupuesto se gestionan en su propia página.
           </p>
           <Button size="sm" asChild>
             <a href="/presupuesto">
@@ -66,26 +60,15 @@ function GeneralSection() {
 }
 
 // Income editing lives in Ingresos; the budget configuration stays in General.
-function SettingsPageView({
-  section,
-  tab = "credito",
-}: {
-  section: SettingsSection;
-  tab?: CardsAccountsTab;
-}) {
+function SettingsPageView({ section, tab = "credito" }: { section: SettingsSection; tab?: CardsAccountsTab }) {
   const { data: me } = useMe();
   // The signed-in user may already be cached in the browser while server rendering has no query data
   const [hasHydrated, setHasHydrated] = useState(false);
   useEffect(() => setHasHydrated(true), []);
-  const isAdmin =
-    hasHydrated && (me?.role === "admin" || me?.role === "superadmin");
+  const isAdmin = hasHydrated && (me?.role === "admin" || me?.role === "superadmin");
 
   return (
-    <SettingsShell
-      section={section}
-      isAdmin={isAdmin}
-      wide={section === "perfil"}
-    >
+    <SettingsShell section={section} isAdmin={isAdmin} wide={section === "perfil"}>
       {section === "perfil" && <ProfilePage />}
       {section === "general" && <GeneralSection />}
       {section === "notificaciones" && <NotificationSettingsCard />}

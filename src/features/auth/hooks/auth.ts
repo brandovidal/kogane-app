@@ -116,10 +116,10 @@ export const useRevokeInvite = () =>
   });
 
 export const useUpdateUser = () =>
-  useApiMutation(
-    ({ id, body }: { id: string; body: UpdateUserDto }) => updateUser(id, body),
-    { invalidate: [authKeys.users], success: "Guardado" },
-  );
+  useApiMutation(({ id, body }: { id: string; body: UpdateUserDto }) => updateUser(id, body), {
+    invalidate: [authKeys.users],
+    success: "Guardado",
+  });
 
 // The superadmin enters as a user (D84): the whole app reloads as them
 export const useImpersonate = () =>

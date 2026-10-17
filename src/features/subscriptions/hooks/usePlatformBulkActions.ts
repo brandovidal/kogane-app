@@ -6,18 +6,12 @@ import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
 import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
 import { duplicateBody } from "@/features/expenses/lib/expense-actions";
 import { expenseKeys } from "@/features/expenses/hooks/expenses";
-import {
-  deleteExpense,
-  saveExpense,
-} from "@/features/expenses/services/expense.service";
+import { deleteExpense, saveExpense } from "@/features/expenses/services/expense.service";
 
 type BulkAction = "duplicate" | "delete" | "status";
 type Failure = { id: string; name: string; message: string };
 
-export function usePlatformBulkActions(
-  items: Subscription[],
-  scopeKey: string,
-) {
+export function usePlatformBulkActions(items: Subscription[], scopeKey: string) {
   const queryClient = useQueryClient();
   const [selection, setSelection] = useState<RowSelectionState>({});
   const [failures, setFailures] = useState<Failure[]>([]);
@@ -31,27 +25,13 @@ export function usePlatformBulkActions(
   useEffect(() => {
     const ids = new Set(items.map((item) => item.id));
     setSelection((current) => {
-      const next = Object.fromEntries(
-        Object.entries(current).filter(
-          ([id, checked]) => checked && ids.has(id),
-        ),
-      );
-      return Object.keys(next).length === Object.keys(current).length
-        ? current
-        : next;
+      const next = Object.fromEntries(Object.entries(current).filter(([id, checked]) => checked && ids.has(id)));
+      return Object.keys(next).length === Object.keys(current).length ? current : next;
     });
   }, [items]);
 
   const mutation = useMutation({
-    mutationFn: async ({
-      action,
-      records,
-      status,
-    }: {
-      action: BulkAction;
-      records: Subscription[];
-      status?: string;
-    }) => {
+    mutationFn: async ({ action, records, status }: { action: BulkAction; records: Subscription[]; status?: string }) => {
       const succeeded: string[] = [];
       const failed: Failure[] = [];
       const perform = (record: Subscription) => {
@@ -83,28 +63,17 @@ export function usePlatformBulkActions(
     },
     onSuccess: async ({ succeeded, failed, action }) => {
       setFailures(failed);
-      setSelection((current) =>
-        Object.fromEntries(
-          Object.entries(current).filter(([id]) => !succeeded.includes(id)),
-        ),
-      );
+      setSelection((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !succeeded.includes(id))));
       await Promise.all(
-        [
-          expenseKeys.resource(resource),
-          ["summary"],
-          ["commitments"],
-          ["history"],
-          ["attachments"],
-        ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+        [expenseKeys.resource(resource), ["summary"], ["commitments"], ["history"], ["attachments"]].map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       if (succeeded.length)
         toast.success(
           `${succeeded.length} ${action === "delete" ? "plataformas eliminadas" : action === "duplicate" ? "plataformas duplicadas" : "estados actualizados"}`,
         );
-      if (failed.length)
-        toast.error(
-          `${failed.length} registros no se pudieron procesar. Puedes reintentar su selección.`,
-        );
+      if (failed.length) toast.error(`${failed.length} registros no se pudieron procesar. Puedes reintentar su selección.`);
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
@@ -120,12 +89,7 @@ export function usePlatformBulkActions(
       setFailures([]);
     },
     run: async (action: BulkAction, status?: string) => {
-      if (
-        mutation.isPending ||
-        !selectedItems.length ||
-        (action === "status" && !status)
-      )
-        return;
+      if (mutation.isPending || !selectedItems.length || (action === "status" && !status)) return;
       setFailures([]);
       try {
         await mutation.mutateAsync({ action, records: selectedItems, status });

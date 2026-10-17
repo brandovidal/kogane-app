@@ -7,10 +7,5 @@ export function DailyPeriodHeader() {
   const year = usePeriod((state) => state.year);
   const setPeriod = usePeriod((state) => state.setPeriod);
 
-  return (
-    <PeriodFilterFields
-      value={{ month, year }}
-      onChange={(period) => setPeriod(period.month, period.year)}
-    />
-  );
+  return <PeriodFilterFields value={{ month, year }} onChange={(period) => setPeriod(period.month, period.year)} />;
 }

@@ -2,11 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { cn } from "@/shared/utils/cn";
-import {
-  SETTINGS_NAV_GROUPS,
-  settingsHref,
-  type SettingsSection,
-} from "../constants/sections";
+import { SETTINGS_NAV_GROUPS, settingsHref, type SettingsSection } from "../constants/sections";
 
 const STORAGE_KEY = "kogane:settings-nav";
 
@@ -50,10 +46,7 @@ export function SettingsShell({
 
   return (
     <div className="flex flex-col gap-4 md:flex-row">
-      <nav
-        aria-label="Configuración"
-        className={cn("shrink-0", state.rail ? "md:w-12" : "md:w-56")}
-      >
+      <nav aria-label="Configuración" className={cn("shrink-0", state.rail ? "md:w-12" : "md:w-56")}>
         <button
           type="button"
           className="mb-2 hidden items-center gap-2 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted md:flex"
@@ -83,19 +76,12 @@ export function SettingsShell({
                     onClick={() =>
                       update({
                         ...state,
-                        folded: folded
-                          ? state.folded.filter((l) => l !== group.label)
-                          : [...state.folded, group.label],
+                        folded: folded ? state.folded.filter((l) => l !== group.label) : [...state.folded, group.label],
                       })
                     }
                   >
                     {group.label}
-                    <ChevronDown
-                      className={cn(
-                        "h-3 w-3 transition",
-                        folded && "-rotate-90",
-                      )}
-                    />
+                    <ChevronDown className={cn("h-3 w-3 transition", folded && "-rotate-90")} />
                   </button>
                 )}
                 {!folded &&
@@ -112,9 +98,7 @@ export function SettingsShell({
                       )}
                     >
                       <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                      <span className={cn(state.rail && "md:sr-only")}>
-                        {label}
-                      </span>
+                      <span className={cn(state.rail && "md:sr-only")}>{label}</span>
                     </a>
                   ))}
               </div>
@@ -122,9 +106,7 @@ export function SettingsShell({
           })}
         </div>
       </nav>
-      <div className={`min-w-0 flex-1 ${wide ? "w-full" : "max-w-4xl"}`}>
-        {children}
-      </div>
+      <div className={`min-w-0 flex-1 ${wide ? "w-full" : "max-w-4xl"}`}>{children}</div>
     </div>
   );
 }

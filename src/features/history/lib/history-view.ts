@@ -110,15 +110,7 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 // Never worth showing next to the ones that changed
-const HIDDEN_FIELDS = new Set([
-  "id",
-  "createdAt",
-  "updatedAt",
-  "draftId",
-  "importKey",
-  "originDraftId",
-  "batchId",
-]);
+const HIDDEN_FIELDS = new Set(["id", "createdAt", "updatedAt", "draftId", "importKey", "originDraftId", "batchId"]);
 
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 
@@ -134,35 +126,19 @@ const MONEY_FIELDS = new Set([
   "installmentAmount",
   "cancellationAmount",
 ]);
-const BOOLEAN_FIELDS = new Set([
-  "isActive",
-  "isDefault",
-  "telegram",
-  "web",
-  "recurringCount",
-  "platformsCount",
-]);
+const BOOLEAN_FIELDS = new Set(["isActive", "isDefault", "telegram", "web", "recurringCount", "platformsCount"]);
 
 // A value as the person reads it: names for ids, dates, money and statuses
-export function formatValue(
-  field: string,
-  value: unknown,
-  labels: Record<string, string> = {},
-  currency = "PEN",
-): string {
+export function formatValue(field: string, value: unknown, labels: Record<string, string> = {}, currency = "PEN"): string {
   if (value === null || value === undefined || value === "") return "—";
-  if (BOOLEAN_FIELDS.has(field))
-    return value === 1 || value === true ? "Sí" : "No";
+  if (BOOLEAN_FIELDS.has(field)) return value === 1 || value === true ? "Sí" : "No";
   if (typeof value === "string") {
     if (labels[value]) return labels[value];
-    if (field === "paymentStatus" || field === "status")
-      return PAYMENT_STATUS_LABELS[value] ?? value;
-    if (DATE_FIELDS.test(field) && /^\d{4}-\d{2}-\d{2}/.test(value))
-      return formatDate(value);
+    if (field === "paymentStatus" || field === "status") return PAYMENT_STATUS_LABELS[value] ?? value;
+    if (DATE_FIELDS.test(field) && /^\d{4}-\d{2}-\d{2}/.test(value)) return formatDate(value);
     return value;
   }
-  if (typeof value === "number" && MONEY_FIELDS.has(field))
-    return formatCurrency(value, currency);
+  if (typeof value === "number" && MONEY_FIELDS.has(field)) return formatCurrency(value, currency);
   return String(value);
 }
 
@@ -180,23 +156,13 @@ interface Change {
 }
 
 // An edit says "Monto: 1,000.00 → 1,042.00"; a create or a delete lists the fields it had (without the noise)
-export function describeChanges(
-  action: string,
-  changes: Change[],
-  labels: Record<string, string> = {},
-): HistoryLine[] {
+export function describeChanges(action: string, changes: Change[], labels: Record<string, string> = {}): HistoryLine[] {
   const currency = String(
-    changes.find((change) => change.field === "currency")?.[
-      action === "update" ? "after" : action === "delete" ? "before" : "after"
-    ] ?? "PEN",
+    changes.find((change) => change.field === "currency")?.[action === "update" ? "after" : action === "delete" ? "before" : "after"] ?? "PEN",
   );
   return changes
     .filter((change) => !HIDDEN_FIELDS.has(change.field))
-    .filter(
-      (change) =>
-        action === "update" ||
-        (action === "delete" ? change.before : change.after) != null,
-    )
+    .filter((change) => action === "update" || (action === "delete" ? change.before : change.after) != null)
     .map((change) => ({
       field: change.field,
       label: fieldLabel(change.field),
@@ -206,14 +172,7 @@ export function describeChanges(
 }
 
 // The fields worth showing in the short line of a create or a delete
-export const SUMMARY_FIELDS = [
-  "description",
-  "name",
-  "amount",
-  "paymentStatus",
-  "personId",
-  "installment",
-];
+export const SUMMARY_FIELDS = ["description", "name", "amount", "paymentStatus", "personId", "installment"];
 
 export type HistoryFilterId = "all" | "edits" | "status" | "files";
 
@@ -228,35 +187,22 @@ export function emptyFilterCopy(filter: Exclude<HistoryFilterId, "all">) {
   const copy = {
     edits: {
       title: "Sin ediciones",
-      description:
-        "Este registro todavía no tiene ediciones de campos. Prueba con otro filtro.",
+      description: "Este registro todavía no tiene ediciones de campos. Prueba con otro filtro.",
     },
     status: {
       title: "Sin cambios de estado",
-      description:
-        "Este registro todavía no cambió de estado. Prueba con otro filtro.",
+      description: "Este registro todavía no cambió de estado. Prueba con otro filtro.",
     },
     files: {
       title: "Sin cambios de archivos",
-      description:
-        "Todavía no se adjuntaron ni quitaron archivos. Prueba con otro filtro.",
+      description: "Todavía no se adjuntaron ni quitaron archivos. Prueba con otro filtro.",
     },
   } as const;
   return copy[filter];
 }
 
 // Pie del historial (boards 14d–14h): cuántos se ven, de cuántos, y con qué filtro
-export function historyFooter({
-  shown,
-  loaded,
-  total,
-  filter,
-}: {
-  shown: number;
-  loaded: number;
-  total: number;
-  filter: HistoryFilterId;
-}) {
+export function historyFooter({ shown, loaded, total, filter }: { shown: number; loaded: number; total: number; filter: HistoryFilterId }) {
   if (filter !== "all")
     return `${shown} ${shown === 1 ? "cambio" : "cambios"} · filtro: ${FILTER_NAMES[filter][0].toUpperCase()}${FILTER_NAMES[filter].slice(1)}`;
   if (loaded < total) return `Mostrando ${loaded} de ${total} cambios`;
@@ -266,10 +212,7 @@ export function historyFooter({
 const HISTORY_VALUE_PREVIEW_CHARS = 120;
 
 // «Ver completo» (board 14i): un valor largo se corta y se puede expandir
-export const isLongValue = (text: string, max = HISTORY_VALUE_PREVIEW_CHARS) =>
-  text.length > max;
+export const isLongValue = (text: string, max = HISTORY_VALUE_PREVIEW_CHARS) => text.length > max;
 
-export const truncateValue = (
-  text: string,
-  max = HISTORY_VALUE_PREVIEW_CHARS,
-) => (isLongValue(text, max) ? `${text.slice(0, max).trimEnd()}…` : text);
+export const truncateValue = (text: string, max = HISTORY_VALUE_PREVIEW_CHARS) =>
+  isLongValue(text, max) ? `${text.slice(0, max).trimEnd()}…` : text;

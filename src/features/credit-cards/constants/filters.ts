@@ -30,8 +30,7 @@ export const CARD_DETAIL_GROUP_OPTIONS = [
   { value: "installments", label: "Cuotas" },
 ] as const;
 
-export type CardDetailGroupBy =
-  (typeof CARD_DETAIL_GROUP_OPTIONS)[number]["value"];
+export type CardDetailGroupBy = (typeof CARD_DETAIL_GROUP_OPTIONS)[number]["value"];
 
 export const CARD_OVERVIEW_GROUP_OPTIONS = [
   { value: "bank", label: "Banco" },
@@ -40,5 +39,4 @@ export const CARD_OVERVIEW_GROUP_OPTIONS = [
   { value: "person", label: "Persona" },
 ] as const;
 
-export type CardOverviewGroupBy =
-  (typeof CARD_OVERVIEW_GROUP_OPTIONS)[number]["value"];
+export type CardOverviewGroupBy = (typeof CARD_OVERVIEW_GROUP_OPTIONS)[number]["value"];

@@ -1,35 +1,15 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
 
-import {
-  useHistory,
-  type HistoryFilter,
-} from "@/features/history/hooks/history";
+import { useHistory, type HistoryFilter } from "@/features/history/hooks/history";
 import { EmptyState } from "@/shared/components/data-display/EmptyState";
 import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/ui/sheet";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
 
-import {
-  ENTITY_LABELS,
-  SOURCE_LABELS,
-} from "@/features/history/lib/history-view";
+import { ENTITY_LABELS, SOURCE_LABELS } from "@/features/history/lib/history-view";
 import { HistoryTimeline } from "./HistoryTimeline";
 import { HistoryTimelineLoading } from "./HistoryTimelineLoading";
 
@@ -39,13 +19,7 @@ const MODULES = [
   {
     key: "expenses",
     label: "Gastos",
-    entities: [
-      "exp_daily_expenses",
-      "exp_fixed_costs",
-      "exp_subscriptions",
-      "exp_credit_card_expenses",
-      "exp_recurring_expenses",
-    ],
+    entities: ["exp_daily_expenses", "exp_fixed_costs", "exp_subscriptions", "exp_credit_card_expenses", "exp_recurring_expenses"],
   },
   {
     key: "debts",
@@ -60,24 +34,12 @@ const MODULES = [
   {
     key: "budget",
     label: "Presupuesto",
-    entities: [
-      "bud_monthly_budgets",
-      "bud_budget_groups",
-      "bud_category_budgets",
-      "bud_incomes",
-      "bud_settings",
-    ],
+    entities: ["bud_monthly_budgets", "bud_budget_groups", "bud_category_budgets", "bud_incomes", "bud_settings"],
   },
   {
     key: "settings",
     label: "Configuración",
-    entities: [
-      "cat_people",
-      "cat_payment_methods",
-      "cat_card_holders",
-      "cat_categories",
-      "ntf_settings",
-    ],
+    entities: ["cat_people", "cat_payment_methods", "cat_card_holders", "cat_categories", "ntf_settings"],
   },
   {
     key: "imports",
@@ -102,16 +64,10 @@ export function HistoryPanel() {
   };
   const { data, isLoading, isError } = useHistory(query);
   const active =
-    Number(Boolean(filters.module || filters.entity)) +
-    ["source", "from", "to"].filter(
-      (key) => filters[key as keyof HistoryFilters],
-    ).length;
-  const set = (key: keyof HistoryFilters, value: string | undefined) =>
-    setFilters({ ...filters, [key]: value || undefined, page: undefined });
+    Number(Boolean(filters.module || filters.entity)) + ["source", "from", "to"].filter((key) => filters[key as keyof HistoryFilters]).length;
+  const set = (key: keyof HistoryFilters, value: string | undefined) => setFilters({ ...filters, [key]: value || undefined, page: undefined });
   const pages = data ? Math.max(Math.ceil(data.total / data.pageSize), 1) : 1;
-  const selectedModule = MODULES.find(
-    (module) => module.key === filters.module,
-  );
+  const selectedModule = MODULES.find((module) => module.key === filters.module);
   const screens = selectedModule?.entities ?? ENTITIES;
 
   return (
@@ -128,8 +84,7 @@ export function HistoryPanel() {
             <SheetHeader>
               <SheetTitle>Filtros</SheetTitle>
               <SheetDescription>
-                Revisa todo el historial o filtra por módulo y pantalla. Los
-                filtros quedan en la dirección de la página.
+                Revisa todo el historial o filtra por módulo y pantalla. Los filtros quedan en la dirección de la página.
               </SheetDescription>
             </SheetHeader>
             <div className="flex flex-col gap-3 px-4">
@@ -156,12 +111,7 @@ export function HistoryPanel() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select
-                value={filters.entity ?? ALL}
-                onValueChange={(value) =>
-                  set("entity", value === ALL ? undefined : value)
-                }
-              >
+              <Select value={filters.entity ?? ALL} onValueChange={(value) => set("entity", value === ALL ? undefined : value)}>
                 <SelectTrigger aria-label="Pantalla" className="w-full">
                   <SelectValue placeholder="Pantalla: todas" />
                 </SelectTrigger>
@@ -174,12 +124,7 @@ export function HistoryPanel() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select
-                value={filters.source ?? ALL}
-                onValueChange={(value) =>
-                  set("source", value === ALL ? undefined : value)
-                }
-              >
+              <Select value={filters.source ?? ALL} onValueChange={(value) => set("source", value === ALL ? undefined : value)}>
                 <SelectTrigger aria-label="Origen" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -194,27 +139,15 @@ export function HistoryPanel() {
               </Select>
               <label className="space-y-1 text-sm">
                 <span className="text-muted-foreground">Desde</span>
-                <Input
-                  type="date"
-                  value={filters.from ?? ""}
-                  onChange={(event) => set("from", event.target.value)}
-                />
+                <Input type="date" value={filters.from ?? ""} onChange={(event) => set("from", event.target.value)} />
               </label>
               <label className="space-y-1 text-sm">
                 <span className="text-muted-foreground">Hasta</span>
-                <Input
-                  type="date"
-                  value={filters.to ?? ""}
-                  onChange={(event) => set("to", event.target.value)}
-                />
+                <Input type="date" value={filters.to ?? ""} onChange={(event) => set("to", event.target.value)} />
               </label>
             </div>
             <SheetFooter>
-              <Button
-                variant="outline"
-                disabled={active === 0}
-                onClick={() => setFilters({})}
-              >
+              <Button variant="outline" disabled={active === 0} onClick={() => setFilters({})}>
                 Limpiar filtros
               </Button>
             </SheetFooter>
@@ -235,25 +168,12 @@ export function HistoryPanel() {
       {isLoading ? (
         <HistoryTimelineLoading />
       ) : isError ? (
-        <p className="text-sm text-destructive">
-          No se pudo leer el historial.
-        </p>
+        <p className="text-sm text-destructive">No se pudo leer el historial.</p>
       ) : !data || data.items.length === 0 ? (
-        <EmptyState
-          title="Sin cambios"
-          description={
-            active
-              ? "No hay cambios con estos filtros"
-              : "Todavía no se registró ningún cambio"
-          }
-        />
+        <EmptyState title="Sin cambios" description={active ? "No hay cambios con estos filtros" : "Todavía no se registró ningún cambio"} />
       ) : (
         <>
-          <HistoryTimeline
-            entries={data.items}
-            labels={data.labels}
-            showRecord
-          />
+          <HistoryTimeline entries={data.items} labels={data.labels} showRecord />
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
@@ -271,12 +191,7 @@ export function HistoryPanel() {
             <span className="text-xs text-muted-foreground">
               Página {page} de {pages}
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= pages}
-              onClick={() => setFilters({ ...filters, page: String(page + 1) })}
-            >
+            <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => setFilters({ ...filters, page: String(page + 1) })}>
               Más antiguos <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>

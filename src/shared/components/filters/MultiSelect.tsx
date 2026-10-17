@@ -1,11 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import {
-  Check,
-  ChevronDown,
-  Minus,
-  Search,
-  type LucideIcon,
-} from "lucide-react";
+import { Check, ChevronDown, Minus, Search, type LucideIcon } from "lucide-react";
 
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { Input } from "@/ui/input";
@@ -13,13 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
 import { cn } from "@/shared/utils/cn";
 import { normalize } from "@/shared/lib/text";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
 
 export interface MultiSelectOption {
   value: string;
@@ -66,33 +54,17 @@ export interface MultiSelectProps {
   footerAction?: (close: () => void) => ReactNode;
 }
 
-function SelectionMark({
-  checked,
-  circular = false,
-}: {
-  checked: boolean | "indeterminate";
-  circular?: boolean;
-}) {
+function SelectionMark({ checked, circular = false }: { checked: boolean | "indeterminate"; circular?: boolean }) {
   return (
     <span
       aria-hidden="true"
-      data-state={
-        checked === "indeterminate"
-          ? "indeterminate"
-          : checked
-            ? "checked"
-            : "unchecked"
-      }
+      data-state={checked === "indeterminate" ? "indeterminate" : checked ? "checked" : "unchecked"}
       className={cn(
         "inline-flex size-[18px] shrink-0 items-center justify-center border border-input bg-background text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary",
         circular ? "rounded-full" : "rounded-[5px]",
       )}
     >
-      {checked === "indeterminate" ? (
-        <Minus className="size-3" />
-      ) : checked ? (
-        <Check className="size-3" />
-      ) : null}
+      {checked === "indeterminate" ? <Minus className="size-3" /> : checked ? <Check className="size-3" /> : null}
     </span>
   );
 }
@@ -145,34 +117,20 @@ export function MultiSelect({
         [
           group,
           items.filter((item) =>
-            [
-              item.label,
-              ...(item.searchTerms ?? []),
-              ...(item.searchAliases ?? []),
-              group,
-            ].some((text) => normalize(text).includes(normalizedQuery)),
+            [item.label, ...(item.searchTerms ?? []), ...(item.searchAliases ?? []), group].some((text) => normalize(text).includes(normalizedQuery)),
           ),
         ] as const,
     )
     .filter(([, items]) => items.length > 0);
   const selectedValues = value ?? [];
-  const allSelected =
-    multiple &&
-    options.length > 0 &&
-    options.every((option) => selected.has(option.value));
+  const allSelected = multiple && options.length > 0 && options.every((option) => selected.has(option.value));
   const noFilter = multiple && (value === null || value.length === 0);
   const allChecked = (noFilter && emptyValueMeansAll) || allSelected;
-  const isSelected = (optionValue: string) =>
-    selected.has(optionValue) || (noFilter && emptyValueMeansAll);
+  const isSelected = (optionValue: string) => selected.has(optionValue) || (noFilter && emptyValueMeansAll);
   const active = !noFilter && !allSelected;
-  const selectedNames = selectedValues.map(
-    (value) => options.find((option) => option.value === value)?.label ?? value,
-  );
+  const selectedNames = selectedValues.map((value) => options.find((option) => option.value === value)?.label ?? value);
   const completeSelectedGroup = groups.find(
-    ([group, items]) =>
-      group &&
-      items.length === selectedValues.length &&
-      items.every((item) => selected.has(item.value)),
+    ([group, items]) => group && items.length === selectedValues.length && items.every((item) => selected.has(item.value)),
   );
   const summaryAccessibleText = allChecked
     ? allLabel
@@ -189,9 +147,7 @@ export function MultiSelect({
     ) : selectedValues.length <= 3 ? (
       <>
         <span className="truncate">{selectedNames.slice(0, 3).join(", ")}</span>
-        <span className="shrink-0 font-semibold text-brand">
-          {selectedValues.length}
-        </span>
+        <span className="shrink-0 font-semibold text-brand">{selectedValues.length}</span>
       </>
     ) : (
       `${selectedValues.length} seleccionadas`
@@ -200,18 +156,14 @@ export function MultiSelect({
     completeSelectedGroup ? (
       <>
         <span className="truncate">{completeSelectedGroup[0]}</span>
-        <span className="shrink-0 font-semibold text-brand">
-          {selectedValues.length}
-        </span>
+        <span className="shrink-0 font-semibold text-brand">{selectedValues.length}</span>
       </>
     ) : selectedValues.length === 1 ? (
       (selectedNames[0] ?? selectedValues[0])
     ) : selectedValues.length <= 3 ? (
       <>
         <span className="truncate">{selectedNames.join(", ")}</span>
-        <span className="shrink-0 font-semibold text-brand">
-          {selectedValues.length}
-        </span>
+        <span className="shrink-0 font-semibold text-brand">{selectedValues.length}</span>
       </>
     ) : (
       `${selectedValues.length} cuentas`
@@ -220,18 +172,14 @@ export function MultiSelect({
     completeSelectedGroup ? (
       <>
         <span className="truncate">{completeSelectedGroup[0]}</span>
-        <span className="shrink-0 font-semibold text-brand">
-          {selectedValues.length}
-        </span>
+        <span className="shrink-0 font-semibold text-brand">{selectedValues.length}</span>
       </>
     ) : selectedValues.length === 1 ? (
       (selectedNames[0] ?? selectedValues[0])
     ) : selectedValues.length <= 3 ? (
       <>
         <span className="truncate">{selectedNames.join(", ")}</span>
-        <span className="shrink-0 font-semibold text-brand">
-          {selectedValues.length}
-        </span>
+        <span className="shrink-0 font-semibold text-brand">{selectedValues.length}</span>
       </>
     ) : (
       <>
@@ -243,8 +191,7 @@ export function MultiSelect({
     )
   ) : summaryMode === "chip" ? (
     selectedValues.length === 1 ? (
-      (options.find((option) => option.value === selectedValues[0])?.label ??
-      selectedValues[0])
+      (options.find((option) => option.value === selectedValues[0])?.label ?? selectedValues[0])
     ) : (
       `${options.find((option) => option.value === selectedValues[0])?.label ?? selectedValues[0]} +${selectedValues.length - 1}`
     )
@@ -274,9 +221,7 @@ export function MultiSelect({
     updateSelection(
       isSelected(optionValue)
         ? noFilter
-          ? options
-              .map((option) => option.value)
-              .filter((item) => item !== optionValue)
+          ? options.map((option) => option.value).filter((item) => item !== optionValue)
           : current.filter((item) => item !== optionValue)
         : [...current, optionValue],
     );
@@ -288,9 +233,7 @@ export function MultiSelect({
     updateSelection(
       everySelected
         ? noFilter
-          ? options
-              .map((option) => option.value)
-              .filter((item) => !groupValues.includes(item))
+          ? options.map((option) => option.value).filter((item) => !groupValues.includes(item))
           : current.filter((item) => !groupValues.includes(item))
         : [...new Set([...current, ...groupValues])],
     );
@@ -308,19 +251,11 @@ export function MultiSelect({
   };
 
   const resetSelection = () => onChange(emptyValueMeansAll ? [] : null);
-  const matchCount = visibleGroups.reduce(
-    (count, [, items]) => count + items.length,
-    0,
-  );
-  const noResults =
-    visibleGroups.length === 0 &&
-    normalizedQuery &&
-    !normalize(allLabel).includes(normalizedQuery);
+  const matchCount = visibleGroups.reduce((count, [, items]) => count + items.length, 0);
+  const noResults = visibleGroups.length === 0 && normalizedQuery && !normalize(allLabel).includes(normalizedQuery);
   const renderLabel = (text: string) => {
     if (!highlightMatches || !query.trim()) return text;
-    const index = text
-      .toLocaleLowerCase()
-      .indexOf(query.trim().toLocaleLowerCase());
+    const index = text.toLocaleLowerCase().indexOf(query.trim().toLocaleLowerCase());
     if (index < 0) return text;
     const match = text.slice(index, index + query.trim().length);
     return (
@@ -333,12 +268,7 @@ export function MultiSelect({
   };
 
   const selectionContent = (
-    <div
-      className={cn(
-        "overflow-hidden rounded-md border bg-popover",
-        presentation === "popover" && "rounded-none border-0",
-      )}
-    >
+    <div className={cn("overflow-hidden rounded-md border bg-popover", presentation === "popover" && "rounded-none border-0")}>
       {searchable && (
         <div className="border-b p-2">
           <div className="relative">
@@ -359,83 +289,48 @@ export function MultiSelect({
         aria-label={multiple ? undefined : label}
         className={cn("max-h-60 overflow-y-auto p-1", listClassName)}
       >
-        {multiple &&
-          (!normalizedQuery ||
-            normalize(allLabel).includes(normalizedQuery)) && (
-            <button
-              type="button"
-              role="checkbox"
-              aria-checked={allChecked ? true : value?.length ? "mixed" : false}
-              onClick={toggleAll}
-              className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium hover:bg-accent"
-            >
-              <SelectionMark
-                checked={
-                  allChecked ? true : value?.length ? "indeterminate" : false
-                }
-                circular={circularSelectionMarks}
-              />
-              <span className="flex-1">{allLabel}</span>
-              {hierarchicalGroups && (
-                <span className="text-xs tabular-nums text-muted-foreground">
-                  {allCount ?? options.length}
-                </span>
-              )}
-            </button>
-          )}
+        {multiple && (!normalizedQuery || normalize(allLabel).includes(normalizedQuery)) && (
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={allChecked ? true : value?.length ? "mixed" : false}
+            onClick={toggleAll}
+            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium hover:bg-accent"
+          >
+            <SelectionMark checked={allChecked ? true : value?.length ? "indeterminate" : false} circular={circularSelectionMarks} />
+            <span className="flex-1">{allLabel}</span>
+            {hierarchicalGroups && <span className="text-xs tabular-nums text-muted-foreground">{allCount ?? options.length}</span>}
+          </button>
+        )}
         {noResults ? (
           <p className="px-3 py-6 text-center text-sm text-muted-foreground">
-            {typeof emptyDescription === "function"
-              ? emptyDescription(query.trim())
-              : emptyDescription}
+            {typeof emptyDescription === "function" ? emptyDescription(query.trim()) : emptyDescription}
           </p>
         ) : (
           visibleGroups.map(([group, items]) => {
-            const groupItems = hierarchicalGroups
-              ? (groups.find(([candidate]) => candidate === group)?.[1] ??
-                items)
-              : items;
-            const chosen = groupItems.filter((item) =>
-              isSelected(item.value),
-            ).length;
+            const groupItems = hierarchicalGroups ? (groups.find(([candidate]) => candidate === group)?.[1] ?? items) : items;
+            const chosen = groupItems.filter((item) => isSelected(item.value)).length;
             const groupChecked = chosen === groupItems.length;
-            const groupState = groupChecked
-              ? true
-              : chosen > 0
-                ? "indeterminate"
-                : false;
+            const groupState = groupChecked ? true : chosen > 0 ? "indeterminate" : false;
             return (
-              <section
-                key={group || "ungrouped"}
-                className={cn(hierarchicalGroups && "mt-1 border-t pt-1")}
-              >
+              <section key={group || "ungrouped"} className={cn(hierarchicalGroups && "mt-1 border-t pt-1")}>
                 {group &&
                   (multiple ? (
                     <button
                       type="button"
                       role="checkbox"
-                      aria-checked={
-                        groupState === "indeterminate" ? "mixed" : groupState
-                      }
+                      aria-checked={groupState === "indeterminate" ? "mixed" : groupState}
                       onClick={() => toggleGroup(groupItems)}
                       className={cn(
                         "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                         hierarchicalGroups && "bg-muted/50",
                       )}
                     >
-                      <SelectionMark
-                        checked={groupState}
-                        circular={circularSelectionMarks}
-                      />
+                      <SelectionMark checked={groupState} circular={circularSelectionMarks} />
                       {hierarchicalGroups && items[0]?.groupDecoration}
                       <span className="flex-1">{group}</span>
                       {hierarchicalGroups && (
-                        <span
-                          className={cn(
-                            "text-xs tabular-nums",
-                            chosen > 0 && "text-brand",
-                          )}
-                        >
+                        <span className={cn("text-xs tabular-nums", chosen > 0 && "text-brand")}>
                           {chosen}/{groupItems.length}
                         </span>
                       )}
@@ -446,13 +341,7 @@ export function MultiSelect({
                       <span>{group}</span>
                     </div>
                   ))}
-                <div
-                  className={cn(
-                    hierarchicalGroups &&
-                      group &&
-                      "ml-[9px] border-l border-border/70 pl-2",
-                  )}
-                >
+                <div className={cn(hierarchicalGroups && group && "ml-[9px] border-l border-border/70 pl-2")}>
                   {items.map((option) => (
                     <button
                       key={option.value}
@@ -462,55 +351,25 @@ export function MultiSelect({
                       onClick={() => toggle(option.value)}
                       className={cn(
                         "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-accent",
-                        hierarchicalGroups &&
-                          isSelected(option.value) &&
-                          "bg-accent/60",
+                        hierarchicalGroups && isSelected(option.value) && "bg-accent/60",
                         option.separatorBefore && "mt-1 border-t pt-2",
                       )}
                     >
-                      <SelectionMark
-                        checked={isSelected(option.value)}
-                        circular={circularSelectionMarks || !multiple}
-                      />
-                      {option.color && (
-                        <span
-                          aria-hidden="true"
-                          className={cn(
-                            "size-2 shrink-0 rounded-full",
-                            option.color,
-                          )}
-                        />
-                      )}
+                      <SelectionMark checked={isSelected(option.value)} circular={circularSelectionMarks || !multiple} />
+                      {option.color && <span aria-hidden="true" className={cn("size-2 shrink-0 rounded-full", option.color)} />}
                       {option.decoration}
-                      <span className="min-w-0 flex-1 truncate">
-                        {renderLabel(option.label)}
-                      </span>
-                      {option.searchAliases?.some((alias) =>
-                        normalize(alias).includes(normalizedQuery),
-                      ) &&
+                      <span className="min-w-0 flex-1 truncate">{renderLabel(option.label)}</span>
+                      {option.searchAliases?.some((alias) => normalize(alias).includes(normalizedQuery)) &&
                         normalizedQuery &&
                         !normalize(option.label).includes(normalizedQuery) && (
                           <span className="shrink-0 text-xs text-muted-foreground">
-                            alias ·{" "}
-                            {option.searchAliases.find((alias) =>
-                              normalize(alias).includes(normalizedQuery),
-                            )}
+                            alias · {option.searchAliases.find((alias) => normalize(alias).includes(normalizedQuery))}
                           </span>
                         )}
-                      {option.badge && (
-                        <span className="rounded-full bg-brand/15 px-1.5 text-[10px] font-semibold text-brand">
-                          {option.badge}
-                        </span>
-                      )}
-                      {option.meta && (
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {option.meta}
-                        </span>
-                      )}
+                      {option.badge && <span className="rounded-full bg-brand/15 px-1.5 text-[10px] font-semibold text-brand">{option.badge}</span>}
+                      {option.meta && <span className="shrink-0 text-xs text-muted-foreground">{option.meta}</span>}
                       {option.count != null && (
-                        <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
-                          {option.count}
-                        </span>
+                        <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">{option.count}</span>
                       )}
                     </button>
                   ))}
@@ -520,9 +379,7 @@ export function MultiSelect({
           })
         )}
       </div>
-      {footerAction && (
-        <div className="border-t p-1">{footerAction(() => setOpen(false))}</div>
-      )}
+      {footerAction && <div className="border-t p-1">{footerAction(() => setOpen(false))}</div>}
       {allowEmptySelection && !multiple && (
         <button
           type="button"
@@ -571,14 +428,7 @@ export function MultiSelect({
         triggerClassName,
       )}
     >
-      <span
-        className={cn(
-          "flex min-w-0 flex-1 items-center gap-2 truncate text-left",
-          active && "text-brand",
-        )}
-      >
-        {summary}
-      </span>
+      <span className={cn("flex min-w-0 flex-1 items-center gap-2 truncate text-left", active && "text-brand")}>{summary}</span>
       <ChevronDown className="size-4 shrink-0 opacity-50" />
     </button>
   );
@@ -586,16 +436,8 @@ export function MultiSelect({
   return (
     <div className={cn("block min-w-0 space-y-1.5", containerClassName)}>
       <div className={labelClassName}>
-        <FieldLabel
-          icon={activeMarker ? undefined : icon}
-          className={activeMarker && active ? "text-foreground" : undefined}
-        >
-          {activeMarker && active && (
-            <span
-              aria-hidden="true"
-              className="mr-0.5 size-2 rounded-full bg-brand"
-            />
-          )}
+        <FieldLabel icon={activeMarker ? undefined : icon} className={activeMarker && active ? "text-foreground" : undefined}>
+          {activeMarker && active && <span aria-hidden="true" className="mr-0.5 size-2 rounded-full bg-brand" />}
           {label}
         </FieldLabel>
       </div>
@@ -610,16 +452,11 @@ export function MultiSelect({
           }}
         >
           <SheetTrigger asChild>{trigger}</SheetTrigger>
-          <SheetContent
-            side="bottom"
-            className="max-h-[85dvh] gap-0 overflow-hidden rounded-t-xl p-0"
-          >
+          <SheetContent side="bottom" className="max-h-[85dvh] gap-0 overflow-hidden rounded-t-xl p-0">
             <SheetHeader className="shrink-0 border-b px-4 py-3">
               <SheetTitle>{label}</SheetTitle>
             </SheetHeader>
-            <div className="min-h-0 overflow-y-auto p-4">
-              {selectionContent}
-            </div>
+            <div className="min-h-0 overflow-y-auto p-4">{selectionContent}</div>
           </SheetContent>
         </Sheet>
       ) : (
@@ -631,10 +468,7 @@ export function MultiSelect({
           }}
         >
           <PopoverTrigger render={trigger} />
-          <PopoverContent
-            align="start"
-            className="w-(--anchor-width) min-w-64 overflow-hidden p-0"
-          >
+          <PopoverContent align="start" className="w-(--anchor-width) min-w-64 overflow-hidden p-0">
             {selectionContent}
           </PopoverContent>
         </Popover>

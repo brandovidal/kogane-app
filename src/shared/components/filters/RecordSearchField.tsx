@@ -1,7 +1,4 @@
-import {
-  SearchField,
-  type SearchFieldProps,
-} from "@/shared/components/filters/SearchField";
+import { SearchField, type SearchFieldProps } from "@/shared/components/filters/SearchField";
 
 export type RecordSearchFieldProps = Omit<SearchFieldProps, "placeholder">;
 

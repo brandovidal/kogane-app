@@ -1,9 +1,6 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { AttachmentRecordThumbnail } from "./AttachmentRecordThumbnail";
-export {
-  AttachmentGallery,
-  type AttachmentGalleryProps,
-} from "./AttachmentGallery";
+export { AttachmentGallery, type AttachmentGalleryProps } from "./AttachmentGallery";
 export type { AttachmentRecordThumbnailProps } from "./AttachmentRecordThumbnail";
 export { AttachmentPreviewMedia } from "./AttachmentPreviewMedia";
 export type { AttachmentPreviewDialogProps } from "../types/attachment-preview";

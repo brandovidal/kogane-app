@@ -13,11 +13,7 @@ export interface ProxyConfig {
   apiKey: string;
 }
 
-export function buildProxyRequest(
-  path: string,
-  request: Request,
-  { apiUrl, apiKey }: ProxyConfig,
-): Request | null {
+export function buildProxyRequest(path: string, request: Request, { apiUrl, apiKey }: ProxyConfig): Request | null {
   if (!ALLOWED_PATH.test(path) || path.includes("..")) return null;
 
   const target = new URL(`/${path}${new URL(request.url).search}`, apiUrl);
@@ -30,9 +26,7 @@ export function buildProxyRequest(
   const cookies = (request.headers.get("cookie") ?? "")
     .split(";")
     .map((cookie) => cookie.trim())
-    .filter((cookie) =>
-      FORWARDED_COOKIES.some((name) => cookie.startsWith(`${name}=`)),
-    );
+    .filter((cookie) => FORWARDED_COOKIES.some((name) => cookie.startsWith(`${name}=`)));
   if (cookies.length) headers.set("cookie", cookies.join("; "));
 
   const hasBody = !["GET", "HEAD"].includes(request.method);
@@ -58,17 +52,12 @@ export function toProxyResponse(response: Response): Response {
     if (value) headers.set(name, value);
   }
   for (const cookie of response.headers.getSetCookie()) {
-    if (FORWARDED_COOKIES.some((name) => cookie.startsWith(`${name}=`)))
-      headers.append("set-cookie", cookie);
+    if (FORWARDED_COOKIES.some((name) => cookie.startsWith(`${name}=`))) headers.append("set-cookie", cookie);
   }
   return new Response(response.body, { status: response.status, headers });
 }
 
-export const notFoundResponse = () =>
-  Response.json(
-    { success: false, code: "NOT_FOUND", message: "Not found" },
-    { status: 404 },
-  );
+export const notFoundResponse = () => Response.json({ success: false, code: "NOT_FOUND", message: "Not found" }, { status: 404 });
 
 export const apiUnavailableResponse = () =>
   Response.json(

@@ -1,16 +1,7 @@
-import type {
-  NavEntry,
-  NavGroup,
-  Card,
-  FlatLink,
-} from "@/shared/types/navigation";
-import {
-  NOTIFICATIONS_LINK,
-  SETTINGS_NAV,
-} from "@/shared/constants/navigation";
+import type { NavEntry, NavGroup, Card, FlatLink } from "@/shared/types/navigation";
+import { NOTIFICATIONS_LINK, SETTINGS_NAV } from "@/shared/constants/navigation";
 
-export const isGroup = (entry: NavEntry): entry is NavGroup =>
-  "children" in entry;
+export const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 export function flattenNav(nav: NavEntry[], cards: Card[] = []): FlatLink[] {
   const links: FlatLink[] = [];
@@ -26,22 +17,14 @@ export function flattenNav(nav: NavEntry[], cards: Card[] = []): FlatLink[] {
         group: entry.label,
         action: child.action,
       });
-      if (child.cards)
-        cards.forEach((card) => links.push({ ...card, group: entry.label }));
+      if (child.cards) cards.forEach((card) => links.push({ ...card, group: entry.label }));
     }
   }
-  return [
-    ...links,
-    NOTIFICATIONS_LINK,
-    { href: SETTINGS_NAV.href, label: SETTINGS_NAV.label },
-  ];
+  return [...links, NOTIFICATIONS_LINK, { href: SETTINGS_NAV.href, label: SETTINGS_NAV.label }];
 }
 
 // A static page is served with or without a trailing slash (/cobros, /cobros/): both are the same page (D102)
 export const isActivePath = (href: string, currentPath: string) => {
-  const path =
-    currentPath.length > 1 ? currentPath.replace(/\/+$/, "") : currentPath;
-  return href === "/"
-    ? path === "/"
-    : path === href || path.startsWith(`${href}/`);
+  const path = currentPath.length > 1 ? currentPath.replace(/\/+$/, "") : currentPath;
+  return href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
 };

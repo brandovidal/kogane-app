@@ -22,8 +22,7 @@ const notificationKeys = {
   all: ["notifications"] as const,
   recent: ["notifications", "recent"] as const,
   unread: ["notifications", "unread"] as const,
-  history: (filter: HistoryFilter) =>
-    ["notifications", "history", filter] as const,
+  history: (filter: HistoryFilter) => ["notifications", "history", filter] as const,
   settings: ["notifications", "settings"] as const,
 };
 
@@ -77,10 +76,10 @@ export const useNotificationSettings = () =>
   });
 
 export const useUpdateNotificationSettings = () =>
-  useApiMutation(
-    (body: UpdateNotificationSettingsDto) => updateNotificationSettings(body),
-    { invalidate: [notificationKeys.settings], success: "Avisos guardados" },
-  );
+  useApiMutation((body: UpdateNotificationSettingsDto) => updateNotificationSettings(body), {
+    invalidate: [notificationKeys.settings],
+    success: "Avisos guardados",
+  });
 
 const refreshBell = [notificationKeys.all];
 

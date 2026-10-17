@@ -9,11 +9,7 @@ export interface PaymentMethodIconProps {
   className?: string;
 }
 
-export function PaymentMethodIcon({
-  type,
-  color,
-  className,
-}: PaymentMethodIconProps) {
+export function PaymentMethodIcon({ type, color, className }: PaymentMethodIconProps) {
   const Icon = PAYMENT_METHOD_ICONS[type];
   const style: CSSProperties | undefined = color
     ? {
@@ -25,10 +21,7 @@ export function PaymentMethodIcon({
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        "inline-flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-primary [&>svg]:size-3",
-        className,
-      )}
+      className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-primary [&>svg]:size-3", className)}
       style={style}
     >
       <Icon />

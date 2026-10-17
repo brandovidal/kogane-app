@@ -1,18 +1,5 @@
 const WEEKDAYS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
-const MONTHS = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
-];
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 const isoDay = (value: string) => value.slice(0, 10);
 
@@ -21,8 +8,7 @@ const utcTime = (day: string) => {
   return Date.UTC(year, month - 1, date);
 };
 
-const localDay = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const localDay = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 /** "Hoy · mar 6 oct", "Ayer · lun 5 oct" or "Sáb 3 oct" (board Por día). Without `today` it never says Hoy/Ayer. */
 export function dayLabel(spentAt: string, today?: Date | null): string {

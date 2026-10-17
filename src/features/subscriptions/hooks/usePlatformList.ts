@@ -1,10 +1,5 @@
 import { useEffect, useMemo } from "react";
-import {
-  nameById,
-  useMe,
-  usePaymentMethods,
-  usePeople,
-} from "@/shared/api/hooks/catalogs";
+import { nameById, useMe, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
 import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
 import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
@@ -24,10 +19,7 @@ type ViewPeriod = {
   hasta?: string;
 };
 const VIEW_PERIOD_KEYS = ["month", "year", "desde", "hasta"] as const;
-type LegacyPeriodFilters = Pick<
-  ExpenseFilterValues,
-  "period" | "dueFrom" | "dueTo"
->;
+type LegacyPeriodFilters = Pick<ExpenseFilterValues, "period" | "dueFrom" | "dueTo">;
 
 export function usePlatformList() {
   const month = usePeriod((state) => state.month);
@@ -37,24 +29,15 @@ export function usePlatformList() {
     month: String(month),
     year: String(year),
   });
-  const [legacyPeriodFilters, clearLegacyPeriodFilters] =
-    useUrlFilters<LegacyPeriodFilters>(["period", "dueFrom", "dueTo"]);
+  const [legacyPeriodFilters, clearLegacyPeriodFilters] = useUrlFilters<LegacyPeriodFilters>(["period", "dueFrom", "dueTo"]);
   useEffect(() => {
-    if (
-      legacyPeriodFilters.period ||
-      legacyPeriodFilters.dueFrom ||
-      legacyPeriodFilters.dueTo
-    ) {
+    if (legacyPeriodFilters.period || legacyPeriodFilters.dueFrom || legacyPeriodFilters.dueTo) {
       clearLegacyPeriodFilters({});
     }
   }, [clearLegacyPeriodFilters, legacyPeriodFilters]);
   const hasRange = !!(viewPeriod.desde || viewPeriod.hasta);
   const monthView = !hasRange && !!viewPeriod.month && !!viewPeriod.year;
-  const query = useExpenses(
-    EXPENSE_RESOURCES.subscription,
-    undefined,
-    "platform",
-  );
+  const query = useExpenses(EXPENSE_RESOURCES.subscription, undefined, "platform");
   const sourceItems = query.data ?? EMPTY;
   const items = useMemo(() => {
     if (hasRange) {
@@ -66,16 +49,10 @@ export function usePlatformList() {
       });
     }
     if (!viewPeriod.month && viewPeriod.year) {
-      return sourceItems.filter(
-        (item) => item.paymentYear === Number(viewPeriod.year),
-      );
+      return sourceItems.filter((item) => item.paymentYear === Number(viewPeriod.year));
     }
     if (monthView) {
-      return sourceItems.filter(
-        (item) =>
-          item.paymentMonth === Number(viewPeriod.month) &&
-          item.paymentYear === Number(viewPeriod.year),
-      );
+      return sourceItems.filter((item) => item.paymentMonth === Number(viewPeriod.month) && item.paymentYear === Number(viewPeriod.year));
     }
     return sourceItems;
   }, [sourceItems, hasRange, viewPeriod, monthView]);
@@ -86,22 +63,12 @@ export function usePlatformList() {
       setPeriod(1, Number(viewPeriod.year));
     }
   }, [hasRange, monthView, setPeriod, viewPeriod.month, viewPeriod.year]);
-  const [filters, setFilters] =
-    useUrlFilters<ExpenseFilterValues>(PLATFORM_FILTER_KEYS);
-  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>([
-    "group",
-  ]);
-  const [viewParams, setViewParams] = useUrlFilters<{ vista?: string }>([
-    "vista",
-  ]);
+  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(PLATFORM_FILTER_KEYS);
+  const [groupParams, setGroupParams] = useUrlFilters<{ group?: string }>(["group"]);
+  const [viewParams, setViewParams] = useUrlFilters<{ vista?: string }>(["vista"]);
   const view: PlatformView =
-    viewParams.vista === "cards" ||
-    viewParams.vista === "period" ||
-    viewParams.vista === "calendar"
-      ? viewParams.vista
-      : "list";
-  const setView = (next: PlatformView) =>
-    setViewParams(next === "list" ? {} : { vista: next });
+    viewParams.vista === "cards" || viewParams.vista === "period" || viewParams.vista === "calendar" ? viewParams.vista : "list";
+  const setView = (next: PlatformView) => setViewParams(next === "list" ? {} : { vista: next });
   const me = useMe();
   const people = usePeople().data;
   const personName = nameById(people);
@@ -120,8 +87,7 @@ export function usePlatformList() {
     () =>
       items.reduce<Record<string, number>>((counts, item) => {
         if (item.paymentMethodId) {
-          counts[item.paymentMethodId] =
-            (counts[item.paymentMethodId] ?? 0) + 1;
+          counts[item.paymentMethodId] = (counts[item.paymentMethodId] ?? 0) + 1;
         }
         return counts;
       }, {}),
@@ -130,44 +96,22 @@ export function usePlatformList() {
   const filtered = useMemo(() => {
     const matches = applyExpenseFilters(items, filters, me);
     if (!filters.methodType) return matches;
-    const methodTypes = new Map(
-      (paymentMethods ?? []).map((method) => [method.id, method.type]),
-    );
+    const methodTypes = new Map((paymentMethods ?? []).map((method) => [method.id, method.type]));
     const selectedMethodTypes = filters.methodType.split(",").filter(Boolean);
-    return matches.filter(
-      (item) =>
-        item.paymentMethodId != null &&
-        selectedMethodTypes.includes(
-          methodTypes.get(item.paymentMethodId) ?? "",
-        ),
-    );
+    return matches.filter((item) => item.paymentMethodId != null && selectedMethodTypes.includes(methodTypes.get(item.paymentMethodId) ?? ""));
   }, [items, filters, me, paymentMethods]);
   const calendarItems = useMemo(() => {
     const matches = applyExpenseFilters(sourceItems, filters, me);
     if (!filters.methodType) return matches;
-    const methodTypes = new Map(
-      (paymentMethods ?? []).map((method) => [method.id, method.type]),
-    );
+    const methodTypes = new Map((paymentMethods ?? []).map((method) => [method.id, method.type]));
     const selectedMethodTypes = filters.methodType.split(",").filter(Boolean);
-    return matches.filter(
-      (item) =>
-        item.paymentMethodId != null &&
-        selectedMethodTypes.includes(
-          methodTypes.get(item.paymentMethodId) ?? "",
-        ),
-    );
+    return matches.filter((item) => item.paymentMethodId != null && selectedMethodTypes.includes(methodTypes.get(item.paymentMethodId) ?? ""));
   }, [sourceItems, filters, me, paymentMethods]);
-  const groupBy = (groupParams.group?.split(",") ?? []).filter(
-    (field): field is "person" | "period" =>
-      field === "person" || field === "period",
-  );
-  const setGroupBy = (next: Array<"person" | "period">) =>
-    setGroupParams(next.length ? { group: next.join(",") } : {});
+  const groupBy = (groupParams.group?.split(",") ?? []).filter((field): field is "person" | "period" => field === "person" || field === "period");
+  const setGroupBy = (next: Array<"person" | "period">) => setGroupParams(next.length ? { group: next.join(",") } : {});
 
   useEffect(() => {
-    platformHeaderStore
-      .getState()
-      .setCount(query.isLoading ? null : items.length);
+    platformHeaderStore.getState().setCount(query.isLoading ? null : items.length);
   }, [items.length, query.isLoading]);
 
   return {

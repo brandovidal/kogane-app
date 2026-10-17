@@ -18,12 +18,7 @@ const markerVariants = cva(
   },
 );
 
-function Marker({
-  className,
-  variant = "default",
-  render,
-  ...props
-}: useRender.ComponentProps<"div"> & VariantProps<typeof markerVariants>) {
+function Marker({ className, variant = "default", render, ...props }: useRender.ComponentProps<"div"> & VariantProps<typeof markerVariants>) {
   return useRender({
     defaultTagName: "div",
     props: mergeProps<"div">(
@@ -42,15 +37,7 @@ function Marker({
 
 function MarkerIcon({ className, ...props }: React.ComponentProps<"span">) {
   return (
-    <span
-      data-slot="marker-icon"
-      aria-hidden="true"
-      className={cn(
-        "size-4 shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
-      {...props}
-    />
+    <span data-slot="marker-icon" aria-hidden="true" className={cn("size-4 shrink-0 [&_svg:not([class*='size-'])]:size-4", className)} {...props} />
   );
 }
 

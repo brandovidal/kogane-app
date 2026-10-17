@@ -39,17 +39,11 @@ function FixedCostListPageContent() {
     rowSelection: bulk.selection,
     onSelectionChange: bulk.setSelection,
     pending: bulk.pending,
-    sorting: list.sort
-      ? { column: list.sort.column, desc: list.sort.desc }
-      : undefined,
+    sorting: list.sort ? { column: list.sort.column, desc: list.sort.desc } : undefined,
   });
 
-  const openedItem =
-    list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ??
-    interaction.openedItem;
-  const openedCategory = list.categories.find(
-    (category) => category.id === openedItem?.categoryId,
-  );
+  const openedItem = list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ?? interaction.openedItem;
+  const openedCategory = list.categories.find((category) => category.id === openedItem?.categoryId);
   const page = list.page;
   const viewGroup = useFixedCostViewGroup(page);
   const periodLabel =
@@ -60,13 +54,9 @@ function FixedCostListPageContent() {
         : list.filters.month && list.filters.year
           ? "del mes"
           : "del período";
-  const emptyPeriodLabel =
-    page === "todos"
-      ? `el año ${list.filters.year || new Date().getFullYear()}`
-      : "este período";
+  const emptyPeriodLabel = page === "todos" ? `el año ${list.filters.year || new Date().getFullYear()}` : "este período";
   const hasNonPeriodCriteria = Object.entries(list.filters).some(
-    ([key, value]) =>
-      key !== "month" && key !== "year" && value != null && value !== "",
+    ([key, value]) => key !== "month" && key !== "year" && value != null && value !== "",
   );
   const hasEmptyCriteria = hasNonPeriodCriteria || list.scope !== "all";
 
@@ -122,9 +112,7 @@ function FixedCostListPageContent() {
   else if (page === "estado")
     body = (
       <FixedCostStatusBoard
-        items={dataTable.table
-          .getSortedRowModel()
-          .rows.map((row) => row.original)}
+        items={dataTable.table.getSortedRowModel().rows.map((row) => row.original)}
         categories={list.categories}
         personName={list.personName}
         groupBy={list.groupBy}
@@ -152,13 +140,7 @@ function FixedCostListPageContent() {
         previousCosts={list.previousMonthCosts}
         previousLoading={list.previousMonthLoading}
         copying={interaction.copying}
-        onCopy={(costs) =>
-          void interaction.copyToMonth(
-            costs,
-            Number(list.filters.month),
-            Number(list.filters.year),
-          )
-        }
+        onCopy={(costs) => void interaction.copyToMonth(costs, Number(list.filters.month), Number(list.filters.year))}
         onCreate={interaction.onCreate}
         onGoTo={(month, year) =>
           list.setFilters({
@@ -185,16 +167,8 @@ function FixedCostListPageContent() {
           loading={list.loading}
           error={list.error}
           pending={bulk.pending}
-          emptyDescription={
-            page === "por-pagar" && !hasEmptyCriteria
-              ? "No tienes costos fijos pendientes. Todo está al día."
-              : undefined
-          }
-          emptyTitle={
-            page === "por-pagar" && !hasEmptyCriteria
-              ? "Todo al día"
-              : undefined
-          }
+          emptyDescription={page === "por-pagar" && !hasEmptyCriteria ? "No tienes costos fijos pendientes. Todo está al día." : undefined}
+          emptyTitle={page === "por-pagar" && !hasEmptyCriteria ? "Todo al día" : undefined}
           filters={list.filters}
           onFiltersChange={list.setFilters}
           me={list.me}
@@ -209,9 +183,7 @@ function FixedCostListPageContent() {
             });
             list.setScope("all");
           }}
-          onClearSearch={() =>
-            list.setFilters({ ...list.filters, q: undefined })
-          }
+          onClearSearch={() => list.setFilters({ ...list.filters, q: undefined })}
           onSearchAllMonths={() => list.setPage("todos")}
           onCreate={interaction.onCreate}
           viewGroup={viewGroup}
@@ -239,22 +211,12 @@ function FixedCostListPageContent() {
           onScopeChange={page === "por-pagar" ? () => undefined : list.setScope}
           periodLabel={periodLabel}
           loading={list.loading}
-          variant={
-            page === "por-pagar"
-              ? "payable"
-              : page === "todos"
-                ? "year"
-                : "period"
-          }
+          variant={page === "por-pagar" ? "payable" : page === "todos" ? "year" : "period"}
         />
       )}
       {page !== "cuotas" && toolbar}
       {body}
-      <FixedCostDialog
-        open={interaction.dialogOpen}
-        onOpenChange={interaction.setDialogOpen}
-        fixedCost={interaction.editingItem}
-      />
+      <FixedCostDialog open={interaction.dialogOpen} onOpenChange={interaction.setDialogOpen} fixedCost={interaction.editingItem} />
       <FixedCostDetailPage
         fixedCost={openedItem}
         categoryName={openedCategory?.name ?? "Sin categoría"}
@@ -269,13 +231,7 @@ function FixedCostListPageContent() {
         onNavigate={(cost) => interaction.actions.onOpen(cost, "detail")}
         initialTab={interaction.openedTab}
       />
-      {interaction.moving && (
-        <MoveSeriesDialog
-          key={interaction.moving.id}
-          source={interaction.moving}
-          onClose={interaction.onCloseMove}
-        />
-      )}
+      {interaction.moving && <MoveSeriesDialog key={interaction.moving.id} source={interaction.moving} onClose={interaction.onCloseMove} />}
     </div>
   );
 }

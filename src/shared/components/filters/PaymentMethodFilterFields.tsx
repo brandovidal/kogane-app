@@ -4,10 +4,7 @@ import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
 import type { PaymentMethod } from "@/shared/api/types";
 import { PaymentMethodIcon } from "@/shared/components/data-display/PaymentMethodIcon";
 import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import {
-  PAYMENT_METHOD_TYPE_LABELS,
-  PAYMENT_METHOD_TYPE_ORDER,
-} from "@/shared/constants/payment-methods";
+import { PAYMENT_METHOD_TYPE_LABELS, PAYMENT_METHOD_TYPE_ORDER } from "@/shared/constants/payment-methods";
 
 export interface PaymentMethodFilterFieldsProps {
   value?: string | null;
@@ -52,9 +49,7 @@ export function PaymentMethodFilterFields({
     .filter((method) => method.isActive && (!type || method.type === type))
     .sort(
       (left, right) =>
-        PAYMENT_METHOD_TYPE_ORDER.indexOf(left.type) -
-          PAYMENT_METHOD_TYPE_ORDER.indexOf(right.type) ||
-        left.name.localeCompare(right.name, "es"),
+        PAYMENT_METHOD_TYPE_ORDER.indexOf(left.type) - PAYMENT_METHOD_TYPE_ORDER.indexOf(right.type) || left.name.localeCompare(right.name, "es"),
     );
   const options = activeMethods.map((method) => {
     const withPrimary = method as PaymentMethod & { isPrimary?: boolean };
@@ -62,28 +57,15 @@ export function PaymentMethodFilterFields({
       value: method.id,
       label: method.name,
       group: PAYMENT_METHOD_TYPE_LABELS[method.type],
-      groupDecoration: (
-        <PaymentMethodIcon
-          type={method.type}
-          className="size-4 rounded-sm bg-muted text-muted-foreground [&>svg]:size-2.5"
-        />
-      ),
+      groupDecoration: <PaymentMethodIcon type={method.type} className="size-4 rounded-sm bg-muted text-muted-foreground [&>svg]:size-2.5" />,
       decoration: <PaymentMethodIcon type={method.type} color={method.color} />,
       searchTerms: [method.code ?? "", method.bank ?? "", method.network ?? ""],
       searchAliases: method.aliases,
-      badge:
-        method.id === primaryMethodId || withPrimary.isPrimary
-          ? "Principal"
-          : undefined,
+      badge: method.id === primaryMethodId || withPrimary.isPrimary ? "Principal" : undefined,
       count: counts?.[method.id],
     };
   });
-  const allCount =
-    counts &&
-    activeMethods.reduce(
-      (total, method) => total + (counts[method.id] ?? 0),
-      0,
-    );
+  const allCount = counts && activeMethods.reduce((total, method) => total + (counts[method.id] ?? 0), 0);
 
   return (
     <MultiSelect

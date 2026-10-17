@@ -56,11 +56,7 @@ export function DailyResultsSection({
 
   if (expenses.length === 0) {
     return totalExpenses ? (
-      <EmptyState
-        variant="filters"
-        title="Sin resultados"
-        description="No hay gastos con estos filtros"
-      />
+      <EmptyState variant="filters" title="Sin resultados" description="No hay gastos con estos filtros" />
     ) : (
       <EmptyState
         variant="period"
@@ -81,15 +77,7 @@ export function DailyResultsSection({
   }
 
   if (layout === "calendar") {
-    return (
-      <DailyCalendar
-        year={year}
-        month={month}
-        expenses={expenses}
-        onEdit={onEdit}
-        onNewExpense={onNewExpense}
-      />
-    );
+    return <DailyCalendar year={year} month={month} expenses={expenses} onEdit={onEdit} onNewExpense={onNewExpense} />;
   }
 
   return (
@@ -102,28 +90,12 @@ export function DailyResultsSection({
       hideEmptyGroups={hideEmptyGroups}
       selected={selected}
       onSelectedChange={onSelectedChange}
-      knownGroups={(field) =>
-        field === "person"
-          ? personIds
-          : field === "category"
-            ? categories.map((category) => category.id)
-            : undefined
-      }
+      knownGroups={(field) => (field === "person" ? personIds : field === "category" ? categories.map((category) => category.id) : undefined)}
       groupKey={(expense, key) =>
-        key === "day"
-          ? dayKey(expense.spentAt)
-          : key === "person"
-            ? (expense.personId ?? "none")
-            : (expense.categoryId ?? "none")
+        key === "day" ? dayKey(expense.spentAt) : key === "person" ? (expense.personId ?? "none") : (expense.categoryId ?? "none")
       }
       groupLabel={(key, field) =>
-        field === "day"
-          ? dayLabel(key, today)
-          : key === "none"
-            ? "Sin asignar"
-            : field === "person"
-              ? personName(key)
-              : categoryName(key)
+        field === "day" ? dayLabel(key, today) : key === "none" ? "Sin asignar" : field === "person" ? personName(key) : categoryName(key)
       }
     />
   );

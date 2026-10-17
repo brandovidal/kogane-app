@@ -7,20 +7,12 @@ export interface AppliedGroupChipsProps<T extends string = string> {
   onChange: (value: T[]) => void;
 }
 
-export function AppliedGroupChips<T extends string>({
-  value,
-  options,
-  onChange,
-}: AppliedGroupChipsProps<T>) {
+export function AppliedGroupChips<T extends string>({ value, options, onChange }: AppliedGroupChipsProps<T>) {
   if (!value.length) return null;
   const labels = value
     .map((selected) => options.find((item) => item.value === selected)?.label)
     .filter((label): label is string => !!label)
-    .map((label) =>
-      label
-        .replace(/^Por\s+/i, "")
-        .replace(/^./, (letter) => letter.toLocaleUpperCase()),
-    );
+    .map((label) => label.replace(/^Por\s+/i, "").replace(/^./, (letter) => letter.toLocaleUpperCase()));
   if (!labels.length) return null;
 
   return (

@@ -12,17 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 
 // Contraste con la tarjeta (D114): what others owe of this card and month next to what the bank billed. The
 // "sin explicar" is what the statement asks beyond the card expenses registered: interest, fees or a missing charge
-export function CardCheckPanel({
-  cardId,
-  cardName,
-  month,
-  year,
-}: {
-  cardId: string;
-  cardName: string;
-  month: number;
-  year: number;
-}) {
+export function CardCheckPanel({ cardId, cardName, month, year }: { cardId: string; cardName: string; month: number; year: number }) {
   const [currency, setCurrency] = useState<CurrencyCode>("PEN");
   const money = (amount: number) => formatCurrency(amount, currency);
   const { data: check } = useCardCheck({
@@ -44,11 +34,7 @@ export function CardCheckPanel({
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <CurrencySelect value={currency} onChange={setCurrency} />
-        {check.currencyReviewRequired && (
-          <p className="text-xs text-amber-600">
-            Vuelve a cargar este PDF para reconocer los saldos por moneda.
-          </p>
-        )}
+        {check.currencyReviewRequired && <p className="text-xs text-amber-600">Vuelve a cargar este PDF para reconocer los saldos por moneda.</p>}
         {!check.statementId ? (
           <p className="text-muted-foreground">
             Todavía no subes el estado de cuenta de este mes.{" "}
@@ -61,28 +47,18 @@ export function CardCheckPanel({
           <div className="grid gap-2 sm:grid-cols-4">
             <div>
               <p className="text-muted-foreground">Total del banco</p>
-              <p className="font-semibold tabular-nums">
-                {check.statementTotal == null
-                  ? "—"
-                  : money(check.statementTotal)}
-              </p>
+              <p className="font-semibold tabular-nums">{check.statementTotal == null ? "—" : money(check.statementTotal)}</p>
             </div>
             <div>
               <p className="text-muted-foreground">Registrado en Kogane</p>
-              <p className="font-semibold tabular-nums">
-                {money(check.koganeTotal)}
-              </p>
+              <p className="font-semibold tabular-nums">{money(check.koganeTotal)}</p>
             </div>
             <div>
               <p className="text-muted-foreground">Sin explicar</p>
               <p
                 className={`flex items-center gap-1 font-semibold tabular-nums ${Math.abs(unexplained) < 0.01 ? "text-emerald-600" : "text-amber-600"}`}
               >
-                {Math.abs(unexplained) < 0.01 ? (
-                  <CheckCircle2 className="h-4 w-4" />
-                ) : (
-                  <AlertTriangle className="h-4 w-4" />
-                )}
+                {Math.abs(unexplained) < 0.01 ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
                 {check.unexplained == null ? "—" : money(unexplained)}
               </p>
             </div>
@@ -90,9 +66,7 @@ export function CardCheckPanel({
               <p className="text-muted-foreground">Te deben de esta tarjeta</p>
               <p className="font-semibold tabular-nums">
                 {money(check.othersOwed - check.othersPaid)}{" "}
-                <span className="text-xs font-normal text-muted-foreground">
-                  de {money(check.othersOwed)}
-                </span>
+                <span className="text-xs font-normal text-muted-foreground">de {money(check.othersOwed)}</span>
               </p>
             </div>
           </div>
@@ -105,13 +79,7 @@ export function CardCheckPanel({
                 <span>{person.name}</span>
                 <span className="tabular-nums text-muted-foreground">
                   pagó {money(person.paid)} de {money(person.owed)} ·{" "}
-                  <span
-                    className={
-                      person.balance > 0 ? "font-medium text-foreground" : ""
-                    }
-                  >
-                    saldo {money(person.balance)}
-                  </span>
+                  <span className={person.balance > 0 ? "font-medium text-foreground" : ""}>saldo {money(person.balance)}</span>
                 </span>
               </div>
             ))}
@@ -133,23 +101,10 @@ export function CardCheckPanel({
         {check.statementId && (
           <div className="space-y-3 border-t pt-3">
             <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <Checkbox
-                checked={showTotalCalculation}
-                onCheckedChange={(checked) =>
-                  setShowTotalCalculation(checked === true)
-                }
-              />
+              <Checkbox checked={showTotalCalculation} onCheckedChange={(checked) => setShowTotalCalculation(checked === true)} />
               Mostrar cálculo visual del pago total
             </label>
-            {showTotalCalculation && (
-              <StatementTotalCard
-                paymentMethodId={cardId}
-                cardName={cardName}
-                month={month}
-                year={year}
-                compact
-              />
-            )}
+            {showTotalCalculation && <StatementTotalCard paymentMethodId={cardId} cardName={cardName} month={month} year={year} compact />}
           </div>
         )}
       </CardContent>

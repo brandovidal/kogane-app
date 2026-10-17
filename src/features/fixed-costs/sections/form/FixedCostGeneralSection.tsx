@@ -1,45 +1,16 @@
 import { useFormContext } from "react-hook-form";
-import {
-  ArrowLeftRight,
-  Banknote,
-  ChevronDown,
-  CircleCheck,
-  FileText,
-  ListFilter,
-  Tags,
-  UserRound,
-  WalletCards,
-} from "lucide-react";
+import { ArrowLeftRight, Banknote, ChevronDown, CircleCheck, FileText, ListFilter, Tags, UserRound, WalletCards } from "lucide-react";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
 import { PersonPicker } from "@/features/settings/components/PersonPicker";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { FormField } from "@/shared/components/forms/FormField";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
-import {
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-} from "@/shared/constants/finance";
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
 import { Input } from "@/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-  InputGroupText,
-} from "@/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import type {
-  FixedCostForm,
-  FixedCostValues,
-} from "@/features/fixed-costs/lib/fixed-cost-form";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@/ui/input-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import type { FixedCostForm, FixedCostValues } from "@/features/fixed-costs/lib/fixed-cost-form";
 
 export function FixedCostGeneralSection() {
   const {
@@ -53,25 +24,11 @@ export function FixedCostGeneralSection() {
   return (
     <div className="space-y-3">
       <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
-        <FormField
-          label="Descripción *"
-          icon={FileText}
-          htmlFor="fixed-cost-description"
-          error={errors.description?.message}
-        >
-          <Input
-            id="fixed-cost-description"
-            {...register("description")}
-            placeholder="Ej: Luz, Agua, Gas..."
-          />
+        <FormField label="Descripción *" icon={FileText} htmlFor="fixed-cost-description" error={errors.description?.message}>
+          <Input id="fixed-cost-description" {...register("description")} placeholder="Ej: Luz, Agua, Gas..." />
         </FormField>
         <div>
-          <FormField
-            label="Monto *"
-            icon={Banknote}
-            htmlFor="fixed-cost-amount"
-            error={errors.amount?.message}
-          >
+          <FormField label="Monto *" icon={Banknote} htmlFor="fixed-cost-amount" error={errors.amount?.message}>
             <InputGroup className="bg-background/50">
               <InputGroupInput
                 id="fixed-cost-amount"
@@ -81,34 +38,18 @@ export function FixedCostGeneralSection() {
                 {...register("amount", { valueAsNumber: true })}
               />
               <InputGroupAddon>
-                <InputGroupText>
-                  {currency === "USD" ? "$" : "S/"}
-                </InputGroupText>
+                <InputGroupText>{currency === "USD" ? "$" : "S/"}</InputGroupText>
               </InputGroupAddon>
-              <InputGroupAddon
-                align="inline-end"
-                className="h-full border-l px-1.5"
-              >
-                <Select
-                  value={currency}
-                  onValueChange={(value) =>
-                    setValue("currency", value as FixedCostForm["currency"])
-                  }
-                >
+              <InputGroupAddon align="inline-end" className="h-full border-l px-1.5">
+                <Select value={currency} onValueChange={(value) => setValue("currency", value as FixedCostForm["currency"])}>
                   <SelectTrigger
                     asChild
                     aria-label="Moneda del monto"
                     className="h-7 w-auto border-0 bg-transparent px-2 py-0 shadow-none focus-visible:ring-0 dark:bg-transparent"
                   >
-                    <InputGroupButton
-                      className="h-7 gap-1.5 px-2"
-                      variant="ghost"
-                    >
+                    <InputGroupButton className="h-7 gap-1.5 px-2" variant="ghost">
                       <SelectValue />
-                      <ChevronDown
-                        aria-hidden="true"
-                        className="size-4 opacity-50"
-                      />
+                      <ChevronDown aria-hidden="true" className="size-4 opacity-50" />
                     </InputGroupButton>
                   </SelectTrigger>
                   <SelectContent align="end">
@@ -124,19 +65,13 @@ export function FixedCostGeneralSection() {
           </FormField>
         </div>
         {currency !== "PEN" && (
-          <FormField
-            label="Tipo de cambio"
-            icon={ArrowLeftRight}
-            htmlFor="fixed-cost-exchange-rate"
-            error={errors.exchangeRate?.message}
-          >
+          <FormField label="Tipo de cambio" icon={ArrowLeftRight} htmlFor="fixed-cost-exchange-rate" error={errors.exchangeRate?.message}>
             <Input
               id="fixed-cost-exchange-rate"
               type="number"
               step="0.001"
               {...register("exchangeRate", {
-                setValueAs: (value) =>
-                  value === "" || value == null ? null : Number(value),
+                setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
               })}
               placeholder="Ej: 3.75"
             />
@@ -145,44 +80,25 @@ export function FixedCostGeneralSection() {
       </section>
       <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
-            label="Categoría *"
-            icon={Tags}
-            error={errors.categoryId?.message}
-          >
+          <FormField label="Categoría *" icon={Tags} error={errors.categoryId?.message}>
             <CategoryFilterFields
               multiple={false}
               presentation="popover"
               labelClassName="sr-only"
               emptySelectionLabel="Selecciona categoría"
               value={watch("categoryId")}
-              onChange={(id) =>
-                setValue("categoryId", id ?? "", { shouldValidate: true })
-              }
+              onChange={(id) => setValue("categoryId", id ?? "", { shouldValidate: true })}
             />
           </FormField>
-          <FormField
-            label="Persona *"
-            icon={UserRound}
-            error={errors.personId?.message}
-          >
+          <FormField label="Persona *" icon={UserRound} error={errors.personId?.message}>
             <PersonPicker
               module="fixed_costs"
               value={watch("personId")}
-              onChange={(id) =>
-                setValue("personId", id ?? "", { shouldValidate: true })
-              }
+              onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })}
             />
           </FormField>
-          <FormField
-            label="Tipo de gasto"
-            icon={ListFilter}
-            htmlFor="fixed-cost-type"
-          >
-            <Select
-              value={watch("expenseType")}
-              onValueChange={(value) => setValue("expenseType", value)}
-            >
+          <FormField label="Tipo de gasto" icon={ListFilter} htmlFor="fixed-cost-type">
+            <Select value={watch("expenseType")} onValueChange={(value) => setValue("expenseType", value)}>
               <SelectTrigger id="fixed-cost-type" className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -208,11 +124,7 @@ export function FixedCostGeneralSection() {
             />
           </FormField>
           <div className="sm:col-span-2">
-            <FormField
-              label="Estado"
-              icon={CircleCheck}
-              htmlFor="fixed-cost-status"
-            >
+            <FormField label="Estado" icon={CircleCheck} htmlFor="fixed-cost-status">
               <StatusFilterFields
                 multiple={false}
                 width="w-full"

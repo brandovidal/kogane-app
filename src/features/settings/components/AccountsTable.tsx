@@ -1,24 +1,14 @@
 import { useState } from "react";
 import { CreditCard, Plus, Users } from "lucide-react";
 
-import {
-  usePaymentMethods,
-  useSavePaymentMethod,
-} from "@/shared/api/hooks/catalogs";
+import { usePaymentMethods, useSavePaymentMethod } from "@/shared/api/hooks/catalogs";
 import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
 import { useViewMode } from "@/shared/hooks/useViewMode";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 import { CardHoldersDialog } from "./CardHoldersDialog";
 import { NewCardDialog } from "./NewCardDialog";
@@ -31,11 +21,7 @@ type Method = NonNullable<ReturnType<typeof usePaymentMethods>["data"]>[number];
 // "En el bot" (showInBot) the quick buttons of the chat. Credit cards also keep their closing and payment days (D22).
 export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
   const all = usePaymentMethods().data ?? [];
-  const methods = all.filter((method) =>
-    scope === "credit"
-      ? method.type === "credit_card"
-      : method.type !== "credit_card",
-  );
+  const methods = all.filter((method) => (scope === "credit" ? method.type === "credit_card" : method.type !== "credit_card"));
   const credit = scope === "credit";
   const [view, setView] = useViewMode("credit-cards-settings", "cards");
   const save = useSavePaymentMethod();
@@ -46,8 +32,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
       type: method.type,
       ...body,
     });
-  const day = (value: string) =>
-    value === "" ? null : Math.min(31, Math.max(1, Number(value)));
+  const day = (value: string) => (value === "" ? null : Math.min(31, Math.max(1, Number(value))));
   const [holdersOf, setHoldersOf] = useState<{
     id: string;
     name: string;
@@ -57,11 +42,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
   const toggles = (method: Method) => (
     <>
       <label className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Switch
-          checked={method.isActive}
-          aria-label={`Tengo ${method.name}`}
-          onCheckedChange={(isActive) => update(method, { isActive })}
-        />
+        <Switch checked={method.isActive} aria-label={`Tengo ${method.name}`} onCheckedChange={(isActive) => update(method, { isActive })} />
         La tengo
       </label>
       <label className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -75,11 +56,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
       </label>
     </>
   );
-  const dayInput = (
-    method: Method,
-    key: "billingCloseDay" | "paymentDueDay",
-    label: string,
-  ) => (
+  const dayInput = (method: Method, key: "billingCloseDay" | "paymentDueDay", label: string) => (
     <Input
       type="number"
       min={1}
@@ -91,11 +68,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
     />
   );
   const holdersButton = (method: Method) => (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setHoldersOf({ id: method.id, name: method.name })}
-    >
+    <Button variant="outline" size="sm" onClick={() => setHoldersOf({ id: method.id, name: method.name })}>
       <Users className="mr-1 h-3.5 w-3.5" /> Titular y adicionales
     </Button>
   );
@@ -104,14 +77,12 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
     <Card>
       <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle className="flex items-center gap-2 text-base">
-          <CreditCard className="h-4 w-4" />{" "}
-          {credit ? "Tarjetas de crédito" : "Débito y billeteras"}
+          <CreditCard className="h-4 w-4" /> {credit ? "Tarjetas de crédito" : "Débito y billeteras"}
         </CardTitle>
         <div className="flex items-center gap-2">
           {credit && <ViewToggle view={view} onChange={setView} showLabels />}
           <Button size="sm" onClick={() => setCreating(true)}>
-            <Plus className="mr-1 h-4 w-4" />{" "}
-            {credit ? "Nueva tarjeta" : "Nuevo medio"}
+            <Plus className="mr-1 h-4 w-4" /> {credit ? "Nueva tarjeta" : "Nuevo medio"}
           </Button>
         </div>
       </CardHeader>
@@ -123,38 +94,25 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
         </p>
 
         {methods.length === 0 && (
-          <p className="py-6 text-center text-sm text-muted-foreground">
-            Aún no tienes {credit ? "tarjetas de crédito" : "medios de pago"}.
-          </p>
+          <p className="py-6 text-center text-sm text-muted-foreground">Aún no tienes {credit ? "tarjetas de crédito" : "medios de pago"}.</p>
         )}
 
         {credit && view === "cards" && methods.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2">
             {methods.map((method) => (
-              <article
-                key={method.id}
-                className={`space-y-4 rounded-xl border p-4 ${method.isActive ? "" : "opacity-60"}`}
-              >
+              <article key={method.id} className={`space-y-4 rounded-xl border p-4 ${method.isActive ? "" : "opacity-60"}`}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <PaymentMethodLabel
-                    name={method.name}
-                    type={method.type}
-                    color={method.color}
-                  />
+                  <PaymentMethodLabel name={method.name} type={method.type} color={method.color} />
                   <div className="flex gap-4">{toggles(method)}</div>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
                   <label className="space-y-1">
                     Día de cierre
-                    <div>
-                      {dayInput(method, "billingCloseDay", "Día de cierre")}
-                    </div>
+                    <div>{dayInput(method, "billingCloseDay", "Día de cierre")}</div>
                   </label>
                   <label className="space-y-1">
                     Día de pago
-                    <div>
-                      {dayInput(method, "paymentDueDay", "Día de pago")}
-                    </div>
+                    <div>{dayInput(method, "paymentDueDay", "Día de pago")}</div>
                   </label>
                 </div>
                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
@@ -162,9 +120,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
                     <Switch
                       checked={method.supportsAmortization}
                       aria-label={`Permitir amortización en ${method.name}`}
-                      onCheckedChange={(supportsAmortization) =>
-                        update(method, { supportsAmortization })
-                      }
+                      onCheckedChange={(supportsAmortization) => update(method, { supportsAmortization })}
                     />
                     Amortización
                   </label>
@@ -172,9 +128,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
                     <Switch
                       checked={method.supportsCashback}
                       aria-label={`Permitir cashback en ${method.name}`}
-                      onCheckedChange={(supportsCashback) =>
-                        update(method, { supportsCashback })
-                      }
+                      onCheckedChange={(supportsCashback) => update(method, { supportsCashback })}
                     />
                     Cashback
                   </label>
@@ -198,12 +152,8 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
                     <>
                       <TableHead>Cierre</TableHead>
                       <TableHead>Pago</TableHead>
-                      <TableHead title="Permitir pagos adelantados para esta tarjeta">
-                        Amortización
-                      </TableHead>
-                      <TableHead title="Permitir registrar devoluciones para esta tarjeta">
-                        Cashback
-                      </TableHead>
+                      <TableHead title="Permitir pagos adelantados para esta tarjeta">Amortización</TableHead>
+                      <TableHead title="Permitir registrar devoluciones para esta tarjeta">Cashback</TableHead>
                       <TableHead>Personas</TableHead>
                     </>
                   )}
@@ -211,29 +161,16 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
               </TableHeader>
               <TableBody>
                 {methods.map((method) => (
-                  <TableRow
-                    key={method.id}
-                    className={method.isActive ? "" : "opacity-60"}
-                  >
+                  <TableRow key={method.id} className={method.isActive ? "" : "opacity-60"}>
                     <TableCell className="font-medium">
-                      <PaymentMethodLabel
-                        name={method.name}
-                        type={method.type}
-                        color={method.color}
-                      />
+                      <PaymentMethodLabel name={method.name} type={method.type} color={method.color} />
                     </TableCell>
-                    {!credit && (
-                      <TableCell className="text-sm text-muted-foreground">
-                        {PAYMENT_METHOD_TYPE_LABELS[method.type]}
-                      </TableCell>
-                    )}
+                    {!credit && <TableCell className="text-sm text-muted-foreground">{PAYMENT_METHOD_TYPE_LABELS[method.type]}</TableCell>}
                     <TableCell>
                       <Switch
                         checked={method.isActive}
                         aria-label={`Tengo ${method.name}`}
-                        onCheckedChange={(isActive) =>
-                          update(method, { isActive })
-                        }
+                        onCheckedChange={(isActive) => update(method, { isActive })}
                       />
                     </TableCell>
                     <TableCell>
@@ -241,35 +178,25 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
                         checked={method.showInBot}
                         disabled={!method.isActive}
                         aria-label={`${method.name} en el bot`}
-                        onCheckedChange={(showInBot) =>
-                          update(method, { showInBot })
-                        }
+                        onCheckedChange={(showInBot) => update(method, { showInBot })}
                       />
                     </TableCell>
                     {credit && (
                       <>
-                        <TableCell>
-                          {dayInput(method, "billingCloseDay", "Día de cierre")}
-                        </TableCell>
-                        <TableCell>
-                          {dayInput(method, "paymentDueDay", "Día de pago")}
-                        </TableCell>
+                        <TableCell>{dayInput(method, "billingCloseDay", "Día de cierre")}</TableCell>
+                        <TableCell>{dayInput(method, "paymentDueDay", "Día de pago")}</TableCell>
                         <TableCell>
                           <Switch
                             checked={method.supportsAmortization}
                             aria-label={`Permitir amortización en ${method.name}`}
-                            onCheckedChange={(supportsAmortization) =>
-                              update(method, { supportsAmortization })
-                            }
+                            onCheckedChange={(supportsAmortization) => update(method, { supportsAmortization })}
                           />
                         </TableCell>
                         <TableCell>
                           <Switch
                             checked={method.supportsCashback}
                             aria-label={`Permitir cashback en ${method.name}`}
-                            onCheckedChange={(supportsCashback) =>
-                              update(method, { supportsCashback })
-                            }
+                            onCheckedChange={(supportsCashback) => update(method, { supportsCashback })}
                           />
                         </TableCell>
                         <TableCell>{holdersButton(method)}</TableCell>
@@ -282,13 +209,7 @@ export function AccountsTable({ scope }: { scope: "credit" | "other" }) {
           </div>
         )}
         {creating && <NewCardDialog onClose={() => setCreating(false)} />}
-        {holdersOf && (
-          <CardHoldersDialog
-            key={holdersOf.id}
-            card={holdersOf}
-            onClose={() => setHoldersOf(null)}
-          />
-        )}
+        {holdersOf && <CardHoldersDialog key={holdersOf.id} card={holdersOf} onClose={() => setHoldersOf(null)} />}
       </CardContent>
     </Card>
   );

@@ -16,15 +16,9 @@ export function AttachmentKindChips({
     <div className="space-y-1.5">
       <div>
         <p className="text-sm font-medium">Tipo de archivo</p>
-        <p className="text-xs text-muted-foreground">
-          Se aplica a los que subas ahora
-        </p>
+        <p className="text-xs text-muted-foreground">Se aplica a los que subas ahora</p>
       </div>
-      <div
-        role="radiogroup"
-        aria-label="Tipo de archivo"
-        className="flex flex-wrap gap-1.5"
-      >
+      <div role="radiogroup" aria-label="Tipo de archivo" className="flex flex-wrap gap-1.5">
         {Object.entries(ATTACHMENT_KIND_LABELS).map(([kind, label]) => (
           <button
             key={kind}
@@ -35,9 +29,7 @@ export function AttachmentKindChips({
             onClick={() => onChange(kind as Attachment["kind"])}
             className={cn(
               "rounded-full border px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50",
-              value === kind
-                ? "border-primary bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted",
+              value === kind ? "border-primary bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
             )}
           >
             {label}

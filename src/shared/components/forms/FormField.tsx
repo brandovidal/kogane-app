@@ -12,14 +12,7 @@ export interface FormFieldProps {
   children: ReactNode;
 }
 
-export function FormField({
-  label,
-  icon,
-  missing,
-  error,
-  htmlFor,
-  children,
-}: FormFieldProps) {
+export function FormField({ label, icon, missing, error, htmlFor, children }: FormFieldProps) {
   return (
     <div className="space-y-1.5">
       <label htmlFor={htmlFor} className="text-sm font-medium">

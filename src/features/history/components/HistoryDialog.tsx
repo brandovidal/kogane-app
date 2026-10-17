@@ -9,20 +9,13 @@ export interface HistoryDialogProps {
   onClose: () => void;
 }
 
-export function HistoryDialog({
-  title,
-  entity,
-  id,
-  onClose,
-}: HistoryDialogProps) {
+export function HistoryDialog({ title, entity, id, onClose }: HistoryDialogProps) {
   return (
     <ResponsiveDialog
       open
       onOpenChange={(open) => !open && onClose()}
       title={`Historial de ${title}`}
-      icon={
-        <History aria-hidden="true" className="size-4 shrink-0 text-primary" />
-      }
+      icon={<History aria-hidden="true" className="size-4 shrink-0 text-primary" />}
       description="Revisa qué cambió, cuándo y desde dónde. Compara los valores anteriores con los nuevos."
       contentClassName="sm:max-w-2xl"
     >

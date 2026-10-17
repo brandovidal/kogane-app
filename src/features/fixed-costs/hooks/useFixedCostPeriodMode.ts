@@ -9,10 +9,7 @@ type PeriodMode = "month" | "year" | "range" | "all";
 type PeriodScope = "month" | "year" | "all";
 
 /** Derives the selected period mode from URL values and the active view scope. */
-export function useFixedCostPeriodMode(
-  values: PeriodValues,
-  scope: PeriodScope,
-): PeriodMode {
+export function useFixedCostPeriodMode(values: PeriodValues, scope: PeriodScope): PeriodMode {
   if (scope === "year") return "year";
   if (scope === "all") return "all";
   if (values.desde || values.hasta) return "range";

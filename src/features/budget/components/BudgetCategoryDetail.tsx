@@ -30,12 +30,7 @@ export function BudgetCategoryDetail({
     ...fixed.map((item) => ({ ...item, when: item.paymentDate ?? null })),
     ...cards.map((item) => ({ ...item, when: item.processDate ?? null })),
   ]
-    .filter(
-      (item) =>
-        item.personId === me &&
-        (item.categoryId ?? null) === categoryId &&
-        item.currency === "PEN",
-    )
+    .filter((item) => item.personId === me && (item.categoryId ?? null) === categoryId && item.currency === "PEN")
     .sort((a, b) => (b.when ?? "").localeCompare(a.when ?? ""));
 
   return (
@@ -46,24 +41,15 @@ export function BudgetCategoryDetail({
         </SheetHeader>
         <ul className="space-y-2 px-4 pb-4 text-sm">
           {rows.map((row) => (
-            <li
-              key={row.id}
-              className="flex items-start justify-between gap-2 border-b pb-2"
-            >
+            <li key={row.id} className="flex items-start justify-between gap-2 border-b pb-2">
               <div>
                 <p className="font-medium">{row.description}</p>
-                <p className="text-xs text-muted-foreground">
-                  {row.when ? formatDate(row.when) : "—"}
-                </p>
+                <p className="text-xs text-muted-foreground">{row.when ? formatDate(row.when) : "—"}</p>
               </div>
-              <span className="tabular-nums">
-                {formatCurrency(paidAndOwn(row).own)}
-              </span>
+              <span className="tabular-nums">{formatCurrency(paidAndOwn(row).own)}</span>
             </li>
           ))}
-          {!rows.length && (
-            <li className="text-muted-foreground">Sin gastos</li>
-          )}
+          {!rows.length && <li className="text-muted-foreground">Sin gastos</li>}
         </ul>
         <div className="px-4">
           <Button variant="outline" size="sm" onClick={onClose}>

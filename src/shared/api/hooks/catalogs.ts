@@ -68,27 +68,21 @@ export const useCreditCards = () => {
   const query = usePaymentMethods();
   return {
     ...query,
-    data: query.data?.filter(
-      (method) => method.type === "credit_card" && method.isActive,
-    ),
+    data: query.data?.filter((method) => method.type === "credit_card" && method.isActive),
   };
 };
 
 export const useSavePerson = () =>
-  useApiMutation(
-    (input: CreatePersonDto & { id?: string }) => savePerson(input),
-    { invalidate: [catalogKeys.people], success: "Persona guardada" },
-  );
+  useApiMutation((input: CreatePersonDto & { id?: string }) => savePerson(input), {
+    invalidate: [catalogKeys.people],
+    success: "Persona guardada",
+  });
 
 export const useSavePaymentMethod = () =>
-  useApiMutation(
-    (input: CreatePaymentMethodDto & { id?: string }) =>
-      savePaymentMethod(input),
-    {
-      invalidate: [catalogKeys.paymentMethods],
-      success: "Medio de pago guardado",
-    },
-  );
+  useApiMutation((input: CreatePaymentMethodDto & { id?: string }) => savePaymentMethod(input), {
+    invalidate: [catalogKeys.paymentMethods],
+    success: "Medio de pago guardado",
+  });
 
 export const useDeactivatePaymentMethod = () =>
   useApiMutation((id: string) => deactivatePaymentMethod(id), {
@@ -97,10 +91,10 @@ export const useDeactivatePaymentMethod = () =>
   });
 
 export const useSaveCategory = () =>
-  useApiMutation(
-    (input: CreateCategoryDto & { id?: string }) => saveCategory(input),
-    { invalidate: [catalogKeys.categories], success: "Categoría guardada" },
-  );
+  useApiMutation((input: CreateCategoryDto & { id?: string }) => saveCategory(input), {
+    invalidate: [catalogKeys.categories],
+    success: "Categoría guardada",
+  });
 
 export const useDeleteCategory = () =>
   useApiMutation((id: string) => deleteCategory(id), {
@@ -109,13 +103,10 @@ export const useDeleteCategory = () =>
   });
 
 export const useSaveBudgetGroup = () =>
-  useApiMutation(
-    (input: CreateBudgetGroupDto & { id?: string }) => saveBudgetGroup(input),
-    {
-      invalidate: [catalogKeys.budgetGroups, ["summary"]],
-      success: "Grupo guardado",
-    },
-  );
+  useApiMutation((input: CreateBudgetGroupDto & { id?: string }) => saveBudgetGroup(input), {
+    invalidate: [catalogKeys.budgetGroups, ["summary"]],
+    success: "Grupo guardado",
+  });
 
 export const useDeleteBudgetGroup = () =>
   useApiMutation((id: string) => deleteBudgetGroup(id), {
@@ -124,16 +115,13 @@ export const useDeleteBudgetGroup = () =>
   });
 
 // Lookup by id for tables (person and payment method names)
-export const nameById = <T extends { id: string; name: string }>(
-  items: T[] | undefined,
-) => {
+export const nameById = <T extends { id: string; name: string }>(items: T[] | undefined) => {
   const names = new Map((items ?? []).map((item) => [item.id, item.name]));
   return (id: string | null | undefined) => (id ? (names.get(id) ?? "—") : "—");
 };
 
 // "Yo": the default person (D19), what the Persona filter shows by default (D80)
-export const useMe = () =>
-  usePeople().data?.find((person) => person.isDefault)?.id;
+export const useMe = () => usePeople().data?.find((person) => person.isDefault)?.id;
 
 // Titular and additional people of a credit card (D116): statements give each purchase to them
 export const useCardHolders = (paymentMethodId: string | null) =>
@@ -144,14 +132,10 @@ export const useCardHolders = (paymentMethodId: string | null) =>
   });
 
 export const useSaveCardHolders = () =>
-  useApiMutation(
-    ({ id, holders }: { id: string; holders: CardHoldersDto["holders"] }) =>
-      saveCardHolders(id, holders),
-    {
-      invalidate: [["catalogs", "card-holders"]],
-      success: "Titular y adicionales guardados",
-    },
-  );
+  useApiMutation(({ id, holders }: { id: string; holders: CardHoldersDto["holders"] }) => saveCardHolders(id, holders), {
+    invalidate: [["catalogs", "card-holders"]],
+    success: "Titular y adicionales guardados",
+  });
 
 // Cuentas de salida (active ones first); `activeOnly` for the selects of a payment
 export const useAccounts = (activeOnly = false) =>
@@ -163,7 +147,7 @@ export const useAccounts = (activeOnly = false) =>
   });
 
 export const useSaveAccount = () =>
-  useApiMutation(
-    (input: CreateAccountDto & { id?: string }) => saveAccount(input),
-    { invalidate: [catalogKeys.accounts], success: "Cuenta guardada" },
-  );
+  useApiMutation((input: CreateAccountDto & { id?: string }) => saveAccount(input), {
+    invalidate: [catalogKeys.accounts],
+    success: "Cuenta guardada",
+  });

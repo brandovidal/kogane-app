@@ -1,17 +1,4 @@
-const MONTH_NAMES = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-];
+const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 export function getMonthName(month: number): string {
   return MONTH_NAMES[month - 1] ?? "";
@@ -42,9 +29,7 @@ export function formatDate(date: Date | string): string {
 
 // YYYY-MM-DD for <input type="date"> and the API
 export const toIsoDate = (date: Date | string | null | undefined): string =>
-  date
-    ? (typeof date === "string" ? date : date.toISOString()).slice(0, 10)
-    : "";
+  date ? (typeof date === "string" ? date : date.toISOString()).slice(0, 10) : "";
 
 // Compact calendar date; use UTC like formatDate for dates stored by the API.
 export function formatDayMonth(date: Date | string): string {

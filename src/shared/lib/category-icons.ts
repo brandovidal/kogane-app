@@ -123,22 +123,16 @@ export const CATEGORY_ICON_OPTIONS: CategoryIconOption[] = [
 ];
 
 const aliases: Record<string, string> = { home: "house", tag: "tags" };
-const categoryIcons = new Map(
-  CATEGORY_ICON_OPTIONS.map(({ value, Icon }) => [value, Icon]),
-);
+const categoryIcons = new Map(CATEGORY_ICON_OPTIONS.map(({ value, Icon }) => [value, Icon]));
 
-export const normalizeCategoryIconName = (value?: string | null) =>
-  value ? (aliases[value] ?? value) : null;
+export const normalizeCategoryIconName = (value?: string | null) => (value ? (aliases[value] ?? value) : null);
 
 export function getCategoryIcon(value?: string | null): LucideIcon {
   const name = normalizeCategoryIconName(value);
   return (name && categoryIcons.get(name)) || Tags;
 }
 
-export function matchesCategoryIcon(
-  option: { value: string; label: string },
-  query: string,
-) {
+export function matchesCategoryIcon(option: { value: string; label: string }, query: string) {
   const fold = (text: string) =>
     text
       .normalize("NFD")

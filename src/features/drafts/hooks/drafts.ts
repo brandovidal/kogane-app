@@ -44,9 +44,7 @@ export const useDraftTabCounts = () => {
       queryFn: async () => (await getDrafts(tab, 1)).total,
     })),
   });
-  return Object.fromEntries(
-    DRAFT_TABS.map((tab, index) => [tab, results[index].data]),
-  ) as Record<DraftTab, number | undefined>;
+  return Object.fromEntries(DRAFT_TABS.map((tab, index) => [tab, results[index].data])) as Record<DraftTab, number | undefined>;
 };
 
 // A saved draft is a new record: every table and the summary may change
@@ -58,10 +56,9 @@ export const useCreateDraft = () =>
   });
 
 export const useUpdateDraft = () =>
-  useApiMutation(
-    ({ id, body }: { id: string; body: DraftFields }) => updateDraft(id, body),
-    { invalidate: [draftKeys.all] },
-  );
+  useApiMutation(({ id, body }: { id: string; body: DraftFields }) => updateDraft(id, body), {
+    invalidate: [draftKeys.all],
+  });
 
 // `quiet`: the caller shows its own message (Nuevo gasto says where it went)
 export const useSaveDraft = ({ quiet = false }: { quiet?: boolean } = {}) =>

@@ -10,8 +10,7 @@ import { NotionImportDetailView } from "./NotionImportDetailView";
 import { StatementPreview } from "../components/StatementPreview";
 
 function ImportsPageView() {
-  const { history, current, source, id, setSelected, startNew } =
-    useImportsPage();
+  const { history, current, source, id, setSelected, startNew } = useImportsPage();
   const [showHistory, setShowHistory] = useState(false);
 
   if (current)
@@ -26,9 +25,7 @@ function ImportsPageView() {
         )}
         <div className="min-w-0">
           {source === "notion" && <NotionImportDetailView id={id} />}
-          {source === "statement" && (
-            <StatementPreview id={id} onChangeFile={startNew} />
-          )}
+          {source === "statement" && <StatementPreview id={id} onChangeFile={startNew} />}
         </div>
       </div>
     );
@@ -40,18 +37,9 @@ function ImportsPageView() {
       </div>
       <div className="space-y-4">
         {showHistory ? (
-          <ImportHistoryCard
-            items={history}
-            current={current}
-            onSelect={setSelected}
-            onClose={() => setShowHistory(false)}
-          />
+          <ImportHistoryCard items={history} current={current} onSelect={setSelected} onClose={() => setShowHistory(false)} />
         ) : (
-          <ImportRecents
-            items={history}
-            onSelect={setSelected}
-            onViewAll={() => setShowHistory(true)}
-          />
+          <ImportRecents items={history} onSelect={setSelected} onViewAll={() => setShowHistory(true)} />
         )}
       </div>
     </div>

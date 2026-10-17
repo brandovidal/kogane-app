@@ -22,13 +22,10 @@ const parseDate = (value?: string | null) => {
   const key = value.slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return undefined;
   const parsed = new Date(`${key}T12:00:00`);
-  return Number.isNaN(parsed.getTime()) || dateKey(parsed) !== key
-    ? undefined
-    : parsed;
+  return Number.isNaN(parsed.getTime()) || dateKey(parsed) !== key ? undefined : parsed;
 };
 
-const dateKey = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const dateKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 const displayDate = (date: Date) =>
   date.toLocaleDateString("es-PE", {
@@ -37,16 +34,7 @@ const displayDate = (date: Date) =>
     year: "numeric",
   });
 
-export function DatePicker({
-  value,
-  onChange,
-  placeholder = "Seleccionar fecha",
-  ariaLabel,
-  minDate,
-  maxDate,
-  className,
-  active,
-}: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder = "Seleccionar fecha", ariaLabel, minDate, maxDate, className, active }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const date = useMemo(() => parseDate(value), [value]);
   const minimum = useMemo(() => parseDate(minDate), [minDate]);
@@ -68,9 +56,7 @@ export function DatePicker({
           )}
         >
           <CalendarDays className="size-4" />
-          <span className="min-w-0 flex-1 truncate">
-            {date ? displayDate(date) : placeholder}
-          </span>
+          <span className="min-w-0 flex-1 truncate">{date ? displayDate(date) : placeholder}</span>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-3">
           <Calendar

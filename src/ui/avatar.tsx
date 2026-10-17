@@ -26,9 +26,7 @@ function Avatar({
 type ImageState = "loading" | "loaded" | "error";
 
 function AvatarImage({ className, ...props }: React.ComponentProps<"img">) {
-  const [state, setState] = React.useState<ImageState>(
-    props.src ? "loading" : "error",
-  );
+  const [state, setState] = React.useState<ImageState>(props.src ? "loading" : "error");
   return (
     <img
       data-slot="avatar-image"
@@ -36,10 +34,7 @@ function AvatarImage({ className, ...props }: React.ComponentProps<"img">) {
       data-state={state}
       onLoad={() => setState("loaded")}
       onError={() => setState("error")}
-      className={cn(
-        "peer aspect-square size-full rounded-full object-cover data-[state=error]:hidden",
-        className,
-      )}
+      className={cn("peer aspect-square size-full rounded-full object-cover data-[state=error]:hidden", className)}
       {...props}
     />
   );
@@ -78,19 +73,13 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="avatar-group"
-      className={cn(
-        "group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background",
-        className,
-      )}
+      className={cn("group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background", className)}
       {...props}
     />
   );
 }
 
-function AvatarGroupCount({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="avatar-group-count"
@@ -103,11 +92,4 @@ function AvatarGroupCount({
   );
 }
 
-export {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-  AvatarBadge,
-};
+export { Avatar, AvatarImage, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarBadge };

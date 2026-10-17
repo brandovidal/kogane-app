@@ -15,12 +15,9 @@ const DRAFT_FIELD_LABELS: Record<string, string> = {
   period: "Período",
 };
 
-export const missingLabels = (draft: Pick<DraftLike, "missingFields">) =>
-  draft.missingFields.map((field) => DRAFT_FIELD_LABELS[field] ?? field);
+export const missingLabels = (draft: Pick<DraftLike, "missingFields">) => draft.missingFields.map((field) => DRAFT_FIELD_LABELS[field] ?? field);
 
-export const draftState = (
-  draft: Pick<DraftLike, "missingFields">,
-): DraftState => (draft.missingFields.length ? "incomplete" : "ready");
+export const draftState = (draft: Pick<DraftLike, "missingFields">): DraftState => (draft.missingFields.length ? "incomplete" : "ready");
 
 export interface DraftSummary {
   total: number;
@@ -46,5 +43,4 @@ export function summarizeDrafts(items: DraftLike[]): DraftSummary {
 }
 
 // "Guardar listos": solo los completos; los incompletos se quedan en Por revisar
-export const readyDrafts = <T extends DraftLike>(items: T[]) =>
-  items.filter((item) => draftState(item) === "ready");
+export const readyDrafts = <T extends DraftLike>(items: T[]) => items.filter((item) => draftState(item) === "ready");

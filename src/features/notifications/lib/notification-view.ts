@@ -13,9 +13,7 @@ export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   collect: "Cobros del mes y atrasados",
 };
 
-export const NOTIFICATION_KINDS = Object.keys(
-  NOTIFICATION_KIND_LABELS,
-) as NotificationKind[];
+export const NOTIFICATION_KINDS = Object.keys(NOTIFICATION_KIND_LABELS) as NotificationKind[];
 
 const LINK_BY_REF: Record<string, string> = {
   fixed_cost: "/costos-fijos",
@@ -36,22 +34,13 @@ const LINK_BY_KIND: Partial<Record<NotificationKind, string>> = {
   collect: "/cobros",
 };
 
-export function notificationLink(
-  notification: Pick<AppNotification, "kind" | "refType">,
-): string {
-  return (
-    (notification.refType && LINK_BY_REF[notification.refType]) ??
-    LINK_BY_KIND[notification.kind] ??
-    "/"
-  );
+export function notificationLink(notification: Pick<AppNotification, "kind" | "refType">): string {
+  return (notification.refType && LINK_BY_REF[notification.refType]) ?? LINK_BY_KIND[notification.kind] ?? "/";
 }
 
 // "hace 5 min", "hace 3 h", "ayer", "hace 4 días", then the date
 export function timeAgo(iso: string, now: Date = new Date()): string {
-  const minutes = Math.max(
-    0,
-    Math.round((now.getTime() - new Date(iso).getTime()) / 60_000),
-  );
+  const minutes = Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60_000));
   if (minutes < 1) return "ahora";
   if (minutes < 60) return `hace ${minutes} min`;
   const hours = Math.round(minutes / 60);
@@ -60,9 +49,7 @@ export function timeAgo(iso: string, now: Date = new Date()): string {
   if (days === 1) return "ayer";
   if (days < 7) return `hace ${days} días`;
   // dd/mm of the day in Lima (the ICU of Node and of each browser writes es-PE dates differently)
-  const [, month, day] = new Date(iso)
-    .toLocaleDateString("en-CA", { timeZone: "America/Lima" })
-    .split("-");
+  const [, month, day] = new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Lima" }).split("-");
   return `${day}/${month}`;
 }
 
@@ -74,23 +61,15 @@ export const NOTIFICATION_TABS = [
 ] as const;
 export type NotificationTab = (typeof NOTIFICATION_TABS)[number]["value"];
 
-const DUE_KINDS: ReadonlySet<NotificationKind> = new Set([
-  "due",
-  "card_close",
-  "collect",
-]);
+const DUE_KINDS: ReadonlySet<NotificationKind> = new Set(["due", "card_close", "collect"]);
 
-export function filterByTab<T extends Pick<AppNotification, "kind" | "readAt">>(
-  items: T[],
-  tab: NotificationTab,
-): T[] {
+export function filterByTab<T extends Pick<AppNotification, "kind" | "readAt">>(items: T[], tab: NotificationTab): T[] {
   if (tab === "unread") return items.filter((item) => !item.readAt);
   if (tab === "due") return items.filter((item) => DUE_KINDS.has(item.kind));
   return items;
 }
 
-const limaDay = (date: Date) =>
-  date.toLocaleDateString("en-CA", { timeZone: "America/Lima" });
+const limaDay = (date: Date) => date.toLocaleDateString("en-CA", { timeZone: "America/Lima" });
 
 export type DayGroup = "Hoy" | "Ayer" | "Antes";
 
@@ -103,10 +82,7 @@ export function dayGroup(iso: string, now: Date = new Date()): DayGroup {
 }
 
 // Keeps the order received; empty groups do not appear
-export function groupByDay<T extends Pick<AppNotification, "createdAt">>(
-  items: T[],
-  now: Date = new Date(),
-): Array<{ label: DayGroup; items: T[] }> {
+export function groupByDay<T extends Pick<AppNotification, "createdAt">>(items: T[], now: Date = new Date()): Array<{ label: DayGroup; items: T[] }> {
   const groups: Array<{ label: DayGroup; items: T[] }> = [];
   for (const item of items) {
     const label = dayGroup(item.createdAt, now);

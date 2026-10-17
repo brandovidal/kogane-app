@@ -1,9 +1,5 @@
 import { createStore } from "zustand/vanilla";
-import {
-  THEME_PREFERENCE,
-  THEME_STORAGE_KEY,
-  THEME_MEDIA_QUERY,
-} from "@/shared/constants/theme";
+import { THEME_PREFERENCE, THEME_STORAGE_KEY, THEME_MEDIA_QUERY } from "@/shared/constants/theme";
 import type { ThemePreference, ResolvedTheme } from "@/shared/types/theme";
 
 export interface ThemeState {
@@ -34,10 +30,7 @@ export const themeStore = createStore<ThemeState>()((set, get) => ({
   initTheme: () => {
     if (typeof window === "undefined") return;
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    const preference =
-      stored === THEME_PREFERENCE.LIGHT || stored === THEME_PREFERENCE.DARK
-        ? stored
-        : THEME_PREFERENCE.SYSTEM;
+    const preference = stored === THEME_PREFERENCE.LIGHT || stored === THEME_PREFERENCE.DARK ? stored : THEME_PREFERENCE.SYSTEM;
     const theme = resolvedTheme(preference);
     set({ theme, preference });
     applyTheme(theme);

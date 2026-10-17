@@ -1,23 +1,11 @@
 import { importKeys } from "../constants/import-keys";
 import type { ImportRowsParams } from "../types/import-types";
 export type { ImportRowsParams } from "../types/import-types";
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useApiMutation } from "@/shared/api/hooks/use-api-mutation";
-import {
-  applyImport,
-  discardImport,
-  getImport,
-  getImportRows,
-  getImports,
-  uploadNotionImport,
-} from "../services/import.service";
+import { applyImport, discardImport, getImport, getImportRows, getImports, uploadNotionImport } from "../services/import.service";
 
 export const useImports = () =>
   useQuery({
@@ -55,14 +43,7 @@ export function useUploadNotion() {
 // Applying writes expenses, debts, the budget and the calendar
 export const useApplyImport = () =>
   useApiMutation((id: string) => applyImport(id), {
-    invalidate: [
-      importKeys.all,
-      ["expenses"],
-      ["debts"],
-      ["budget"],
-      ["summary"],
-      ["calendar"],
-    ],
+    invalidate: [importKeys.all, ["expenses"], ["debts"], ["budget"], ["summary"], ["calendar"]],
     success: "Importado",
   });
 

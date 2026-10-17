@@ -45,26 +45,16 @@ export function CategoryFilterFields({
   const groupById = new Map(budgetGroups.map((group) => [group.id, group]));
   const options = [...categories]
     .sort((left, right) => {
-      const leftGroup = left.budgetGroupId
-        ? groupById.get(left.budgetGroupId)
-        : undefined;
-      const rightGroup = right.budgetGroupId
-        ? groupById.get(right.budgetGroupId)
-        : undefined;
+      const leftGroup = left.budgetGroupId ? groupById.get(left.budgetGroupId) : undefined;
+      const rightGroup = right.budgetGroupId ? groupById.get(right.budgetGroupId) : undefined;
       return (
-        (leftGroup?.order ?? Number.MAX_SAFE_INTEGER) -
-          (rightGroup?.order ?? Number.MAX_SAFE_INTEGER) ||
-        (leftGroup?.name ?? UNGROUPED).localeCompare(
-          rightGroup?.name ?? UNGROUPED,
-          "es",
-        ) ||
+        (leftGroup?.order ?? Number.MAX_SAFE_INTEGER) - (rightGroup?.order ?? Number.MAX_SAFE_INTEGER) ||
+        (leftGroup?.name ?? UNGROUPED).localeCompare(rightGroup?.name ?? UNGROUPED, "es") ||
         left.name.localeCompare(right.name, "es")
       );
     })
     .map((category) => {
-      const group = category.budgetGroupId
-        ? groupById.get(category.budgetGroupId)
-        : undefined;
+      const group = category.budgetGroupId ? groupById.get(category.budgetGroupId) : undefined;
       return {
         value: category.id,
         label: category.name,
@@ -74,9 +64,7 @@ export function CategoryFilterFields({
             {group.emoji}
           </span>
         ) : undefined,
-        decoration: (
-          <CategoryIcon icon={category.icon} color={category.color} size="xs" />
-        ),
+        decoration: <CategoryIcon icon={category.icon} color={category.color} size="xs" />,
         searchTerms: [group?.name ?? UNGROUPED],
         count: counts?.[category.id],
       };

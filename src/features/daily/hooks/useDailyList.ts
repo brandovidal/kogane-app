@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  nameById,
-  useCategories,
-  useMe,
-  usePaymentMethods,
-  usePeople,
-} from "@/shared/api/hooks/catalogs";
+import { nameById, useCategories, useMe, usePaymentMethods, usePeople } from "@/shared/api/hooks/catalogs";
 import { useExpenses } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES } from "@/shared/api/types";
 import { applyExpenseFilters } from "@/features/expenses/lib/expense-filters";
@@ -32,8 +26,7 @@ export function useDailyList() {
   const methodName = nameById(usePaymentMethods().data);
   const categoryName = nameById(categories);
   const me = useMe();
-  const [filters, setFilters] =
-    useUrlFilters<ExpenseFilterValues>(DAILY_FILTERS);
+  const [filters, setFilters] = useUrlFilters<ExpenseFilterValues>(DAILY_FILTERS);
   const [view, setView] = useViewMode("daily", "table");
   const [groupBy, setGroupBy] = useState("none");
   const [layout, setLayout] = useState<DailyLayout>("list");
@@ -50,14 +43,8 @@ export function useDailyList() {
   const sorted = useMemo(() => {
     const direction = sort.endsWith("asc") ? 1 : -1;
     return applyExpenseFilters(expenses, filters, me).sort((left, right) => {
-      if (sort.startsWith("date"))
-        return direction * left.spentAt.localeCompare(right.spentAt);
-      if (sort.startsWith("amount"))
-        return (
-          direction *
-          ((left.amountInPen ?? left.amount) -
-            (right.amountInPen ?? right.amount))
-        );
+      if (sort.startsWith("date")) return direction * left.spentAt.localeCompare(right.spentAt);
+      if (sort.startsWith("amount")) return direction * ((left.amountInPen ?? left.amount) - (right.amountInPen ?? right.amount));
       return left.description.localeCompare(right.description);
     });
   }, [expenses, filters, me, sort]);

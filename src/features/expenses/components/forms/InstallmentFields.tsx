@@ -13,14 +13,7 @@ export interface InstallmentFieldsProps {
   compact?: boolean;
 }
 
-export function InstallmentFields({
-  value,
-  onChange,
-  error,
-  missing,
-  disabled,
-  compact = false,
-}: InstallmentFieldsProps) {
+export function InstallmentFields({ value, onChange, error, missing, disabled, compact = false }: InstallmentFieldsProps) {
   const id = useId();
   const { current, total } = parseInstallment(value);
   const errorId = `${id}-error`;
@@ -33,16 +26,8 @@ export function InstallmentFields({
 
   return (
     <div className="space-y-2">
-      <div
-        className={
-          compact ? "grid grid-cols-2 gap-2" : "grid gap-3 sm:grid-cols-2"
-        }
-      >
-        <FormField
-          label="Cuota actual"
-          htmlFor={`${id}-current`}
-          missing={missing}
-        >
+      <div className={compact ? "grid grid-cols-2 gap-2" : "grid gap-3 sm:grid-cols-2"}>
+        <FormField label="Cuota actual" htmlFor={`${id}-current`} missing={missing}>
           <InputGroup>
             <InputGroupInput
               id={`${id}-current`}
@@ -68,11 +53,7 @@ export function InstallmentFields({
             </InputGroupAddon>
           </InputGroup>
         </FormField>
-        <FormField
-          label="Total de cuotas"
-          htmlFor={`${id}-total`}
-          missing={missing}
-        >
+        <FormField label="Total de cuotas" htmlFor={`${id}-total`} missing={missing}>
           <InputGroup>
             <InputGroupInput
               id={`${id}-total`}
