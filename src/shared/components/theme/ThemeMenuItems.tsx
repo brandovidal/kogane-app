@@ -17,12 +17,12 @@ export function ThemeMenuItems() {
 
   return (
     <>
-      <DropdownMenuLabel className="px-2 pt-1 pb-0.5 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+      <DropdownMenuLabel className="px-0 pt-0 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         Apariencia
       </DropdownMenuLabel>
       <DropdownMenuRadioGroup
         aria-label="Apariencia"
-        className="mx-1 mb-1 grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
+        className="grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
         value={preference}
         onValueChange={(value) => {
           if (value === THEME_PREFERENCE.LIGHT || value === THEME_PREFERENCE.DARK || value === THEME_PREFERENCE.SYSTEM) setTheme(value)
@@ -34,7 +34,7 @@ export function ThemeMenuItems() {
             <DropdownMenuRadioItem
               key={option.value}
               value={option.value}
-              className="min-h-8 justify-center gap-1.5 rounded-md px-2 text-xs data-[state=checked]:bg-accent data-[state=checked]:font-medium [&>span:first-child]:hidden"
+              className="min-h-9 justify-center gap-1 rounded-md px-1 text-xs data-[state=checked]:bg-accent data-[state=checked]:font-semibold [&>span:first-child]:hidden"
             >
               <Icon aria-hidden="true" className="size-4" />
               {option.label}
