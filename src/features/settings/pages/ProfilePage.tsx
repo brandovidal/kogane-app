@@ -9,7 +9,6 @@ import { ProfileAccountCard } from '../components/profile/ProfileAccountCard'
 import { ProfileAppSettingsCard } from '../components/profile/ProfileAppSettingsCard'
 import { ProfilePersonalDataCard, type ProfileDraft, validateProfileDraft } from '../components/profile/ProfilePersonalDataCard'
 import { ProfilePasswordCard } from '../components/profile/ProfilePasswordCard'
-import { ProfileSessionsCard } from '../components/profile/ProfileSessionsCard'
 import { ProfileTelegramCard } from '../components/profile/ProfileTelegramCard'
 
 function makeDraft(user: NonNullable<ReturnType<typeof useMe>['data']>): ProfileDraft {
@@ -175,7 +174,6 @@ function ProfilePageView() {
           />
           <ProfilePasswordCard user={me} />
           <ProfileTelegramCard user={me} />
-          <ProfileSessionsCard />
         </div>
       </div>
 

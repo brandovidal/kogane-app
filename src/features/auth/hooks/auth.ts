@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { useApiMutation } from '@/shared/api/hooks/use-api-mutation'
 import {
@@ -69,6 +69,26 @@ export const useRevokeDeviceSession = () =>
     invalidate: [authKeys.sessions],
     success: 'Sesión cerrada',
   })
+
+export const useRevokeDeviceSessions = () => {
+  const queryClient = useQueryClient()
+  return useApiMutation(
+    async (ids: string[]) => {
+      try {
+        return await Promise.all(ids.map(revokeDeviceSession))
+      } finally {
+        await queryClient.invalidateQueries({ queryKey: authKeys.sessions })
+      }
+    },
+    {
+      invalidate: [],
+      success: (results) => {
+        const count = results.reduce((total, result) => total + result.revoked, 0)
+        return `${count} ${count === 1 ? 'sesión cerrada' : 'sesiones cerradas'}`
+      },
+    },
+  )
+}
 
 export const useRevokeOtherDeviceSessions = () =>
   useApiMutation(revokeOtherDeviceSessions, {

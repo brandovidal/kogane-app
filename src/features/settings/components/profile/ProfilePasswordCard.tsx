@@ -13,7 +13,7 @@ export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typ
   const valid = next.length >= 10 && (!user.hasPassword || !!current)
 
   return (
-    <ProfileAccentCard tone="password">
+    <ProfileAccentCard tone="password" id="contrasena">
       <ProfileAccentHeader
         tone="password"
         icon={KeyRound}

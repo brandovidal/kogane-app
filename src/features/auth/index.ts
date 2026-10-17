@@ -9,6 +9,7 @@ export {
   useAuthConfig,
   useDeviceSessions,
   useRevokeDeviceSession,
+  useRevokeDeviceSessions,
   useRevokeOtherDeviceSessions,
   useInvitePreview,
   useLogin,

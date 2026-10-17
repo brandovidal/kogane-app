@@ -4,6 +4,7 @@ import { AccountsTable } from '../components/accounts/AccountsTable'
 import { CardsAccountsTabs } from '../components/accounts/CardsAccountsTabs'
 import { OutputAccountsPanel } from '../components/accounts/OutputAccountsPanel'
 import { NotificationSettingsCard } from '../components/notifications/NotificationSettingsCard'
+import { DevicesPage } from '../components/devices'
 import { PeoplePage } from '../components/people/PeoplePage'
 import { SettingsShell } from '../components/navigation/SettingsShell'
 import { ProfilePage } from './ProfilePage'
@@ -26,10 +27,15 @@ function SettingsPageView({ section, tab = CARDS_ACCOUNTS_TAB.CREDITO }: Setting
   const isAdmin = hasHydrated && (me?.role === 'admin' || me?.role === 'superadmin')
 
   return (
-    <SettingsShell section={section} isAdmin={isAdmin} wide={section === SETTINGS_SECTION.PERFIL}>
+    <SettingsShell
+      section={section}
+      isAdmin={isAdmin}
+      wide={section === SETTINGS_SECTION.PERFIL || section === SETTINGS_SECTION.NOTIFICACIONES || section === SETTINGS_SECTION.DISPOSITIVOS}
+    >
       {section === SETTINGS_SECTION.PERFIL && <ProfilePage />}
       {section === SETTINGS_SECTION.GENERAL && <GeneralSettingsView />}
       {section === SETTINGS_SECTION.NOTIFICACIONES && <NotificationSettingsCard />}
+      {section === SETTINGS_SECTION.DISPOSITIVOS && <DevicesPage />}
       {section === SETTINGS_SECTION.CUENTAS_TARJETAS && (
         <div className="space-y-4">
           <CardsAccountsTabs active={tab} />

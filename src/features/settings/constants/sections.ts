@@ -19,6 +19,7 @@ export const SETTINGS_SECTION = {
   PERFIL: 'perfil',
   GENERAL: 'general',
   NOTIFICACIONES: 'notificaciones',
+  DISPOSITIVOS: 'dispositivos',
   CUENTAS_TARJETAS: 'cuentas-tarjetas',
   PERSONAS: 'personas',
   HISTORIAL: 'historial',
@@ -35,6 +36,7 @@ export const SETTINGS_PAGE_NAMES: Record<SettingsSection, string> = {
   [SETTINGS_SECTION.PERFIL]: 'Perfil',
   [SETTINGS_SECTION.GENERAL]: 'General',
   [SETTINGS_SECTION.NOTIFICACIONES]: 'Notificaciones',
+  [SETTINGS_SECTION.DISPOSITIVOS]: 'Dispositivos',
   [SETTINGS_SECTION.CUENTAS_TARJETAS]: 'Cuentas y tarjetas',
   [SETTINGS_SECTION.PERSONAS]: 'Personas',
   [SETTINGS_SECTION.USUARIOS]: 'Usuarios',
@@ -61,7 +63,7 @@ export const SETTINGS_NAV_GROUPS: {
       { key: SETTINGS_SECTION.GENERAL, label: SETTINGS_PAGE_NAMES[SETTINGS_SECTION.GENERAL], icon: Settings },
       { key: SETTINGS_SECTION.PERFIL, label: SETTINGS_PAGE_NAMES[SETTINGS_SECTION.PERFIL], icon: UserRound },
       { key: SETTINGS_SECTION.NOTIFICACIONES, label: SETTINGS_PAGE_NAMES[SETTINGS_SECTION.NOTIFICACIONES], icon: BellRing },
-      { key: 'dispositivos', label: 'Dispositivos', icon: Smartphone, href: '/configuracion/perfil#sesiones' },
+      { key: SETTINGS_SECTION.DISPOSITIVOS, label: SETTINGS_PAGE_NAMES[SETTINGS_SECTION.DISPOSITIVOS], icon: Smartphone },
     ],
   },
   {
@@ -108,7 +110,6 @@ export const CARDS_ACCOUNTS_TABS: {
 
 // Cuentas y tarjetas opens its first subtab
 export const settingsHref = (section: SettingsNavKey) => {
-  if (section === 'dispositivos') return '/configuracion/perfil#sesiones'
   if (section === 'presupuesto') return '/presupuesto'
   return section === SETTINGS_SECTION.CUENTAS_TARJETAS ? CARDS_ACCOUNTS_TABS[0].href : `/configuracion/${section}`
 }
