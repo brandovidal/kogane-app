@@ -10,7 +10,7 @@
   ],
   "ignoreIssues": {
     // knip cannot follow a name through the barrels, so exports and types are checked by tsc/eslint; unused files still are
-    "src/**": ["exports", "types"],
+    "src/ui/**": ["exports", "types"],
   },
   "ignoreDependencies": [
     "@astrojs/check", // `astro check` loads it
