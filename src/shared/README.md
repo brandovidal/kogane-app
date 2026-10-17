@@ -62,11 +62,11 @@ sus valores de API y las uniones literales; no se introducen enums numéricos.
 Para consumidores externos se puede usar una entrada pública:
 
 ```ts
-import { FixedCostListPage, FIXED_COST_STATUSES } from "@/features/fixed-costs";
-import type { FixedCostGroupBy } from "@/features/fixed-costs";
-import { FilterSelect } from "@/shared/components/filters";
-import { useViewMode } from "@/shared/hooks";
-import { cn } from "@/shared/utils";
+import { FixedCostListPage, FIXED_COST_STATUSES } from '@/features/fixed-costs'
+import type { FixedCostGroupBy } from '@/features/fixed-costs'
+import { FilterSelect } from '@/shared/components/filters'
+import { useViewMode } from '@/shared/hooks'
+import { cn } from '@/shared/utils'
 ```
 
 Dentro de un módulo se importan archivos concretos. Para consumidores que necesitan

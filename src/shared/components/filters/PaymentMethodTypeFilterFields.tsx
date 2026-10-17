@@ -1,19 +1,13 @@
-import { PAYMENT_METHOD_ICONS } from "@/shared/constants/payment-methods";
-import {
-  PAYMENT_METHOD_TYPE_ORDER,
-  PAYMENT_METHOD_TYPE_LABELS,
-} from "@/shared/constants/payment-methods";
-import {
-  ShortFilterFields,
-  type ShortFilterFieldsProps,
-} from "./ShortFilterFields";
+import { PAYMENT_METHOD_ICONS } from '@/shared/constants/payment-methods'
+import { PAYMENT_METHOD_TYPE_ORDER, PAYMENT_METHOD_TYPE_LABELS } from '@/shared/constants/payment-methods'
+import { ShortFilterFields, type ShortFilterFieldsProps } from './ShortFilterFields'
 
-type Props = Omit<ShortFilterFieldsProps, "options" | "mode" | "allLabel"> & {
-  allLabel?: string;
-};
+type Props = Omit<ShortFilterFieldsProps, 'options' | 'allLabel'> & {
+  allLabel?: string
+}
 
 const options = PAYMENT_METHOD_TYPE_ORDER.map((value) => {
-  const Icon = PAYMENT_METHOD_ICONS[value];
+  const Icon = PAYMENT_METHOD_ICONS[value]
   return {
     value,
     label: PAYMENT_METHOD_TYPE_LABELS[value],
@@ -22,19 +16,9 @@ const options = PAYMENT_METHOD_TYPE_ORDER.map((value) => {
         <Icon className="size-3.5" />
       </span>
     ),
-  };
-});
+  }
+})
 
-export function PaymentMethodTypeFilterFields({
-  allLabel = "Todos los medios",
-  ...props
-}: Props) {
-  return (
-    <ShortFilterFields
-      {...props}
-      options={options}
-      mode="multi"
-      allLabel={allLabel}
-    />
-  );
+export function PaymentMethodTypeFilterFields({ allLabel = 'Todos los medios', mode = 'multi', ...props }: Props) {
+  return <ShortFilterFields {...props} options={options} mode={mode} allLabel={allLabel} />
 }

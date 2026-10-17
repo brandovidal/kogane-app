@@ -1,14 +1,8 @@
-import { formatCurrency } from "@/shared/lib/currency";
-import type { DraftSummary } from "@/features/drafts/lib/draft-view";
+import { formatCurrency } from '@/shared/lib/currency'
+import type { DraftSummary } from '@/features/drafts/lib/draft-view'
 
 // Indicadores de Por revisar (board B1): incompletos en ámbar, listos en verde con su avance
-export function DraftIndicators({
-  summary,
-  currency = "PEN",
-}: {
-  summary: DraftSummary;
-  currency?: string;
-}) {
+export function DraftIndicators({ summary, currency = 'PEN' }: { summary: DraftSummary; currency?: string }) {
   return (
     <section
       aria-label="Indicadores de Borrador"
@@ -33,22 +27,14 @@ export function DraftIndicators({
           aria-valuemax={100}
           className="h-1 w-10 overflow-hidden rounded-full bg-current/20"
         >
-          <i
-            className="block h-full bg-current"
-            style={{ width: `${summary.readyPercent}%` }}
-          />
+          <i className="block h-full bg-current" style={{ width: `${summary.readyPercent}%` }} />
         </span>
         <b>{summary.readyPercent}%</b>
       </span>
       <span className="text-muted-foreground">
-        Monto total{" "}
-        <b className="ml-1 text-foreground tabular-nums">
-          {formatCurrency(summary.totalAmount, currency)}
-        </b>
-        {summary.withoutAmount > 0 && (
-          <span className="ml-1">+ {summary.withoutAmount} sin monto</span>
-        )}
+        Monto total <b className="ml-1 text-foreground tabular-nums">{formatCurrency(summary.totalAmount, currency)}</b>
+        {summary.withoutAmount > 0 && <span className="ml-1">+ {summary.withoutAmount} sin monto</span>}
       </span>
     </section>
-  );
+  )
 }

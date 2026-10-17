@@ -1,22 +1,13 @@
-import {
-  CalendarRange,
-  Columns3,
-  Eye,
-  Layers,
-  Link2,
-  ListFilter,
-  RotateCcw,
-  SlidersHorizontal,
-} from "lucide-react";
-import { toast } from "sonner";
+import { CalendarRange, Columns3, Eye, Layers, Link2, ListFilter, RotateCcw, SlidersHorizontal } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   ColumnVisibilityOptions,
   RowColorRulesMenu,
   ViewSettingsMenu,
   type ColumnVisibilityOption,
   type RowColorRulesMenuProps,
-} from "@/shared/components/toolbar";
-import { Button } from "@/ui/button";
+} from '@/shared/components/toolbar'
+import { Button } from '@/ui/button'
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuItem,
@@ -25,12 +16,12 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/ui/dropdown-menu";
+} from '@/ui/dropdown-menu'
 
 const GROUP_OPTIONS = [
-  { value: "period", label: "Período" },
-  { value: "person", label: "Persona" },
-] as const;
+  { value: 'period', label: 'Período' },
+  { value: 'person', label: 'Persona' },
+] as const
 
 export function PlatformViewSettings({
   columns,
@@ -43,21 +34,21 @@ export function PlatformViewSettings({
   onReset,
   rowColors,
 }: {
-  columns: readonly ColumnVisibilityOption[];
-  visible: number;
-  filterCount: number;
-  onOpenFilters: () => void;
-  groupBy: Array<"person" | "period">;
-  onGroupByChange: (groupBy: Array<"person" | "period">) => void;
-  canReset: boolean;
-  onReset: () => void;
-  rowColors: RowColorRulesMenuProps;
+  columns: readonly ColumnVisibilityOption[]
+  visible: number
+  filterCount: number
+  onOpenFilters: () => void
+  groupBy: Array<'person' | 'period'>
+  onGroupByChange: (groupBy: Array<'person' | 'period'>) => void
+  canReset: boolean
+  onReset: () => void
+  rowColors: RowColorRulesMenuProps
 }) {
   const copyViewLink = () =>
     void navigator.clipboard
       .writeText(window.location.href)
-      .then(() => toast.success("Enlace copiado"))
-      .catch(() => toast.error("No se pudo copiar el enlace"));
+      .then(() => toast.success('Enlace copiado'))
+      .catch(() => toast.error('No se pudo copiar el enlace'))
 
   return (
     <ViewSettingsMenu
@@ -85,21 +76,14 @@ export function PlatformViewSettings({
       <DropdownMenuItem onSelect={onOpenFilters}>
         <ListFilter className="size-4" />
         Filtros
-        {filterCount > 0 && (
-          <span className="ml-auto text-xs text-brand">{filterCount}</span>
-        )}
+        {filterCount > 0 && <span className="ml-auto text-xs text-brand">{filterCount}</span>}
       </DropdownMenuItem>
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <Layers className="size-4" />
           Agrupar
           <span className="ml-auto max-w-32 truncate text-xs text-muted-foreground">
-            {groupBy
-              .map(
-                (field) =>
-                  GROUP_OPTIONS.find((option) => option.value === field)?.label,
-              )
-              .join(" › ") || "Sin agrupar"}
+            {groupBy.map((field) => GROUP_OPTIONS.find((option) => option.value === field)?.label).join(' › ') || 'Sin agrupar'}
           </span>
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
@@ -116,13 +100,7 @@ export function PlatformViewSettings({
               key={value}
               checked={groupBy.includes(value)}
               onSelect={(event) => event.preventDefault()}
-              onCheckedChange={(checked) =>
-                onGroupByChange(
-                  checked
-                    ? [...groupBy, value]
-                    : groupBy.filter((item) => item !== value),
-                )
-              }
+              onCheckedChange={(checked) => onGroupByChange(checked ? [...groupBy, value] : groupBy.filter((item) => item !== value))}
             >
               {label}
             </DropdownMenuCheckboxItem>
@@ -134,16 +112,12 @@ export function PlatformViewSettings({
       <DropdownMenuItem disabled>
         <CalendarRange className="size-4" />
         Color condicional
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Próximamente
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Próximamente</span>
       </DropdownMenuItem>
       <DropdownMenuItem disabled>
         <Columns3 className="size-4" />
         Totales del pie
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Próximamente
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Próximamente</span>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem onSelect={copyViewLink}>
@@ -153,14 +127,12 @@ export function PlatformViewSettings({
       <DropdownMenuItem disabled>
         <RotateCcw className="size-4" />
         Guardar como nueva vista
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Próximamente
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Próximamente</span>
       </DropdownMenuItem>
       <DropdownMenuItem disabled={!canReset} onSelect={onReset}>
         <RotateCcw className="size-4" />
         Restablecer vista
       </DropdownMenuItem>
     </ViewSettingsMenu>
-  );
+  )
 }

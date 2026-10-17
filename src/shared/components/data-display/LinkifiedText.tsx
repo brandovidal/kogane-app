@@ -1,10 +1,10 @@
 export interface LinkifiedTextProps {
-  text: string;
+  text: string
 }
 
 // React escapes text; only explicit HTTP(S) links become anchors.
 export function LinkifiedText({ text }: LinkifiedTextProps) {
-  const parts = text.split(/(https?:\/\/[^\s<>"']*[^\s<>"'.,;:!?])/g);
+  const parts = text.split(/(https?:\/\/[^\s<>"']*[^\s<>"'.,;:!?])/g)
   return (
     <>
       {parts.map((part, index) =>
@@ -23,5 +23,5 @@ export function LinkifiedText({ text }: LinkifiedTextProps) {
         ),
       )}
     </>
-  );
+  )
 }

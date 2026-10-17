@@ -1,75 +1,54 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react'
 
-import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import {
-  NO_PAYMENT_STATUS_FILTER,
-  PAYMENT_STATUS_DOT_COLORS,
-  PAYMENT_STATUS_GROUPS,
-  PAYMENT_STATUS_LABELS,
-} from "@/shared/constants/finance";
+import { MultiSelect } from '@/shared/components/filters/MultiSelect'
+import { NO_PAYMENT_STATUS_FILTER, PAYMENT_STATUS_DOT_COLORS, PAYMENT_STATUS_GROUPS, PAYMENT_STATUS_LABELS } from '@/shared/constants/finance'
 
 export interface StatusFilterFieldsProps {
-  statuses?: readonly string[];
-  value?: string;
-  onChange: (value: string | undefined) => void;
-  label?: string;
-  allLabel?: string;
-  emptySelectionLabel?: string;
-  activeMarker?: boolean;
-  icon?: LucideIcon;
-  width?: string;
-  labelClassName?: string;
-  multiple?: boolean;
-  presentation?: "popover" | "inline" | "responsive-sheet";
+  statuses?: readonly string[]
+  value?: string
+  onChange: (value: string | undefined) => void
+  label?: string
+  allLabel?: string
+  emptySelectionLabel?: string
+  activeMarker?: boolean
+  icon?: LucideIcon
+  width?: string
+  labelClassName?: string
+  multiple?: boolean
+  presentation?: 'popover' | 'inline' | 'responsive-sheet'
 }
 
 export function StatusFilterFields({
   statuses = Object.keys(PAYMENT_STATUS_LABELS),
   value,
   onChange,
-  label = "Estado",
-  allLabel = "Todos los estados",
-  emptySelectionLabel = "Ninguno",
+  label = 'Estado',
+  allLabel = 'Todos los estados',
+  emptySelectionLabel = 'Ninguno',
   activeMarker = false,
   icon,
   width,
-  labelClassName = "text-sm font-medium",
+  labelClassName = 'text-sm font-medium',
   multiple = true,
-  presentation = "responsive-sheet",
+  presentation = 'responsive-sheet',
 }: StatusFilterFieldsProps) {
-  const groups = new Map<string, string>();
+  const groups = new Map<string, string>()
   for (const group of PAYMENT_STATUS_GROUPS) {
-    for (const status of group.statuses) groups.set(status, group.label);
+    for (const status of group.statuses) groups.set(status, group.label)
   }
 
   return (
     <MultiSelect
       label={label}
-      value={
-        value === NO_PAYMENT_STATUS_FILTER
-          ? []
-          : multiple
-            ? (value?.split(",").filter(Boolean) ?? null)
-            : value
-              ? [value]
-              : []
-      }
+      value={value === NO_PAYMENT_STATUS_FILTER ? [] : multiple ? (value?.split(',').filter(Boolean) ?? null) : value ? [value] : []}
       options={statuses.map((status) => ({
         value: status,
         label: PAYMENT_STATUS_LABELS[status] ?? status,
-        group: groups.get(status) ?? "Otros",
+        group: groups.get(status) ?? 'Otros',
         color: PAYMENT_STATUS_DOT_COLORS[status],
       }))}
       onChange={(next) =>
-        onChange(
-          !multiple
-            ? (next?.[0] ?? undefined)
-            : next === null
-              ? undefined
-              : next.length
-                ? next.join(",")
-                : NO_PAYMENT_STATUS_FILTER,
-        )
+        onChange(!multiple ? (next?.[0] ?? undefined) : next === null ? undefined : next.length ? next.join(',') : NO_PAYMENT_STATUS_FILTER)
       }
       allLabel={allLabel}
       emptySelectionLabel={emptySelectionLabel}
@@ -85,5 +64,5 @@ export function StatusFilterFields({
       showSelectionFooter={multiple}
       presentation={presentation}
     />
-  );
+  )
 }

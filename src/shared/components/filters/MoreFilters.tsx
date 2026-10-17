@@ -1,28 +1,19 @@
-import { useState, type ReactNode } from "react";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/ui/collapsible";
-import { Marker, MarkerContent, MarkerIcon } from "@/ui/marker";
-import { Badge } from "@/ui/badge";
-import { cn } from "@/shared/utils/cn";
+import { useState, type ReactNode } from 'react'
+import { ChevronDown, SlidersHorizontal } from 'lucide-react'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible'
+import { Marker, MarkerContent, MarkerIcon } from '@/ui/marker'
+import { Badge } from '@/ui/badge'
+import { cn } from '@/shared/utils/cn'
 
 export interface MoreFiltersProps {
-  activeCount?: number;
-  defaultOpen?: boolean;
-  activeCountDisplay?: "badge" | "inline";
-  children: ReactNode;
+  activeCount?: number
+  defaultOpen?: boolean
+  activeCountDisplay?: 'badge' | 'inline'
+  children: ReactNode
 }
 
-export function MoreFilters({
-  activeCount = 0,
-  defaultOpen = false,
-  activeCountDisplay = "badge",
-  children,
-}: MoreFiltersProps) {
-  const [open, setOpen] = useState(defaultOpen);
+export function MoreFilters({ activeCount = 0, defaultOpen = false, activeCountDisplay = 'badge', children }: MoreFiltersProps) {
+  const [open, setOpen] = useState(defaultOpen)
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
@@ -34,29 +25,20 @@ export function MoreFilters({
             <SlidersHorizontal />
           </MarkerIcon>
           <MarkerContent className="flex-1 text-foreground">
-            {open ? "Ver menos filtros" : "Ver más filtros"}
-            {activeCountDisplay === "inline" && activeCount > 0 && (
+            {open ? 'Ver menos filtros' : 'Ver más filtros'}
+            {activeCountDisplay === 'inline' && activeCount > 0 && (
               <span className="ml-2 text-sm font-normal text-brand">
-                · {activeCount} aplicado{activeCount === 1 ? "" : "s"}
+                · {activeCount} aplicado{activeCount === 1 ? '' : 's'}
               </span>
             )}
           </MarkerContent>
-          {activeCountDisplay === "badge" && activeCount > 0 && (
-            <Badge
-              variant="secondary"
-              className="shrink-0 text-xs tabular-nums"
-              aria-label={`${activeCount} filtros adicionales activos`}
-            >
+          {activeCountDisplay === 'badge' && activeCount > 0 && (
+            <Badge variant="secondary" className="shrink-0 text-xs tabular-nums" aria-label={`${activeCount} filtros adicionales activos`}>
               {activeCount} activos
             </Badge>
           )}
           <MarkerIcon>
-            <ChevronDown
-              className={cn(
-                "size-4 transition-transform motion-reduce:transition-none",
-                open && "rotate-180",
-              )}
-            />
+            <ChevronDown className={cn('size-4 transition-transform motion-reduce:transition-none', open && 'rotate-180')} />
           </MarkerIcon>
         </Marker>
       </CollapsibleTrigger>
@@ -64,5 +46,5 @@ export function MoreFilters({
         <div className="pt-2">{children}</div>
       </CollapsibleContent>
     </Collapsible>
-  );
+  )
 }

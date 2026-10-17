@@ -1,25 +1,23 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import type { Column } from "@/shared/types/data-view";
-import { DATA_TABLE_SELECTION_COLUMN } from "@/shared/constants/data-table";
-import { Checkbox } from "@/ui/checkbox";
+import type { ColumnDef } from '@tanstack/react-table'
+import type { Column } from '@/shared/types/data-view'
+import { DATA_TABLE_SELECTION_COLUMN } from '@/shared/constants/data-table'
+import { Checkbox } from '@/ui/checkbox'
 
-/** Bridges the existing table/card definitions to TanStack without duplicating cells. */
 export function toDataTableColumns<T>(columns: Column<T>[]): ColumnDef<T>[] {
   return columns.map((column) => ({
     id: column.key,
-    header: column.role === "actions" ? "" : column.header,
+    header: column.role === 'actions' ? '' : column.header,
     accessorFn: column.accessor,
     cell: ({ row }) => column.cell(row.original),
     enableSorting: !!column.accessor,
-    enableHiding:
-      column.hideable ?? (column.role !== "title" && column.role !== "actions"),
+    enableHiding: column.hideable ?? (column.role !== 'title' && column.role !== 'actions'),
     meta: {
       label: column.header,
       className: column.className,
       calculationType: column.calculationType,
       formatCalculation: column.formatCalculation,
     },
-  }));
+  }))
 }
 
 export function selectionColumn<T>(): ColumnDef<T> {
@@ -27,24 +25,13 @@ export function selectionColumn<T>(): ColumnDef<T> {
     id: DATA_TABLE_SELECTION_COLUMN,
     enableHiding: false,
     enableSorting: false,
-    meta: { className: "w-10" },
+    meta: { className: 'w-10' },
     header: ({ table }) => (
       <Checkbox
         aria-label="Seleccionar todos los registros de esta página"
-        checked={
-          table.getIsAllPageRowsSelected()
-            ? true
-            : table.getIsSomePageRowsSelected()
-              ? "indeterminate"
-              : false
-        }
-        disabled={
-          !table.getRowModel().rows.length ||
-          !table.getRowModel().rows.some((row) => row.getCanSelect())
-        }
-        onCheckedChange={(checked) =>
-          table.toggleAllPageRowsSelected(checked === true)
-        }
+        checked={table.getIsAllPageRowsSelected() ? true : table.getIsSomePageRowsSelected() ? 'indeterminate' : false}
+        disabled={!table.getRowModel().rows.length || !table.getRowModel().rows.some((row) => row.getCanSelect())}
+        onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked === true)}
       />
     ),
     cell: ({ row }) => (
@@ -55,5 +42,5 @@ export function selectionColumn<T>(): ColumnDef<T> {
         onCheckedChange={(checked) => row.toggleSelected(checked === true)}
       />
     ),
-  };
+  }
 }

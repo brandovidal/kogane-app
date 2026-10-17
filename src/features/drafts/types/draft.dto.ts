@@ -1,4 +1,4 @@
-import type { Schemas } from "@/shared/api/client";
+import type { Schemas } from '@/shared/api/client'
 
-export type DraftTab = "review" | "failed" | "discarded";
-export type DraftFieldsDto = Schemas["DraftFieldsDto"];
+export type DraftTab = 'review' | 'failed' | 'discarded'
+export type DraftFieldsDto = Schemas['DraftFieldsDto']

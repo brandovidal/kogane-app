@@ -1,11 +1,11 @@
 ---
-import "@/styles/app-gradient.css";
+import '@/styles/app-gradient.css'
 
 interface Props {
-  title?: string;
+  title?: string
 }
 
-const { title = "Kogane" } = Astro.props;
+const { title = 'Kogane' } = Astro.props
 ---
 
 <!doctype html>
@@ -14,21 +14,18 @@ const { title = "Kogane" } = Astro.props;
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="/kogane.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="App de seguimiento de gastos personales"
-    />
+    <meta name="description" content="App de seguimiento de gastos personales" />
     <title>{title === "Kogane" ? title : `${title} · Kogane`}</title>
   </head>
   <body class="min-h-screen antialiased">
     <slot />
     <script>
-      import { themeStore } from "@/shared/stores/theme.store";
-      themeStore.getState().initTheme();
+      import { themeStore } from '@/shared/stores/theme.store'
+      themeStore.getState().initTheme()
     </script>
   </body>
 </html>
 
 <style is:global>
-  @import "../styles/globals.css";
+  @import '../styles/globals.css';
 </style>

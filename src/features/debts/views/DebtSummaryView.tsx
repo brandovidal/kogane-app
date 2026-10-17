@@ -1,51 +1,35 @@
-import { useState } from "react";
-import { PeriodStatusNotice } from "@/shared/components/data-display/PeriodStatusNotice";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { Button } from "@/ui/button";
-import { Card, CardContent } from "@/ui/card";
-import { useViewMode } from "@/shared/hooks/useViewMode";
-import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
-import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { useDebtSummaryData } from "../hooks/useDebtSummaryData";
-import { usePersonSummaries } from "../hooks/personSummaries";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import {
-  DEBT_FILTER_KEYS,
-  type DebtFilterValues,
-} from "@/features/debts/lib/debt-filters";
-import {
-  ActiveDebtFilterChips,
-  DebtFilterSheet,
-  DebtReportLinks as ReportLinks,
-} from "../sections/DebtListControls";
-import { DebtMovementTypeSheet } from "../sections/DebtMovementTypeSheet";
-import { StatementMinimumSection } from "../sections/StatementMinimumSection";
-import { PersonDebtSummaryCardList } from "../sections/PersonDebtSummaryCardList";
-import { DebtSummaryMenu } from "../sections/DebtSummaryMenu";
-import { DebtSummaryMonthlyTable } from "../sections/DebtSummaryMonthlyTable";
-import { CardMinimumCoverageSection } from "../sections/CardMinimumCoverageSection";
+import { useState } from 'react'
+import { PeriodStatusNotice } from '@/shared/components/data-display/PeriodStatusNotice'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { Button } from '@/ui/button'
+import { Card, CardContent } from '@/ui/card'
+import { useViewMode } from '@/shared/hooks/useViewMode'
+import { ViewToggle } from '@/shared/components/data-display/ViewToggle'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { useDebtSummaryData } from '../hooks/useDebtSummaryData'
+import { usePersonSummaries } from '../hooks/personSummaries'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
+import { DEBT_FILTER_KEYS, type DebtFilterValues } from '@/features/debts/lib/debt-filters'
+import { ActiveDebtFilterChips, DebtFilterSheet, DebtReportLinks as ReportLinks } from '../sections/DebtListControls'
+import { DebtMovementTypeSheet } from '../sections/DebtMovementTypeSheet'
+import { StatementMinimumSection } from '../sections/StatementMinimumSection'
+import { PersonDebtSummaryCardList } from '../sections/PersonDebtSummaryCardList'
+import { DebtSummaryMenu } from '../sections/DebtSummaryMenu'
+import { DebtSummaryMonthlyTable } from '../sections/DebtSummaryMonthlyTable'
+import { CardMinimumCoverageSection } from '../sections/CardMinimumCoverageSection'
 
-export function DebtSummaryView({
-  month,
-  year,
-}: {
-  month: number;
-  year: number;
-}) {
+export function DebtSummaryView({ month, year }: { month: number; year: number }) {
   const defaults: DebtFilterValues = {
     month: String(month),
     year: String(year),
-  };
-  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(
-    DEBT_FILTER_KEYS,
-    defaults,
-  );
-  const [view, setView] = useViewMode("debt-summary", "cards");
-  const [summaryView, setSummaryView] = useState("consolidated");
-  const [showCollections, setShowCollections] = useState(true);
-  const [showDebts, setShowDebts] = useState(true);
+  }
+  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS, defaults)
+  const [view, setView] = useViewMode('debt-summary', 'cards')
+  const [summaryView, setSummaryView] = useState('consolidated')
+  const [showCollections, setShowCollections] = useState(true)
+  const [showDebts, setShowDebts] = useState(true)
   const summary = useDebtSummaryData({
     month,
     year,
@@ -53,18 +37,12 @@ export function DebtSummaryView({
     summaryView,
     showCollections,
     showDebts,
-  });
-  const personSummaries = usePersonSummaries(
-    summary.selectedMonth,
-    summary.selectedYear,
-  );
-  const summariesByPerson = new Map(
-    (personSummaries.data ?? []).map((item) => [item.personId, item]),
-  );
-  const periodMonth =
-    filters.month && filters.month !== "until" ? Number(filters.month) : null;
-  const periodYear = Number(filters.year ?? year);
-  if (summary.isLoading) return null;
+  })
+  const personSummaries = usePersonSummaries(summary.selectedMonth, summary.selectedYear)
+  const summariesByPerson = new Map((personSummaries.data ?? []).map((item) => [item.personId, item]))
+  const periodMonth = filters.month && filters.month !== 'until' ? Number(filters.month) : null
+  const periodYear = Number(filters.year ?? year)
+  if (summary.isLoading) return null
   const {
     paymentMethods,
     cardNames,
@@ -85,7 +63,7 @@ export function DebtSummaryView({
     byMonth,
     totalToPay,
     netTotal,
-  } = summary;
+  } = summary
 
   return (
     <div className="space-y-4">
@@ -109,8 +87,8 @@ export function DebtSummaryView({
           onCollectionsChange={setShowCollections}
           onDebtsChange={setShowDebts}
           onReset={() => {
-            setShowCollections(true);
-            setShowDebts(true);
+            setShowCollections(true)
+            setShowDebts(true)
           }}
         />
         <ReportLinks filter={reportFilter} />
@@ -132,8 +110,8 @@ export function DebtSummaryView({
               showCollections,
               showDebts,
               onReset: () => {
-                setShowCollections(true);
-                setShowDebts(true);
+                setShowCollections(true)
+                setShowDebts(true)
               },
             },
           }}
@@ -165,32 +143,22 @@ export function DebtSummaryView({
         <div className="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap rounded-md border border-primary/25 bg-primary/5 px-3 py-2 text-sm">
           {showCollections && (
             <span>
-              <span className="text-muted-foreground">Cobros</span>{" "}
-              <strong className="font-semibold tabular-nums text-amber-300">
-                {formatCurrency(totalToCollect)}
-              </strong>
+              <span className="text-muted-foreground">Cobros</span>{' '}
+              <strong className="font-semibold tabular-nums text-amber-300">{formatCurrency(totalToCollect)}</strong>
             </span>
           )}
           <span>
-            <span className="text-muted-foreground">Lo que debo</span>{" "}
-            <strong className="font-medium tabular-nums text-muted-foreground">
-              {formatCurrency(totalToPay)}
-            </strong>
+            <span className="text-muted-foreground">Lo que debo</span>{' '}
+            <strong className="font-medium tabular-nums text-muted-foreground">{formatCurrency(totalToPay)}</strong>
           </span>
           <span className="font-semibold text-primary">
-            {netTotal > 0 ? "Por cobrar" : netTotal < 0 ? "Por pagar" : "Saldo"}{" "}
-            {formatCurrency(Math.abs(netTotal))}
+            {netTotal > 0 ? 'Por cobrar' : netTotal < 0 ? 'Por pagar' : 'Saldo'} {formatCurrency(Math.abs(netTotal))}
           </span>
         </div>
       )}
-      {(!groups.length && !creditCards.length) ||
-      (!showCollections && !showDebts) ? (
+      {(!groups.length && !creditCards.length) || (!showCollections && !showDebts) ? (
         !showCollections && !showDebts ? (
-          <EmptyState
-            variant="filters"
-            title="Nada que mostrar"
-            description="Activa Cobros (+), Deudas (−) o ambos en los filtros."
-          />
+          <EmptyState variant="filters" title="Nada que mostrar" description="Activa Cobros (+), Deudas (−) o ambos en los filtros." />
         ) : (
           <EmptyState
             variant="period"
@@ -209,39 +177,27 @@ export function DebtSummaryView({
           />
         )
       ) : (
-        <Tabs
-          value={summaryView}
-          onValueChange={setSummaryView}
-          className="w-full"
-        >
+        <Tabs value={summaryView} onValueChange={setSummaryView} className="w-full">
           <TabsList className="w-full justify-start sm:w-auto">
             <TabsTrigger value="consolidated">Consolidado</TabsTrigger>
-            <TabsTrigger
-              value="minimum"
-              className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary"
-            >
+            <TabsTrigger value="minimum" className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
               Tarjeta (pago mínimo)
             </TabsTrigger>
           </TabsList>
           <TabsContent value={summaryView} className="mt-4 space-y-3">
-            {summaryView === "minimum" ? (
+            {summaryView === 'minimum' ? (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Estados de cuenta y pagos mínimos de tus tarjetas.
-                </p>
+                <p className="text-sm text-muted-foreground">Estados de cuenta y pagos mínimos de tus tarjetas.</p>
                 {!showCollections ? (
                   <Card>
                     <CardContent className="p-4 text-sm text-muted-foreground">
-                      El filtro está mostrando solo deudas. El pago mínimo
-                      corresponde a cobros del estado de cuenta; selecciona
-                      Cobros (+) para verlo.
+                      El filtro está mostrando solo deudas. El pago mínimo corresponde a cobros del estado de cuenta; selecciona Cobros (+) para
+                      verlo.
                     </CardContent>
                   </Card>
                 ) : (
                   <StatementMinimumSection
-                    cards={creditCards.filter((_, index) =>
-                      Boolean(statementChecks[index]?.data?.statementId),
-                    )}
+                    cards={creditCards.filter((_, index) => Boolean(statementChecks[index]?.data?.statementId))}
                     isLoading={statementChecks.some((check) => check.isLoading)}
                     hasCreditCards={creditCards.length > 0}
                     month={selectedMonth}
@@ -251,7 +207,7 @@ export function DebtSummaryView({
               </div>
             ) : (
               <>
-                {view === "cards" ? (
+                {view === 'cards' ? (
                   <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3">
                     <PersonDebtSummaryCardList
                       groups={visibleGroups}
@@ -270,29 +226,18 @@ export function DebtSummaryView({
                 ) : (
                   <DebtSummaryMonthlyTable
                     rows={byMonth}
-                    recordCount={
-                      shown.length +
-                      (summaryView === "consolidated"
-                        ? personalExpenses.length
-                        : 0)
-                    }
+                    recordCount={shown.length + (summaryView === 'consolidated' ? personalExpenses.length : 0)}
                     totalToCollect={totalToCollect}
                     totalToPay={totalToPay}
                     netTotal={netTotal}
                   />
                 )}
-                {showCollections && (
-                  <CardMinimumCoverageSection
-                    items={minimumCoverage}
-                    month={selectedMonth}
-                    year={selectedYear}
-                  />
-                )}
+                {showCollections && <CardMinimumCoverageSection items={minimumCoverage} month={selectedMonth} year={selectedYear} />}
               </>
             )}
           </TabsContent>
         </Tabs>
       )}
     </div>
-  );
+  )
 }

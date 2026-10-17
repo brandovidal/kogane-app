@@ -1,0 +1,8 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import { SettingsPage } from '@/features/settings/pages/SettingsPage'
+---
+
+<DashboardLayout title="Débito y billeteras">
+  <SettingsPage section="cuentas-tarjetas" tab="debito" client:load />
+</DashboardLayout>

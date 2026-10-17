@@ -1,1 +1,1 @@
-export type { DraftFormSectionProps } from "./draft-form";
+export type { DraftFormSectionProps } from './draft-form'

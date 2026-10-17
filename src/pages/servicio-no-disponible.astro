@@ -1,31 +1,19 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout from '@/layouts/Layout.astro'
 
-export const prerender = true;
+export const prerender = true
 ---
 
 <Layout title="Servicio no disponible">
   <main class="recovery-shell">
     <section class="recovery-card" aria-labelledby="recovery-title">
-      <img
-        class="brand-mark"
-        src="/kogane.webp"
-        alt="Kogane"
-        width="62"
-        height="62"
-      />
+      <img class="brand-mark" src="/kogane.webp" alt="Kogane" width="62" height="62" />
       <p class="eyebrow">
         <span class="status-dot"></span> Conexión interrumpida
       </p>
       <h1 id="recovery-title">No pudimos conectar con Kogane</h1>
-      <p class="description">
-        La API está temporalmente fuera de servicio. Vuelve a cargar la vista en
-        unos momentos.
-      </p>
-      <p class="notice">
-        Si estabas enviando un formulario, es posible que el cambio no se haya
-        guardado.
-      </p>
+      <p class="description">La API está temporalmente fuera de servicio. Vuelve a cargar la vista en unos momentos.</p>
+      <p class="notice">Si estabas enviando un formulario, es posible que el cambio no se haya guardado.</p>
       <form id="reload-form" class="actions">
         <button id="reload-view" class="primary-action" type="submit">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -38,9 +26,7 @@ export const prerender = true;
           Ir al inicio
         </a>
       </form>
-      <p class="help-text">
-        Si el problema continúa, inténtalo de nuevo más tarde.
-      </p>
+      <p class="help-text">Si el problema continúa, inténtalo de nuevo más tarde.</p>
     </section>
     <footer class="recovery-footer">Kogane · Finanzas personales</footer>
   </main>
@@ -54,7 +40,7 @@ export const prerender = true;
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
-        "Segoe UI",
+        'Segoe UI',
         sans-serif;
     }
     *,
@@ -73,13 +59,7 @@ export const prerender = true;
       display: grid;
       place-items: center;
       padding: 28px 20px 48px;
-      background:
-        radial-gradient(
-          ellipse at 50% 0%,
-          rgba(59, 130, 246, 0.09),
-          transparent 55%
-        ),
-        #f4f5f7;
+      background: radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.09), transparent 55%), #f4f5f7;
     }
     .recovery-card {
       width: min(100%, 480px);
@@ -210,13 +190,7 @@ export const prerender = true;
       color: #fafafa;
     }
     :root.dark .recovery-shell {
-      background:
-        radial-gradient(
-          ellipse at 50% 0%,
-          rgba(59, 130, 246, 0.14),
-          transparent 55%
-        ),
-        #09090b;
+      background: radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.14), transparent 55%), #09090b;
     }
     :root.dark .recovery-card {
       border-color: #27272a;
@@ -252,24 +226,17 @@ export const prerender = true;
   </style>
 
   <script>
-    const form = document.querySelector<HTMLFormElement>("#reload-form");
-    const button = document.querySelector<HTMLButtonElement>("#reload-view");
-    const buttonLabel = button?.querySelector("span");
-    form?.addEventListener("submit", (event) => {
-      event.preventDefault();
-      if (button) button.disabled = true;
-      if (buttonLabel) buttonLabel.textContent = "Recargando…";
-      const requested = new URL(window.location.href).searchParams.get(
-        "returnTo",
-      );
-      const destination = requested
-        ? new URL(requested, window.location.origin)
-        : null;
-      const safePath =
-        destination?.origin === window.location.origin
-          ? `${destination.pathname}${destination.search}${destination.hash}`
-          : "/";
-      window.location.assign(safePath);
-    });
+    const form = document.querySelector<HTMLFormElement>('#reload-form')
+    const button = document.querySelector<HTMLButtonElement>('#reload-view')
+    const buttonLabel = button?.querySelector('span')
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault()
+      if (button) button.disabled = true
+      if (buttonLabel) buttonLabel.textContent = 'Recargando…'
+      const requested = new URL(window.location.href).searchParams.get('returnTo')
+      const destination = requested ? new URL(requested, window.location.origin) : null
+      const safePath = destination?.origin === window.location.origin ? `${destination.pathname}${destination.search}${destination.hash}` : '/'
+      window.location.assign(safePath)
+    })
   </script>
 </Layout>

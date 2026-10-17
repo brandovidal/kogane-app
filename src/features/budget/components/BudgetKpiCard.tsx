@@ -1,6 +1,6 @@
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
-import { Card, CardContent } from "@/ui/card";
+import type { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { Card, CardContent } from '@/ui/card'
 
 export function BudgetKpiCard({
   label,
@@ -9,11 +9,11 @@ export function BudgetKpiCard({
   icon: Icon,
   children,
 }: {
-  label: string;
-  value: string;
-  hint?: ReactNode;
-  icon: LucideIcon;
-  children?: ReactNode;
+  label: string
+  value: string
+  hint?: ReactNode
+  icon: LucideIcon
+  children?: ReactNode
 }) {
   return (
     <Card className="py-3">
@@ -27,5 +27,5 @@ export function BudgetKpiCard({
         {children}
       </CardContent>
     </Card>
-  );
+  )
 }

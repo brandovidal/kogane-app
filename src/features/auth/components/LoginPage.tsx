@@ -1,150 +1,113 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  ArrowUpRight,
-  Copy,
-  Dices,
-  KeyRound,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight, Copy, Dices, KeyRound, ShieldCheck, Sparkles } from 'lucide-react'
 
-import { googleSignInUrl } from "@/features/auth/services/google.service";
-import {
-  useAcceptInvite,
-  useAuthConfig,
-  useInvitePreview,
-  useLogin,
-} from "@/features/auth/hooks/auth";
-import {
-  ForgotPasswordPanel,
-  ResetPasswordForm,
-} from "@/features/auth/components/PasswordRecovery";
-import { withQuery } from "@/shared/api/query";
-import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
-import { safeReturnPath } from "@/shared/lib/auth-redirect";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Input } from "@/ui/input";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
+import { googleSignInUrl } from '@/features/auth/services/google.service'
+import { useAcceptInvite, useAuthConfig, useInvitePreview, useLogin } from '@/features/auth/hooks/auth'
+import { ForgotPasswordPanel, ResetPasswordForm } from '@/features/auth/components/PasswordRecovery'
+import { withQuery } from '@/shared/api/query'
+import { errorMessage } from '@/shared/api/hooks/use-api-mutation'
+import { safeReturnPath } from '@/shared/lib/auth-redirect'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Input } from '@/ui/input'
+import { PasswordInput } from '@/shared/components/forms/PasswordInput'
 
 const ERRORS: Record<string, string> = {
-  no_invitado:
-    "Esa cuenta de Google no tiene invitación. Pídele una a un administrador.",
-  desactivado: "Esta cuenta está desactivada.",
-  google: "No se pudo entrar con Google. Intenta de nuevo.",
-};
+  no_invitado: 'Esa cuenta de Google no tiene invitación. Pídele una a un administrador.',
+  desactivado: 'Esta cuenta está desactivada.',
+  google: 'No se pudo entrar con Google. Intenta de nuevo.',
+}
 
 function params() {
-  const query = new URLSearchParams(window.location.search);
+  const query = new URLSearchParams(window.location.search)
   return {
-    invite: query.get("invitacion"),
-    resetToken: query.get("restablecer"),
-    error: query.get("error"),
-    returnTo: safeReturnPath(query.get("volver")),
-  };
+    invite: query.get('invitacion'),
+    resetToken: query.get('restablecer'),
+    error: query.get('error'),
+    returnTo: safeReturnPath(query.get('volver')),
+  }
 }
 
 function generatePassword() {
-  const alphabet =
-    "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%*-_";
-  const bytes = window.crypto.getRandomValues(new Uint8Array(20));
-  return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join("");
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%*-_'
+  const bytes = window.crypto.getRandomValues(new Uint8Array(20))
+  return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('')
 }
 
 // Entrar (P23, D83): email or mobile + password, or Google. Nobody registers alone: the way in is an invitation link
 // (?invitacion=…), which proves the email, or an admin who registered the email (Google then recognises it)
 function LoginPageView() {
   // The address is read after hydration: the page is static
-  const [url, setUrl] = useState<ReturnType<typeof params> | null>(null);
-  useEffect(() => setUrl(params()), []);
+  const [url, setUrl] = useState<ReturnType<typeof params> | null>(null)
+  useEffect(() => setUrl(params()), [])
 
-  const config = useAuthConfig().data;
-  const preview = useInvitePreview(url?.invite ?? null);
-  const login = useLogin();
-  const acceptInvite = useAcceptInvite();
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [generatedPassword, setGeneratedPassword] = useState(false);
-  const [copiedPassword, setCopiedPassword] = useState(false);
-  const [name, setName] = useState("");
-  const [googleError, setGoogleError] = useState<string | null>(null);
-  const generatedInvite = useRef(false);
+  const config = useAuthConfig().data
+  const preview = useInvitePreview(url?.invite ?? null)
+  const login = useLogin()
+  const acceptInvite = useAcceptInvite()
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [generatedPassword, setGeneratedPassword] = useState(false)
+  const [copiedPassword, setCopiedPassword] = useState(false)
+  const [name, setName] = useState('')
+  const [googleError, setGoogleError] = useState<string | null>(null)
+  const generatedInvite = useRef(false)
 
-  const invite = url?.invite ?? null;
-  const resetToken = url?.resetToken ?? null;
-  const returnTo = url?.returnTo ?? "/";
-  const done = () => window.location.replace(returnTo);
-  const error =
-    googleError ?? (url?.error ? (ERRORS[url.error] ?? ERRORS.google) : null);
+  const invite = url?.invite ?? null
+  const resetToken = url?.resetToken ?? null
+  const returnTo = url?.returnTo ?? '/'
+  const done = () => window.location.replace(returnTo)
+  const error = googleError ?? (url?.error ? (ERRORS[url.error] ?? ERRORS.google) : null)
 
   const google = async () => {
     try {
-      window.location.assign(await googleSignInUrl(returnTo, invite));
+      window.location.assign(await googleSignInUrl(returnTo, invite))
     } catch (caught) {
-      setGoogleError(errorMessage(caught));
+      setGoogleError(errorMessage(caught))
     }
-  };
+  }
 
-  const invalidInvite = Boolean(
-    url && invite && !resetToken && preview.isError,
-  );
-  const inviteEmail =
-    invite && !resetToken && preview.data ? preview.data.email : null;
+  const invalidInvite = Boolean(url && invite && !resetToken && preview.isError)
+  const inviteEmail = invite && !resetToken && preview.data ? preview.data.email : null
 
   useEffect(() => {
-    if (!inviteEmail || generatedInvite.current) return;
-    generatedInvite.current = true;
-    setPassword(generatePassword());
-    setGeneratedPassword(true);
-    setShowPassword(true);
-  }, [inviteEmail]);
+    if (!inviteEmail || generatedInvite.current) return
+    generatedInvite.current = true
+    setPassword(generatePassword())
+    setGeneratedPassword(true)
+    setShowPassword(true)
+  }, [inviteEmail])
 
   const generateInvitePassword = () => {
-    setPassword(generatePassword());
-    setGeneratedPassword(true);
-    setShowPassword(true);
-    setCopiedPassword(false);
-  };
+    setPassword(generatePassword())
+    setGeneratedPassword(true)
+    setShowPassword(true)
+    setCopiedPassword(false)
+  }
 
-  if (!url) return null;
+  if (!url) return null
 
   return (
     <main className="app-gradient app-gradient--dark relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 text-white sm:px-8">
       <div className="relative grid w-full max-w-5xl overflow-hidden rounded-[28px] border border-white/10 bg-[#101114]/95 shadow-2xl shadow-black/50 lg:min-h-[640px] lg:grid-cols-[1.05fr_0.95fr]">
         <section className="relative hidden flex-col justify-between overflow-hidden border-r border-white/10 bg-[#111318] p-10 lg:flex">
-          <div
-            aria-hidden="true"
-            className="absolute -right-24 top-28 h-80 w-80 rounded-full border border-white/[0.06]"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute -right-12 top-40 h-56 w-56 rounded-full border border-white/[0.08]"
-          />
+          <div aria-hidden="true" className="absolute -right-24 top-28 h-80 w-80 rounded-full border border-white/[0.06]" />
+          <div aria-hidden="true" className="absolute -right-12 top-40 h-56 w-56 rounded-full border border-white/[0.08]" />
           <div className="relative flex items-center gap-3">
-            <img
-              src="/kogane.webp"
-              alt=""
-              width={44}
-              height={44}
-              className="rounded-xl bg-white p-1"
-            />
+            <img src="/kogane.webp" alt="" width={44} height={44} className="rounded-xl bg-white p-1" />
             <span className="text-lg font-semibold tracking-tight">Kogane</span>
           </div>
           <div className="relative max-w-md">
             <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
               <Sparkles className="h-5 w-5" />
             </div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-primary/80">
-              Tu espacio financiero
-            </p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-primary/80">Tu espacio financiero</p>
             <h1 className="text-4xl font-semibold leading-tight tracking-tight">
-              Todo tu dinero,{" "}
-              <span className="text-white/50">con más claridad.</span>
+              Todo tu dinero, <span className="text-white/50">con más claridad.</span>
             </h1>
             <p className="mt-5 max-w-sm text-sm leading-6 text-white/55">
-              Organiza gastos, tarjetas y pagos en un solo lugar. Entra de forma
-              segura para continuar.
+              Organiza gastos, tarjetas y pagos en un solo lugar. Entra de forma segura para continuar.
             </p>
           </div>
           <div className="relative flex items-center gap-2 text-xs text-white/45">
@@ -156,49 +119,31 @@ function LoginPageView() {
         <section className="flex items-center justify-center p-6 sm:p-10 lg:p-12">
           <div className="w-full max-w-sm">
             <div className="mb-8 flex items-center gap-3 lg:hidden">
-              <img
-                src="/kogane.webp"
-                alt="Kogane"
-                width={42}
-                height={42}
-                className="rounded-xl bg-white p-1"
-              />
+              <img src="/kogane.webp" alt="Kogane" width={42} height={42} className="rounded-xl bg-white p-1" />
               <span className="text-lg font-semibold">Kogane</span>
             </div>
             <Card className="border-0 bg-transparent text-white shadow-none">
               <CardHeader className="space-y-2 p-0 pb-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">
-                  Bienvenido
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">Bienvenido</p>
                 <CardTitle className="text-3xl font-semibold tracking-tight">
-                  {resetToken
-                    ? "Elige otra contraseña"
-                    : inviteEmail
-                      ? "Te invitaron a Kogane"
-                      : "Entrar a Kogane"}
+                  {resetToken ? 'Elige otra contraseña' : inviteEmail ? 'Te invitaron a Kogane' : 'Entrar a Kogane'}
                 </CardTitle>
                 <p className="text-sm leading-6 text-white/55">
                   {resetToken
-                    ? "El enlace vence a los 60 minutos y solo sirve una vez."
+                    ? 'El enlace vence a los 60 minutos y solo sirve una vez.'
                     : inviteEmail
                       ? `Completa tu acceso para ${inviteEmail}.`
-                      : "Ingresa a tu cuenta para ver tus finanzas."}
+                      : 'Ingresa a tu cuenta para ver tus finanzas.'}
                 </p>
               </CardHeader>
               <CardContent className="space-y-5 p-0">
                 {error && (
-                  <p
-                    role="alert"
-                    className="rounded-md bg-destructive/10 p-2 text-sm text-destructive"
-                  >
+                  <p role="alert" className="rounded-md bg-destructive/10 p-2 text-sm text-destructive">
                     {error}
                   </p>
                 )}
                 {invalidInvite && (
-                  <p
-                    role="alert"
-                    className="rounded-md bg-destructive/10 p-2 text-sm text-destructive"
-                  >
+                  <p role="alert" className="rounded-md bg-destructive/10 p-2 text-sm text-destructive">
                     La invitación venció o ya se usó: pide otra.
                   </p>
                 )}
@@ -211,30 +156,13 @@ function LoginPageView() {
                     onClick={google}
                     disabled={!config?.google}
                   >
-                    <svg
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                      className="mr-2 h-[18px] w-[18px]"
-                    >
-                      <path
-                        fill="#FFC107"
-                        d="M43.6 20.5H42V20H24v8h11.3A12 12 0 1 1 32 15.1l5.7-5.7A20 20 0 1 0 44 24c0-1.2-.1-2.3-.4-3.5Z"
-                      />
-                      <path
-                        fill="#FF3D00"
-                        d="m6.3 14.7 6.6 4.8A12 12 0 0 1 32 15.1l5.7-5.7A20 20 0 0 0 6.3 14.7Z"
-                      />
-                      <path
-                        fill="#4CAF50"
-                        d="M24 44a20 20 0 0 0 13.5-5.3l-6.2-5.2A12 12 0 0 1 12.8 28l-6.5 5A20 20 0 0 0 24 44Z"
-                      />
-                      <path
-                        fill="#1976D2"
-                        d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.2A20 20 0 0 0 44 24c0-1.2-.1-2.3-.4-3.5Z"
-                      />
+                    <svg viewBox="0 0 48 48" aria-hidden="true" className="mr-2 h-[18px] w-[18px]">
+                      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3A12 12 0 1 1 32 15.1l5.7-5.7A20 20 0 1 0 44 24c0-1.2-.1-2.3-.4-3.5Z" />
+                      <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8A12 12 0 0 1 32 15.1l5.7-5.7A20 20 0 0 0 6.3 14.7Z" />
+                      <path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.5-5.3l-6.2-5.2A12 12 0 0 1 12.8 28l-6.5 5A20 20 0 0 0 24 44Z" />
+                      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.2A20 20 0 0 0 44 24c0-1.2-.1-2.3-.4-3.5Z" />
                     </svg>
-                    Iniciar sesión con Google{" "}
-                    <ArrowUpRight className="ml-auto h-4 w-4 text-white/45" />
+                    Iniciar sesión con Google <ArrowUpRight className="ml-auto h-4 w-4 text-white/45" />
                   </Button>
                 )}
                 {!invalidInvite && !resetToken && (
@@ -244,21 +172,16 @@ function LoginPageView() {
                   </div>
                 )}
                 {config && !config.google && !invalidInvite && !resetToken && (
-                  <p className="-mt-3 text-center text-xs text-amber-200/75">
-                    Próximamente disponible el inicio de sesión con Google
-                  </p>
+                  <p className="-mt-3 text-center text-xs text-amber-200/75">Próximamente disponible el inicio de sesión con Google</p>
                 )}
 
                 {resetToken ? (
-                  <ResetPasswordForm
-                    token={resetToken}
-                    onDone={() => window.location.replace("/entrar")}
-                  />
+                  <ResetPasswordForm token={resetToken} onDone={() => window.location.replace('/entrar')} />
                 ) : inviteEmail ? (
                   <form
                     className="space-y-3"
                     onSubmit={(event) => {
-                      event.preventDefault();
+                      event.preventDefault()
                       acceptInvite.mutate(
                         {
                           token: invite!,
@@ -266,7 +189,7 @@ function LoginPageView() {
                           password,
                         },
                         { onSuccess: done },
-                      );
+                      )
                     }}
                   >
                     <Input
@@ -287,9 +210,9 @@ function LoginPageView() {
                         visible={showPassword}
                         onVisibleChange={setShowPassword}
                         onChange={(e) => {
-                          setPassword(e.target.value);
-                          setGeneratedPassword(false);
-                          setCopiedPassword(false);
+                          setPassword(e.target.value)
+                          setGeneratedPassword(false)
+                          setCopiedPassword(false)
                         }}
                       />
                       <Button
@@ -312,10 +235,10 @@ function LoginPageView() {
                           void navigator.clipboard
                             .writeText(password)
                             .then(() => setCopiedPassword(true))
-                            .catch(() => setCopiedPassword(false));
+                            .catch(() => setCopiedPassword(false))
                         }}
                         aria-label="Copiar contraseña"
-                        title={copiedPassword ? "Copiada" : "Copiar contraseña"}
+                        title={copiedPassword ? 'Copiada' : 'Copiar contraseña'}
                         disabled={!password}
                       >
                         <Copy className="h-4 w-4" />
@@ -323,8 +246,8 @@ function LoginPageView() {
                     </div>
                     <p className="text-xs leading-5 text-white/45">
                       {generatedPassword
-                        ? "Generamos una contraseña segura. Cópiala y guárdala; se activará al crear tu acceso."
-                        : "La contraseña se activará al crear tu acceso."}
+                        ? 'Generamos una contraseña segura. Cópiala y guárdala; se activará al crear tu acceso.'
+                        : 'La contraseña se activará al crear tu acceso.'}
                     </p>
                     <Button
                       type="submit"
@@ -338,11 +261,8 @@ function LoginPageView() {
                   <form
                     className="space-y-3"
                     onSubmit={(event) => {
-                      event.preventDefault();
-                      login.mutate(
-                        { identifier: identifier.trim(), password },
-                        { onSuccess: done },
-                      );
+                      event.preventDefault()
+                      login.mutate({ identifier: identifier.trim(), password }, { onSuccess: done })
                     }}
                   >
                     <Input
@@ -364,9 +284,7 @@ function LoginPageView() {
                     <Button
                       type="submit"
                       className="h-12 w-full bg-white text-[#101114] hover:bg-white/90"
-                      disabled={
-                        login.isPending || !identifier.trim() || !password
-                      }
+                      disabled={login.isPending || !identifier.trim() || !password}
                     >
                       Entrar
                     </Button>
@@ -374,15 +292,11 @@ function LoginPageView() {
                 ) : null}
 
                 {!inviteEmail && !invalidInvite && !resetToken && (
-                  <ForgotPasswordPanel
-                    mailEnabled={Boolean(config?.mail)}
-                    initialEmail={identifier}
-                  />
+                  <ForgotPasswordPanel mailEnabled={Boolean(config?.mail)} initialEmail={identifier} />
                 )}
 
                 <p className="pt-1 text-center text-xs leading-5 text-white/45">
-                  Solo con invitación. ¿No tienes una? Pídesela a quien
-                  administra Kogane.
+                  Solo con invitación. ¿No tienes una? Pídesela a quien administra Kogane.
                 </p>
               </CardContent>
             </Card>
@@ -390,7 +304,7 @@ function LoginPageView() {
         </section>
       </div>
     </main>
-  );
+  )
 }
 
-export const LoginPage = withQuery(LoginPageView);
+export const LoginPage = withQuery(LoginPageView)

@@ -1,5 +1,5 @@
-export {
-  PAYMENT_METHOD_ICONS,
-  PAYMENT_METHOD_TYPE_LABELS,
-} from "./payment-methods";
-export { SETTINGS_MENU_LINKS } from "./menu";
+export * from './menu'
+export * from './payment-methods'
+export * from './people'
+export * from './sections'
+export * from './preferences'

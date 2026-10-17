@@ -1,1 +1,1 @@
-export { FixedCostDetailRow } from "./FixedCostDetailRow";
+export { FixedCostDetailRow } from './FixedCostDetailRow'

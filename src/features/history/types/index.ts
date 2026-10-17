@@ -1,1 +1,1 @@
-export type { HistoryDayGroup, HistoryTimelineProps } from "./history-timeline";
+export type { HistoryDayGroup, HistoryTimelineProps } from './history-timeline'

@@ -1,6 +1,6 @@
-import type { Table } from "@tanstack/react-table";
-import { Columns3 } from "lucide-react";
-import { Button } from "@/ui/button";
+import type { Table } from '@tanstack/react-table'
+import { Columns3 } from 'lucide-react'
+import { Button } from '@/ui/button'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -8,19 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+} from '@/ui/dropdown-menu'
 
-export function DataTableColumnSelector<T>({
-  table,
-  disabled = false,
-}: {
-  table: Table<T>;
-  disabled?: boolean;
-}) {
-  const columns = table
-    .getAllLeafColumns()
-    .filter((column) => column.getCanHide());
-  if (!columns.length) return null;
+export function DataTableColumnSelector<T>({ table, disabled = false }: { table: Table<T>; disabled?: boolean }) {
+  const columns = table.getAllLeafColumns().filter((column) => column.getCanHide())
+  if (!columns.length) return null
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,5 +43,5 @@ export function DataTableColumnSelector<T>({
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

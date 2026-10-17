@@ -1,89 +1,78 @@
-import type { BotReply } from "@/features/messages/hooks/messages";
+import type { BotReply } from '@/features/messages/hooks/messages'
 
 // Web chat of Mensajes (D49, D57): the same replies the bot sends to Telegram, kept only in this browser
 export interface ChatMessage {
-  id: string;
-  author: "user" | "bot";
-  text: string; // user: plain text; bot: HTML with <b> and <i>
-  buttons?: BotReply["buttons"];
-  attachment?: "image" | "audio";
-  fileName?: string;
-  previewUrl?: string; // miniatura de la imagen enviada
-  durationSeconds?: number; // nota de voz
-  createdAt: string;
-  failed?: boolean;
+  id: string
+  author: 'user' | 'bot'
+  text: string // user: plain text; bot: HTML with <b> and <i>
+  buttons?: BotReply['buttons']
+  attachment?: 'image' | 'audio'
+  fileName?: string
+  previewUrl?: string // miniatura de la imagen enviada
+  durationSeconds?: number // nota de voz
+  createdAt: string
+  failed?: boolean
 }
 
-const HISTORY_KEY = "kogane:chat";
-const HISTORY_LIMIT = 200;
-const PREVIEW_LIMIT = 10; // miniaturas guardadas: las más recientes, para no llenar el almacenamiento
+const HISTORY_KEY = 'kogane:chat'
+const HISTORY_LIMIT = 200
+const PREVIEW_LIMIT = 10 // miniaturas guardadas: las más recientes, para no llenar el almacenamiento
 
-export const newMessageId = () => crypto.randomUUID();
+export const newMessageId = () => crypto.randomUUID()
 
 // Bot replies after a message or a pressed button. "edit" replaces the message whose button was pressed (as Telegram
 // does); the rest are new messages.
-export function applyReplies(
-  messages: ChatMessage[],
-  replies: BotReply[],
-  pressedId?: string,
-): ChatMessage[] {
-  let next = [...messages];
+export function applyReplies(messages: ChatMessage[], replies: BotReply[], pressedId?: string): ChatMessage[] {
+  let next = [...messages]
   for (const reply of replies) {
-    const index =
-      reply.edit && pressedId
-        ? next.findIndex((message) => message.id === pressedId)
-        : -1;
+    const index = reply.edit && pressedId ? next.findIndex((message) => message.id === pressedId) : -1
     if (index >= 0) {
       next[index] = {
         ...next[index],
         text: reply.text,
         buttons: reply.buttons,
-      };
-      continue;
+      }
+      continue
     }
     next = [
       ...next,
       {
         id: newMessageId(),
-        author: "bot",
+        author: 'bot',
         text: reply.text,
         buttons: reply.buttons,
         createdAt: new Date().toISOString(),
       },
-    ];
+    ]
   }
-  return next;
+  return next
 }
 
 // The bot only sends <b> and <i> (user text comes escaped): anything else is shown as text, never as HTML
 export function sanitizeBotHtml(html: string): string {
-  return html.replace(/<(?!\/?(b|i)>)/g, "&lt;").replace(/\n/g, "<br>");
+  return html.replace(/<(?!\/?(b|i)>)/g, '&lt;').replace(/\n/g, '<br>')
 }
 
 export function loadHistory(): ChatMessage[] {
   try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    return raw ? (JSON.parse(raw) as ChatMessage[]) : [];
+    const raw = localStorage.getItem(HISTORY_KEY)
+    return raw ? (JSON.parse(raw) as ChatMessage[]) : []
   } catch {
-    return [];
+    return []
   }
 }
 
 export function saveHistory(messages: ChatMessage[]) {
   try {
-    const recent = messages.slice(-HISTORY_LIMIT);
+    const recent = messages.slice(-HISTORY_LIMIT)
     const keep = new Set(
       recent
         .filter((message) => message.previewUrl)
         .slice(-PREVIEW_LIMIT)
         .map((message) => message.id),
-    );
-    const stored = recent.map((message) =>
-      message.previewUrl && !keep.has(message.id)
-        ? { ...message, previewUrl: undefined }
-        : message,
-    );
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(stored));
+    )
+    const stored = recent.map((message) => (message.previewUrl && !keep.has(message.id) ? { ...message, previewUrl: undefined } : message))
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(stored))
   } catch {
     // private window or full storage: the chat works, it just does not remember
   }
@@ -91,7 +80,7 @@ export function saveHistory(messages: ChatMessage[]) {
 
 export function clearHistory() {
   try {
-    localStorage.removeItem(HISTORY_KEY);
+    localStorage.removeItem(HISTORY_KEY)
   } catch {
     // ignore
   }

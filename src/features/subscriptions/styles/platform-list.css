@@ -4,21 +4,21 @@
   overflow-x: auto;
 }
 
-.platform-table [data-slot="table"] {
+.platform-table [data-slot='table'] {
   min-width: 64rem;
   table-layout: fixed;
 }
 
-.platform-table [data-slot="table-header"],
-.platform-table [data-slot="table-footer"] {
+.platform-table [data-slot='table-header'],
+.platform-table [data-slot='table-footer'] {
   background-color: color-mix(in srgb, var(--card) 97%, var(--foreground) 3%);
 }
 
-.platform-table [data-slot="table-head"] {
+.platform-table [data-slot='table-head'] {
   color: var(--muted-foreground);
 }
 
-.platform-table [data-slot="table-cell"] {
+.platform-table [data-slot='table-cell'] {
   padding-block: 0.65rem;
 }
 
@@ -156,13 +156,13 @@
   font-weight: 600;
 }
 .platform-form-dialog .platform-form input,
-.platform-form-dialog .platform-form button[role="combobox"] {
+.platform-form-dialog .platform-form button[role='combobox'] {
   min-height: 2.75rem;
 }
-.platform-form-dialog [data-slot="dialog-title"] {
+.platform-form-dialog [data-slot='dialog-title'] {
   font-size: 1.35rem;
 }
-.platform-form-dialog [data-slot="dialog-description"] {
+.platform-form-dialog [data-slot='dialog-description'] {
   font-size: 0.9rem;
 }
 
@@ -195,7 +195,7 @@
 }
 
 @media (min-width: 640px) {
-  .platform-form-dialog[data-slot="dialog-content"] {
+  .platform-form-dialog[data-slot='dialog-content'] {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -203,14 +203,13 @@
     overflow: hidden;
   }
 
-  .platform-form-dialog[data-slot="dialog-content"] .platform-form {
+  .platform-form-dialog[data-slot='dialog-content'] .platform-form {
     min-height: 0;
     overflow-y: auto;
     padding-right: 0.25rem;
   }
 
-  .platform-form-dialog[data-slot="dialog-content"]
-    [data-slot="dialog-footer"] {
+  .platform-form-dialog[data-slot='dialog-content'] [data-slot='dialog-footer'] {
     flex: none;
     border-top: 1px solid var(--border);
     padding-top: 1rem;

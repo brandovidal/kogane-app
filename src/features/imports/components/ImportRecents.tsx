@@ -1,7 +1,7 @@
-import { formatDate } from "@/shared/lib/dates";
-import { Badge } from "@/ui/badge";
-import { BATCH_STATUS } from "@/features/imports/constants/import-options";
-import type { HistoryItem } from "../types/import-types";
+import { formatDate } from '@/shared/lib/dates'
+import { Badge } from '@/ui/badge'
+import { BATCH_STATUS } from '@/features/imports/constants/import-options'
+import type { HistoryItem } from '../types/import-types'
 
 // «Recientes» junto a la carga (boards I1–I6)
 export function ImportRecents({
@@ -10,32 +10,22 @@ export function ImportRecents({
   onSelect,
   onViewAll,
 }: {
-  items: HistoryItem[];
-  limit?: number;
-  onSelect: (key: string) => void;
-  onViewAll: () => void;
+  items: HistoryItem[]
+  limit?: number
+  onSelect: (key: string) => void
+  onViewAll: () => void
 }) {
   return (
     <aside className="space-y-2" aria-label="Recientes">
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          Recientes
-        </h2>
+        <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Recientes</h2>
         {items.length > 0 && (
-          <button
-            type="button"
-            onClick={onViewAll}
-            className="text-xs text-primary hover:underline"
-          >
+          <button type="button" onClick={onViewAll} className="text-xs text-primary hover:underline">
             Ver historial
           </button>
         )}
       </div>
-      {items.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          Todavía no subiste nada.
-        </p>
-      )}
+      {items.length === 0 && <p className="text-sm text-muted-foreground">Todavía no subiste nada.</p>}
       {items.slice(0, limit).map((item) => (
         <button
           key={item.key}
@@ -49,11 +39,9 @@ export function ImportRecents({
               {formatDate(item.createdAt)} · {item.detail}
             </span>
           </span>
-          <Badge variant={item.pending ? "default" : "secondary"}>
-            {BATCH_STATUS[item.status] ?? item.status}
-          </Badge>
+          <Badge variant={item.pending ? 'default' : 'secondary'}>{BATCH_STATUS[item.status] ?? item.status}</Badge>
         </button>
       ))}
     </aside>
-  );
+  )
 }

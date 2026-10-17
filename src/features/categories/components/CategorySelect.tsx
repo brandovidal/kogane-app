@@ -1,13 +1,7 @@
-import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
-import type { CatalogSelectProps } from "@/shared/types/catalog-select";
+import { CategoryFilterFields } from '@/shared/components/filters/CategoryFilterFields'
+import type { CatalogSelectProps } from '@/shared/types/catalog-select'
 
-export function CategorySelect({
-  value,
-  onChange,
-  placeholder = "Selecciona categoría",
-  allowEmpty = false,
-  className,
-}: CatalogSelectProps) {
+export function CategorySelect({ value, onChange, placeholder = 'Selecciona categoría', allowEmpty = false, className }: CatalogSelectProps) {
   return (
     <CategoryFilterFields
       multiple={false}
@@ -20,5 +14,5 @@ export function CategorySelect({
       allowEmptySelection={allowEmpty}
       triggerClassName={className}
     />
-  );
+  )
 }

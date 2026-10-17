@@ -1,38 +1,34 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { z } from "zod";
-import {
-  useBudgetGroups,
-  useSaveBudgetGroup,
-} from "@/shared/api/hooks/catalogs";
-import type { BudgetGroup } from "@/shared/api/types";
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { z } from 'zod'
+import { useBudgetGroups, useDeleteBudgetGroup, useSaveBudgetGroup } from '@/shared/api/hooks/catalogs'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import type { BudgetGroup } from '@/shared/api/types'
 
 const budgetGroupFormSchema = z.object({
-  name: z.string().trim().min(1, "Nombre requerido").max(40),
+  name: z.string().trim().min(1, 'Nombre requerido').max(40),
   emoji: z.string().trim().max(8),
   percentage: z.number().min(0).max(100),
   order: z.number().int().min(0),
-});
-type CreateBudgetGroup = z.infer<typeof budgetGroupFormSchema>;
+})
+type CreateBudgetGroup = z.infer<typeof budgetGroupFormSchema>
 
 interface BudgetGroupDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  group?: BudgetGroup;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  group?: BudgetGroup
 }
 
-export function BudgetGroupDialog({
-  open,
-  onOpenChange,
-  group,
-}: BudgetGroupDialogProps) {
-  const saveBudgetGroup = useSaveBudgetGroup();
-  const groups = useBudgetGroups().data ?? [];
-  const isEdit = !!group;
+export function BudgetGroupDialog({ open, onOpenChange, group }: BudgetGroupDialogProps) {
+  const saveBudgetGroup = useSaveBudgetGroup()
+  const groups = useBudgetGroups().data ?? []
+  const isEdit = !!group
+  const deleteBudgetGroup = useDeleteBudgetGroup()
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const {
     register,
@@ -42,12 +38,12 @@ export function BudgetGroupDialog({
   } = useForm<CreateBudgetGroup>({
     resolver: zodResolver(budgetGroupFormSchema),
     defaultValues: {
-      name: "",
-      emoji: "📦",
+      name: '',
+      emoji: '📦',
       percentage: 0,
       order: groups.length + 1,
     },
-  });
+  })
 
   useEffect(() => {
     if (open && group) {
@@ -56,44 +52,39 @@ export function BudgetGroupDialog({
         emoji: group.emoji,
         percentage: group.percentage,
         order: group.order,
-      });
+      })
     } else if (open) {
       reset({
-        name: "",
-        emoji: "📦",
+        name: '',
+        emoji: '📦',
         percentage: 0,
         order: groups.length + 1,
-      });
+      })
     }
-  }, [open, group, reset, groups.length]);
+  }, [open, group, reset, groups.length])
 
   const onSubmit = (data: CreateBudgetGroup) => {
-    saveBudgetGroup.mutate(
-      { ...data, id: group?.id },
-      { onSuccess: () => onOpenChange(false) },
-    );
-  };
+    saveBudgetGroup.mutate({ ...data, id: group?.id }, { onSuccess: () => onOpenChange(false) })
+  }
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={isEdit ? "Editar grupo" : "Nuevo grupo presupuestario"}
-      description={
-        isEdit
-          ? "Modifica los datos del grupo"
-          : "Crea un nuevo grupo para organizar tu presupuesto"
-      }
+      title={isEdit ? 'Editar grupo' : 'Nuevo grupo presupuestario'}
+      description={isEdit ? 'Modifica los datos del grupo' : 'Crea un nuevo grupo para organizar tu presupuesto'}
       footer={
         <>
+          {group && (
+            <Button variant="ghost" className="mr-auto text-destructive" onClick={() => setConfirmDelete(true)}>
+              Eliminar
+            </Button>
+          )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            disabled={saveBudgetGroup.isPending}
-          >
-            {isEdit ? "Guardar" : "Crear"}
+          <Button onClick={handleSubmit(onSubmit)} disabled={saveBudgetGroup.isPending}>
+            {isEdit ? 'Guardar' : 'Crear'}
           </Button>
         </>
       }
@@ -101,43 +92,44 @@ export function BudgetGroupDialog({
       <form className="space-y-4 py-2" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Nombre *</label>
-          <Input
-            {...register("name")}
-            placeholder="Ej: Costos Fijos, Ahorros..."
-          />
-          {errors.name && (
-            <p className="text-xs text-destructive">{errors.name.message}</p>
-          )}
+          <Input {...register('name')} placeholder="Ej: Costos Fijos, Ahorros..." />
+          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Emoji</label>
-            <Input {...register("emoji")} placeholder="📦" />
+            <Input {...register('emoji')} placeholder="📦" />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Porcentaje (%)</label>
-            <Input
-              type="number"
-              {...register("percentage", { valueAsNumber: true })}
-              placeholder="25"
-            />
-            {errors.percentage && (
-              <p className="text-xs text-destructive">
-                {errors.percentage.message}
-              </p>
-            )}
+            <Input type="number" {...register('percentage', { valueAsNumber: true })} placeholder="25" />
+            {errors.percentage && <p className="text-xs text-destructive">{errors.percentage.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Orden</label>
-            <Input
-              type="number"
-              {...register("order", { valueAsNumber: true })}
-              placeholder="1"
-            />
+            <Input type="number" {...register('order', { valueAsNumber: true })} placeholder="1" />
           </div>
         </div>
       </form>
+      {group && (
+        <DeleteConfirmationDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title={`Eliminar ${group.name}`}
+          description="Un grupo con categorías no se puede eliminar: muévelas antes."
+          pending={deleteBudgetGroup.isPending}
+          onConfirm={() =>
+            deleteBudgetGroup.mutate(group.id, {
+              onSuccess: () => {
+                setConfirmDelete(false)
+                onOpenChange(false)
+              },
+              onError: () => setConfirmDelete(false),
+            })
+          }
+        />
+      )}
     </ResponsiveDialog>
-  );
+  )
 }

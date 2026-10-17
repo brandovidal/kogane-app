@@ -1,2 +1,2 @@
-export { FixedCostName } from "./FixedCostName";
-export { FixedCostEmptyState } from "./FixedCostEmptyState";
+export { FixedCostName } from './FixedCostName'
+export { FixedCostEmptyState } from './FixedCostEmptyState'

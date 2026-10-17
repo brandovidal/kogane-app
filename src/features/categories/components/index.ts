@@ -1,7 +1,7 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
-export { CategoryDialog } from "./CategoryDialog";
-export { CATEGORY_ICON_OPTIONS, CategoryIcon } from "./CategoryIcon";
-export { CategoryIconPicker } from "./CategoryIconPicker";
-export { CategoryLabel } from "./CategoryLabel";
-export { CategoryManager } from "./CategoryManager";
-export { CategorySelect } from "./CategorySelect";
+export { CategoryDialog } from './CategoryDialog'
+export { CategoryIcon } from './CategoryIcon'
+export { CategoryIconPicker } from './CategoryIconPicker'
+export { CategoryLimitDialog } from './CategoryLimitDialog'
+export { CategoryLabel } from './CategoryLabel'
+export { CategorySelect } from './CategorySelect'

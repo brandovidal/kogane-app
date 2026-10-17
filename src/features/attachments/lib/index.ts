@@ -1,2 +1,2 @@
-export { formatAttachmentSize } from "./attachment-size";
-export * from "./attachment-view";
+export { formatAttachmentSize } from './attachment-size'
+export * from './attachment-view'

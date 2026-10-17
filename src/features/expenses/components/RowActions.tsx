@@ -1,27 +1,13 @@
-import { useState, type ComponentType } from "react";
-import {
-  ArrowRightLeft,
-  CalendarArrowDown,
-  CalendarArrowUp,
-  Check,
-  Copy,
-  History,
-  MoreHorizontal,
-  Paperclip,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { useState, type ComponentType } from 'react'
+import { ArrowRightLeft, CalendarArrowDown, CalendarArrowUp, Check, Copy, History, MoreHorizontal, Paperclip, Pencil, Trash2 } from 'lucide-react'
 
-import type { AttachmentRefType } from "@/shared/api/types";
-import { HistoryDialog } from "@/features/history/components/HistoryDialog";
-import { AttachmentsDialog } from "@/features/attachments/components/dialogs/AttachmentsDialog";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import {
-  PaymentStatusMenu,
-  type PaymentStatusMenuProps,
-} from "./PaymentStatusMenu";
+import type { AttachmentRefType } from '@/shared/api/types'
+import { HistoryDialog } from '@/features/history/components/HistoryDialog'
+import { AttachmentsDialog } from '@/features/attachments/components/dialogs/AttachmentsDialog'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { PaymentStatusMenu, type PaymentStatusMenuProps } from './PaymentStatusMenu'
 
-import { Button } from "@/ui/button";
+import { Button } from '@/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,36 +17,36 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+} from '@/ui/dropdown-menu'
 
-import { isPaidStatus } from "@/features/expenses/lib/expense-actions";
+import { isPaidStatus } from '@/features/expenses/lib/expense-actions'
 
 export interface RowActionsProps {
-  label: string; // what the row is, for the delete confirmation ("Uber")
-  onEdit?: () => void;
-  onDuplicate?: () => void;
-  onNextMonth?: () => void;
-  onPreviousMonth?: () => void;
+  label: string // what the row is, for the delete confirmation ("Uber")
+  onEdit?: () => void
+  onDuplicate?: () => void
+  onNextMonth?: () => void
+  onPreviousMonth?: () => void
   /** Labels of the target months, e.g. "Noviembre 2026", shown under "Transferir". */
-  monthLabels?: { previous?: string; next?: string };
-  onMove?: () => void; // Transferir la serie entre Costos fijos, Recurrentes y Plataformas
-  onDelete?: () => void | Promise<unknown>;
-  files?: { refType: AttachmentRefType; refId: string }; // boleta, recibo, contrato (P27, D100)
-  history?: { entity: string; id: string }; // the table (exp_fixed_costs) and the row (P29)
-  status?: PaymentStatusMenuProps;
+  monthLabels?: { previous?: string; next?: string }
+  onMove?: () => void // Transferir la serie entre Costos fijos, Recurrentes y Plataformas
+  onDelete?: () => void | Promise<unknown>
+  files?: { refType: AttachmentRefType; refId: string } // boleta, recibo, contrato (P27, D100)
+  history?: { entity: string; id: string } // the table (exp_fixed_costs) and the row (P29)
+  status?: PaymentStatusMenuProps
   /** Open files / history somewhere else (e.g. a tab of the detail sheet) instead of the dialogs. */
-  onOpenFiles?: () => void;
-  onOpenHistory?: () => void;
+  onOpenFiles?: () => void
+  onOpenHistory?: () => void
   /** Row-specific shortcuts shown after Duplicar (e.g. Cambiar categoría) */
   extraItems?: {
-    label: string;
-    icon: ComponentType;
-    onSelect: () => void;
+    label: string
+    icon: ComponentType
+    onSelect: () => void
     /** Short note under the label; when set the item is disabled */
-    hint?: string;
+    hint?: string
     /** Short note under the label; the item stays enabled */
-    note?: string;
-  }[];
+    note?: string
+  }[]
 }
 
 // ⋯ of each row of the expense tables (like Notion): edit, duplicate, status, paid, next month and delete
@@ -80,33 +66,28 @@ export function RowActions({
   onOpenHistory,
   extraItems,
 }: RowActionsProps) {
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [filesOpen, setFilesOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [filesOpen, setFilesOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const confirmDelete = async () => {
-    if (deleting) return;
-    setDeleting(true);
+    if (deleting) return
+    setDeleting(true)
     try {
-      await onDelete?.();
-      setDeleteOpen(false);
+      await onDelete?.()
+      setDeleteOpen(false)
     } catch {
       // The mutation reports the error; preserve the confirmation for retry.
     } finally {
-      setDeleting(false);
+      setDeleting(false)
     }
-  };
+  }
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            aria-label={`Acciones de ${label}`}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Acciones de ${label}`}>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -121,34 +102,24 @@ export function RowActions({
               <Copy /> Duplicar
             </DropdownMenuItem>
           )}
-          {extraItems?.map(
-            ({ label: text, icon: Icon, onSelect, hint, note }) => (
-              <DropdownMenuItem
-                key={text}
-                onSelect={onSelect}
-                disabled={!!hint}
-              >
-                <Icon />
-                {hint || note ? (
-                  <span className="flex flex-col">
-                    {text}
-                    <span className="text-xs text-muted-foreground">
-                      {hint ?? note}
-                    </span>
-                  </span>
-                ) : (
-                  text
-                )}
-              </DropdownMenuItem>
-            ),
+          {extraItems?.map(({ label: text, icon: Icon, onSelect, hint, note }) => (
+            <DropdownMenuItem key={text} onSelect={onSelect} disabled={!!hint}>
+              <Icon />
+              {hint || note ? (
+                <span className="flex flex-col">
+                  {text}
+                  <span className="text-xs text-muted-foreground">{hint ?? note}</span>
+                </span>
+              ) : (
+                text
+              )}
+            </DropdownMenuItem>
+          ))}
+          {status && !isPaidStatus(status.value) && status.options.includes('paid') && (
+            <DropdownMenuItem onSelect={() => status.onChange('paid')}>
+              <Check /> Marcar como pagado
+            </DropdownMenuItem>
           )}
-          {status &&
-            !isPaidStatus(status.value) &&
-            status.options.includes("paid") && (
-              <DropdownMenuItem onSelect={() => status.onChange("paid")}>
-                <Check /> Marcar como pagado
-              </DropdownMenuItem>
-            )}
           {status && <PaymentStatusMenu {...status} />}
           {(onNextMonth || onPreviousMonth || onMove) && (
             <>
@@ -163,11 +134,7 @@ export function RowActions({
                       <CalendarArrowDown />
                       <span className="flex flex-col">
                         Mover al mes anterior
-                        {monthLabels?.previous && (
-                          <span className="text-xs text-muted-foreground">
-                            {monthLabels.previous}
-                          </span>
-                        )}
+                        {monthLabels?.previous && <span className="text-xs text-muted-foreground">{monthLabels.previous}</span>}
                       </span>
                     </DropdownMenuItem>
                   )}
@@ -176,11 +143,7 @@ export function RowActions({
                       <CalendarArrowUp />
                       <span className="flex flex-col">
                         Mover al siguiente mes
-                        {monthLabels?.next && (
-                          <span className="text-xs text-muted-foreground">
-                            {monthLabels.next}
-                          </span>
-                        )}
+                        {monthLabels?.next && <span className="text-xs text-muted-foreground">{monthLabels.next}</span>}
                       </span>
                     </DropdownMenuItem>
                   )}
@@ -194,50 +157,27 @@ export function RowActions({
             </>
           )}
           {files && (
-            <DropdownMenuItem
-              onSelect={() =>
-                onOpenFiles ? onOpenFiles() : setFilesOpen(true)
-              }
-            >
+            <DropdownMenuItem onSelect={() => (onOpenFiles ? onOpenFiles() : setFilesOpen(true))}>
               <Paperclip /> Archivos
             </DropdownMenuItem>
           )}
           {history && (
-            <DropdownMenuItem
-              onSelect={() =>
-                onOpenHistory ? onOpenHistory() : setHistoryOpen(true)
-              }
-            >
+            <DropdownMenuItem onSelect={() => (onOpenHistory ? onOpenHistory() : setHistoryOpen(true))}>
               <History /> Historial
             </DropdownMenuItem>
           )}
           {onDelete && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={() => setDeleteOpen(true)}
-              >
+              <DropdownMenuItem variant="destructive" onSelect={() => setDeleteOpen(true)}>
                 <Trash2 /> Eliminar
               </DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      {history && historyOpen && (
-        <HistoryDialog
-          title={label}
-          {...history}
-          onClose={() => setHistoryOpen(false)}
-        />
-      )}
-      {files && filesOpen && (
-        <AttachmentsDialog
-          title={label}
-          {...files}
-          onClose={() => setFilesOpen(false)}
-        />
-      )}
+      {history && historyOpen && <HistoryDialog title={label} {...history} onClose={() => setHistoryOpen(false)} />}
+      {files && filesOpen && <AttachmentsDialog title={label} {...files} onClose={() => setFilesOpen(false)} />}
       {onDelete && (
         <DeleteConfirmationDialog
           open={deleteOpen}
@@ -249,5 +189,5 @@ export function RowActions({
         />
       )}
     </>
-  );
+  )
 }

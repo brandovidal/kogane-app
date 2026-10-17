@@ -15,7 +15,11 @@ push a main → Workers Builds: pnpm install → pnpm test && pnpm build → pnp
 | Entorno | Cómo corre | API |
 |---|---|---|
 | local | `pnpm dev` (adaptador Node) | `http://localhost:5560` (kogane-api local) |
-| producción | Worker `kogane-app` en Cloudflare | `https://kogane-api.up.railway.app` (kogane-api en Railway) |
+| dev | Worker `dev-kogane-app` (rama `dev`, `CLOUDFLARE_ENV=dev`) | `https://kogane-api-dev.up.railway.app` |
+| qa | Worker `qa-kogane-app` (rama `qa`, `CLOUDFLARE_ENV=qa`) | `https://kogane-api-qa.up.railway.app` |
+| producción | Worker `kogane-app` (rama `main`, sin `CLOUDFLARE_ENV`) | `https://kogane-api.up.railway.app` (kogane-api en Railway) |
+
+Los entornos viven en `env` de `wrangler.jsonc`: cada uno define el nombre del Worker y su `API_URL`. Con `CLOUDFLARE_ENV` vacío el build usa la configuración de nivel superior (producción). Para comprobar a qué Worker y API apunta un build: `CLOUDFLARE_ENV=qa ASTRO_ADAPTER=cloudflare pnpm build` y mirar `name` y `API_URL` en `dist/server/wrangler.json`.
 
 **En local:** `cp .env.example .env.dev` con la misma `API_KEY` de `kogane-api/.env.dev`, kogane-api con `pnpm dev` y kogane-app con `pnpm dev` (`astro dev --mode dev`, lee `.env.dev`). Para ver los datos de producción desde local: `.env` con `API_URL=https://kogane-api.up.railway.app` y la `API_KEY` de producción, y `pnpm build && pnpm preview` (`localhost:3000`; `astro preview` no lee archivos `.env`, por eso el script usa `node --env-file=.env`). Cuidado: lo que edites ahí cambia producción. El navegador llama a `/api/v1/…` y el servidor de Astro (`src/pages/api/[...path].ts`) agrega `x-api-key` y reenvía a `API_URL`; la clave nunca llega al navegador (D56). Tipos del cliente: `pnpm api:types` con kogane-api corriendo (regenera `src/shared/api/schema.d.ts`, versionado).
 
@@ -32,10 +36,11 @@ Workers & Pages → `kogane-app` → **Configuración → Compilación**:
 | Comando de compilación | `pnpm test && pnpm build` |
 | Comando de implementación | `pnpm exec wrangler deploy` (usa el `wrangler` del lockfile en vez de bajar otro con `npx`) |
 | Directorio raíz | `/` |
-| Variables de compilación | `PNPM_VERSION` = `12.4.2` |
+| Variables de compilación | `PNPM_VERSION` = la de `packageManager` (hoy `12.14.0`); `CLOUDFLARE_ENV` = `dev` o `qa` según el Worker (vacía en producción) |
 
-- **Node:** lo toma de `.node-version` (22). Sin ese archivo, Workers Builds usa Node 24.
-- **pnpm:** sin `PNPM_VERSION`, usa una versión vieja (9.x) y el install falla con `ERR_PNPM_UNSUPPORTED_ENGINE` (el proyecto pide pnpm ≥ 10).
+- **Node:** lo toma de `.node-version` (`24.13.0`); `engines.node` pide `>=24.13.0`. Sin ese archivo, Workers Builds usa Node 24.
+- **pnpm:** la versión se fija en `packageManager` de `package.json`. Sin `PNPM_VERSION`, Workers Builds usa una versión vieja (9.x) y el install falla con `ERR_PNPM_UNSUPPORTED_ENGINE`; mantén `PNPM_VERSION` igual a `packageManager`.
+- **Wrangler:** `@cloudflare/vite-plugin` exige un `wrangler` compatible (hoy `^4.151.0`). El `wrangler` del `package.json` y el del lockfile deben cumplirlo; si el build falla con `does not satisfy the peer dependency`, sube `wrangler` y regenera el lockfile.
 - **Build scripts:** pnpm 12 falla el install si un paquete tiene scripts sin decidir; están en `allowBuilds` de `pnpm-workspace.yaml`.
 
 **Secretos del Worker** (en tiempo de ejecución; siguen en cada deploy): **Configuración → Variables y secretos → Agregar**, tipo *Secreto*:
@@ -43,6 +48,20 @@ Workers & Pages → `kogane-app` → **Configuración → Compilación**:
 - `API_KEY` → la misma `API_KEY` de Railway.
 
 (Las "variables de compilación" solo existen durante el build; `API_URL` y `API_KEY` van como secretos del Worker.)
+
+### Workers de dev y qa
+
+Cada entorno es un Worker distinto con su propio proyecto de Workers Builds, conectado al mismo repo:
+
+| Worker | Rama de producción | Variable de compilación |
+|---|---|---|
+| `kogane-app` | `main` | (ninguna) |
+| `dev-kogane-app` | `dev` | `CLOUDFLARE_ENV=dev` |
+| `qa-kogane-app` | `qa` | `CLOUDFLARE_ENV=qa` |
+
+- El nombre del Worker del proyecto debe coincidir con el `name` del entorno en `wrangler.jsonc`; si no, Workers Builds se queja del desajuste o despliega a otro Worker.
+- Los secretos `API_URL` y `API_KEY` se cargan en cada Worker con los valores de su API (dev, qa o producción).
+- Las ramas que no son la de producción de un proyecto usan el comando de vista previa (`npx wrangler preview`, Wrangler ≥ 4.135.0; el nombre de la vista previa es la rama) y generan una URL de vista previa sin reemplazar el despliegue. Sin `CLOUDFLARE_ENV`, esa vista previa usa la configuración de nivel superior, es decir, la API de producción: para vistas previas de ramas feature, usa el proyecto de dev.
 
 ## 2. Login
 
@@ -67,4 +86,4 @@ Nada que configurar: el workflow de tests no usa secretos. No hace falta `CLOUDF
 
 ## 5. Volver atrás
 
-Workers & Pages → `kogane-app` → **Deployments** → la versión anterior → **Rollback**.
+Workers & Pages → el Worker del entorno (`kogane-app`, `dev-kogane-app` o `qa-kogane-app`) → **Deployments** → la versión anterior → **Rollback**.

@@ -1,6 +1,6 @@
-import { AppliedFilterChips } from "@/shared/components/filters/AppliedFilterChips";
-import type { ActiveExpenseFilterChipsProps } from "../../types/expense-filter-props";
-import { useActiveExpenseFilterChips } from "../../hooks/useActiveExpenseFilterChips";
+import { AppliedFilterChips } from '@/shared/components/filters/AppliedFilterChips'
+import type { ActiveExpenseFilterChipsProps } from '../../types/expense-filter-props'
+import { useActiveExpenseFilterChips } from '../../hooks/useActiveExpenseFilterChips'
 
 export function ActiveExpenseFilterChips<T extends string | string[] = string>({
   fields,
@@ -33,9 +33,9 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
     formatFilterLabel,
     showClearAll,
     onClearAll,
-  });
+  })
 
-  if (!chips.length && !(isGrouped && onGroupByChange)) return null;
+  if (!chips.length && !(isGrouped && onGroupByChange)) return null
 
   return (
     <AppliedFilterChips
@@ -46,5 +46,5 @@ export function ActiveExpenseFilterChips<T extends string | string[] = string>({
       maxVisibleItems={maxVisibleItems}
       showCollapseLabel={showCollapseLabel}
     />
-  );
+  )
 }

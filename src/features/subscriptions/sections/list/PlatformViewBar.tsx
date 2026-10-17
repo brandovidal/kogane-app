@@ -1,36 +1,17 @@
-import { toast } from "sonner";
-import {
-  CalendarDays,
-  ChevronDown,
-  Columns3,
-  Link2,
-  MessageSquareText,
-  MoreHorizontal,
-  Plus,
-  Repeat2,
-  Table2,
-  Upload,
-} from "lucide-react";
-import type { ViewMode } from "@/shared/types/data-view";
-import {
-  ExportMenu,
-  type ExportMenuItem,
-} from "@/shared/components/toolbar/ExportMenu";
-import { Button } from "@/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
-import { cn } from "@/shared/utils/cn";
+import { toast } from 'sonner'
+import { CalendarDays, ChevronDown, Columns3, Link2, MessageSquareText, MoreHorizontal, Plus, Repeat2, Table2, Upload } from 'lucide-react'
+import type { ViewMode } from '@/shared/types/data-view'
+import { ExportMenu, type ExportMenuItem } from '@/shared/components/toolbar/ExportMenu'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { cn } from '@/shared/utils/cn'
 
-type PlatformView = "list" | "cards" | "period" | "calendar";
+type PlatformView = 'list' | 'cards' | 'period' | 'calendar'
 const views: { value: PlatformView; label: string; Icon: typeof Table2 }[] = [
-  { value: "list", label: "Lista", Icon: Table2 },
-  { value: "period", label: "Por período", Icon: Columns3 },
-  { value: "calendar", label: "Calendario", Icon: CalendarDays },
-];
+  { value: 'list', label: 'Lista', Icon: Table2 },
+  { value: 'period', label: 'Por período', Icon: Columns3 },
+  { value: 'calendar', label: 'Calendario', Icon: CalendarDays },
+]
 
 export function PlatformViewBar({
   view,
@@ -39,30 +20,30 @@ export function PlatformViewBar({
   onImport,
   exportItems,
 }: {
-  view: PlatformView;
-  onViewChange: (view: PlatformView) => void;
-  onCreate: () => void;
-  onImport: () => void;
-  exportItems: ExportMenuItem[];
+  view: PlatformView
+  onViewChange: (view: PlatformView) => void
+  onCreate: () => void
+  onImport: () => void
+  exportItems: ExportMenuItem[]
 }) {
   const menuItems: ExportMenuItem[] = [
     ...exportItems,
     {
-      label: "Importar plataformas…",
+      label: 'Importar plataformas…',
       icon: <Upload className="size-4" />,
       onSelect: onImport,
     },
     {
-      label: "Copiar enlace a la vista",
+      label: 'Copiar enlace a la vista',
       icon: <Link2 className="size-4" />,
       onSelect: () => {
         void navigator.clipboard
           .writeText(window.location.href)
-          .then(() => toast.success("Enlace copiado"))
-          .catch(() => toast.error("No se pudo copiar el enlace"));
+          .then(() => toast.success('Enlace copiado'))
+          .catch(() => toast.error('No se pudo copiar el enlace'))
       },
     },
-  ];
+  ]
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div
@@ -71,10 +52,7 @@ export function PlatformViewBar({
         className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {views.map(({ value, label, Icon }) => {
-          const selected =
-            value === "list"
-              ? view === "list" || view === "cards"
-              : view === value;
+          const selected = value === 'list' ? view === 'list' || view === 'cards' : view === value
           return (
             <button
               key={value}
@@ -83,14 +61,14 @@ export function PlatformViewBar({
               aria-selected={selected}
               onClick={() => onViewChange(value)}
               className={cn(
-                "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                selected && "bg-accent text-foreground ring-1 ring-border/70",
+                'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                selected && 'bg-accent text-foreground ring-1 ring-border/70',
               )}
             >
               <Icon className="size-4" />
               {label}
             </button>
-          );
+          )
         })}
         <Button
           type="button"
@@ -98,11 +76,7 @@ export function PlatformViewBar({
           size="icon-sm"
           className="size-8 border border-border/60"
           aria-label="Más vistas, próximamente"
-          onClick={() =>
-            toast.info(
-              "Las vistas personalizadas estarán disponibles próximamente.",
-            )
-          }
+          onClick={() => toast.info('Las vistas personalizadas estarán disponibles próximamente.')}
         >
           <Plus className="size-4" />
         </Button>
@@ -110,12 +84,7 @@ export function PlatformViewBar({
       <div className="flex shrink-0 items-center gap-2">
         <ExportMenu items={menuItems} label="Más opciones" iconOnly />
         <div className="inline-flex items-center">
-          <Button
-            type="button"
-            size="sm"
-            className="platform-create-button h-9 gap-1 rounded-l-md rounded-r-none px-4"
-            onClick={onCreate}
-          >
+          <Button type="button" size="sm" className="platform-create-button h-9 gap-1 rounded-l-md rounded-r-none px-4" onClick={onCreate}>
             <Plus className="size-4" />
             Nueva plataforma
           </Button>
@@ -135,9 +104,7 @@ export function PlatformViewBar({
                 <MoreHorizontal className="size-4" />
                 <span className="flex flex-col">
                   Nueva plataforma
-                  <span className="text-xs text-muted-foreground">
-                    Suscripción o servicio periódico
-                  </span>
+                  <span className="text-xs text-muted-foreground">Suscripción o servicio periódico</span>
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -145,9 +112,7 @@ export function PlatformViewBar({
                   <Repeat2 className="size-4" />
                   <span className="flex flex-col">
                     Nueva recurrente
-                    <span className="text-xs text-muted-foreground">
-                      Se repite cada mes
-                    </span>
+                    <span className="text-xs text-muted-foreground">Se repite cada mes</span>
                   </span>
                 </a>
               </DropdownMenuItem>
@@ -156,9 +121,7 @@ export function PlatformViewBar({
                   <MessageSquareText className="size-4" />
                   <span className="flex flex-col">
                     Registrar en Mensajes
-                    <span className="text-xs text-muted-foreground">
-                      Captura, audio o texto
-                    </span>
+                    <span className="text-xs text-muted-foreground">Captura, audio o texto</span>
                   </span>
                 </a>
               </DropdownMenuItem>
@@ -173,9 +136,8 @@ export function PlatformViewBar({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export type { PlatformView };
-export const layoutForPlatformView = (view: PlatformView): ViewMode =>
-  view === "cards" ? "cards" : "table";
+export type { PlatformView }
+export const layoutForPlatformView = (view: PlatformView): ViewMode => (view === 'cards' ? 'cards' : 'table')

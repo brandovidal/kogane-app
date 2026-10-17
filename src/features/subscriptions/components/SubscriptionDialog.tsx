@@ -1,47 +1,31 @@
-import { useEffect } from "react";
-import { cn } from "@/shared/utils/cn";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
-import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { useSaveExpense } from "@/features/expenses/hooks/expenses";
-import { EXPENSE_RESOURCES, type Subscription } from "@/shared/api/types";
-import {
-  CURRENCIES,
-  EXPENSE_TYPE_LABELS,
-  EXPENSE_TYPES,
-} from "@/shared/constants/finance";
-import {
-  SUBSCRIPTION_PERIOD_LABELS,
-  SUBSCRIPTION_PERIODS,
-  SUBSCRIPTION_STATUSES,
-} from "@/features/subscriptions/constants/subscriptions";
-import { localTodayKey, toIsoDate } from "@/shared/lib/dates";
-import { usePeriod } from "@/shared/stores/period.store";
+import { useEffect } from 'react'
+import { cn } from '@/shared/utils/cn'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { PaymentMethodFilterFields } from '@/shared/components/filters/PaymentMethodFilterFields'
+import { PersonPicker } from '@/features/settings/components/people/PersonPicker'
+import { StatusFilterFields } from '@/shared/components/filters/StatusFilterFields'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
+import { useSaveExpense } from '@/features/expenses/hooks/expenses'
+import { EXPENSE_RESOURCES, type Subscription } from '@/shared/api/types'
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from '@/shared/constants/finance'
+import { SUBSCRIPTION_PERIOD_LABELS, SUBSCRIPTION_PERIODS, SUBSCRIPTION_STATUSES } from '@/features/subscriptions/constants/subscriptions'
+import { localTodayKey, toIsoDate } from '@/shared/lib/dates'
+import { usePeriod } from '@/shared/stores/period.store'
 
 const subscriptionFormSchema = z.object({
-  description: z.string().trim().min(1, "Escribe un nombre para la plataforma"),
-  amount: z
-    .number({ error: "Ingresa un monto mayor a 0" })
-    .positive("Ingresa un monto mayor a 0"),
+  description: z.string().trim().min(1, 'Escribe un nombre para la plataforma'),
+  amount: z.number({ error: 'Ingresa un monto mayor a 0' }).positive('Ingresa un monto mayor a 0'),
   currency: z.enum(CURRENCIES),
   exchangeRate: z.number().positive().nullable(),
-  period: z.string().min(1, "Período requerido"),
+  period: z.string().min(1, 'Período requerido'),
   expenseType: z.string(),
   paymentStatus: z.string(),
-  personId: z.string().min(1, "Persona requerida"),
+  personId: z.string().min(1, 'Persona requerida'),
   paymentMethodId: z.string().nullable(),
   dueDate: z.string(),
   notes: z
@@ -53,42 +37,38 @@ const subscriptionFormSchema = z.object({
     .trim()
     .max(40)
     .transform((value) => value || null),
-});
-type SubscriptionForm = z.input<typeof subscriptionFormSchema>;
-type SubscriptionValues = z.output<typeof subscriptionFormSchema>;
+})
+type SubscriptionForm = z.input<typeof subscriptionFormSchema>
+type SubscriptionValues = z.output<typeof subscriptionFormSchema>
 
 const emptyForm: SubscriptionForm = {
-  description: "",
+  description: '',
   amount: 0,
-  currency: "PEN",
+  currency: 'PEN',
   exchangeRate: null,
-  period: "monthly",
-  expenseType: "essential",
-  paymentStatus: "not_started",
-  personId: "",
+  period: 'monthly',
+  expenseType: 'essential',
+  paymentStatus: 'not_started',
+  personId: '',
   paymentMethodId: null,
-  dueDate: "",
-  notes: "",
-  supplyNumber: "",
-};
-
-interface SubscriptionDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  subscription?: Subscription;
-  platformMode?: boolean;
+  dueDate: '',
+  notes: '',
+  supplyNumber: '',
 }
 
-export function SubscriptionDialog({
-  open,
-  onOpenChange,
-  subscription,
-  platformMode = false,
-}: SubscriptionDialogProps) {
-  const saveExpense = useSaveExpense(EXPENSE_RESOURCES.subscription);
-  const month = usePeriod((s) => s.month);
-  const year = usePeriod((s) => s.year);
-  const isEdit = !!subscription;
+interface SubscriptionDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  subscription?: Subscription
+  platformMode?: boolean
+}
+
+export function SubscriptionDialog({ open, onOpenChange, subscription, platformMode = false }: SubscriptionDialogProps) {
+  const saveExpense = useSaveExpense(EXPENSE_RESOURCES.subscription)
+  const month = usePeriod((s) => s.month)
+  const year = usePeriod((s) => s.year)
+  const isEdit = !!subscription
+  const personModule = (subscription ? subscription.kind === 'platform' : platformMode) ? 'platforms' : 'recurring'
 
   const {
     register,
@@ -100,17 +80,17 @@ export function SubscriptionDialog({
   } = useForm<SubscriptionForm, unknown, SubscriptionValues>({
     resolver: zodResolver(subscriptionFormSchema),
     defaultValues: emptyForm,
-  });
-  const currency = watch("currency");
+  })
+  const currency = watch('currency')
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) return
     reset(
       subscription
         ? {
             description: subscription.description,
             amount: subscription.amount,
-            currency: subscription.currency as SubscriptionForm["currency"],
+            currency: subscription.currency as SubscriptionForm['currency'],
             exchangeRate: subscription.exchangeRate,
             period: subscription.period,
             expenseType: subscription.expenseType,
@@ -118,73 +98,58 @@ export function SubscriptionDialog({
             personId: subscription.personId,
             paymentMethodId: subscription.paymentMethodId,
             dueDate: toIsoDate(subscription.dueDate),
-            notes: subscription.notes ?? "",
-            supplyNumber: subscription.supplyNumber ?? "",
+            notes: subscription.notes ?? '',
+            supplyNumber: subscription.supplyNumber ?? '',
           }
-        : { ...emptyForm, dueDate: platformMode ? localTodayKey() : "" },
-    );
-  }, [open, subscription, reset, platformMode]);
+        : { ...emptyForm, dueDate: platformMode ? localTodayKey() : '' },
+    )
+  }, [open, subscription, reset, platformMode])
 
   const onSubmit = handleSubmit((data) => {
     const body = {
       ...data,
-      exchangeRate: data.currency === "PEN" ? null : data.exchangeRate,
+      exchangeRate: data.currency === 'PEN' ? null : data.exchangeRate,
       dueDate: data.dueDate || null,
-      ...(platformMode && !isEdit ? { kind: "platform" } : {}),
+      ...(platformMode && !isEdit ? { kind: 'platform' } : {}),
       ...(isEdit ? {} : { paymentMonth: month, paymentYear: year }),
-    };
-    saveExpense.mutate(
-      { id: subscription?.id, body },
-      { onSuccess: () => onOpenChange(false) },
-    );
-  });
+    }
+    saveExpense.mutate({ id: subscription?.id, body }, { onSuccess: () => onOpenChange(false) })
+  })
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={isEdit ? "Editar plataforma" : "Nueva plataforma"}
+      title={isEdit ? 'Editar plataforma' : 'Nueva plataforma'}
       description={
         isEdit
-          ? "Modifica los datos de la suscripción"
+          ? 'Modifica los datos de la suscripción'
           : platformMode
-            ? "Registra una suscripción o servicio que se cobra cada período"
-            : "Agrega una nueva suscripción"
+            ? 'Registra una suscripción o servicio que se cobra cada período'
+            : 'Agrega una nueva suscripción'
       }
-      contentClassName={
-        platformMode ? "platform-form-dialog sm:max-w-[700px]" : undefined
-      }
+      contentClassName={platformMode ? 'platform-form-dialog sm:max-w-[700px]' : undefined}
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button onClick={onSubmit} disabled={saveExpense.isPending}>
-            {platformMode ? "Guardar" : isEdit ? "Guardar" : "Crear"}
+            {platformMode ? 'Guardar' : isEdit ? 'Guardar' : 'Crear'}
           </Button>
         </>
       }
     >
-      <form
-        className={cn("space-y-4 py-2", platformMode && "platform-form")}
-        onSubmit={onSubmit}
-      >
+      <form className={cn('space-y-4 py-2', platformMode && 'platform-form')} onSubmit={onSubmit}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Descripción *</label>
           <Input
-            {...register("description")}
+            {...register('description')}
             placeholder="Ej: Netflix, Spotify, iCloud..."
             aria-invalid={!!errors.description}
-            className={cn(
-              errors.description &&
-                "border-destructive focus-visible:ring-destructive/30",
-            )}
+            className={cn(errors.description && 'border-destructive focus-visible:ring-destructive/30')}
           />
-          {errors.description && (
-            <p className="text-xs text-destructive">
-              {errors.description.message}
-            </p>
-          )}
+          {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -194,28 +159,16 @@ export function SubscriptionDialog({
               type="number"
               step="0.01"
               min="0"
-              {...register("amount", { valueAsNumber: true })}
+              {...register('amount', { valueAsNumber: true })}
               placeholder="0.00"
               aria-invalid={!!errors.amount}
-              className={cn(
-                errors.amount &&
-                  "border-destructive focus-visible:ring-destructive/30",
-              )}
+              className={cn(errors.amount && 'border-destructive focus-visible:ring-destructive/30')}
             />
-            {errors.amount && (
-              <p className="text-xs text-destructive">
-                {errors.amount.message}
-              </p>
-            )}
+            {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Moneda</label>
-            <Select
-              value={currency}
-              onValueChange={(v) =>
-                setValue("currency", v as SubscriptionForm["currency"])
-              }
-            >
+            <Select value={currency} onValueChange={(v) => setValue('currency', v as SubscriptionForm['currency'])}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -230,14 +183,14 @@ export function SubscriptionDialog({
           </div>
         </div>
 
-        {currency !== "PEN" && (
+        {currency !== 'PEN' && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de cambio</label>
             <Input
               type="number"
               step="0.001"
-              {...register("exchangeRate", {
-                setValueAs: (v) => (v === "" || v == null ? null : Number(v)),
+              {...register('exchangeRate', {
+                setValueAs: (v) => (v === '' || v == null ? null : Number(v)),
               })}
               placeholder="Ej: 3.75"
             />
@@ -247,10 +200,7 @@ export function SubscriptionDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Período *</label>
-            <Select
-              value={watch("period")}
-              onValueChange={(v) => setValue("period", v)}
-            >
+            <Select value={watch('period')} onValueChange={(v) => setValue('period', v)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -265,10 +215,7 @@ export function SubscriptionDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo de gasto</label>
-            <Select
-              value={watch("expenseType")}
-              onValueChange={(v) => setValue("expenseType", v)}
-            >
+            <Select value={watch('expenseType')} onValueChange={(v) => setValue('expenseType', v)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -286,24 +233,13 @@ export function SubscriptionDialog({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Persona *</label>
-            <PersonFilterFields
-              multiple={false}
-              presentation="popover"
-              labelClassName="sr-only"
-              emptySelectionLabel="Selecciona persona"
-              includeUnassigned={false}
-              useMeAlias={false}
-              value={watch("personId")}
-              onChange={(id) =>
-                setValue("personId", id ?? "", { shouldValidate: true })
-              }
-              className={cn(errors.personId && "border-destructive")}
+            <PersonPicker
+              module={personModule}
+              value={watch('personId')}
+              onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })}
+              className={cn(errors.personId && 'border-destructive')}
             />
-            {errors.personId && (
-              <p className="text-xs text-destructive">
-                {errors.personId.message}
-              </p>
-            )}
+            {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Cuenta</label>
@@ -314,8 +250,8 @@ export function SubscriptionDialog({
               emptySelectionLabel="—"
               allowEmptySelection
               label="Cuenta"
-              value={watch("paymentMethodId")}
-              onChange={(id) => setValue("paymentMethodId", id ?? null)}
+              value={watch('paymentMethodId')}
+              onChange={(id) => setValue('paymentMethodId', id ?? null)}
             />
           </div>
         </div>
@@ -329,33 +265,30 @@ export function SubscriptionDialog({
               presentation="popover"
               width="w-full"
               labelClassName="sr-only"
-              value={watch("paymentStatus")}
+              value={watch('paymentStatus')}
               onChange={(status) => {
-                if (status) setValue("paymentStatus", status);
+                if (status) setValue('paymentStatus', status)
               }}
             />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Fecha vencimiento</label>
-            <Input type="date" {...register("dueDate")} />
+            <Input type="date" {...register('dueDate')} />
           </div>
         </div>
 
-        {subscription && subscription.kind !== "platform" && (
+        {subscription && subscription.kind !== 'platform' && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">N.º de suministro</label>
-            <Input {...register("supplyNumber")} placeholder="Ej: 987654321" />
+            <Input {...register('supplyNumber')} placeholder="Ej: 987654321" />
           </div>
         )}
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Comentario</label>
-          <Input
-            {...register("notes")}
-            placeholder={platformMode ? "Opcional" : "Nota adicional..."}
-          />
+          <Input {...register('notes')} placeholder={platformMode ? 'Opcional' : 'Nota adicional...'} />
         </div>
       </form>
     </ResponsiveDialog>
-  );
+  )
 }

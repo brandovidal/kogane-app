@@ -1,2 +1,2 @@
-export { ImportsPageView, ImportsPage } from "./ImportsPageView";
-export { NotionImportDetailView } from "./NotionImportDetailView";
+export { ImportsPage } from './ImportsPageView'
+export { NotionImportDetailView } from './NotionImportDetailView'

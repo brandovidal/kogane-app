@@ -1,6 +1,5 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export {
-  commitmentKeys,
   useCommitments,
   useCommitment,
   useCreateCommitment,
@@ -9,9 +8,5 @@ export {
   useCreateInstallments,
   useSaveContribution,
   useDeleteContribution,
-} from "./commitments";
-export type {
-  CommitmentBody,
-  CommitmentPatch,
-  ContributionBody,
-} from "./commitments";
+} from './commitments'
+export type { CommitmentBody, CommitmentPatch, ContributionBody } from './commitments'

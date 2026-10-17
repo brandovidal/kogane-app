@@ -1,2 +1,2 @@
-export type { FixedCostDetailOverviewSectionProps } from "./FixedCostDetailOverviewSection";
-export { FixedCostDetailOverviewSection } from "./FixedCostDetailOverviewSection";
+export type { FixedCostDetailOverviewSectionProps } from './FixedCostDetailOverviewSection'
+export { FixedCostDetailOverviewSection } from './FixedCostDetailOverviewSection'

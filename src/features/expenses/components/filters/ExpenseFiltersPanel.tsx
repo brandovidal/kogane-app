@@ -1,29 +1,29 @@
-import type { ReactNode } from "react";
-import { Trash } from "lucide-react";
-import { Button } from "@/ui/button";
-import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
-import { SheetDescription, SheetTitle } from "@/ui/sheet";
+import type { ReactNode } from 'react'
+import { Trash } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { FilterSheetShell } from '@/shared/components/filters/FilterSheetShell'
+import { SheetDescription, SheetTitle } from '@/ui/sheet'
 
 interface ExpenseFiltersPanelProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  trigger: ReactNode;
-  title?: string;
-  description?: string;
-  shown: number;
-  total: number;
-  countLabel?: string;
-  compactCountInTitle?: boolean;
-  count: number;
-  onClear: () => void;
-  children: ReactNode;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  trigger: ReactNode
+  title?: string
+  description?: string
+  shown: number
+  total: number
+  countLabel?: string
+  compactCountInTitle?: boolean
+  count: number
+  onClear: () => void
+  children: ReactNode
 }
 
 export function ExpenseFiltersPanel({
   open,
   onOpenChange,
   trigger,
-  title = "Filtros",
+  title = 'Filtros',
   description,
   shown,
   total,
@@ -56,8 +56,7 @@ export function ExpenseFiltersPanel({
               className="[display:-webkit-box] overflow-hidden whitespace-normal [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
               title={description}
             >
-              {description ??
-                "Filtra los registros y conserva tus opciones en la dirección de la página."}
+              {description ?? 'Filtra los registros y conserva tus opciones en la dirección de la página.'}
             </span>
             {!compactCountInTitle && countLabel && (
               <span className="mt-1 block">
@@ -68,19 +67,12 @@ export function ExpenseFiltersPanel({
         </>
       }
       footer={
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          className="ml-auto h-8 px-3 text-xs"
-          disabled={count === 0}
-          onClick={onClear}
-        >
+        <Button type="button" variant="destructive" size="sm" className="ml-auto h-8 px-3 text-xs" disabled={count === 0} onClick={onClear}>
           <Trash className="mr-1 size-3.5" /> Limpiar
         </Button>
       }
     >
       <div className="flex flex-col gap-3 px-4">{children}</div>
     </FilterSheetShell>
-  );
+  )
 }

@@ -1,2 +1,2 @@
-export { InstallmentFields } from "./InstallmentFields";
-export type { InstallmentFieldsProps } from "./InstallmentFields";
+export { InstallmentFields } from './InstallmentFields'
+export type { InstallmentFieldsProps } from './InstallmentFields'

@@ -1,5 +1,5 @@
-import { LoaderCircle } from "lucide-react";
-import { Marker, MarkerContent, MarkerIcon } from "@/ui/marker";
+import { LoaderCircle } from 'lucide-react'
+import { Marker, MarkerContent, MarkerIcon } from '@/ui/marker'
 
 export function HistoryTimelineLoading() {
   return (
@@ -8,9 +8,7 @@ export function HistoryTimelineLoading() {
         <MarkerIcon>
           <LoaderCircle className="motion-safe:animate-spin" />
         </MarkerIcon>
-        <MarkerContent className="shimmer">
-          Cargando el historial…
-        </MarkerContent>
+        <MarkerContent className="shimmer">Cargando el historial…</MarkerContent>
       </Marker>
       <div aria-hidden="true" className="space-y-3 motion-safe:animate-pulse">
         {[0, 1].map((index) => (
@@ -24,5 +22,5 @@ export function HistoryTimelineLoading() {
         ))}
       </div>
     </div>
-  );
+  )
 }

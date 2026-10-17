@@ -1,21 +1,29 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
-export { AccountsTable } from "./components/AccountsTable";
-export { CardHoldersDialog } from "./components/CardHoldersDialog";
-export { NewCardDialog } from "./components/NewCardDialog";
-export { NotificationSettingsCard } from "./components/NotificationSettingsCard";
-export { PaymentMethodSelect } from "./components/PaymentMethodSelect";
-export { PaymentMethodIcon } from "./components/PaymentMethodIcon";
-export type { PaymentMethodIconProps } from "./components/PaymentMethodIcon";
-export { PaymentMethodLabel } from "./components/PaymentMethodLabel";
-export type { PaymentMethodLabelProps } from "./components/PaymentMethodLabel";
-export {
-  PAYMENT_METHOD_ICONS,
-  PAYMENT_METHOD_TYPE_LABELS,
-} from "./constants/payment-methods";
-export { PeopleTable } from "./components/PeopleTable";
-export { PersonSelect } from "./components/PersonSelect";
-export { SettingsPage } from "./components/SettingsPage";
-export { SettingsMenuItems } from "./components/SettingsMenuItems";
-export { SETTINGS_MENU_LINKS } from "./constants/menu";
-export type { CardForm } from "./lib/card-form";
-export { emptyCardForm, cardErrors, cardBody } from "./lib/card-form";
+export { AccountsTable } from './components/accounts/AccountsTable'
+export { CardHoldersDialog } from './components/accounts/CardHoldersDialog'
+export { CardsAccountsTabs } from './components/accounts/CardsAccountsTabs'
+export { NewCardDialog } from './components/accounts/NewCardDialog'
+export { OutputAccountsPanel } from './components/accounts/OutputAccountsPanel'
+export { NotificationSettingsCard } from './components/notifications/NotificationSettingsCard'
+export { PaymentMethodSelect } from './components/payment-methods/PaymentMethodSelect'
+export { PaymentMethodIcon } from './components/payment-methods/PaymentMethodIcon'
+export type { PaymentMethodIconProps } from './components/payment-methods/PaymentMethodIcon'
+export { PaymentMethodLabel } from './components/payment-methods/PaymentMethodLabel'
+export type { PaymentMethodLabelProps } from './components/payment-methods/PaymentMethodLabel'
+export { PeoplePage } from './components/people/PeoplePage'
+export { PersonSelect } from './components/people/PersonSelect'
+export { PersonPicker } from './components/people/PersonPicker'
+export { SettingsMenuItems } from './components/navigation/SettingsMenuItems'
+
+export { PAYMENT_METHOD_TYPE_LABELS } from './constants/payment-methods'
+export { SETTINGS_MENU_LINKS } from './constants/menu'
+export { SETTINGS_SECTION, CARDS_ACCOUNTS_TAB } from './constants/sections'
+
+export { useSettingsPreferences } from './hooks/useSettingsPreferences'
+
+export type { CardForm } from './lib/card-form'
+export { emptyCardForm, cardErrors, cardBody } from './lib/card-form'
+
+export { SettingsPage } from './pages/SettingsPage'
+export type { SettingsSection, CardsAccountsTab, SettingsPreferences, SettingsCurrency, SettingsTimeZone } from './types'
+export { GeneralSettingsView } from './views/GeneralSettingsView'

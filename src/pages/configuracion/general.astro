@@ -1,0 +1,8 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import { SettingsPage } from '@/features/settings/pages/SettingsPage'
+---
+
+<DashboardLayout title="Configuración">
+  <SettingsPage section="general" client:load />
+</DashboardLayout>

@@ -1,25 +1,18 @@
-import type { DraftFields } from "@/features/drafts/hooks/drafts";
+import type { DraftFields } from '@/features/drafts/hooks/drafts'
 
 // Destinations offered in the web form (D40); "discard" is only for the bot
-export const FORM_DESTINATIONS = [
-  "daily",
-  "credit_card",
-  "fixed_cost",
-  "subscription",
-  "receivable",
-  "payable",
-] as const;
+export const FORM_DESTINATIONS = ['daily', 'credit_card', 'fixed_cost', 'subscription', 'receivable', 'payable'] as const
 
 // Which optional fields each destination uses (the same rules as REQUIRED_FIELDS_BY_DESTINATION in kogane-api)
 export const FIELDS_BY_DESTINATION: Record<
   string,
   {
-    paymentMethod: boolean;
-    category: boolean;
-    period: boolean;
-    installment: boolean;
-    cardsOnly: boolean;
-    shareable: boolean;
+    paymentMethod: boolean
+    category: boolean
+    period: boolean
+    installment: boolean
+    cardsOnly: boolean
+    shareable: boolean
   }
 > = {
   daily: {
@@ -70,15 +63,15 @@ export const FIELDS_BY_DESTINATION: Record<
     installment: true,
     cardsOnly: false,
   },
-};
+}
 
 export const emptyDraftFields = (): DraftFields => ({
-  destination: "daily",
-  description: "",
+  destination: 'daily',
+  description: '',
   amount: null,
-  currency: "PEN",
+  currency: 'PEN',
   spentAt: new Date().toISOString().slice(0, 10),
-  expenseType: "essential",
+  expenseType: 'essential',
   installment: null,
   period: null,
   kind: null,
@@ -90,21 +83,18 @@ export const emptyDraftFields = (): DraftFields => ({
   operationNumber: null,
   notes: null,
   sharedWith: null,
-});
+})
 
 // Only what the destination uses travels to kogane-api; empty texts become null
 export function toDraftBody(fields: DraftFields): DraftFields {
-  const rules =
-    FIELDS_BY_DESTINATION[fields.destination ?? "daily"] ??
-    FIELDS_BY_DESTINATION.daily;
-  const text = (value: string | null | undefined) =>
-    value && value.trim() ? value.trim() : null;
+  const rules = FIELDS_BY_DESTINATION[fields.destination ?? 'daily'] ?? FIELDS_BY_DESTINATION.daily
+  const text = (value: string | null | undefined) => (value && value.trim() ? value.trim() : null)
   return {
     ...fields,
     description: text(fields.description),
     spentAt: fields.spentAt ? fields.spentAt.slice(0, 10) : null,
     installment: rules.installment ? text(fields.installment) : null,
-    period: rules.period ? (fields.period ?? "monthly") : null,
+    period: rules.period ? (fields.period ?? 'monthly') : null,
     // Subscriptions only: Recurrentes sends its kind (service by default), without one it is a platform (D107, D109)
     kind: rules.period ? (fields.kind ?? null) : null,
     supplyNumber: rules.period ? text(fields.supplyNumber) : null,
@@ -115,15 +105,11 @@ export function toDraftBody(fields: DraftFields): DraftFields {
     notes: text(fields.notes),
     // debts cannot be shared (D73); a split without people stops sharing
     sharedWith: shareableWith(fields, rules.shareable),
-  };
+  }
 }
 
 // Rows of the split without a person yet are left out; none left means not shared
-function shareableWith(
-  fields: DraftFields,
-  shareable: boolean,
-): DraftFields["sharedWith"] {
-  const shares =
-    fields.sharedWith?.shares.filter((share) => share.personId) ?? [];
-  return shareable && shares.length ? { shares } : null;
+function shareableWith(fields: DraftFields, shareable: boolean): DraftFields['sharedWith'] {
+  const shares = fields.sharedWith?.shares.filter((share) => share.personId) ?? []
+  return shareable && shares.length ? { shares } : null
 }

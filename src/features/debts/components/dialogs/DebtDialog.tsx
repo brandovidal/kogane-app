@@ -1,31 +1,23 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { useCreateDebt, useUpdateDebt } from "@/features/debts/hooks/debts";
-import type { Debt } from "@/shared/api/types";
-import { DEBT_DIRECTION_LABELS } from "@/features/debts/constants/debts";
-import { usePeriod } from "@/shared/stores/period.store";
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { PaymentMethodSelect } from '@/features/settings/components/payment-methods/PaymentMethodSelect'
+import { PersonPicker } from '@/features/settings/components/people/PersonPicker'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
+import { useCreateDebt, useUpdateDebt } from '@/features/debts/hooks/debts'
+import type { Debt } from '@/shared/api/types'
+import { DEBT_DIRECTION_LABELS } from '@/features/debts/constants/debts'
+import { usePeriod } from '@/shared/stores/period.store'
 
 const debtFormSchema = z.object({
-  direction: z.enum(["owed_to_me", "i_owe"]),
-  description: z.string().trim().min(1, "Escribe un concepto"),
-  amount: z
-    .number({ error: "Monto requerido" })
-    .positive("Monto debe ser positivo"),
-  personId: z.string().min(1, "Persona requerida"),
+  direction: z.enum(['owed_to_me', 'i_owe']),
+  description: z.string().trim().min(1, 'Escribe un concepto'),
+  amount: z.number({ error: 'Monto requerido' }).positive('Monto debe ser positivo'),
+  personId: z.string().min(1, 'Persona requerida'),
   installments: z.number().int().min(1).max(120),
   dueDate: z.string(),
   notes: z
@@ -33,39 +25,34 @@ const debtFormSchema = z.object({
     .trim()
     .transform((value) => value || null),
   paymentMethodId: z.string().nullable(), // the card it was charged on (D114)
-});
-type DebtForm = z.input<typeof debtFormSchema>;
-type DebtValues = z.output<typeof debtFormSchema>;
+})
+type DebtForm = z.input<typeof debtFormSchema>
+type DebtValues = z.output<typeof debtFormSchema>
 
 interface DebtDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  direction: "owed_to_me" | "i_owe";
-  debt?: Debt;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  direction: 'owed_to_me' | 'i_owe'
+  debt?: Debt
 }
 
 // One row per installment (D60): "3 cuotas de 400" creates three installments from the month on screen
-export function DebtDialog({
-  open,
-  onOpenChange,
-  direction,
-  debt,
-}: DebtDialogProps) {
-  const createDebt = useCreateDebt();
-  const updateDebt = useUpdateDebt();
-  const month = usePeriod((s) => s.month);
-  const year = usePeriod((s) => s.year);
+export function DebtDialog({ open, onOpenChange, direction, debt }: DebtDialogProps) {
+  const createDebt = useCreateDebt()
+  const updateDebt = useUpdateDebt()
+  const month = usePeriod((s) => s.month)
+  const year = usePeriod((s) => s.year)
 
   const emptyForm: DebtForm = {
     direction,
-    description: "",
+    description: '',
     amount: 0,
-    personId: "",
+    personId: '',
     installments: 1,
-    dueDate: "",
-    notes: "",
+    dueDate: '',
+    notes: '',
     paymentMethodId: null,
-  };
+  }
   const {
     register,
     handleSubmit,
@@ -76,7 +63,7 @@ export function DebtDialog({
   } = useForm<DebtForm, unknown, DebtValues>({
     resolver: zodResolver(debtFormSchema),
     defaultValues: emptyForm,
-  });
+  })
 
   useEffect(() => {
     if (open)
@@ -88,14 +75,14 @@ export function DebtDialog({
               amount: debt.amount,
               personId: debt.personId,
               installments: 1,
-              dueDate: debt.dueDate?.slice(0, 10) ?? "",
-              notes: debt.notes ?? "",
+              dueDate: debt.dueDate?.slice(0, 10) ?? '',
+              notes: debt.notes ?? '',
               paymentMethodId: debt.paymentMethodId,
             }
           : emptyForm,
-      );
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, direction, debt, reset]);
+  }, [open, direction, debt, reset])
 
   const onSubmit = handleSubmit(({ dueDate, ...data }) => {
     if (debt) {
@@ -115,8 +102,8 @@ export function DebtDialog({
           },
         },
         { onSuccess: () => onOpenChange(false) },
-      );
-      return;
+      )
+      return
     }
     createDebt.mutate(
       {
@@ -126,10 +113,10 @@ export function DebtDialog({
         paymentYear: year,
       },
       { onSuccess: () => onOpenChange(false) },
-    );
-  });
+    )
+  })
 
-  const installments = watch("installments");
+  const installments = watch('installments')
 
   return (
     <ResponsiveDialog
@@ -137,28 +124,25 @@ export function DebtDialog({
       onOpenChange={onOpenChange}
       title={
         debt
-          ? debt.direction === "i_owe"
-            ? "Editar deuda"
-            : "Editar cobro"
-          : watch("direction") === "i_owe"
-            ? "Nueva deuda (debo)"
-            : "Nuevo préstamo (me deben)"
+          ? debt.direction === 'i_owe'
+            ? 'Editar deuda'
+            : 'Editar cobro'
+          : watch('direction') === 'i_owe'
+            ? 'Nueva deuda (debo)'
+            : 'Nuevo préstamo (me deben)'
       }
       description={
         debt
-          ? `Modifica los datos ${debt.direction === "i_owe" ? "de la deuda" : "del cobro"}. Si son cuotas, el monto es el de cada cuota.`
-          : `${watch("direction") === "i_owe" ? "Registra lo que debes" : "Registra lo que alguien te debe"}. Si son cuotas, el monto es el de cada cuota.`
+          ? `Modifica los datos ${debt.direction === 'i_owe' ? 'de la deuda' : 'del cobro'}. Si son cuotas, el monto es el de cada cuota.`
+          : `${watch('direction') === 'i_owe' ? 'Registra lo que debes' : 'Registra lo que alguien te debe'}. Si son cuotas, el monto es el de cada cuota.`
       }
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button
-            onClick={onSubmit}
-            disabled={createDebt.isPending || updateDebt.isPending}
-          >
-            {debt ? "Guardar cambios" : "Crear"}
+          <Button onClick={onSubmit} disabled={createDebt.isPending || updateDebt.isPending}>
+            {debt ? 'Guardar cambios' : 'Crear'}
           </Button>
         </>
       }
@@ -167,12 +151,7 @@ export function DebtDialog({
         {!debt && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Tipo</label>
-            <Select
-              value={watch("direction")}
-              onValueChange={(v) =>
-                setValue("direction", v as DebtForm["direction"])
-              }
-            >
+            <Select value={watch('direction')} onValueChange={(v) => setValue('direction', v as DebtForm['direction'])}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -188,90 +167,52 @@ export function DebtDialog({
         )}
         <div className="space-y-1.5">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              {watch("direction") === "i_owe"
-                ? "A quién le debes"
-                : "Quién te debe"}{" "}
-              *
-            </label>
-            <PersonSelect
-              value={watch("personId")}
-              onChange={(id) =>
-                setValue("personId", id ?? "", { shouldValidate: true })
-              }
-            />
-            {errors.personId && (
-              <p className="text-xs text-destructive">
-                {errors.personId.message}
-              </p>
-            )}
+            <label className="text-sm font-medium">{watch('direction') === 'i_owe' ? 'A quién le debes' : 'Quién te debe'} *</label>
+            <PersonPicker value={watch('personId')} onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })} />
+            {errors.personId && <p className="text-xs text-destructive">{errors.personId.message}</p>}
           </div>
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Descripción *</label>
-          <Input
-            {...register("description")}
-            placeholder="Ej: BCP, Stream, préstamo…"
-          />
-          {errors.description && (
-            <p className="text-xs text-destructive">
-              {errors.description.message}
-            </p>
-          )}
+          <Input {...register('description')} placeholder="Ej: BCP, Stream, préstamo…" />
+          {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              {!debt && installments > 1 ? "Monto por cuota *" : "Monto *"}
-            </label>
-            <Input
-              type="number"
-              step="0.01"
-              {...register("amount", { valueAsNumber: true })}
-            />
-            {errors.amount && (
-              <p className="text-xs text-destructive">
-                {errors.amount.message}
-              </p>
-            )}
+            <label className="text-sm font-medium">{!debt && installments > 1 ? 'Monto por cuota *' : 'Monto *'}</label>
+            <Input type="number" step="0.01" {...register('amount', { valueAsNumber: true })} />
+            {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
           {!debt && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Cuotas</label>
-              <Input
-                type="number"
-                min={1}
-                max={120}
-                {...register("installments", { valueAsNumber: true })}
-              />
+              <Input type="number" min={1} max={120} {...register('installments', { valueAsNumber: true })} />
             </div>
           )}
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Fecha límite</label>
-          <Input type="date" {...register("dueDate")} />
+          <Input type="date" {...register('dueDate')} />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">
-            Tarjeta o cuenta con que se pagó
-          </label>
+          <label className="text-sm font-medium">Tarjeta o cuenta con que se pagó</label>
           <PaymentMethodSelect
             allowEmpty
-            value={watch("paymentMethodId")}
-            onChange={(id) => setValue("paymentMethodId", id)}
+            value={watch('paymentMethodId')}
+            onChange={(id) => setValue('paymentMethodId', id)}
             placeholder="Opcional: para contrastar con el estado de cuenta"
           />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Comentario</label>
-          <Input {...register("notes")} placeholder="Nota adicional..." />
+          <Input {...register('notes')} placeholder="Nota adicional..." />
         </div>
       </form>
     </ResponsiveDialog>
-  );
+  )
 }

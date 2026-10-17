@@ -1,18 +1,15 @@
-import { api, unwrap } from "@/shared/api/client";
+import { api, unwrap } from '@/shared/api/client'
 
-export async function googleSignInUrl(
-  returnTo: string,
-  invite: string | null,
-): Promise<string> {
+export async function googleSignInUrl(returnTo: string, invite: string | null): Promise<string> {
   const { url } = await unwrap(
-    api.GET("/v1/auth/google", {
+    api.GET('/v1/auth/google', {
       params: { query: { returnTo, ...(invite ? { invite } : {}) } },
     }),
-  );
-  return url;
+  )
+  return url
 }
 
 export async function googleLinkUrl(): Promise<string> {
-  const { url } = await unwrap(api.GET("/v1/auth/google/link"));
-  return url;
+  const { url } = await unwrap(api.GET('/v1/auth/google/link'))
+  return url
 }

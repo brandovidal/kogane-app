@@ -1,118 +1,74 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
+import { useState } from 'react'
+import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from 'lucide-react'
 
-import {
-  useHistory,
-  type HistoryFilter,
-} from "@/features/history/hooks/history";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/ui/sheet";
+import { useHistory, type HistoryFilter } from '@/features/history/hooks/history'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/ui/sheet'
 
-import {
-  ENTITY_LABELS,
-  SOURCE_LABELS,
-} from "@/features/history/lib/history-view";
-import { HistoryTimeline } from "./HistoryTimeline";
-import { HistoryTimelineLoading } from "./HistoryTimelineLoading";
+import { ENTITY_LABELS, SOURCE_LABELS } from '@/features/history/lib/history-view'
+import { HistoryTimeline } from './HistoryTimeline'
+import { HistoryTimelineLoading } from './HistoryTimelineLoading'
 
-const ALL = "__all__";
-const ENTITIES = Object.keys(ENTITY_LABELS);
+const ALL = '__all__'
+const ENTITIES = Object.keys(ENTITY_LABELS)
 const MODULES = [
   {
-    key: "expenses",
-    label: "Gastos",
-    entities: [
-      "exp_daily_expenses",
-      "exp_fixed_costs",
-      "exp_subscriptions",
-      "exp_credit_card_expenses",
-      "exp_recurring_expenses",
-    ],
+    key: 'expenses',
+    label: 'Gastos',
+    entities: ['exp_daily_expenses', 'exp_fixed_costs', 'exp_subscriptions', 'exp_credit_card_expenses', 'exp_recurring_expenses'],
   },
   {
-    key: "debts",
-    label: "Cobros y deudas",
-    entities: ["exp_debts", "exp_debt_payments"],
+    key: 'debts',
+    label: 'Cobros y deudas',
+    entities: ['exp_debts', 'exp_debt_payments'],
   },
   {
-    key: "commitments",
-    label: "Préstamos e inversiones",
-    entities: ["exp_commitments", "exp_contributions"],
+    key: 'commitments',
+    label: 'Préstamos e inversiones',
+    entities: ['exp_commitments', 'exp_contributions'],
   },
   {
-    key: "budget",
-    label: "Presupuesto",
-    entities: [
-      "bud_monthly_budgets",
-      "bud_budget_groups",
-      "bud_category_budgets",
-      "bud_incomes",
-      "bud_settings",
-    ],
+    key: 'budget',
+    label: 'Presupuesto',
+    entities: ['bud_monthly_budgets', 'bud_budget_groups', 'bud_category_budgets', 'bud_incomes', 'bud_settings'],
   },
   {
-    key: "settings",
-    label: "Configuración",
-    entities: [
-      "cat_people",
-      "cat_payment_methods",
-      "cat_card_holders",
-      "cat_categories",
-      "ntf_settings",
-    ],
+    key: 'settings',
+    label: 'Configuración',
+    entities: ['cat_people', 'cat_payment_methods', 'cat_card_holders', 'cat_categories', 'ntf_settings'],
   },
   {
-    key: "imports",
-    label: "Importación",
-    entities: ["imp_batches", "imp_statements"],
+    key: 'imports',
+    label: 'Importación',
+    entities: ['imp_batches', 'imp_statements'],
   },
-] as const;
-const KEYS = ["module", "entity", "source", "from", "to", "page"] as const;
-type HistoryFilters = Partial<Record<(typeof KEYS)[number], string>>;
+] as const
+const KEYS = ['module', 'entity', 'source', 'from', 'to', 'page'] as const
+type HistoryFilters = Partial<Record<(typeof KEYS)[number], string>>
 
 export function HistoryPanel() {
-  const [filters, setFilters] = useUrlFilters<HistoryFilters>([...KEYS]);
-  const [open, setOpen] = useState(false);
-  const page = Math.max(Number(filters.page) || 1, 1);
+  const [filters, setFilters] = useUrlFilters<HistoryFilters>([...KEYS])
+  const [open, setOpen] = useState(false)
+  const page = Math.max(Number(filters.page) || 1, 1)
   const query: HistoryFilter = {
-    module: filters.module as HistoryFilter["module"],
+    module: filters.module as HistoryFilter['module'],
     entity: filters.entity,
-    source: filters.source as HistoryFilter["source"],
+    source: filters.source as HistoryFilter['source'],
     from: filters.from,
     to: filters.to,
     page,
-  };
-  const { data, isLoading, isError } = useHistory(query);
+  }
+  const { data, isLoading, isError } = useHistory(query)
   const active =
-    Number(Boolean(filters.module || filters.entity)) +
-    ["source", "from", "to"].filter(
-      (key) => filters[key as keyof HistoryFilters],
-    ).length;
-  const set = (key: keyof HistoryFilters, value: string | undefined) =>
-    setFilters({ ...filters, [key]: value || undefined, page: undefined });
-  const pages = data ? Math.max(Math.ceil(data.total / data.pageSize), 1) : 1;
-  const selectedModule = MODULES.find(
-    (module) => module.key === filters.module,
-  );
-  const screens = selectedModule?.entities ?? ENTITIES;
+    Number(Boolean(filters.module || filters.entity)) + ['source', 'from', 'to'].filter((key) => filters[key as keyof HistoryFilters]).length
+  const set = (key: keyof HistoryFilters, value: string | undefined) => setFilters({ ...filters, [key]: value || undefined, page: undefined })
+  const pages = data ? Math.max(Math.ceil(data.total / data.pageSize), 1) : 1
+  const selectedModule = MODULES.find((module) => module.key === filters.module)
+  const screens = selectedModule?.entities ?? ENTITIES
 
   return (
     <div className="space-y-4">
@@ -121,15 +77,14 @@ export function HistoryPanel() {
           <SheetTrigger asChild>
             <Button variant="outline" size="sm" className="h-9">
               <SlidersHorizontal className="mr-1.5 h-3.5 w-3.5" /> Filtros
-              {active > 0 ? ` (${active})` : ""}
+              {active > 0 ? ` (${active})` : ''}
             </Button>
           </SheetTrigger>
           <SheetContent className="w-full max-w-sm">
             <SheetHeader>
               <SheetTitle>Filtros</SheetTitle>
               <SheetDescription>
-                Revisa todo el historial o filtra por módulo y pantalla. Los
-                filtros quedan en la dirección de la página.
+                Revisa todo el historial o filtra por módulo y pantalla. Los filtros quedan en la dirección de la página.
               </SheetDescription>
             </SheetHeader>
             <div className="flex flex-col gap-3 px-4">
@@ -156,12 +111,7 @@ export function HistoryPanel() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select
-                value={filters.entity ?? ALL}
-                onValueChange={(value) =>
-                  set("entity", value === ALL ? undefined : value)
-                }
-              >
+              <Select value={filters.entity ?? ALL} onValueChange={(value) => set('entity', value === ALL ? undefined : value)}>
                 <SelectTrigger aria-label="Pantalla" className="w-full">
                   <SelectValue placeholder="Pantalla: todas" />
                 </SelectTrigger>
@@ -174,12 +124,7 @@ export function HistoryPanel() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select
-                value={filters.source ?? ALL}
-                onValueChange={(value) =>
-                  set("source", value === ALL ? undefined : value)
-                }
-              >
+              <Select value={filters.source ?? ALL} onValueChange={(value) => set('source', value === ALL ? undefined : value)}>
                 <SelectTrigger aria-label="Origen" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -194,27 +139,15 @@ export function HistoryPanel() {
               </Select>
               <label className="space-y-1 text-sm">
                 <span className="text-muted-foreground">Desde</span>
-                <Input
-                  type="date"
-                  value={filters.from ?? ""}
-                  onChange={(event) => set("from", event.target.value)}
-                />
+                <Input type="date" value={filters.from ?? ''} onChange={(event) => set('from', event.target.value)} />
               </label>
               <label className="space-y-1 text-sm">
                 <span className="text-muted-foreground">Hasta</span>
-                <Input
-                  type="date"
-                  value={filters.to ?? ""}
-                  onChange={(event) => set("to", event.target.value)}
-                />
+                <Input type="date" value={filters.to ?? ''} onChange={(event) => set('to', event.target.value)} />
               </label>
             </div>
             <SheetFooter>
-              <Button
-                variant="outline"
-                disabled={active === 0}
-                onClick={() => setFilters({})}
-              >
+              <Button variant="outline" disabled={active === 0} onClick={() => setFilters({})}>
                 Limpiar filtros
               </Button>
             </SheetFooter>
@@ -227,7 +160,7 @@ export function HistoryPanel() {
         )}
         {data && (
           <span className="text-xs text-muted-foreground">
-            {data.total} cambio{data.total === 1 ? "" : "s"}
+            {data.total} cambio{data.total === 1 ? '' : 's'}
           </span>
         )}
       </div>
@@ -235,25 +168,12 @@ export function HistoryPanel() {
       {isLoading ? (
         <HistoryTimelineLoading />
       ) : isError ? (
-        <p className="text-sm text-destructive">
-          No se pudo leer el historial.
-        </p>
+        <p className="text-sm text-destructive">No se pudo leer el historial.</p>
       ) : !data || data.items.length === 0 ? (
-        <EmptyState
-          title="Sin cambios"
-          description={
-            active
-              ? "No hay cambios con estos filtros"
-              : "Todavía no se registró ningún cambio"
-          }
-        />
+        <EmptyState title="Sin cambios" description={active ? 'No hay cambios con estos filtros' : 'Todavía no se registró ningún cambio'} />
       ) : (
         <>
-          <HistoryTimeline
-            entries={data.items}
-            labels={data.labels}
-            showRecord
-          />
+          <HistoryTimeline entries={data.items} labels={data.labels} showRecord />
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
@@ -271,17 +191,12 @@ export function HistoryPanel() {
             <span className="text-xs text-muted-foreground">
               Página {page} de {pages}
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= pages}
-              onClick={() => setFilters({ ...filters, page: String(page + 1) })}
-            >
+            <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => setFilters({ ...filters, page: String(page + 1) })}>
               Más antiguos <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
         </>
       )}
     </div>
-  );
+  )
 }

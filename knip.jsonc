@@ -2,13 +2,18 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   // An export used only inside its own file is fine
   "ignoreExportsUsedInFile": true,
+  // each feature exposes its public surface through index.ts barrels (feature layout)
+  "entry": ["src/**/index.ts"],
   "ignore": [
-    "src/styles/globals.css" // imported from a <style> block of Layout.astro
+    "src/styles/globals.css", // imported from a <style> block of Layout.astro
+    "src/styles/shimmer.css", // @import-ed by globals.css (HistoryTimelineLoading uses the .shimmer class)
   ],
-  // shadcn/ui primitives keep every part of the component: adding one back by hand is worse than carrying it
-  "ignoreIssues": { "src/ui/**": ["exports", "types"] },
+  "ignoreIssues": {
+    // knip cannot follow a name through the barrels, so exports and types are checked by tsc/eslint; unused files still are
+    "src/ui/**": ["exports", "types"],
+  },
   "ignoreDependencies": [
     "@astrojs/check", // `astro check` loads it
-    "tailwindcss" // globals.css starts with @import "tailwindcss"
-  ]
+    "tailwindcss", // globals.css starts with @import "tailwindcss"
+  ],
 }

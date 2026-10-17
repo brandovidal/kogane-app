@@ -1,7 +1,1 @@
-export {
-  pressButton,
-  sendMessage,
-  type BotReply,
-  type ConversationResult,
-  type OutgoingMessage,
-} from "../services/message.service";
+export { pressButton, sendMessage, type BotReply } from '../services/message.service'

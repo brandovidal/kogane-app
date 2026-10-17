@@ -1,32 +1,17 @@
-import { useEffect, useState, type ReactNode } from "react";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import type { DataViewProps, DataViewSummary } from "@/shared/types/data-view";
-import { useDataTableCalculations } from "@/shared/hooks/useDataTableCalculations";
-import { DataView } from "./DataView";
-import {
-  DATA_TABLE_PAGE_SIZE,
-  DATA_TABLE_PAGE_SIZES,
-} from "@/shared/constants/data-table";
-import { Button } from "@/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { useEffect, useState, type ReactNode } from 'react'
+import { ChevronDown, ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react'
+import type { DataViewProps, DataViewSummary } from '@/shared/types/data-view'
+import { useDataTableCalculations } from '@/shared/hooks/useDataTableCalculations'
+import { DataView } from './DataView'
+import { DATA_TABLE_PAGE_SIZE, DATA_TABLE_PAGE_SIZES } from '@/shared/constants/data-table'
+import { Button } from '@/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
 
 interface GroupPaginationState {
-  pageIndex: number;
-  pageSize: number;
-  hidden: boolean;
-  label: string;
+  pageIndex: number
+  pageSize: number
+  hidden: boolean
+  label: string
 }
 
 function GroupSection<T>({
@@ -44,36 +29,29 @@ function GroupSection<T>({
   initiallyOpen,
   primary,
 }: {
-  label: ReactNode;
-  count: number;
-  summary?: ReactNode;
-  details?: ReactNode;
-  children: (rows: T[], paginationFooter?: ReactNode) => ReactNode;
-  rows: T[];
-  paginate: boolean;
-  groupId: string;
-  pagination: GroupPaginationState;
-  onPaginationChange: (
-    groupId: string,
-    pagination: GroupPaginationState,
-  ) => void;
-  collapsible: boolean;
-  initiallyOpen: boolean;
-  primary: boolean;
+  label: ReactNode
+  count: number
+  summary?: ReactNode
+  details?: ReactNode
+  children: (rows: T[], paginationFooter?: ReactNode) => ReactNode
+  rows: T[]
+  paginate: boolean
+  groupId: string
+  pagination: GroupPaginationState
+  onPaginationChange: (groupId: string, pagination: GroupPaginationState) => void
+  collapsible: boolean
+  initiallyOpen: boolean
+  primary: boolean
 }) {
-  const [open, setOpen] = useState(initiallyOpen);
-  useEffect(() => setOpen(initiallyOpen), [initiallyOpen]);
-  const { pageIndex, pageSize, hidden: paginationHidden } = pagination;
-  const pageCount = Math.max(1, Math.ceil(count / pageSize));
-  const currentPage = Math.min(pageIndex, pageCount - 1);
-  const updatePagination = (changes: Partial<GroupPaginationState>) =>
-    onPaginationChange(groupId, { ...pagination, ...changes });
-  const visibleRows =
-    paginate && !paginationHidden
-      ? rows.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
-      : rows;
-  const from = count ? currentPage * pageSize + 1 : 0;
-  const to = Math.min((currentPage + 1) * pageSize, count);
+  const [open, setOpen] = useState(initiallyOpen)
+  useEffect(() => setOpen(initiallyOpen), [initiallyOpen])
+  const { pageIndex, pageSize, hidden: paginationHidden } = pagination
+  const pageCount = Math.max(1, Math.ceil(count / pageSize))
+  const currentPage = Math.min(pageIndex, pageCount - 1)
+  const updatePagination = (changes: Partial<GroupPaginationState>) => onPaginationChange(groupId, { ...pagination, ...changes })
+  const visibleRows = paginate && !paginationHidden ? rows.slice(currentPage * pageSize, (currentPage + 1) * pageSize) : rows
+  const from = count ? currentPage * pageSize + 1 : 0
+  const to = Math.min((currentPage + 1) * pageSize, count)
   const paginationFooter = paginate ? (
     paginationHidden ? (
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
@@ -100,17 +78,8 @@ function GroupSection<T>({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <div className="flex items-center gap-2">
             <span>Por página</span>
-            <Select
-              value={String(pageSize)}
-              onValueChange={(value) =>
-                updatePagination({ pageSize: Number(value), pageIndex: 0 })
-              }
-            >
-              <SelectTrigger
-                size="sm"
-                aria-label="Registros por página del grupo"
-                className="h-8"
-              >
+            <Select value={String(pageSize)} onValueChange={(value) => updatePagination({ pageSize: Number(value), pageIndex: 0 })}>
+              <SelectTrigger size="sm" aria-label="Registros por página del grupo" className="h-8">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -162,25 +131,20 @@ function GroupSection<T>({
         </div>
       </div>
     )
-  ) : undefined;
+  ) : undefined
   const heading = (
     <>
       <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-        {collapsible &&
-          (open ? (
-            <ChevronDown className="size-4 shrink-0" />
-          ) : (
-            <ChevronRight className="size-4 shrink-0" />
-          ))}
+        {collapsible && (open ? <ChevronDown className="size-4 shrink-0" /> : <ChevronRight className="size-4 shrink-0" />)}
         <span className="truncate">{label}</span>
         <span className="inline-flex shrink-0 items-center rounded-full border border-border/80 bg-muted/40 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-          {count} {count === 1 ? "gasto" : "gastos"}
+          {count} {count === 1 ? 'gasto' : 'gastos'}
         </span>
         {details}
       </span>
       {summary}
     </>
-  );
+  )
 
   return (
     <section className="space-y-2">
@@ -189,25 +153,19 @@ function GroupSection<T>({
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
-          className={`flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${primary ? "text-base font-bold tracking-tight" : "text-sm font-medium"}`}
+          className={`flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${primary ? 'text-base font-bold tracking-tight' : 'text-sm font-medium'}`}
         >
           {heading}
         </button>
       ) : (
-        <h2
-          className={`flex items-baseline justify-between gap-3 ${primary ? "text-base font-bold tracking-tight" : "text-sm font-medium"}`}
-        >
+        <h2 className={`flex items-baseline justify-between gap-3 ${primary ? 'text-base font-bold tracking-tight' : 'text-sm font-medium'}`}>
           {heading}
         </h2>
       )}
       {(!collapsible || open) &&
-        (rows.length === 0 ? (
-          <p className="px-2 text-sm text-muted-foreground">Sin registros</p>
-        ) : (
-          children(visibleRows, paginationFooter)
-        ))}
+        (rows.length === 0 ? <p className="px-2 text-sm text-muted-foreground">Sin registros</p> : children(visibleRows, paginationFooter))}
     </section>
-  );
+  )
 }
 
 export function GroupedDataView<T>({
@@ -215,7 +173,7 @@ export function GroupedDataView<T>({
   columns,
   rowKey,
   view,
-  groupBy = "none",
+  groupBy = 'none',
   groupKey,
   groupLabel,
   primaryGroupDepth = 0,
@@ -239,37 +197,24 @@ export function GroupedDataView<T>({
   onSelectedChange,
   selectionDisabled,
 }: DataViewProps<T> & {
-  groupBy?: string | readonly string[];
-  groupKey: (item: T, field: string) => string;
-  groupLabel: (key: string, field: string) => ReactNode;
-  primaryGroupDepth?: number;
-  summaryForGroup?: (
-    items: T[],
-    key?: string,
-    field?: string,
-  ) => DataViewSummary;
-  groupDetailsFor?: (items: T[], key: string, field: string) => ReactNode;
-  collapsiblePrimaryGroups?: boolean;
-  initialOpenPrimaryGroups?: number;
-  paginatePrimaryGroups?: boolean;
-  comparePrimaryGroups?: (left: T[], right: T[]) => number;
+  groupBy?: string | readonly string[]
+  groupKey: (item: T, field: string) => string
+  groupLabel: (key: string, field: string) => ReactNode
+  primaryGroupDepth?: number
+  summaryForGroup?: (items: T[], key?: string, field?: string) => DataViewSummary
+  groupDetailsFor?: (items: T[], key: string, field: string) => ReactNode
+  collapsiblePrimaryGroups?: boolean
+  initialOpenPrimaryGroups?: number
+  paginatePrimaryGroups?: boolean
+  comparePrimaryGroups?: (left: T[], right: T[]) => number
   /** Every possible group of a field (statuses, people, currencies…); undefined for open-ended fields */
-  knownGroups?: (field: string) => string[] | undefined;
+  knownGroups?: (field: string) => string[] | undefined
   /** Without it, the groups of `knownGroups` that have no rows are shown too */
-  hideEmptyGroups?: boolean;
+  hideEmptyGroups?: boolean
 }) {
-  const calculationState = useDataTableCalculations(
-    calculationStorageKey,
-    calculationDefaults,
-  );
-  const [paginationByGroup, setPaginationByGroup] = useState<
-    Map<string, GroupPaginationState>
-  >(() => new Map());
-  const fields = Array.isArray(groupBy)
-    ? groupBy
-    : groupBy === "none"
-      ? []
-      : [groupBy];
+  const calculationState = useDataTableCalculations(calculationStorageKey, calculationDefaults)
+  const [paginationByGroup, setPaginationByGroup] = useState<Map<string, GroupPaginationState>>(() => new Map())
+  const fields = Array.isArray(groupBy) ? groupBy : groupBy === 'none' ? [] : [groupBy]
   if (!fields.length)
     return (
       <DataView
@@ -291,40 +236,30 @@ export function GroupedDataView<T>({
         onSelectedChange={onSelectedChange}
         selectionDisabled={selectionDisabled}
       />
-    );
-  let firstGroup = true;
-  let primaryGroupCount = 0;
-  let primaryGroupIds = new Set<string>();
+    )
+  let firstGroup = true
+  let primaryGroupCount = 0
+  let primaryGroupIds = new Set<string>()
   const renderGroups = (rows: T[], depth: number): ReactNode => {
-    const field = fields[depth];
-    const groups = new Map<string, T[]>();
+    const field = fields[depth]
+    const groups = new Map<string, T[]>()
     if (!hideEmptyGroups) {
-      knownGroups?.(field)?.forEach((key) => groups.set(key, []));
+      knownGroups?.(field)?.forEach((key) => groups.set(key, []))
     }
     rows.forEach((item) => {
-      const key = groupKey(item, field);
-      groups.set(key, [...(groups.get(key) ?? []), item]);
-    });
-    const orderedGroups = [...groups].sort(([, left], [, right]) =>
-      depth === 0 && comparePrimaryGroups
-        ? comparePrimaryGroups(left, right)
-        : 0,
-    );
+      const key = groupKey(item, field)
+      groups.set(key, [...(groups.get(key) ?? []), item])
+    })
+    const orderedGroups = [...groups].sort(([, left], [, right]) => (depth === 0 && comparePrimaryGroups ? comparePrimaryGroups(left, right) : 0))
     if (depth === 0) {
-      primaryGroupCount = orderedGroups.length;
-      primaryGroupIds = new Set(
-        orderedGroups.map(([key]) => `${field}:${key}`),
-      );
+      primaryGroupCount = orderedGroups.length
+      primaryGroupIds = new Set(orderedGroups.map(([key]) => `${field}:${key}`))
     }
     return (
-      <div
-        className={
-          depth ? "ml-3 space-y-3 border-l pl-3 sm:ml-5 sm:pl-5" : "space-y-4"
-        }
-      >
+      <div className={depth ? 'ml-3 space-y-3 border-l pl-3 sm:ml-5 sm:pl-5' : 'space-y-4'}>
         {orderedGroups.map(([key, groupedRows], groupIndex) => {
-          const summary = summaryForGroup?.(groupedRows, key, field);
-          const collapsible = collapsiblePrimaryGroups && depth === 0;
+          const summary = summaryForGroup?.(groupedRows, key, field)
+          const collapsible = collapsiblePrimaryGroups && depth === 0
           return (
             <GroupSection<T>
               key={`${field}:${key}`}
@@ -333,9 +268,7 @@ export function GroupedDataView<T>({
               summary={summary?.label}
               details={groupDetailsFor?.(groupedRows, key, field)}
               collapsible={collapsible}
-              initiallyOpen={
-                groupedRows.length > 0 && groupIndex < initialOpenPrimaryGroups
-              }
+              initiallyOpen={groupedRows.length > 0 && groupIndex < initialOpenPrimaryGroups}
               primary={depth === primaryGroupDepth}
               rows={groupedRows}
               paginate={paginatePrimaryGroups && depth === 0}
@@ -350,21 +283,17 @@ export function GroupedDataView<T>({
               }
               onPaginationChange={(groupId, pagination) => {
                 setPaginationByGroup((current) => {
-                  const next = new Map(current);
-                  next.set(groupId, pagination);
-                  return next;
-                });
+                  const next = new Map(current)
+                  next.set(groupId, pagination)
+                  return next
+                })
               }}
             >
               {(visibleRows, paginationFooter) =>
                 depth + 1 < fields.length ? (
                   <div className="space-y-3">
                     {renderGroups(visibleRows, depth + 1)}
-                    {paginationFooter && (
-                      <div className="rounded-xl border bg-card px-4 py-3">
-                        {paginationFooter}
-                      </div>
-                    )}
+                    {paginationFooter && <div className="rounded-xl border bg-card px-4 py-3">{paginationFooter}</div>}
                   </div>
                 ) : (
                   <DataView
@@ -373,10 +302,8 @@ export function GroupedDataView<T>({
                     rowKey={rowKey}
                     view={view}
                     footer={
-                      view === "cards" && paginationFooter ? (
-                        <div className="rounded-xl border bg-card px-4 py-3">
-                          {paginationFooter}
-                        </div>
+                      view === 'cards' && paginationFooter ? (
+                        <div className="rounded-xl border bg-card px-4 py-3">{paginationFooter}</div>
                       ) : (
                         paginationFooter
                       )
@@ -387,9 +314,7 @@ export function GroupedDataView<T>({
                     tableClassName={tableClassName}
                     rowClassName={rowClassName}
                     calculationState={calculationState}
-                    extraCard={
-                      firstGroup ? ((firstGroup = false), extraCard) : undefined
-                    }
+                    extraCard={firstGroup ? ((firstGroup = false), extraCard) : undefined}
                     compactCards={compactCards}
                     cardRenderer={cardRenderer}
                     selected={selected}
@@ -399,44 +324,31 @@ export function GroupedDataView<T>({
                 )
               }
             </GroupSection>
-          );
+          )
         })}
       </div>
-    );
-  };
-  const renderedGroups = renderGroups(items, 0);
-  const hiddenGroups = [...paginationByGroup.entries()].filter(
-    ([groupId, pagination]) =>
-      primaryGroupIds.has(groupId) && pagination.hidden,
-  );
+    )
+  }
+  const renderedGroups = renderGroups(items, 0)
+  const hiddenGroups = [...paginationByGroup.entries()].filter(([groupId, pagination]) => primaryGroupIds.has(groupId) && pagination.hidden)
   return (
     <div className="space-y-4">
       {renderedGroups}
       {paginatePrimaryGroups && (
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span>{footer ?? 'Agrupado por mes · más recientes primero · cada mes se pagina por separado'}</span>
           <span>
-            {footer ??
-              "Agrupado por mes · más recientes primero · cada mes se pagina por separado"}
-          </span>
-          <span>
-            {items.length} registros · Paginación por mes:{" "}
-            {hiddenGroups.length === primaryGroupCount ? "oculta" : "visible"}
+            {items.length} registros · Paginación por mes: {hiddenGroups.length === primaryGroupCount ? 'oculta' : 'visible'}
             {hiddenGroups.length > 0 && (
               <>
-                {" "}
-                (
-                {hiddenGroups
-                  .map(([, pagination]) => pagination.label)
-                  .join(", ")}{" "}
-                {hiddenGroups.length === 1 ? "oculta" : "ocultos"})
+                {' '}
+                ({hiddenGroups.map(([, pagination]) => pagination.label).join(', ')} {hiddenGroups.length === 1 ? 'oculta' : 'ocultos'})
               </>
             )}
           </span>
         </div>
       )}
-      {footer && !paginatePrimaryGroups && (
-        <div className="rounded-md border px-4 py-3">{footer}</div>
-      )}
+      {footer && !paginatePrimaryGroups && <div className="rounded-md border px-4 py-3">{footer}</div>}
     </div>
-  );
+  )
 }

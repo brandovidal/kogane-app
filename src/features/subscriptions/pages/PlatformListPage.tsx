@@ -1,43 +1,34 @@
-import { useEffect, useState } from "react";
-import { withQuery } from "@/shared/api/query";
-import { useCsvExport } from "@/shared/hooks/useCsvExport";
-import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
-import { usePlatformList } from "../hooks/usePlatformList";
-import { usePlatformActions } from "../hooks/usePlatformActions";
-import { usePlatformBulkActions } from "../hooks/usePlatformBulkActions";
-import { usePlatformTable } from "../hooks/usePlatformTable";
-import { PlatformPeriodSelector } from "../components/header/PlatformPeriodSelector";
-import { SubscriptionDialog } from "../components/SubscriptionDialog";
-import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
-import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
-import { PlatformViewBar } from "../sections/list/PlatformViewBar";
-import { PlatformOverview } from "../sections/list/PlatformOverview";
-import { PlatformToolbar } from "../sections/list/PlatformToolbar";
-import { PlatformFilterSheet } from "../sections/list/PlatformFilterSheet";
-import { PlatformResults } from "../sections/list/PlatformResults";
-import { PlatformBulkActions } from "../sections/list/PlatformBulkActions";
-import { PlatformDetailPage } from "./PlatformDetailPage";
-import { formatDate, localTodayKey } from "@/shared/lib/dates";
-const EXPORT_HEADERS = [
-  "Plataforma",
-  "Período",
-  "Monto",
-  "Moneda",
-  "Estado",
-  "Persona",
-  "Próximo cobro",
-  "Nota",
-];
+import { useEffect, useState } from 'react'
+import { withQuery } from '@/shared/api/query'
+import { useCsvExport } from '@/shared/hooks/useCsvExport'
+import { useRowColorRules } from '@/shared/hooks/useRowColorRules'
+import { usePlatformList } from '../hooks/usePlatformList'
+import { usePlatformActions } from '../hooks/usePlatformActions'
+import { usePlatformBulkActions } from '../hooks/usePlatformBulkActions'
+import { usePlatformTable } from '../hooks/usePlatformTable'
+import { PlatformPeriodSelector } from '../components/header/PlatformPeriodSelector'
+import { SubscriptionDialog } from '../components/SubscriptionDialog'
+import { MoveSeriesDialog } from '@/features/expenses/components/dialogs/MoveSeriesDialog'
+import { ImportListDialog } from '@/features/imports/components/ImportListDialog'
+import { PlatformViewBar } from '../sections/list/PlatformViewBar'
+import { PlatformOverview } from '../sections/list/PlatformOverview'
+import { PlatformToolbar } from '../sections/list/PlatformToolbar'
+import { PlatformFilterSheet } from '../sections/list/PlatformFilterSheet'
+import { PlatformResults } from '../sections/list/PlatformResults'
+import { PlatformBulkActions } from '../sections/list/PlatformBulkActions'
+import { PlatformDetailPage } from './PlatformDetailPage'
+import { formatDate, localTodayKey } from '@/shared/lib/dates'
+const EXPORT_HEADERS = ['Plataforma', 'Período', 'Monto', 'Moneda', 'Estado', 'Persona', 'Próximo cobro', 'Nota']
 
 function PlatformListPageContent() {
-  const list = usePlatformList();
-  const actions = usePlatformActions();
-  const bulk = usePlatformBulkActions(list.filtered, list.resetKey);
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const rowColors = useRowColorRules("platforms");
-  const [todayKey, setTodayKey] = useState("");
-  useEffect(() => setTodayKey(localTodayKey()), []);
+  const list = usePlatformList()
+  const actions = usePlatformActions()
+  const bulk = usePlatformBulkActions(list.filtered, list.resetKey)
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const rowColors = useRowColorRules('platforms')
+  const [todayKey, setTodayKey] = useState('')
+  useEffect(() => setTodayKey(localTodayKey()), [])
   const tableState = usePlatformTable({
     items: list.filtered,
     personName: list.personName,
@@ -47,7 +38,7 @@ function PlatformListPageContent() {
     selection: bulk.selection,
     onSelectionChange: bulk.setSelection,
     pending: bulk.pending,
-  });
+  })
   const exportRows = (items: typeof list.filtered) =>
     items.map((item) => [
       item.description,
@@ -56,25 +47,21 @@ function PlatformListPageContent() {
       item.currency,
       item.paymentStatus,
       list.personName(item.personId),
-      item.dueDate ? formatDate(item.dueDate) : "",
-      item.notes ?? "",
-    ]);
+      item.dueDate ? formatDate(item.dueDate) : '',
+      item.notes ?? '',
+    ])
   const exportData = useCsvExport({
-    filename: `plataformas-${list.year}-${String(list.month).padStart(2, "0")}`,
+    filename: `plataformas-${list.year}-${String(list.month).padStart(2, '0')}`,
     headers: EXPORT_HEADERS,
     rows: exportRows(list.filtered),
-  });
-  const selected = new Set(
-    Object.keys(bulk.selection).filter((id) => bulk.selection[id]),
-  );
+  })
+  const selected = new Set(Object.keys(bulk.selection).filter((id) => bulk.selection[id]))
   const selectedExport = useCsvExport({
-    filename: `plataformas-seleccionadas-${list.year}-${String(list.month).padStart(2, "0")}`,
+    filename: `plataformas-seleccionadas-${list.year}-${String(list.month).padStart(2, '0')}`,
     headers: EXPORT_HEADERS,
     rows: exportRows(bulk.selectedItems),
-  });
-  const openedItem =
-    list.items.find((item) => item.id === actions.openedItem?.id) ??
-    actions.openedItem;
+  })
+  const openedItem = list.items.find((item) => item.id === actions.openedItem?.id) ?? actions.openedItem
 
   return (
     <div className="space-y-4">
@@ -88,11 +75,7 @@ function PlatformListPageContent() {
         onImport={() => setImporting(true)}
         exportItems={exportData.items}
       />
-      <PlatformOverview
-        items={list.filtered}
-        todayKey={todayKey}
-        loading={list.loading}
-      />
+      <PlatformOverview items={list.filtered} todayKey={todayKey} loading={list.loading} />
       <PlatformToolbar
         filters={list.filters}
         onFiltersChange={list.setFilters}
@@ -132,11 +115,7 @@ function PlatformListPageContent() {
         month={list.month}
         year={list.year}
         selected={selected}
-        onSelectionChange={(next) =>
-          bulk.setSelection(
-            Object.fromEntries([...next].map((id) => [id, true])),
-          )
-        }
+        onSelectionChange={(next) => bulk.setSelection(Object.fromEntries([...next].map((id) => [id, true])))}
         onCreate={actions.onCreate}
         onEdit={actions.onOpen}
         actions={actions}
@@ -153,36 +132,16 @@ function PlatformListPageContent() {
         onEdit={() => openedItem && actions.onEdit(openedItem)}
         onMove={() => openedItem && actions.onMove(openedItem)}
         onDuplicate={() => openedItem && actions.onDuplicate(openedItem)}
-        onStatusChange={(status) =>
-          openedItem && actions.onStatusChange(openedItem, status)
-        }
-        onPaymentPeriodChange={(period) =>
-          openedItem && actions.onPaymentPeriodChange(openedItem, period)
-        }
+        onStatusChange={(status) => openedItem && actions.onStatusChange(openedItem, status)}
+        onPaymentPeriodChange={(period) => openedItem && actions.onPaymentPeriodChange(openedItem, period)}
         onDelete={(item) => actions.onDelete(item)}
         onNavigate={(item) => actions.onOpen(item)}
       />
-      <SubscriptionDialog
-        open={actions.dialogOpen}
-        onOpenChange={actions.setDialogOpen}
-        subscription={actions.editing}
-        platformMode
-      />
-      {actions.moving && (
-        <MoveSeriesDialog
-          key={actions.moving.id}
-          source={actions.moving}
-          onClose={() => actions.setMoving(null)}
-        />
-      )}
-      <ImportListDialog
-        open={importing}
-        onOpenChange={setImporting}
-        target="platforms"
-        title="Importar plataformas"
-      />
+      <SubscriptionDialog open={actions.dialogOpen} onOpenChange={actions.setDialogOpen} subscription={actions.editing} platformMode />
+      {actions.moving && <MoveSeriesDialog key={actions.moving.id} source={actions.moving} onClose={() => actions.setMoving(null)} />}
+      <ImportListDialog open={importing} onOpenChange={setImporting} target="platforms" title="Importar plataformas" />
     </div>
-  );
+  )
 }
 
-export const PlatformListPage = withQuery(PlatformListPageContent);
+export const PlatformListPage = withQuery(PlatformListPageContent)

@@ -1,6 +1,6 @@
-import { ChevronDown, Copy } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/ui/button";
+import { ChevronDown, Copy } from 'lucide-react'
+import { toast } from 'sonner'
+import { Button } from '@/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,51 +9,39 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
-import type { DataTableCalculation } from "@/shared/types/data-table-calculation";
+} from '@/ui/dropdown-menu'
+import type { DataTableCalculation } from '@/shared/types/data-table-calculation'
 
 const labels: Record<DataTableCalculation, string> = {
-  none: "Ninguno",
-  count: "Contar todo",
-  "count-values": "Contar valores",
-  "count-unique": "Contar únicos",
-  "count-empty": "Contar vacíos",
-  sum: "Suma",
-  average: "Promedio",
-  median: "Mediana",
-  min: "Mínimo",
-  max: "Máximo",
-  range: "Rango",
-};
+  none: 'Ninguno',
+  count: 'Contar todo',
+  'count-values': 'Contar valores',
+  'count-unique': 'Contar únicos',
+  'count-empty': 'Contar vacíos',
+  sum: 'Suma',
+  average: 'Promedio',
+  median: 'Mediana',
+  min: 'Mínimo',
+  max: 'Máximo',
+  range: 'Rango',
+}
 
 const shortLabels: Record<DataTableCalculation, string> = {
-  none: "",
-  count: "COUNT",
-  "count-values": "VAL",
-  "count-unique": "ÚN",
-  "count-empty": "VAC",
-  sum: "SUM",
-  average: "PROM",
-  median: "MED",
-  min: "MIN",
-  max: "MAX",
-  range: "RNG",
-};
+  none: '',
+  count: 'COUNT',
+  'count-values': 'VAL',
+  'count-unique': 'ÚN',
+  'count-empty': 'VAC',
+  sum: 'SUM',
+  average: 'PROM',
+  median: 'MED',
+  min: 'MIN',
+  max: 'MAX',
+  range: 'RNG',
+}
 
-const countCalculations: DataTableCalculation[] = [
-  "count",
-  "count-values",
-  "count-unique",
-  "count-empty",
-];
-const numberCalculations: DataTableCalculation[] = [
-  "sum",
-  "average",
-  "median",
-  "min",
-  "max",
-  "range",
-];
+const countCalculations: DataTableCalculation[] = ['count', 'count-values', 'count-unique', 'count-empty']
+const numberCalculations: DataTableCalculation[] = ['sum', 'average', 'median', 'min', 'max', 'range']
 
 export function DataTableColumnCalculation({
   value,
@@ -63,29 +51,23 @@ export function DataTableColumnCalculation({
   formattedValue,
   copyValue,
 }: {
-  value: number | null;
-  calculation: DataTableCalculation;
-  numeric: boolean;
-  onChange: (calculation: DataTableCalculation) => void;
-  formattedValue?: string;
-  copyValue: string;
+  value: number | null
+  calculation: DataTableCalculation
+  numeric: boolean
+  onChange: (calculation: DataTableCalculation) => void
+  formattedValue?: string
+  copyValue: string
 }) {
-  const formatted =
-    formattedValue ??
-    (value == null
-      ? "—"
-      : new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 }).format(
-          value,
-        ));
+  const formatted = formattedValue ?? (value == null ? '—' : new Intl.NumberFormat('es-PE', { maximumFractionDigits: 2 }).format(value))
 
   const copyCalculation = async () => {
     try {
-      await navigator.clipboard.writeText(copyValue);
-      toast.success("Cálculo copiado");
+      await navigator.clipboard.writeText(copyValue)
+      toast.success('Cálculo copiado')
     } catch {
-      toast.error("No se pudo copiar el cálculo");
+      toast.error('No se pudo copiar el cálculo')
     }
-  };
+  }
 
   return (
     <div className="inline-flex max-w-full items-center gap-0">
@@ -95,40 +77,27 @@ export function DataTableColumnCalculation({
             type="button"
             variant="ghost"
             size="xs"
-            aria-label={
-              calculation === "none"
-                ? "Elegir cálculo de columna"
-                : `${labels[calculation]}: ${formatted}`
-            }
-            title={calculation === "none" ? "Calcular" : labels[calculation]}
+            aria-label={calculation === 'none' ? 'Elegir cálculo de columna' : `${labels[calculation]}: ${formatted}`}
+            title={calculation === 'none' ? 'Calcular' : labels[calculation]}
             className={
-              calculation === "none"
-                ? "h-7 gap-1 px-1.5 text-xs font-normal text-muted-foreground opacity-0 transition-opacity hover:opacity-100 group-hover/calculation-cell:opacity-100 group-focus-within/calculation-cell:opacity-100 focus-visible:opacity-100"
-                : "h-7 max-w-full gap-1 px-1.5 text-xs font-normal text-muted-foreground hover:text-foreground"
+              calculation === 'none'
+                ? 'h-7 gap-1 px-1.5 text-xs font-normal text-muted-foreground opacity-0 transition-opacity hover:opacity-100 group-hover/calculation-cell:opacity-100 group-focus-within/calculation-cell:opacity-100 focus-visible:opacity-100'
+                : 'h-7 max-w-full gap-1 px-1.5 text-xs font-normal text-muted-foreground hover:text-foreground'
             }
           >
-            {calculation === "none" ? (
+            {calculation === 'none' ? (
               <span>Calcular</span>
             ) : (
-              <span className="text-[10px] uppercase leading-none tracking-wide">
-                {shortLabels[calculation]}
-              </span>
+              <span className="text-[10px] uppercase leading-none tracking-wide">{shortLabels[calculation]}</span>
             )}
             <ChevronDown aria-hidden="true" className="size-3" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
-          <DropdownMenuRadioGroup
-            value={calculation}
-            onValueChange={(next) => onChange(next as DataTableCalculation)}
-          >
-            <DropdownMenuRadioItem value="none">
-              {labels.none}
-            </DropdownMenuRadioItem>
+          <DropdownMenuRadioGroup value={calculation} onValueChange={(next) => onChange(next as DataTableCalculation)}>
+            <DropdownMenuRadioItem value="none">{labels.none}</DropdownMenuRadioItem>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-              Conteo
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">Conteo</DropdownMenuLabel>
             {countCalculations.map((option) => (
               <DropdownMenuRadioItem key={option} value={option}>
                 {labels[option]}
@@ -149,7 +118,7 @@ export function DataTableColumnCalculation({
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      {calculation !== "none" && (
+      {calculation !== 'none' && (
         <>
           <Button
             type="button"
@@ -160,10 +129,7 @@ export function DataTableColumnCalculation({
             onClick={copyCalculation}
             className="size-5 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover/calculation-cell:opacity-100 group-focus-within/calculation-cell:opacity-100 focus-visible:opacity-100"
           >
-            <Copy
-              aria-hidden="true"
-              className="size-2.5 shrink-0 text-muted-foreground"
-            />
+            <Copy aria-hidden="true" className="size-2.5 shrink-0 text-muted-foreground" />
           </Button>
           <Button
             type="button"
@@ -179,5 +145,5 @@ export function DataTableColumnCalculation({
         </>
       )}
     </div>
-  );
+  )
 }

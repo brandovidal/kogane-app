@@ -1,12 +1,8 @@
-import { useMemo } from "react";
-import { Check, ChevronDown, CircleOff, Search } from "lucide-react";
+import { useMemo } from 'react'
+import { Check, ChevronDown, CircleOff, Search } from 'lucide-react'
 
-import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
-import {
-  CATEGORY_ICON_OPTIONS,
-  matchesCategoryIcon,
-  normalizeCategoryIconName,
-} from "@/features/categories/lib/category-icons";
+import { CategoryIcon } from '@/features/categories/components/CategoryIcon'
+import { CATEGORY_ICON_OPTIONS, matchesCategoryIcon, normalizeCategoryIconName } from '@/features/categories/lib/category-icons'
 import {
   Combobox,
   ComboboxContent,
@@ -18,23 +14,12 @@ import {
   ComboboxTrigger,
   ComboboxValue,
   createComboboxItems,
-} from "@/ui/combobox";
+} from '@/ui/combobox'
 
-const NO_ICON = "__no_icon__";
-const pickerOptions = [
-  { value: NO_ICON, label: "Sin icono" },
-  ...CATEGORY_ICON_OPTIONS.map(({ value, label }) => ({ value, label })),
-];
+const NO_ICON = '__no_icon__'
+const pickerOptions = [{ value: NO_ICON, label: 'Sin icono' }, ...CATEGORY_ICON_OPTIONS.map(({ value, label }) => ({ value, label }))]
 
-export function CategoryIconPicker({
-  value,
-  color,
-  onChange,
-}: {
-  value: string | null;
-  color: string;
-  onChange: (value: string | null) => void;
-}) {
+export function CategoryIconPicker({ value, color, onChange }: { value: string | null; color: string; onChange: (value: string | null) => void }) {
   const items = useMemo(
     () =>
       createComboboxItems(pickerOptions, {
@@ -42,26 +27,20 @@ export function CategoryIconPicker({
         getLabel: (option) => option.label,
       }),
     [],
-  );
-  const selectedValue = normalizeCategoryIconName(value) ?? NO_ICON;
+  )
+  const selectedValue = normalizeCategoryIconName(value) ?? NO_ICON
 
   return (
     <Combobox
       items={items}
       value={selectedValue}
       filter={matchesCategoryIcon}
-      onValueChange={(next) =>
-        onChange(next == null || next === NO_ICON ? null : String(next))
-      }
+      onValueChange={(next) => onChange(next == null || next === NO_ICON ? null : String(next))}
       autoHighlight
     >
       <ComboboxTrigger aria-label="Icono de categoría" className="w-full">
         <span className="inline-flex min-w-0 items-center gap-2">
-          {value ? (
-            <CategoryIcon icon={value} color={color} size="xs" />
-          ) : (
-            <CircleOff className="size-4 text-muted-foreground" />
-          )}
+          {value ? <CategoryIcon icon={value} color={color} size="xs" /> : <CircleOff className="size-4 text-muted-foreground" />}
           <ComboboxValue placeholder="Sin icono" />
         </span>
         <ChevronDown className="size-4 shrink-0 opacity-50" />
@@ -70,12 +49,7 @@ export function CategoryIconPicker({
         <div className="border-b p-2">
           <div className="relative">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <ComboboxInput
-              aria-label="Buscar icono"
-              placeholder="Buscar icono..."
-              autoComplete="off"
-              className="pl-8"
-            />
+            <ComboboxInput aria-label="Buscar icono" placeholder="Buscar icono..." autoComplete="off" className="pl-8" />
           </div>
         </div>
         <ComboboxList className="max-h-64 overflow-y-auto p-1">
@@ -93,10 +67,8 @@ export function CategoryIconPicker({
             </ComboboxItem>
           )}
         </ComboboxList>
-        <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">
-          No se encontraron iconos.
-        </ComboboxEmpty>
+        <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">No se encontraron iconos.</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
-  );
+  )
 }

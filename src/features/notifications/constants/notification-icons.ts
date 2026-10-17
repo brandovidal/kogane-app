@@ -1,17 +1,6 @@
-import {
-  AlertTriangle,
-  CalendarClock,
-  Check,
-  CreditCard,
-  HandCoins,
-  PieChart,
-  Repeat,
-  ScanSearch,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
+import { AlertTriangle, CalendarClock, Check, CreditCard, HandCoins, PieChart, Repeat, ScanSearch, Sparkles, type LucideIcon } from 'lucide-react'
 
-import type { NotificationKind } from "@/shared/api/types";
+import type { NotificationKind } from '@/shared/api/types'
 
 // One icon per kind: the list is scanned by shape before it is read
 export const NOTIFICATION_KIND_ICONS: Record<NotificationKind, LucideIcon> = {
@@ -24,4 +13,4 @@ export const NOTIFICATION_KIND_ICONS: Record<NotificationKind, LucideIcon> = {
   recurring: Repeat,
   statement: Check,
   collect: HandCoins,
-};
+}

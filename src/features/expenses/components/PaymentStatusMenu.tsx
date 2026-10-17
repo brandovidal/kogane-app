@@ -1,5 +1,5 @@
-import { Fragment } from "react";
-import { CircleCheck } from "lucide-react";
+import { Fragment } from 'react'
+import { CircleCheck } from 'lucide-react'
 import {
   DropdownMenuGroup,
   DropdownMenuLabel,
@@ -9,22 +9,18 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/ui/dropdown-menu";
-import { groupPaymentStatuses } from "../lib/group-payment-statuses";
-import { StatusBadge } from "./StatusBadge";
+} from '@/ui/dropdown-menu'
+import { groupPaymentStatuses } from '../lib/group-payment-statuses'
+import { StatusBadge } from './StatusBadge'
 
 export interface PaymentStatusMenuProps {
-  value: string;
-  options: readonly string[];
-  onChange: (status: string) => void;
+  value: string
+  options: readonly string[]
+  onChange: (status: string) => void
 }
 
-export function PaymentStatusMenu({
-  value,
-  options,
-  onChange,
-}: PaymentStatusMenuProps) {
-  const groups = groupPaymentStatuses(options);
+export function PaymentStatusMenu({ value, options, onChange }: PaymentStatusMenuProps) {
+  const groups = groupPaymentStatuses(options)
 
   return (
     <DropdownMenuSub>
@@ -39,10 +35,7 @@ export function PaymentStatusMenu({
             <Fragment key={group.label}>
               {index > 0 && <DropdownMenuSeparator />}
               <DropdownMenuGroup aria-label={group.label}>
-                <DropdownMenuLabel
-                  inset
-                  className="text-xs text-muted-foreground"
-                >
+                <DropdownMenuLabel inset className="text-xs text-muted-foreground">
                   {group.label}
                 </DropdownMenuLabel>
                 {group.options.map((status) => (
@@ -56,5 +49,5 @@ export function PaymentStatusMenu({
         </DropdownMenuRadioGroup>
       </DropdownMenuSubContent>
     </DropdownMenuSub>
-  );
+  )
 }

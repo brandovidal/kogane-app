@@ -6,133 +6,84 @@ import {
   SHARED_FILTER,
   PANEL_FILTER_KEYS,
   PANEL_FILTER_THRESHOLD,
-} from "../constants/expense-filters";
-import type {
-  ExpenseFilterValues,
-  ExpenseFilterKey,
-  FilterableExpense,
-} from "../types/expense-filters";
+} from '../constants/expense-filters'
+import type { ExpenseFilterValues, ExpenseFilterKey, FilterableExpense } from '../types/expense-filters'
 
 // Compatibility exports for existing consumers; definitions live in constants/types.
-export {
-  PERSON_ALL,
-  PERSON_ME,
-  PANEL_FILTER_KEYS,
-} from "../constants/expense-filters";
-export type {
-  ExpenseFilterValues,
-  ExpenseFilterKey,
-  FilterableExpense,
-} from "../types/expense-filters";
+export { PERSON_ALL, PERSON_ME } from '../constants/expense-filters'
+export type { ExpenseFilterValues, ExpenseFilterKey, FilterableExpense } from '../types/expense-filters'
 
-const fold = (text: string) =>
-  text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const fold = (text: string) => text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 // A multi-installment purchase: "1/10", "3/6" (not "1/1")
 const hasInstallments = (installment: string | null | undefined) => {
-  const total = Number(installment?.split("/")[1] ?? 0);
-  return total > 1;
-};
-
-// `me`: the default person's id, selected through PERSON_ME ("Yo").
-export function applyExpenseFilters<T extends FilterableExpense>(
-  records: T[],
-  filters: ExpenseFilterValues,
-  me?: string,
-): T[] {
-  const q = filters.q?.trim() ? fold(filters.q.trim()) : null;
-  const selectedPeople = filters.person
-    ?.split(",")
-    .filter((person) => person && person !== PERSON_ALL)
-    .map((person) => (person === PERSON_ME ? me : person))
-    .filter((person): person is string => !!person);
-  const dueFrom = filters.dueFrom || null;
-  const dueTo = filters.dueTo || null;
-  const amountFrom = filters.amountFrom ? Number(filters.amountFrom) : null;
-  const amountTo = filters.amountTo ? Number(filters.amountTo) : null;
-  const categories = filters.category?.split(",").filter(Boolean) ?? [];
-  const methods = filters.method?.split(",").filter(Boolean) ?? [];
-  const currencies = filters.currency?.split(",").filter(Boolean) ?? [];
-  const expenseTypes = filters.type?.split(",").filter(Boolean) ?? [];
-  const periods = filters.period?.split(",").filter(Boolean) ?? [];
-  return records.filter((record) => {
-    const amount = filters.currency
-      ? record.amount
-      : (record.amountInPen ?? record.amount);
-    return (
-      (!selectedPeople?.length ||
-        selectedPeople.some((person) =>
-          person === PERSON_UNASSIGNED
-            ? !record.personId
-            : record.personId === person,
-        )) &&
-      (!q ||
-        [record.description, record.merchant, record.notes].some(
-          (text) => text && fold(text).includes(q),
-        )) &&
-      (!categories.length || categories.includes(record.categoryId ?? "")) &&
-      (!methods.length || methods.includes(record.paymentMethodId ?? "")) &&
-      (!currencies.length || currencies.includes(record.currency ?? "")) &&
-      (!expenseTypes.length ||
-        expenseTypes.includes(record.expenseType ?? "")) &&
-      (!filters.status ||
-        filters.status.split(",").includes(record.paymentStatus ?? "")) &&
-      (!periods.length || periods.includes(record.period ?? "")) &&
-      (!filters.hasNote ||
-        Boolean(record.notes?.trim()) === (filters.hasNote === "yes")) &&
-      (amountFrom == null ||
-        Number.isNaN(amountFrom) ||
-        (amount ?? 0) >= amountFrom) &&
-      (amountTo == null ||
-        Number.isNaN(amountTo) ||
-        (amount ?? 0) <= amountTo) &&
-      (!filters.month || record.paymentMonth === Number(filters.month)) &&
-      (!filters.year || record.paymentYear === Number(filters.year)) &&
-      (!filters.installments ||
-        hasInstallments(record.installment) ===
-          (filters.installments === INSTALLMENT_FILTER.WITH)) &&
-      (!filters.shared ||
-        (record.othersShare ?? 0) > 0 ===
-          (filters.shared === SHARED_FILTER.SHARED)) &&
-      (!(dueFrom || dueTo) || !!record.dueDate) &&
-      (!dueFrom || (record.dueDate?.slice(0, 10) ?? "") >= dueFrom) &&
-      (!dueTo || (record.dueDate?.slice(0, 10) ?? "") <= dueTo)
-    );
-  });
+  const total = Number(installment?.split('/')[1] ?? 0)
+  return total > 1
 }
 
-export const hasActiveFilters = (filters: ExpenseFilterValues) =>
-  Object.values(filters).some((value) => value != null && value !== "");
+// `me`: the default person's id, selected through PERSON_ME ("Yo").
+export function applyExpenseFilters<T extends FilterableExpense>(records: T[], filters: ExpenseFilterValues, me?: string): T[] {
+  const q = filters.q?.trim() ? fold(filters.q.trim()) : null
+  const origins = filters.origin?.split(',').filter(Boolean) ?? []
+  const selectedPeople = filters.person
+    ?.split(',')
+    .filter((person) => person && person !== PERSON_ALL)
+    .map((person) => (person === PERSON_ME ? me : person))
+    .filter((person): person is string => !!person)
+  const dueFrom = filters.dueFrom || null
+  const dueTo = filters.dueTo || null
+  const amountFrom = filters.amountFrom ? Number(filters.amountFrom) : null
+  const amountTo = filters.amountTo ? Number(filters.amountTo) : null
+  const categories = filters.category?.split(',').filter(Boolean) ?? []
+  const methods = filters.method?.split(',').filter(Boolean) ?? []
+  const currencies = filters.currency?.split(',').filter(Boolean) ?? []
+  const expenseTypes = filters.type?.split(',').filter(Boolean) ?? []
+  const periods = filters.period?.split(',').filter(Boolean) ?? []
+  const shared = filters.shared?.split(',').filter(Boolean) ?? []
+  return records.filter((record) => {
+    const amount = filters.currency ? record.amount : (record.amountInPen ?? record.amount)
+    return (
+      (!selectedPeople?.length || selectedPeople.some((person) => (person === PERSON_UNASSIGNED ? !record.personId : record.personId === person))) &&
+      (!q || [record.description, record.merchant, record.notes].some((text) => text && fold(text).includes(q))) &&
+      (!origins.length || origins.includes(record.draftId ? 'message' : 'manual')) &&
+      (!categories.length || categories.includes(record.categoryId ?? '')) &&
+      (!methods.length || methods.includes(record.paymentMethodId ?? '')) &&
+      (!currencies.length || currencies.includes(record.currency ?? '')) &&
+      (!expenseTypes.length || expenseTypes.includes(record.expenseType ?? '')) &&
+      (!filters.status || filters.status.split(',').includes(record.paymentStatus ?? '')) &&
+      (!periods.length || periods.includes(record.period ?? '')) &&
+      (!filters.hasNote || Boolean(record.notes?.trim()) === (filters.hasNote === 'yes')) &&
+      (amountFrom == null || Number.isNaN(amountFrom) || (amount ?? 0) >= amountFrom) &&
+      (amountTo == null || Number.isNaN(amountTo) || (amount ?? 0) <= amountTo) &&
+      (!filters.month || record.paymentMonth === Number(filters.month)) &&
+      (!filters.year || record.paymentYear === Number(filters.year)) &&
+      (!filters.installments || hasInstallments(record.installment) === (filters.installments === INSTALLMENT_FILTER.WITH)) &&
+      (!shared.length || shared.includes((record.othersShare ?? 0) > 0 ? SHARED_FILTER.SHARED : SHARED_FILTER.OWN)) &&
+      (!(dueFrom || dueTo) || !!record.dueDate) &&
+      (!dueFrom || (record.dueDate?.slice(0, 10) ?? '') >= dueFrom) &&
+      (!dueTo || (record.dueDate?.slice(0, 10) ?? '') <= dueTo)
+    )
+  })
+}
 
-export function countActiveExpenseFilters(
-  filters: ExpenseFilterValues,
-  fields: readonly ExpenseFilterKey[],
-) {
+export const hasActiveFilters = (filters: ExpenseFilterValues) => Object.values(filters).some((value) => value != null && value !== '')
+
+export function countActiveExpenseFilters(filters: ExpenseFilterValues, fields: readonly ExpenseFilterKey[]) {
   return fields.filter((key) => {
-    const value = filters[key];
-    if (value == null || value === "") return false;
-    if (key === "q") return !!value.trim();
+    const value = filters[key]
+    if (key === 'amountTo') return false
+    if (value == null || value === '') return false
+    if (key === 'q') return !!value.trim()
     // Person selections are serialized as comma-separated ids. Count the
     // field once whenever at least one concrete person is selected.
-    if (key === "person")
-      return value
-        .split(",")
-        .some((person) => person !== "" && person !== PERSON_ALL);
-    return true;
-  }).length;
+    if (key === 'person') return value.split(',').some((person) => person !== '' && person !== PERSON_ALL)
+    return true
+  }).length
 }
 
 // Larger sets of filters use the sheet instead of inline controls.
-export const usesPanel = (fields: ExpenseFilterKey[]) =>
-  fields.filter((key) => PANEL_FILTER_KEYS.includes(key)).length >
-  PANEL_FILTER_THRESHOLD;
+export const usesPanel = (fields: ExpenseFilterKey[]) => fields.filter((key) => PANEL_FILTER_KEYS.includes(key)).length > PANEL_FILTER_THRESHOLD
 
 // How many of the filters of the panel are on (the N of the button)
-export const activePanelCount = (
-  filters: ExpenseFilterValues,
-  fields: ExpenseFilterKey[],
-) =>
-  PANEL_FILTER_KEYS.filter(
-    (key) =>
-      fields.includes(key) && filters[key] != null && filters[key] !== "",
-  ).length;
+export const activePanelCount = (filters: ExpenseFilterValues, fields: ExpenseFilterKey[]) =>
+  PANEL_FILTER_KEYS.filter((key) => fields.includes(key) && filters[key] != null && filters[key] !== '').length
