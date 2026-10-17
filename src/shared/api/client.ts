@@ -3,12 +3,6 @@ import createClient from 'openapi-fetch'
 import { loginUrl } from '@/shared/lib/auth-redirect'
 import type { components, paths } from './schema'
 
-function recoveryPageUrl() {
-  if (typeof window === 'undefined' || window.location.pathname.startsWith('/servicio-no-disponible')) return
-  const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`
-  window.location.replace(`/servicio-no-disponible?returnTo=${encodeURIComponent(returnTo)}`)
-}
-
 export const apiFetch: typeof fetch = async (input, init) => {
   if (typeof window === 'undefined') {
     return Response.json(
@@ -31,17 +25,9 @@ export const apiFetch: typeof fetch = async (input, init) => {
       window.location.replace(loginUrl(returnTo))
       return response
     }
-    if (response.status === 503) {
-      const body = (await response
-        .clone()
-        .json()
-        .catch(() => null)) as { code?: string } | null
-      if (body?.code === 'API_UNAVAILABLE') recoveryPageUrl()
-    }
     return response
   } catch {
-    recoveryPageUrl()
-    throw new Error('No se pudo conectar con Kogane. Se abrirá la página de recuperación.')
+    throw new Error('No se pudo conectar con Kogane. Inténtalo de nuevo en unos momentos.')
   }
 }
 
