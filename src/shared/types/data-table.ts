@@ -13,7 +13,6 @@ import type {
 import type { DataTableCalculationState } from "./data-table-calculation";
 
 declare module "@tanstack/react-table" {
-  // Declaration merging requires TanStack's exact generic parameter names.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     label?: string;

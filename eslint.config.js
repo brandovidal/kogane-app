@@ -1,11 +1,12 @@
 import eslint from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import astro from "eslint-plugin-astro";
 import prettier from "eslint-config-prettier";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: ["dist/**", ".astro/**", "node_modules/**"],
   },
