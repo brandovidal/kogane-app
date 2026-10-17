@@ -2,8 +2,8 @@ import { useState } from "react";
 import { NotebookPen, ReceiptText, UsersRound } from "lucide-react";
 
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/people/PersonSelect";
 import { FormField } from "@/shared/components/forms/FormField";
 import { CURRENCIES } from "@/shared/constants/finance";
 import { Button } from "@/ui/button";

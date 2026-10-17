@@ -16,8 +16,8 @@ import {
   useCreateStatementRows,
   useUpdateStatementRow,
 } from "@/features/statements/hooks/statements";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
+import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
 import { EXPENSE_RESOURCES, type Statement, type StatementRow } from "@/shared/api/types";
 import { formatCurrency } from "@/shared/lib/currency";
 import { formatDate, getMonthName } from "@/shared/lib/dates";

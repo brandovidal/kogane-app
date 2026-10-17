@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
 import { useCardHolders, useSaveCardHolders, useMe } from "@/shared/api/hooks/catalogs";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";

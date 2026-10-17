@@ -3,7 +3,7 @@ import { Button, buttonVariants } from "@/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { SearchField } from "@/shared/components/filters/SearchField";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonSelect } from "@/features/settings/components/people/PersonSelect";
 import { cn } from "@/shared/utils/cn";
 import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
 import {

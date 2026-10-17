@@ -2,8 +2,8 @@ import { Banknote, Coins, FileText, ListFilter, ReceiptText, Tags, UserRound, Wa
 import type { DraftFields } from "../hooks/drafts";
 import type { DraftFormSectionProps } from "../types/draft-form";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { FormField } from "@/shared/components/forms/FormField";
 import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";

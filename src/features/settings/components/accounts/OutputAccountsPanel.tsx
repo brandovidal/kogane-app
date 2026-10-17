@@ -10,7 +10,7 @@ import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Switch } from "@/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { ACCOUNT_TYPE_LABELS, accountBody, accountErrors, emptyAccountForm, type AccountForm, type AccountType } from "../lib/account-form";
+import { ACCOUNT_TYPE_LABELS, accountBody, accountErrors, emptyAccountForm, type AccountForm, type AccountType } from "../../lib/account-form";
 
 type Account = NonNullable<ReturnType<typeof useAccounts>["data"]>[number];
 

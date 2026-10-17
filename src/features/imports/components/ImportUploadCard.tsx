@@ -1,7 +1,7 @@
 import type { ImportUploadCardProps } from "../types/import-types";
 import { AlertCircle, FileUp, Lock, ShieldCheck } from "lucide-react";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
+import { PersonSelect } from "@/features/settings/components/people/PersonSelect";
 import { Button } from "@/ui/button";
 import { PasswordInput } from "@/shared/components/forms/PasswordInput";
 import { Switch } from "@/ui/switch";

@@ -7,7 +7,7 @@ import type { PendingAttachmentUpload } from "@/features/attachments/types/pendi
 import { toast } from "sonner";
 import type { Debt } from "@/shared/api/types";
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
-import { PaymentMethodLabel } from "@/features/settings/components/PaymentMethodLabel";
+import { PaymentMethodLabel } from "@/features/settings/components/payment-methods/PaymentMethodLabel";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { toIsoDate } from "@/shared/lib/dates";

@@ -8,7 +8,7 @@ import { MultiSelect } from "@/shared/components/filters/MultiSelect";
 import type { CatalogSelectProps } from "@/shared/types/catalog-select";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { PERSON_MODULE_LABELS, type PersonModule } from "../constants/people";
+import { PERSON_MODULE_LABELS, type PersonModule } from "../../constants/people";
 
 interface PersonPickerProps extends CatalogSelectProps {
   /** The page of the record: people marked there come first and the others are marked when picked. */

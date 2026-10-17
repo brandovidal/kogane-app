@@ -4,8 +4,8 @@ import { InstallmentFields } from "@/features/expenses/components/forms/Installm
 import { installmentError } from "@/features/expenses/lib/installments";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { CategorySelect } from "@/features/categories/components/CategorySelect";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import type { PersonModule } from "@/features/settings/constants";
 import { FormField as Field } from "@/shared/components/forms/FormField";
 import type { DraftFields } from "@/features/drafts/hooks/drafts";

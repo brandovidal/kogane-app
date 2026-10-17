@@ -6,7 +6,7 @@ import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 
-import { cardBody, cardErrors, emptyCardForm, type CardForm } from "@/features/settings/lib/card-form";
+import { cardBody, cardErrors, emptyCardForm, type CardForm } from "../../lib/card-form";
 
 // Nueva tarjeta (D97): credit needs its code and both days, debit its bank; nothing is sent until it is complete
 export function NewCardDialog({ onClose }: { onClose: () => void }) {

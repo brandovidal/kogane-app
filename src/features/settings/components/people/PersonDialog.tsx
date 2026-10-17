@@ -7,7 +7,7 @@ import { MultiSelect } from "@/shared/components/filters/MultiSelect";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
-import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../constants";
+import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../../constants";
 
 type Person = Schemas["PersonResponseDto"]["data"];
 

@@ -1,4 +1,4 @@
-import { SETTINGS_MENU_LINKS } from "../constants/menu";
+import { SETTINGS_MENU_LINKS } from "../../constants/menu";
 import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/ui/dropdown-menu";
 
 // Links of the user menu: the settings of everyone, then the administration block (header board 13)

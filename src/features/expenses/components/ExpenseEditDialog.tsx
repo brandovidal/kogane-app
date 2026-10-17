@@ -8,7 +8,7 @@ import { useSaveExpense } from "@/features/expenses/hooks/expenses";
 import { EXPENSE_RESOURCES, type CreditCardExpense, type DailyExpense } from "@/shared/api/types";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";

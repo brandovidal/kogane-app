@@ -1,7 +1,7 @@
 import { Plus, Trash2, UsersRound } from "lucide-react";
 
 import type { DraftFields } from "@/features/drafts/hooks/drafts";
-import { PersonSelect } from "@/features/settings/components/PersonSelect";
+import { PersonSelect } from "@/features/settings/components/people/PersonSelect";
 import { FieldLabel } from "@/shared/components/forms/FieldLabel";
 import { formatCurrency } from "@/shared/lib/currency";
 import { shareParts, type ExpenseShare } from "@/features/expenses/lib/shared-expense";

@@ -13,7 +13,6 @@ import NavTooltipLayer from "@/layouts/components/navigation/NavTooltipLayer.ast
 
 interface Props {
   title?: string;
-  /** Small uppercase label above the title, e.g. "Gastos". */
   section?: string;
   mainClass?: string;
 }
@@ -21,7 +20,7 @@ interface Props {
 const { title = "Kogane", section, mainClass } = Astro.props;
 const currentPath = Astro.url.pathname;
 const hasLocalPeriodControl =
-  ["/resumen", "/calendario", "/recurrentes"].some((path) => currentPath === path) || currentPath.startsWith("/configuracion");
+  ["/resumen", "/calendario", "/recurrentes"].some((path) => currentPath === path);
 ---
 
 <Layout title={title}>

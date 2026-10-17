@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useBulkDebts } from "@/features/debts/hooks/debts";
 import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
-import { PaymentMethodLabel } from "@/features/settings/components/PaymentMethodLabel";
+import { PaymentMethodLabel } from "@/features/settings/components/payment-methods/PaymentMethodLabel";
 import type { Debt } from "@/shared/api/types";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";

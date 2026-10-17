@@ -2,7 +2,7 @@ import { CardStatementPassword } from "./CardStatementPassword";
 import { useEffect, useState } from "react";
 import { useCardHolders, useMe, useSaveCardHolders, useSavePaymentMethod } from "@/shared/api/hooks/catalogs";
 import type { PaymentMethod } from "@/shared/api/types";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { Archive } from "lucide-react";
 import { Button } from "@/ui/button";

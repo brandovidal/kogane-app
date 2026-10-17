@@ -1,6 +1,7 @@
 import { BellRing, History, Settings, UserRound, UsersRound, WalletCards, Contact, type LucideIcon } from "lucide-react";
+import type { CardsAccountsTab, SettingsSection } from "../types/navigation";
 
-export type SettingsSection = "perfil" | "general" | "notificaciones" | "cuentas-tarjetas" | "personas" | "usuarios" | "historial";
+export type { SettingsSection, CardsAccountsTab } from "../types/navigation";
 
 export interface SettingsNavItem {
   key: SettingsSection;
@@ -40,8 +41,6 @@ export const SETTINGS_NAV_GROUPS: {
     ],
   },
 ];
-
-export type CardsAccountsTab = "credito" | "debito" | "cuentas-salida";
 
 export const CARDS_ACCOUNTS_TABS: {
   key: CardsAccountsTab;

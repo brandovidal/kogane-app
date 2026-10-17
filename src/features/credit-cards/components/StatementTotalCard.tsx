@@ -2,7 +2,7 @@ import { CurrencySelect } from "@/shared/components/forms/CurrencySelect";
 import type { CurrencyCode } from "@/shared/constants/currency";
 import { useEffect, useMemo, useState } from "react";
 import { useCardCheck } from "@/features/debts/hooks/debts";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName } from "@/shared/lib/dates";
 import { Checkbox } from "@/ui/checkbox";

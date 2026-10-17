@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { ArrowLeftRight, Banknote, ChevronDown, CircleCheck, FileText, ListFilter, Tags, UserRound, WalletCards } from "lucide-react";
 import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
 import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonPicker } from "@/features/settings/components/PersonPicker";
+import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
 import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
 import { FormField } from "@/shared/components/forms/FormField";
 import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";

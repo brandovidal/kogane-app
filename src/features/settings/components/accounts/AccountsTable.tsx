@@ -12,8 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { CardHoldersDialog } from "./CardHoldersDialog";
 import { NewCardDialog } from "./NewCardDialog";
-import { PaymentMethodLabel } from "./PaymentMethodLabel";
-import { PAYMENT_METHOD_TYPE_LABELS } from "../constants/payment-methods";
+import { PaymentMethodLabel } from "../payment-methods/PaymentMethodLabel";
+import { PAYMENT_METHOD_TYPE_LABELS } from "../../constants/payment-methods";
 
 type Method = NonNullable<ReturnType<typeof usePaymentMethods>["data"]>[number];
 

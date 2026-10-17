@@ -7,7 +7,7 @@ import { BulkReceiptDialog } from "@/features/debts/components/dialogs/BulkRecei
 import { useBulkDebts, type DebtBulk } from "@/features/debts/hooks/debts";
 import { useRemindDebts } from "@/features/notifications/hooks/notifications";
 import type { Debt } from "@/shared/api/types";
-import { PaymentMethodSelect } from "@/features/settings/components/PaymentMethodSelect";
+import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
 import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
 import { formatCurrency } from "@/shared/lib/currency";
 import { getMonthName, toIsoDate } from "@/shared/lib/dates";

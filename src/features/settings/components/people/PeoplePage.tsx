@@ -11,8 +11,8 @@ import { Input } from "@/ui/input";
 import { Switch } from "@/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../constants";
-import { PEOPLE_TABS, filterPeople, toggleModule, type PeopleTab, type Person } from "../lib/people-filter";
+import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../../constants";
+import { PEOPLE_TABS, filterPeople, toggleModule, type PeopleTab, type Person } from "../../lib/people-filter";
 import { PersonDialog } from "./PersonDialog";
 
 type View = "checks" | "compact" | "cards";

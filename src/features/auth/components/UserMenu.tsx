@@ -16,7 +16,7 @@ import { withQuery } from "@/shared/api/query";
 import { incomesHref } from "@/features/incomes/lib/income-links";
 import { periodFromParams } from "@/shared/lib/period";
 import { periodStore } from "@/shared/stores/period.store";
-import { SettingsMenuItems } from "@/features/settings/components/SettingsMenuItems";
+import { SettingsMenuItems } from "@/features/settings/components/navigation/SettingsMenuItems";
 import { ThemeMenuItems } from "@/shared/components/theme/ThemeMenuItems";
 import { AUTH_ROLE, AUTH_ROLE_LABELS } from "../constants/roles";
 

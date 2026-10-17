@@ -1,5 +1,5 @@
 import { cn } from "@/shared/utils/cn";
-import { CARDS_ACCOUNTS_TABS, type CardsAccountsTab } from "../constants/sections";
+import { CARDS_ACCOUNTS_TABS, type CardsAccountsTab } from "../../constants/sections";
 
 // Subtabs of Cuentas y tarjetas; each one is its own route (/configuracion/cuentas-tarjetas/<tab>)
 export function CardsAccountsTabs({ active }: { active: CardsAccountsTab }) {
