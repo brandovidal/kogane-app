@@ -1,38 +1,38 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Eye, FileText, History, Maximize2, Minimize2, Paperclip, Pencil, Trash2 } from "lucide-react";
-import type { FixedCost } from "@/shared/api/types";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
-import { useAttachments } from "@/features/attachments/hooks/attachments";
-import { RecordHistoryPanel } from "@/features/history/components/RecordHistoryPanel";
-import { useRecordHistory } from "@/features/history/hooks/history";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import { ATTACHMENT_KIND_LABELS } from "@/features/attachments/constants/attachments";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { FixedCostDetailOverviewSection } from "../sections/detail/FixedCostDetailOverviewSection";
-import { cn } from "@/shared/utils/cn";
+import { useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight, Eye, FileText, History, Maximize2, Minimize2, Paperclip, Pencil, Trash2 } from 'lucide-react'
+import type { FixedCost } from '@/shared/api/types'
+import { StatusBadge } from '@/features/expenses/components/StatusBadge'
+import { AttachmentsPanel } from '@/features/attachments/components/AttachmentsPanel'
+import { useAttachments } from '@/features/attachments/hooks/attachments'
+import { RecordHistoryPanel } from '@/features/history/components/RecordHistoryPanel'
+import { useRecordHistory } from '@/features/history/hooks/history'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { ATTACHMENT_KIND_LABELS } from '@/features/attachments/constants/attachments'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Button } from '@/ui/button'
+import { Badge } from '@/ui/badge'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
+import { FixedCostDetailOverviewSection } from '../sections/detail/FixedCostDetailOverviewSection'
+import { cn } from '@/shared/utils/cn'
 
 export interface FixedCostDetailPageProps {
-  fixedCost?: FixedCost;
-  categoryName: string;
-  categoryIcon?: string | null;
-  categoryColor?: string | null;
-  personName: string;
-  accountName: string;
-  onClose: () => void;
-  onEdit: () => void;
-  initialTab?: DetailTab;
-  onDelete: (cost: FixedCost) => void | Promise<unknown>;
-  items: FixedCost[];
-  onNavigate: (cost: FixedCost) => void;
+  fixedCost?: FixedCost
+  categoryName: string
+  categoryIcon?: string | null
+  categoryColor?: string | null
+  personName: string
+  accountName: string
+  onClose: () => void
+  onEdit: () => void
+  initialTab?: DetailTab
+  onDelete: (cost: FixedCost) => void | Promise<unknown>
+  items: FixedCost[]
+  onNavigate: (cost: FixedCost) => void
 }
 
-export type DetailTab = "detail" | "files" | "history";
+export type DetailTab = 'detail' | 'files' | 'history'
 
 export function FixedCostDetailPage({
   fixedCost,
@@ -43,47 +43,47 @@ export function FixedCostDetailPage({
   accountName,
   onClose,
   onEdit,
-  initialTab = "detail",
+  initialTab = 'detail',
   onDelete,
   items,
   onNavigate,
 }: FixedCostDetailPageProps) {
-  const [tab, setTab] = useState<DetailTab>(initialTab);
-  const [expanded, setExpanded] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [filterKind, setFilterKind] = useState<string>("all");
-  const [uploadKind, setUploadKind] = useState<string>("boleta");
-  const attachments = useAttachments("fixed_cost", fixedCost?.id ?? "", {
+  const [tab, setTab] = useState<DetailTab>(initialTab)
+  const [expanded, setExpanded] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [filterKind, setFilterKind] = useState<string>('all')
+  const [uploadKind, setUploadKind] = useState<string>('boleta')
+  const attachments = useAttachments('fixed_cost', fixedCost?.id ?? '', {
     enabled: !!fixedCost,
-  });
-  const history = useRecordHistory("exp_fixed_costs", fixedCost?.id ?? "", {
+  })
+  const history = useRecordHistory('exp_fixed_costs', fixedCost?.id ?? '', {
     enabled: !!fixedCost,
-  });
-  const files = attachments.data ?? [];
-  const currentIndex = fixedCost ? items.findIndex((item) => item.id === fixedCost.id) : -1;
-  const previous = currentIndex > 0 ? items[currentIndex - 1] : undefined;
-  const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : undefined;
-  const latestChange = history.data?.items?.[0];
-  const attachmentKinds = Object.keys(ATTACHMENT_KIND_LABELS);
-  const fileFilters = ["all", ...attachmentKinds];
+  })
+  const files = attachments.data ?? []
+  const currentIndex = fixedCost ? items.findIndex((item) => item.id === fixedCost.id) : -1
+  const previous = currentIndex > 0 ? items[currentIndex - 1] : undefined
+  const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : undefined
+  const latestChange = history.data?.items?.[0]
+  const attachmentKinds = Object.keys(ATTACHMENT_KIND_LABELS)
+  const fileFilters = ['all', ...attachmentKinds]
 
   useEffect(() => {
-    setTab(initialTab);
-    setExpanded(false);
-  }, [fixedCost?.id, initialTab]);
+    setTab(initialTab)
+    setExpanded(false)
+  }, [fixedCost?.id, initialTab])
 
   return (
     <Sheet open={!!fixedCost} onOpenChange={(open) => !open && onClose()}>
       {fixedCost && (
-        <SheetContent side="right" className={cn("w-full gap-0 overflow-hidden", expanded ? "sm:max-w-none" : "sm:max-w-xl")}>
+        <SheetContent side="right" className={cn('w-full gap-0 overflow-hidden', expanded ? 'sm:max-w-none' : 'sm:max-w-xl')}>
           <SheetHeader className="min-w-0 shrink-0 gap-1.5 pb-0 pr-12 sm:pr-24">
             <SheetTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left text-lg tracking-tight">
               <span className="min-w-0 wrap-anywhere">{fixedCost.description}</span>
               <StatusBadge status={fixedCost.paymentStatus} />
             </SheetTitle>
             <SheetDescription className="wrap-anywhere">
-              {categoryName} · {getMonthName(fixedCost.paymentMonth)} {fixedCost.paymentYear} ·{" "}
+              {categoryName} · {getMonthName(fixedCost.paymentMonth)} {fixedCost.paymentYear} ·{' '}
               {formatCurrency(fixedCost.amountInPen ?? fixedCost.amount)}
             </SheetDescription>
           </SheetHeader>
@@ -92,7 +92,7 @@ export function FixedCostDetailPage({
             variant="ghost"
             size="icon-sm"
             className="absolute top-2.5 right-12 hidden sm:inline-flex"
-            aria-label={expanded ? "Reducir detalle" : "Ampliar detalle a pantalla completa"}
+            aria-label={expanded ? 'Reducir detalle' : 'Ampliar detalle a pantalla completa'}
             aria-pressed={expanded}
             onClick={() => setExpanded((current) => !current)}
           >
@@ -140,11 +140,11 @@ export function FixedCostDetailPage({
                   {files.length > 0 && (
                     <button
                       type="button"
-                      onClick={() => setTab("files")}
+                      onClick={() => setTab('files')}
                       className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
                     >
                       <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                        {files[0].contentType.startsWith("image/") && files[0].url ? (
+                        {files[0].contentType.startsWith('image/') && files[0].url ? (
                           <img src={files[0].url} alt="" className="size-full object-cover" />
                         ) : (
                           <Paperclip className="size-4" />
@@ -152,7 +152,7 @@ export function FixedCostDetailPage({
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block font-medium">
-                          {files.length} {files.length === 1 ? "archivo adjunto" : "archivos adjuntos"}
+                          {files.length} {files.length === 1 ? 'archivo adjunto' : 'archivos adjuntos'}
                         </span>
                         <span className="block truncate text-sm text-muted-foreground">
                           {ATTACHMENT_KIND_LABELS[files[0].kind] ?? files[0].kind} · {files[0].name}
@@ -164,16 +164,16 @@ export function FixedCostDetailPage({
                   {latestChange && (
                     <button
                       type="button"
-                      onClick={() => setTab("history")}
+                      onClick={() => setTab('history')}
                       className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
                     >
                       <History className="size-5 shrink-0 text-muted-foreground" />
                       <span className="min-w-0 flex-1">
                         <span className="block font-medium">
-                          Último cambio ·{" "}
-                          {new Intl.DateTimeFormat("es-PE", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
+                          Último cambio ·{' '}
+                          {new Intl.DateTimeFormat('es-PE', {
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
                           }).format(new Date(latestChange.createdAt))}
                         </span>
                         <span className="block truncate text-sm text-muted-foreground">{latestChange.changes[0]?.field ?? latestChange.action}</span>
@@ -198,7 +198,7 @@ export function FixedCostDetailPage({
                         key={kind}
                         type="button"
                         size="sm"
-                        variant={uploadKind === kind ? "secondary" : "outline"}
+                        variant={uploadKind === kind ? 'secondary' : 'outline'}
                         className="h-8 rounded-full"
                         aria-pressed={uploadKind === kind}
                         onClick={() => setUploadKind(kind)}
@@ -212,21 +212,21 @@ export function FixedCostDetailPage({
                 </div>
                 <div className="flex flex-wrap gap-2 border-t pt-3" aria-label="Filtrar archivos por tipo">
                   {fileFilters.map((kind) => {
-                    const count = kind === "all" ? files.length : files.filter((file) => file.kind === kind).length;
-                    if (kind !== "all" && !count) return null;
+                    const count = kind === 'all' ? files.length : files.filter((file) => file.kind === kind).length
+                    if (kind !== 'all' && !count) return null
                     return (
                       <Button
                         key={kind}
                         type="button"
                         size="sm"
-                        variant={filterKind === kind ? "secondary" : "ghost"}
+                        variant={filterKind === kind ? 'secondary' : 'ghost'}
                         className="h-8"
                         onClick={() => setFilterKind(kind)}
                         aria-pressed={filterKind === kind}
                       >
-                        {kind === "all" ? "Todos" : ATTACHMENT_KIND_LABELS[kind]} <span className="ml-1 text-muted-foreground">{count}</span>
+                        {kind === 'all' ? 'Todos' : ATTACHMENT_KIND_LABELS[kind]} <span className="ml-1 text-muted-foreground">{count}</span>
                       </Button>
-                    );
+                    )
                   })}
                 </div>
                 <AttachmentsPanel
@@ -280,18 +280,18 @@ export function FixedCostDetailPage({
             description={<>Se eliminará «{fixedCost.description}». Esta acción no se puede deshacer.</>}
             pending={deleting}
             onConfirm={() => {
-              setDeleting(true);
+              setDeleting(true)
               Promise.resolve(onDelete(fixedCost))
                 .then(() => {
-                  setConfirmDelete(false);
-                  onClose();
+                  setConfirmDelete(false)
+                  onClose()
                 })
                 .catch(() => undefined)
-                .finally(() => setDeleting(false));
+                .finally(() => setDeleting(false))
             }}
           />
         </SheetContent>
       )}
     </Sheet>
-  );
+  )
 }

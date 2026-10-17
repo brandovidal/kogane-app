@@ -1,5 +1,5 @@
-import { ArrowUpRight, Info } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+import { ArrowUpRight, Info } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
 
 export function BudgetSection() {
   return (
@@ -22,5 +22,5 @@ export function BudgetSection() {
         </a>
       </CardContent>
     </Card>
-  );
+  )
 }

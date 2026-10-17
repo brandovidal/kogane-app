@@ -1,55 +1,55 @@
-import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { CalendarClock, CalendarDays, ChartNoAxesColumnIncreasing } from "lucide-react";
-import { InstallmentFields } from "@/features/expenses/components/forms/InstallmentFields";
-import { DatePicker } from "@/shared/components/forms/DatePicker";
-import { FieldLabel } from "@/shared/components/forms/FieldLabel";
-import { FormField } from "@/shared/components/forms/FormField";
-import { MonthYearPicker } from "@/shared/components/navigation/MonthYearPicker";
-import { Switch } from "@/ui/switch";
-import { parseInstallment } from "@/features/expenses/lib/installments";
-import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
-import { relativeDueLabel } from "@/features/fixed-costs/lib/fixed-cost-views";
-import { localTodayKey } from "@/shared/lib/dates";
-import { cn } from "@/shared/utils/cn";
-import type { FixedCostForm, FixedCostValues } from "@/features/fixed-costs/lib/fixed-cost-form";
+import { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { CalendarClock, CalendarDays, ChartNoAxesColumnIncreasing } from 'lucide-react'
+import { InstallmentFields } from '@/features/expenses/components/forms/InstallmentFields'
+import { DatePicker } from '@/shared/components/forms/DatePicker'
+import { FieldLabel } from '@/shared/components/forms/FieldLabel'
+import { FormField } from '@/shared/components/forms/FormField'
+import { MonthYearPicker } from '@/shared/components/navigation/MonthYearPicker'
+import { Switch } from '@/ui/switch'
+import { parseInstallment } from '@/features/expenses/lib/installments'
+import { daysUntilDue } from '@/features/fixed-costs/lib/fixed-cost-summary'
+import { relativeDueLabel } from '@/features/fixed-costs/lib/fixed-cost-views'
+import { localTodayKey } from '@/shared/lib/dates'
+import { cn } from '@/shared/utils/cn'
+import type { FixedCostForm, FixedCostValues } from '@/features/fixed-costs/lib/fixed-cost-form'
 
 export function FixedCostScheduleSection() {
-  const [todayKey, setTodayKey] = useState("");
+  const [todayKey, setTodayKey] = useState('')
   const {
     watch,
     setValue,
     formState: { errors },
-  } = useFormContext<FixedCostForm, unknown, FixedCostValues>();
-  const hasInstallments = watch("hasInstallments");
-  const installment = watch("installment");
-  const { current, total } = parseInstallment(installment);
-  const currentInstallment = Number(current);
-  const totalInstallments = Number(total);
-  const hasValidInstallment = currentInstallment > 0 && totalInstallments > 0 && currentInstallment <= totalInstallments;
-  const paidInstallments = hasValidInstallment ? currentInstallment - 1 : 0;
-  const remainingInstallments = hasValidInstallment ? totalInstallments - paidInstallments : 0;
-  const progress = hasValidInstallment ? Math.round((paidInstallments / totalInstallments) * 100) : 0;
-  const periodMonth = watch("paymentMonth");
-  const periodYear = watch("paymentYear");
-  const dueDate = watch("dueDate");
-  const daysToDue = dueDate && todayKey ? daysUntilDue(dueDate, todayKey) : null;
-  const dueRelativeLabel = relativeDueLabel(daysToDue);
+  } = useFormContext<FixedCostForm, unknown, FixedCostValues>()
+  const hasInstallments = watch('hasInstallments')
+  const installment = watch('installment')
+  const { current, total } = parseInstallment(installment)
+  const currentInstallment = Number(current)
+  const totalInstallments = Number(total)
+  const hasValidInstallment = currentInstallment > 0 && totalInstallments > 0 && currentInstallment <= totalInstallments
+  const paidInstallments = hasValidInstallment ? currentInstallment - 1 : 0
+  const remainingInstallments = hasValidInstallment ? totalInstallments - paidInstallments : 0
+  const progress = hasValidInstallment ? Math.round((paidInstallments / totalInstallments) * 100) : 0
+  const periodMonth = watch('paymentMonth')
+  const periodYear = watch('paymentYear')
+  const dueDate = watch('dueDate')
+  const daysToDue = dueDate && todayKey ? daysUntilDue(dueDate, todayKey) : null
+  const dueRelativeLabel = relativeDueLabel(daysToDue)
   const dueMessage =
     daysToDue == null || !dueRelativeLabel
       ? null
       : daysToDue < 0
-        ? dueRelativeLabel.replace(/^v/, "V")
+        ? dueRelativeLabel.replace(/^v/, 'V')
         : daysToDue === 0
-          ? "Vence hoy"
-          : `Vence ${dueRelativeLabel}`;
-  const finishDate = new Date(periodYear, periodMonth - 1 + remainingInstallments - 1, 1);
-  const finishLabel = finishDate.toLocaleDateString("es-PE", {
-    month: "short",
-    year: "numeric",
-  });
+          ? 'Vence hoy'
+          : `Vence ${dueRelativeLabel}`
+  const finishDate = new Date(periodYear, periodMonth - 1 + remainingInstallments - 1, 1)
+  const finishLabel = finishDate.toLocaleDateString('es-PE', {
+    month: 'short',
+    year: 'numeric',
+  })
 
-  useEffect(() => setTodayKey(localTodayKey()), []);
+  useEffect(() => setTodayKey(localTodayKey()), [])
 
   return (
     <div className="space-y-3">
@@ -66,8 +66,8 @@ export function FixedCostScheduleSection() {
               ariaLabel="Periodo del registro"
               value={{ month: periodMonth, year: periodYear }}
               onChange={({ month, year }) => {
-                setValue("paymentMonth", month, { shouldValidate: true });
-                setValue("paymentYear", year, { shouldValidate: true });
+                setValue('paymentMonth', month, { shouldValidate: true })
+                setValue('paymentYear', year, { shouldValidate: true })
               }}
             />
           </FormField>
@@ -75,11 +75,11 @@ export function FixedCostScheduleSection() {
             <DatePicker
               ariaLabel="Fecha de vencimiento"
               value={dueDate}
-              onChange={(date) => setValue("dueDate", date, { shouldValidate: true })}
+              onChange={(date) => setValue('dueDate', date, { shouldValidate: true })}
               placeholder="Sin fecha de vencimiento"
             />
             {dueMessage && daysToDue != null && (
-              <p className={cn("mt-1 text-xs", daysToDue < 0 ? "text-destructive" : "text-amber-600 dark:text-amber-300")}>{dueMessage}</p>
+              <p className={cn('mt-1 text-xs', daysToDue < 0 ? 'text-destructive' : 'text-amber-600 dark:text-amber-300')}>{dueMessage}</p>
             )}
           </FormField>
         </div>
@@ -94,7 +94,7 @@ export function FixedCostScheduleSection() {
             aria-label="Se paga en cuotas"
             checked={hasInstallments}
             onCheckedChange={(checked) =>
-              setValue("hasInstallments", checked, {
+              setValue('hasInstallments', checked, {
                 shouldValidate: !checked,
               })
             }
@@ -107,7 +107,7 @@ export function FixedCostScheduleSection() {
                 compact
                 value={installment}
                 onChange={(value) =>
-                  setValue("installment", value ?? "", {
+                  setValue('installment', value ?? '', {
                     shouldDirty: true,
                     shouldValidate: true,
                   })
@@ -120,7 +120,7 @@ export function FixedCostScheduleSection() {
                     <ChartNoAxesColumnIncreasing aria-hidden="true" className="size-3.5" />
                     Avance
                   </span>
-                  <span>{hasValidInstallment ? `${progress}%` : "—"}</span>
+                  <span>{hasValidInstallment ? `${progress}%` : '—'}</span>
                 </div>
                 <div
                   role="progressbar"
@@ -145,7 +145,7 @@ export function FixedCostScheduleSection() {
         )}
       </section>
     </div>
-  );
+  )
 }
 
 function InstallmentSummary({ label, value }: { label: string; value: string }) {
@@ -154,5 +154,5 @@ function InstallmentSummary({ label, value }: { label: string; value: string }) 
       <div className="text-[11px] text-muted-foreground">{label}</div>
       <div className="truncate text-sm font-semibold tabular-nums">{value}</div>
     </div>
-  );
+  )
 }

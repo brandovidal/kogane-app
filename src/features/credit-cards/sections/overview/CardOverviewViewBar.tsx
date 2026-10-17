@@ -1,14 +1,14 @@
-import { Activity, ChevronDown, CircleDollarSign, CreditCard, LayoutGrid, ListFilter, MoreHorizontal, Plus } from "lucide-react";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import { cn } from "@/shared/utils/cn";
+import { Activity, ChevronDown, CircleDollarSign, CreditCard, LayoutGrid, ListFilter, MoreHorizontal, Plus } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { cn } from '@/shared/utils/cn'
 
-export type CardOverviewView = "summary" | "movements" | "currency" | "installments" | "period";
+export type CardOverviewView = 'summary' | 'movements' | 'currency' | 'installments' | 'period'
 const VIEWS = [
-  { value: "summary", label: "Resumen", Icon: LayoutGrid },
-  { value: "movements", label: "Movimientos", Icon: ListFilter },
-  { value: "currency", label: "Por moneda", Icon: CircleDollarSign },
-] as const;
+  { value: 'summary', label: 'Resumen', Icon: LayoutGrid },
+  { value: 'movements', label: 'Movimientos', Icon: ListFilter },
+  { value: 'currency', label: 'Por moneda', Icon: CircleDollarSign },
+] as const
 
 export function CardOverviewViewBar({
   view,
@@ -16,10 +16,10 @@ export function CardOverviewViewBar({
   onNewExpense,
   onNewCard,
 }: {
-  view: CardOverviewView;
-  onViewChange: (view: CardOverviewView) => void;
-  onNewExpense: () => void;
-  onNewCard: () => void;
+  view: CardOverviewView
+  onViewChange: (view: CardOverviewView) => void
+  onNewExpense: () => void
+  onNewCard: () => void
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -32,22 +32,22 @@ export function CardOverviewViewBar({
             aria-selected={view === value}
             onClick={() => onViewChange(value)}
             className={cn(
-              "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground",
-              view === value && "bg-accent text-foreground ring-1 ring-border/70",
+              'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground',
+              view === value && 'bg-accent text-foreground ring-1 ring-border/70',
             )}
           >
             <Icon className="size-4" />
             {label}
           </button>
         ))}
-        {(view === "period" || view === "installments") && (
+        {(view === 'period' || view === 'installments') && (
           <button
             type="button"
             role="tab"
             aria-selected="true"
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-accent px-2.5 text-sm font-medium text-foreground ring-1 ring-border/70"
           >
-            {view === "period" ? "Por período" : "Cuotas"}
+            {view === 'period' ? 'Por período' : 'Cuotas'}
           </button>
         )}
         <Button type="button" variant="ghost" size="icon-sm" className="size-8" aria-label="Nueva tarjeta" onClick={onNewCard}>
@@ -62,8 +62,8 @@ export function CardOverviewViewBar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => onViewChange("period")}>Vista por período</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onViewChange("installments")}>
+            <DropdownMenuItem onSelect={() => onViewChange('period')}>Vista por período</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onViewChange('installments')}>
               <Activity className="size-4" /> Cuotas
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={onNewCard}>Nueva tarjeta</DropdownMenuItem>
@@ -98,5 +98,5 @@ export function CardOverviewViewBar({
         </div>
       </div>
     </div>
-  );
+  )
 }

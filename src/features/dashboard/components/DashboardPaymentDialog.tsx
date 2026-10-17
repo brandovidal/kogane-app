@@ -1,19 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, Check, CreditCard, HandCoins, ReceiptText } from "lucide-react";
-import { toast } from "sonner";
-import { useCalendar, usePayCalendarEvent } from "@/features/calendar/hooks/calendar";
-import type { CalendarEvent } from "@/shared/api/types";
-import { eventLabel, gridRange, isPayable } from "@/features/calendar/lib/calendar-view";
-import { useExpenses } from "@/features/expenses/hooks/expenses";
-import { useCreditCards, useCategories } from "@/shared/api/hooks/catalogs";
-import { EXPENSE_RESOURCES } from "@/shared/api/types";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { formatCurrency } from "@/shared/lib/currency";
-import { formatDate } from "@/shared/lib/dates";
-import { usePeriod } from "@/shared/stores/period.store";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Checkbox } from "@/ui/checkbox";
+import { useEffect, useMemo, useState } from 'react'
+import { CalendarDays, Check, CreditCard, HandCoins, ReceiptText } from 'lucide-react'
+import { toast } from 'sonner'
+import { useCalendar, usePayCalendarEvent } from '@/features/calendar/hooks/calendar'
+import type { CalendarEvent } from '@/shared/api/types'
+import { eventLabel, gridRange, isPayable } from '@/features/calendar/lib/calendar-view'
+import { useExpenses } from '@/features/expenses/hooks/expenses'
+import { useCreditCards, useCategories } from '@/shared/api/hooks/catalogs'
+import { EXPENSE_RESOURCES } from '@/shared/api/types'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { formatCurrency } from '@/shared/lib/currency'
+import { formatDate } from '@/shared/lib/dates'
+import { usePeriod } from '@/shared/stores/period.store'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Checkbox } from '@/ui/checkbox'
 import {
   buildPayBody,
   emptyPayAmount,
@@ -21,185 +21,185 @@ import {
   payAmountError,
   type PayAmount,
   type PayDetails,
-} from "@/features/calendar/lib/payment-details";
-import { PaymentDetailsFields } from "./PaymentDetailsFields";
-import { localTodayKey } from "@/shared/lib/dates";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import type { DashboardPaymentTab } from "../types/dashboard";
+} from '@/features/calendar/lib/payment-details'
+import { PaymentDetailsFields } from './PaymentDetailsFields'
+import { localTodayKey } from '@/shared/lib/dates'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
+import type { DashboardPaymentTab } from '../types/dashboard'
 
 type PaymentCalendarEvent = CalendarEvent & {
-  displayDate?: string | null;
-  unscheduled?: boolean;
-};
+  displayDate?: string | null
+  unscheduled?: boolean
+}
 const TAB_ITEMS: { id: DashboardPaymentTab; label: string }[] = [
-  { id: "card", label: "Tarjeta" },
-  { id: "fixed", label: "Costos fijos" },
-  { id: "collect", label: "Cobros" },
-  { id: "debt", label: "Deudas" },
-];
+  { id: 'card', label: 'Tarjeta' },
+  { id: 'fixed', label: 'Costos fijos' },
+  { id: 'collect', label: 'Cobros' },
+  { id: 'debt', label: 'Deudas' },
+]
 
 function tabOf(event: CalendarEvent): DashboardPaymentTab | null {
-  if (event.refType === "card_statement") return "card";
-  if (event.refType === "fixed_cost" || event.refType === "subscription") return "fixed";
-  if (event.kind === "debt_owed_to_me") return "collect";
-  if (event.kind === "debt_i_owe") return "debt";
-  return null;
+  if (event.refType === 'card_statement') return 'card'
+  if (event.refType === 'fixed_cost' || event.refType === 'subscription') return 'fixed'
+  if (event.kind === 'debt_owed_to_me') return 'collect'
+  if (event.kind === 'debt_i_owe') return 'debt'
+  return null
 }
 
-const eventKey = (event: CalendarEvent) => `${event.refType}:${event.refId}`;
+const eventKey = (event: CalendarEvent) => `${event.refType}:${event.refId}`
 
 function daysUntil(date: string) {
-  const due = new Date(`${date.slice(0, 10)}T00:00:00Z`).getTime();
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Lima",
-  });
-  return Math.round((due - new Date(`${today}T00:00:00Z`).getTime()) / 86_400_000);
+  const due = new Date(`${date.slice(0, 10)}T00:00:00Z`).getTime()
+  const today = new Date().toLocaleDateString('en-CA', {
+    timeZone: 'America/Lima',
+  })
+  return Math.round((due - new Date(`${today}T00:00:00Z`).getTime()) / 86_400_000)
 }
 
 export function DashboardPaymentDialog({
   open,
   onOpenChange,
-  initialTab = "card",
+  initialTab = 'card',
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialTab?: DashboardPaymentTab;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  initialTab?: DashboardPaymentTab
 }) {
-  const month = usePeriod((state) => state.month);
-  const year = usePeriod((state) => state.year);
-  const { from, to } = gridRange(month, year);
-  const calendarQuery = useCalendar(from, to);
-  const events = useMemo(() => calendarQuery.data ?? [], [calendarQuery.data]);
-  const cardExpenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? [];
+  const month = usePeriod((state) => state.month)
+  const year = usePeriod((state) => state.year)
+  const { from, to } = gridRange(month, year)
+  const calendarQuery = useCalendar(from, to)
+  const events = useMemo(() => calendarQuery.data ?? [], [calendarQuery.data])
+  const cardExpenses = useExpenses(EXPENSE_RESOURCES.creditCard, { month, year }).data ?? []
   const fixedCostsQuery = useExpenses(EXPENSE_RESOURCES.fixedCost, {
     month,
     year,
-  });
-  const fixedCosts = useMemo(() => fixedCostsQuery.data ?? [], [fixedCostsQuery.data]);
-  const subscriptions = useExpenses(EXPENSE_RESOURCES.subscription, { month, year }).data ?? [];
-  const cards = useCreditCards().data ?? [];
-  const categories = useCategories().data ?? [];
-  const payEvent = usePayCalendarEvent();
-  const [tab, setTab] = useState<DashboardPaymentTab>("card");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [submitting, setSubmitting] = useState(false);
-  const [selectionInitialized, setSelectionInitialized] = useState(false);
-  const [details, setDetails] = useState<PayDetails>(() => emptyPayDetails(localTodayKey()));
-  const [singleAmount, setSingleAmount] = useState<PayAmount>(emptyPayAmount());
+  })
+  const fixedCosts = useMemo(() => fixedCostsQuery.data ?? [], [fixedCostsQuery.data])
+  const subscriptions = useExpenses(EXPENSE_RESOURCES.subscription, { month, year }).data ?? []
+  const cards = useCreditCards().data ?? []
+  const categories = useCategories().data ?? []
+  const payEvent = usePayCalendarEvent()
+  const [tab, setTab] = useState<DashboardPaymentTab>('card')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [submitting, setSubmitting] = useState(false)
+  const [selectionInitialized, setSelectionInitialized] = useState(false)
+  const [details, setDetails] = useState<PayDetails>(() => emptyPayDetails(localTodayKey()))
+  const [singleAmount, setSingleAmount] = useState<PayAmount>(emptyPayAmount())
 
   const fixedCostEvents = useMemo<PaymentCalendarEvent[]>(
     () =>
       fixedCosts
-        .filter((cost) => !["paid", "waived", "amortized", "cashback", "skipped"].includes(cost.paymentStatus))
+        .filter((cost) => !['paid', 'waived', 'amortized', 'cashback', 'skipped'].includes(cost.paymentStatus))
         .map((cost) => {
-          const displayDate = cost.dueDate?.slice(0, 10) ?? null;
-          const placeholderDate = displayDate ?? `${cost.paymentYear}-${String(cost.paymentMonth).padStart(2, "0")}-01`;
-          const late = displayDate ? daysUntil(displayDate) < 0 : false;
+          const displayDate = cost.dueDate?.slice(0, 10) ?? null
+          const placeholderDate = displayDate ?? `${cost.paymentYear}-${String(cost.paymentMonth).padStart(2, '0')}-01`
+          const late = displayDate ? daysUntil(displayDate) < 0 : false
           return {
             date: placeholderDate,
             displayDate,
             unscheduled: displayDate == null,
-            kind: "fixed_cost",
+            kind: 'fixed_cost',
             name: cost.description,
             personName: null,
             installment: cost.installment,
             amount: cost.amountInPen ?? cost.amount,
             currency: cost.currency,
-            status: late ? "late" : "pending",
-            refType: "fixed_cost",
+            status: late ? 'late' : 'pending',
+            refType: 'fixed_cost',
             refId: cost.id,
             color: null,
-          };
+          }
         }),
     [fixedCosts],
-  );
+  )
   const payable = useMemo<PaymentCalendarEvent[]>(() => {
-    if (tab !== "fixed") return events.filter(isPayable).filter((event) => tabOf(event) === tab);
-    const platformEvents = events.filter((event) => isPayable(event) && event.refType === "subscription");
-    return [...platformEvents, ...fixedCostEvents];
-  }, [events, fixedCostEvents, tab]);
-  const selectedEvents = payable.filter((event) => selected.has(eventKey(event)));
-  const total = selectedEvents.reduce((sum, event) => sum + (event.amount ?? 0), 0);
+    if (tab !== 'fixed') return events.filter(isPayable).filter((event) => tabOf(event) === tab)
+    const platformEvents = events.filter((event) => isPayable(event) && event.refType === 'subscription')
+    return [...platformEvents, ...fixedCostEvents]
+  }, [events, fixedCostEvents, tab])
+  const selectedEvents = payable.filter((event) => selected.has(eventKey(event)))
+  const total = selectedEvents.reduce((sum, event) => sum + (event.amount ?? 0), 0)
 
   const expenseClassification = (event: CalendarEvent) => {
-    if (event.refType === "fixed_cost" || event.refType === "subscription") {
-      const expense = [...fixedCosts, ...subscriptions].find((item) => item.id === event.refId);
-      if (!expense) return event.refType === "subscription" ? "Plataforma" : "Costo fijo";
-      const category = categories.find((item) => item.id === expense.categoryId)?.name ?? "Sin categoría";
-      const expenseType = expense.expenseType === "essential" ? "Necesario" : "Gusto";
-      return `${category} · ${expenseType}`;
+    if (event.refType === 'fixed_cost' || event.refType === 'subscription') {
+      const expense = [...fixedCosts, ...subscriptions].find((item) => item.id === event.refId)
+      if (!expense) return event.refType === 'subscription' ? 'Plataforma' : 'Costo fijo'
+      const category = categories.find((item) => item.id === expense.categoryId)?.name ?? 'Sin categoría'
+      const expenseType = expense.expenseType === 'essential' ? 'Necesario' : 'Gusto'
+      return `${category} · ${expenseType}`
     }
 
-    if (event.refType === "card_statement") {
-      const card = cards.find((item) => item.name === event.name);
-      const expenses = cardExpenses.filter((expense) => expense.paymentMethodId === card?.id);
-      if (!expenses.length) return "Tarjeta de crédito";
+    if (event.refType === 'card_statement') {
+      const card = cards.find((item) => item.name === event.name)
+      const expenses = cardExpenses.filter((expense) => expense.paymentMethodId === card?.id)
+      if (!expenses.length) return 'Tarjeta de crédito'
       const totals = expenses.reduce(
         (acc, expense) => {
-          const type = expense.expenseType === "essential" ? "Necesario" : "Gusto";
-          acc[type] = (acc[type] ?? 0) + (expense.amountInPen ?? expense.amount);
-          return acc;
+          const type = expense.expenseType === 'essential' ? 'Necesario' : 'Gusto'
+          acc[type] = (acc[type] ?? 0) + (expense.amountInPen ?? expense.amount)
+          return acc
         },
         {} as Record<string, number>,
-      );
+      )
       return Object.entries(totals)
         .map(([type, amount]) => `${type} ${formatCurrency(amount)}`)
-        .join(" · ");
+        .join(' · ')
     }
 
-    if (event.kind === "debt_owed_to_me") return "Cobro de préstamo";
-    if (event.kind === "debt_i_owe") return "Pago de préstamo";
-    return "Sin categoría";
-  };
+    if (event.kind === 'debt_owed_to_me') return 'Cobro de préstamo'
+    if (event.kind === 'debt_i_owe') return 'Pago de préstamo'
+    return 'Sin categoría'
+  }
 
   useEffect(() => {
-    if (!open) return;
-    setTab(initialTab);
-    setSelected(new Set());
-    setSelectionInitialized(false);
-    setDetails(emptyPayDetails(localTodayKey()));
-    setSingleAmount(emptyPayAmount());
-  }, [open, initialTab]);
+    if (!open) return
+    setTab(initialTab)
+    setSelected(new Set())
+    setSelectionInitialized(false)
+    setDetails(emptyPayDetails(localTodayKey()))
+    setSingleAmount(emptyPayAmount())
+  }, [open, initialTab])
 
   useEffect(() => {
-    if (!open || !calendarQuery.isSuccess || !fixedCostsQuery.isSuccess || selectionInitialized) return;
-    const defaults = [...events.filter((event) => event.refType !== "fixed_cost"), ...fixedCostEvents].filter((event) => {
-      const category = tabOf(event);
-      if (!category || !isPayable(event)) return false;
-      if ("unscheduled" in event && event.unscheduled) return false;
-      return event.status === "late" || daysUntil(event.date) <= 7;
-    });
-    setSelected(new Set(defaults.map(eventKey)));
-    setSelectionInitialized(true);
-  }, [calendarQuery.isSuccess, events, fixedCostsQuery.isSuccess, fixedCostEvents, open, selectionInitialized]);
+    if (!open || !calendarQuery.isSuccess || !fixedCostsQuery.isSuccess || selectionInitialized) return
+    const defaults = [...events.filter((event) => event.refType !== 'fixed_cost'), ...fixedCostEvents].filter((event) => {
+      const category = tabOf(event)
+      if (!category || !isPayable(event)) return false
+      if ('unscheduled' in event && event.unscheduled) return false
+      return event.status === 'late' || daysUntil(event.date) <= 7
+    })
+    setSelected(new Set(defaults.map(eventKey)))
+    setSelectionInitialized(true)
+  }, [calendarQuery.isSuccess, events, fixedCostsQuery.isSuccess, fixedCostEvents, open, selectionInitialized])
 
   const toggle = (event: CalendarEvent, checked: boolean) => {
     setSelected((current) => {
-      const next = new Set(current);
-      if (checked) next.add(eventKey(event));
-      else next.delete(eventKey(event));
-      return next;
-    });
-  };
+      const next = new Set(current)
+      if (checked) next.add(eventKey(event))
+      else next.delete(eventKey(event))
+      return next
+    })
+  }
 
   // A different amount (or total / minimum / partial) only makes sense for one element
-  const single = selectedEvents.length === 1 ? singleAmount : null;
-  const amountError = payAmountError({ refType: selectedEvents[0]?.refType ?? "" }, single);
+  const single = selectedEvents.length === 1 ? singleAmount : null
+  const amountError = payAmountError({ refType: selectedEvents[0]?.refType ?? '' }, single)
 
   const submit = async () => {
-    if (!selectedEvents.length || submitting || amountError) return;
-    setSubmitting(true);
+    if (!selectedEvents.length || submitting || amountError) return
+    setSubmitting(true)
     const results = await Promise.allSettled(
       selectedEvents.map((event) => payEvent.mutateAsync(buildPayBody({ refType: event.refType!, refId: event.refId! }, details, single))),
-    );
-    const paid = results.filter((result) => result.status === "fulfilled" && (result.value === "Pagado" || result.value === "Pago parcial")).length;
-    const failed = results.length - results.filter((result) => result.status === "fulfilled").length;
-    if (paid) toast.success(`${paid} ${paid === 1 ? "pago registrado" : "pagos registrados"}`);
-    if (failed) toast.error(`${failed} ${failed === 1 ? "pago no se pudo registrar" : "pagos no se pudieron registrar"}`);
-    setSubmitting(false);
-    if (!failed) onOpenChange(false);
-    setSelected(new Set());
-  };
+    )
+    const paid = results.filter((result) => result.status === 'fulfilled' && (result.value === 'Pagado' || result.value === 'Pago parcial')).length
+    const failed = results.length - results.filter((result) => result.status === 'fulfilled').length
+    if (paid) toast.success(`${paid} ${paid === 1 ? 'pago registrado' : 'pagos registrados'}`)
+    if (failed) toast.error(`${failed} ${failed === 1 ? 'pago no se pudo registrar' : 'pagos no se pudieron registrar'}`)
+    setSubmitting(false)
+    if (!failed) onOpenChange(false)
+    setSelected(new Set())
+  }
 
   return (
     <ResponsiveDialog
@@ -215,7 +215,7 @@ export function DashboardPaymentDialog({
           </Button>
           <Button onClick={submit} disabled={!selectedEvents.length || submitting || !!amountError}>
             <Check className="mr-2 size-4" />
-            Registrar {selectedEvents.length} {selectedEvents.length === 1 ? "pago" : "pagos"}
+            Registrar {selectedEvents.length} {selectedEvents.length === 1 ? 'pago' : 'pagos'}
           </Button>
         </>
       }
@@ -230,21 +230,21 @@ export function DashboardPaymentDialog({
             ))}
           </TabsList>
           {TAB_ITEMS.map(({ id }) => {
-            const rows = id === tab ? payable : events.filter(isPayable).filter((event) => tabOf(event) === id);
+            const rows = id === tab ? payable : events.filter(isPayable).filter((event) => tabOf(event) === id)
             return (
               <TabsContent key={id} value={id} className="mt-3">
                 {rows.length ? (
                   <div className="max-h-64 divide-y overflow-y-auto rounded-xl border">
                     {rows.map((event) => {
-                      const checked = selected.has(eventKey(event));
-                      const paymentEvent = event as PaymentCalendarEvent;
-                      const due = paymentEvent.displayDate ? daysUntil(paymentEvent.displayDate) : daysUntil(event.date);
-                      const isLate = event.status === "late" || due < 0;
-                      const Icon = id === "card" ? CreditCard : id === "fixed" ? ReceiptText : HandCoins;
+                      const checked = selected.has(eventKey(event))
+                      const paymentEvent = event as PaymentCalendarEvent
+                      const due = paymentEvent.displayDate ? daysUntil(paymentEvent.displayDate) : daysUntil(event.date)
+                      const isLate = event.status === 'late' || due < 0
+                      const Icon = id === 'card' ? CreditCard : id === 'fixed' ? ReceiptText : HandCoins
                       return (
                         <label
                           key={eventKey(event)}
-                          className={`flex cursor-pointer items-center gap-3 px-3.5 py-3 transition-colors ${checked ? "bg-muted/60" : "hover:bg-muted/30"}`}
+                          className={`flex cursor-pointer items-center gap-3 px-3.5 py-3 transition-colors ${checked ? 'bg-muted/60' : 'hover:bg-muted/30'}`}
                         >
                           <Checkbox checked={checked} onCheckedChange={(value) => toggle(event, value === true)} />
                           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -261,7 +261,7 @@ export function DashboardPaymentDialog({
                             </span>
                             <span className="block truncate text-xs text-muted-foreground">
                               {paymentEvent.displayDate === null
-                                ? "Sin fecha de vencimiento"
+                                ? 'Sin fecha de vencimiento'
                                 : isLate
                                   ? `Venció ${formatDate(paymentEvent.displayDate ?? event.date)} · retrasado ${Math.abs(due)} días`
                                   : `Vence ${formatDate(paymentEvent.displayDate ?? event.date)}`}
@@ -269,10 +269,10 @@ export function DashboardPaymentDialog({
                             <span className="block truncate text-xs text-muted-foreground">{expenseClassification(event)}</span>
                           </div>
                           <span className="shrink-0 text-sm font-semibold tabular-nums">
-                            {event.amount == null ? "—" : formatCurrency(event.amount, event.currency)}
+                            {event.amount == null ? '—' : formatCurrency(event.amount, event.currency)}
                           </span>
                         </label>
-                      );
+                      )
                     })}
                   </div>
                 ) : (
@@ -285,7 +285,7 @@ export function DashboardPaymentDialog({
                   </div>
                 )}
               </TabsContent>
-            );
+            )
           })}
         </Tabs>
         <div className="space-y-2 rounded-xl border px-4 py-3 text-sm">
@@ -294,12 +294,12 @@ export function DashboardPaymentDialog({
               {selectedEvents.map((event) => (
                 <li key={eventKey(event)} className="flex items-center justify-between gap-3">
                   <span className="truncate text-muted-foreground">{eventLabel(event)}</span>
-                  <span className="tabular-nums">{event.amount == null ? "—" : formatCurrency(event.amount, event.currency)}</span>
+                  <span className="tabular-nums">{event.amount == null ? '—' : formatCurrency(event.amount, event.currency)}</span>
                 </li>
               ))}
             </ul>
           )}
-          <div className={`flex items-center justify-between font-semibold tabular-nums ${selectedEvents.length ? "border-t pt-2" : ""}`}>
+          <div className={`flex items-center justify-between font-semibold tabular-nums ${selectedEvents.length ? 'border-t pt-2' : ''}`}>
             <span>
               Total a registrar
               {!selectedEvents.length && <span className="ml-2 font-normal text-muted-foreground">0 seleccionados</span>}
@@ -313,16 +313,16 @@ export function DashboardPaymentDialog({
             onDetails={setDetails}
             single={single}
             onSingle={setSingleAmount}
-            isCardStatement={selectedEvents[0]?.refType === "card_statement"}
+            isCardStatement={selectedEvents[0]?.refType === 'card_statement'}
             error={amountError}
           />
         )}
         <p className="text-xs text-muted-foreground">
           {single
-            ? "Deja el monto vacío para pagar el saldo completo."
-            : "Con varios elementos se paga el saldo completo de cada uno; elige uno solo para indicar otro monto."}
+            ? 'Deja el monto vacío para pagar el saldo completo.'
+            : 'Con varios elementos se paga el saldo completo de cada uno; elige uno solo para indicar otro monto.'}
         </p>
       </div>
     </ResponsiveDialog>
-  );
+  )
 }

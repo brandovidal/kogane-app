@@ -1,45 +1,45 @@
-import { useState } from "react";
-import { LayoutGrid, Pencil, Plus, Rows3, Table2 } from "lucide-react";
+import { useState } from 'react'
+import { LayoutGrid, Pencil, Plus, Rows3, Table2 } from 'lucide-react'
 
-import { usePeople, useSavePerson } from "@/shared/api/hooks/catalogs";
-import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Card, CardContent } from "@/ui/card";
-import { Checkbox } from "@/ui/checkbox";
-import { Input } from "@/ui/input";
-import { Switch } from "@/ui/switch";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../../constants";
-import { PEOPLE_TABS, filterPeople, toggleModule, type PeopleTab, type Person } from "../../lib/people-filter";
-import { PersonDialog } from "./PersonDialog";
+import { usePeople, useSavePerson } from '@/shared/api/hooks/catalogs'
+import { MultiSelect } from '@/shared/components/filters/MultiSelect'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Card, CardContent } from '@/ui/card'
+import { Checkbox } from '@/ui/checkbox'
+import { Input } from '@/ui/input'
+import { Switch } from '@/ui/switch'
+import { Tabs, TabsList, TabsTrigger } from '@/ui/tabs'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from '../../constants'
+import { PEOPLE_TABS, filterPeople, toggleModule, type PeopleTab, type Person } from '../../lib/people-filter'
+import { PersonDialog } from './PersonDialog'
 
-type View = "checks" | "compact" | "cards";
+type View = 'checks' | 'compact' | 'cards'
 const VIEWS: [View, string, typeof Table2][] = [
-  ["checks", "Checks", Table2],
-  ["compact", "Compacta", Rows3],
-  ["cards", "Tarjetas", LayoutGrid],
-];
+  ['checks', 'Checks', Table2],
+  ['compact', 'Compacta', Rows3],
+  ['cards', 'Tarjetas', LayoutGrid],
+]
 
 const moduleOptions = PERSON_MODULES.map(([value, label]) => ({
   value,
   label,
-}));
+}))
 
 // Personas (D80): who expenses and debts belong to, and in which pages each one can be picked (appearsIn).
 // "Yo" is the default person and appears everywhere.
 export function PeoplePage() {
-  const people = usePeople().data ?? [];
-  const savePerson = useSavePerson();
-  const [tab, setTab] = useState<PeopleTab>("all");
-  const [query, setQuery] = useState("");
-  const [module, setModule] = useState<PersonModule | null>(null);
-  const [view, setView] = useState<View>("checks");
-  const [editing, setEditing] = useState<Person | null | undefined>(undefined); // null: new
+  const people = usePeople().data ?? []
+  const savePerson = useSavePerson()
+  const [tab, setTab] = useState<PeopleTab>('all')
+  const [query, setQuery] = useState('')
+  const [module, setModule] = useState<PersonModule | null>(null)
+  const [view, setView] = useState<View>('checks')
+  const [editing, setEditing] = useState<Person | null | undefined>(undefined) // null: new
 
-  const visible = filterPeople(people, { tab, query, module });
-  const setModules = (person: Person, appearsIn: PersonModule[]) => savePerson.mutate({ id: person.id, name: person.name, appearsIn });
+  const visible = filterPeople(people, { tab, query, module })
+  const setModules = (person: Person, appearsIn: PersonModule[]) => savePerson.mutate({ id: person.id, name: person.name, appearsIn })
 
   return (
     <div className="space-y-4">
@@ -69,7 +69,7 @@ export function PeoplePage() {
         <select
           aria-label="Filtrar por página"
           className="h-9 rounded-md border bg-background px-2 text-sm"
-          value={module ?? ""}
+          value={module ?? ''}
           onChange={(e) => setModule((e.target.value || null) as PersonModule | null)}
         >
           <option value="">Todas las páginas</option>
@@ -81,7 +81,7 @@ export function PeoplePage() {
         </select>
         <div className="ml-auto flex gap-1" role="group" aria-label="Vista">
           {VIEWS.map(([key, label, Icon]) => (
-            <Button key={key} size="sm" variant={view === key ? "secondary" : "ghost"} aria-pressed={view === key} onClick={() => setView(key)}>
+            <Button key={key} size="sm" variant={view === key ? 'secondary' : 'ghost'} aria-pressed={view === key} onClick={() => setView(key)}>
               <Icon className="mr-1 h-4 w-4" /> {label}
             </Button>
           ))}
@@ -90,7 +90,7 @@ export function PeoplePage() {
 
       {visible.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">No hay personas con esos filtros.</p>}
 
-      {visible.length > 0 && view === "cards" && (
+      {visible.length > 0 && view === 'cards' && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((person) => (
             <Card key={person.id}>
@@ -100,7 +100,7 @@ export function PeoplePage() {
                     <p className="font-medium">
                       {person.name} {person.isDefault && <Badge variant="secondary">Yo</Badge>}
                     </p>
-                    <p className="text-xs text-muted-foreground">{person.aliases.join(", ") || "Sin alias"}</p>
+                    <p className="text-xs text-muted-foreground">{person.aliases.join(', ') || 'Sin alias'}</p>
                   </div>
                   <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Editar ${person.name}`} onClick={() => setEditing(person)}>
                     <Pencil className="h-3.5 w-3.5" />
@@ -119,13 +119,13 @@ export function PeoplePage() {
         </div>
       )}
 
-      {visible.length > 0 && view !== "cards" && (
+      {visible.length > 0 && view !== 'cards' && (
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Nombre</TableHead>
-                {view === "checks" ? (
+                {view === 'checks' ? (
                   PERSON_MODULES.map(([key, label]) => (
                     <TableHead key={key} className="text-center">
                       {label}
@@ -142,15 +142,15 @@ export function PeoplePage() {
               {visible.map((person) => (
                 <TableRow key={person.id}>
                   <TableCell className="font-medium">
-                    {person.name}{" "}
+                    {person.name}{' '}
                     {person.isDefault && (
                       <Badge variant="secondary" className="ml-1">
                         Yo
                       </Badge>
                     )}
-                    <span className="block text-xs font-normal text-muted-foreground">{person.aliases.join(", ")}</span>
+                    <span className="block text-xs font-normal text-muted-foreground">{person.aliases.join(', ')}</span>
                   </TableCell>
-                  {view === "checks" ? (
+                  {view === 'checks' ? (
                     PERSON_MODULES.map(([key, label]) => (
                       <TableCell key={key} className="text-center">
                         <Checkbox
@@ -202,5 +202,5 @@ export function PeoplePage() {
 
       {editing !== undefined && <PersonDialog person={editing} onClose={() => setEditing(undefined)} />}
     </div>
-  );
+  )
 }

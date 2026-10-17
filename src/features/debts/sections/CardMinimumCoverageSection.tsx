@@ -1,16 +1,16 @@
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Card, CardContent } from "@/ui/card";
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Card, CardContent } from '@/ui/card'
 
 export type CardMinimumCoverage = {
-  cardId: string;
-  cardName: string;
-  minimumDue: number;
-  currentCharges: number;
-  difference: number;
-  covered: boolean;
-  expensesByPerson: { personId: string; name: string; amount: number }[];
-};
+  cardId: string
+  cardName: string
+  minimumDue: number
+  currentCharges: number
+  difference: number
+  covered: boolean
+  expensesByPerson: { personId: string; name: string; amount: number }[]
+}
 
 export function CardMinimumCoverageSection({ items, month, year }: { items: CardMinimumCoverage[]; month: number; year: number }) {
   return (
@@ -25,8 +25,8 @@ export function CardMinimumCoverageSection({ items, month, year }: { items: Card
                 </h3>
                 <p className="text-xs text-muted-foreground">Cargos del estado asignados, incluidos intereses</p>
               </div>
-              <span className={`text-sm font-semibold ${item.covered ? "text-emerald-300" : "text-amber-300"}`}>
-                {item.covered ? "Mínimo cubierto" : "Falta para el mínimo"}
+              <span className={`text-sm font-semibold ${item.covered ? 'text-emerald-300' : 'text-amber-300'}`}>
+                {item.covered ? 'Mínimo cubierto' : 'Falta para el mínimo'}
               </span>
             </div>
             <div className="grid gap-2 sm:grid-cols-3">
@@ -38,9 +38,9 @@ export function CardMinimumCoverageSection({ items, month, year }: { items: Card
                 <p className="text-xs text-muted-foreground">Cargos + intereses</p>
                 <p className="font-semibold tabular-nums">{formatCurrency(item.currentCharges)}</p>
               </div>
-              <div className={`rounded-md p-2 ${item.covered ? "bg-emerald-500/10" : "bg-amber-500/10"}`}>
-                <p className="text-xs text-muted-foreground">{item.covered ? "Excedente" : "Por cubrir"}</p>
-                <p className={`font-semibold tabular-nums ${item.covered ? "text-emerald-300" : "text-amber-300"}`}>
+              <div className={`rounded-md p-2 ${item.covered ? 'bg-emerald-500/10' : 'bg-amber-500/10'}`}>
+                <p className="text-xs text-muted-foreground">{item.covered ? 'Excedente' : 'Por cubrir'}</p>
+                <p className={`font-semibold tabular-nums ${item.covered ? 'text-emerald-300' : 'text-amber-300'}`}>
                   {formatCurrency(Math.abs(item.difference))}
                 </p>
               </div>
@@ -59,5 +59,5 @@ export function CardMinimumCoverageSection({ items, month, year }: { items: Card
         </Card>
       ))}
     </div>
-  );
+  )
 }

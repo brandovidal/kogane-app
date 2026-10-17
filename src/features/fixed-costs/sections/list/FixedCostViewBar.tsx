@@ -1,21 +1,21 @@
-import { toast } from "sonner";
-import { cn } from "@/shared/utils/cn";
+import { toast } from 'sonner'
+import { cn } from '@/shared/utils/cn'
 
-import { Activity, CalendarDays, ChevronDown, Clock, KanbanSquare, Plus, ReceiptText, Table2 } from "lucide-react";
-import { newExpenseStore } from "@/features/new-expense/stores/new-expense.store";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { Activity, CalendarDays, ChevronDown, Clock, KanbanSquare, Plus, ReceiptText, Table2 } from 'lucide-react'
+import { newExpenseStore } from '@/features/new-expense/stores/new-expense.store'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
 
-import { ExportMenu, type ExportMenuItem } from "@/shared/components/toolbar/ExportMenu";
-import { FIXED_COST_VIEWS, PAYABLE_HORIZONS, type PayableHorizon, type FixedCostView } from "../../lib/fixed-cost-views";
+import { ExportMenu, type ExportMenuItem } from '@/shared/components/toolbar/ExportMenu'
+import { FIXED_COST_VIEWS, PAYABLE_HORIZONS, type PayableHorizon, type FixedCostView } from '../../lib/fixed-cost-views'
 
 const VIEW_ICONS: Record<FixedCostView, typeof CalendarDays> = {
   mes: CalendarDays,
-  "por-pagar": Clock,
+  'por-pagar': Clock,
   cuotas: Activity,
   estado: KanbanSquare,
   todos: Table2,
-};
+}
 
 export function FixedCostViewBar({
   page,
@@ -25,20 +25,20 @@ export function FixedCostViewBar({
   payableHorizon,
   onPayableHorizonChange,
 }: {
-  page: FixedCostView;
-  onPageChange: (page: FixedCostView) => void;
-  exportItems: ExportMenuItem[];
-  onCreate: () => void;
-  payableHorizon: PayableHorizon;
-  onPayableHorizonChange: (horizon: PayableHorizon) => void;
+  page: FixedCostView
+  onPageChange: (page: FixedCostView) => void
+  exportItems: ExportMenuItem[]
+  onCreate: () => void
+  payableHorizon: PayableHorizon
+  onPayableHorizonChange: (horizon: PayableHorizon) => void
 }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center gap-1">
         <div role="tablist" aria-label="Vistas" className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 pb-1 sm:pb-0 [scrollbar-width:none]">
           {FIXED_COST_VIEWS.map((view) => {
-            const Icon = VIEW_ICONS[view.value];
-            const active = view.value === page;
+            const Icon = VIEW_ICONS[view.value]
+            const active = view.value === page
             return (
               <button
                 key={view.value}
@@ -47,14 +47,14 @@ export function FixedCostViewBar({
                 aria-selected={active}
                 onClick={() => onPageChange(view.value)}
                 className={cn(
-                  "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active && "bg-accent text-foreground ring-1 ring-border/70",
+                  'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  active && 'bg-accent text-foreground ring-1 ring-border/70',
                 )}
               >
                 <Icon className="size-4" />
                 {view.label}
               </button>
-            );
+            )
           })}
         </div>
         <Button
@@ -64,20 +64,20 @@ export function FixedCostViewBar({
           title="Más vistas: próximamente"
           aria-label="Más vistas, próximamente"
           className="rounded-sm border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
-          onClick={() => toast.info("La creación de vistas personalizadas estará disponible próximamente.")}
+          onClick={() => toast.info('La creación de vistas personalizadas estará disponible próximamente.')}
         >
           <Plus className="size-4" />
         </Button>
       </div>
       <div className="flex shrink-0 items-center justify-end gap-2">
-        {page === "por-pagar" && (
+        {page === 'por-pagar' && (
           <div role="group" aria-label="Filtrar vencimientos" className="inline-flex items-center gap-0.5 rounded-lg border p-0.5">
             {PAYABLE_HORIZONS.map((horizon) => (
               <Button
                 key={horizon.value}
                 type="button"
                 size="sm"
-                variant={payableHorizon === horizon.value ? "secondary" : "ghost"}
+                variant={payableHorizon === horizon.value ? 'secondary' : 'ghost'}
                 className="h-7 px-2.5 text-xs"
                 aria-pressed={payableHorizon === horizon.value}
                 onClick={() => onPayableHorizonChange(horizon.value)}
@@ -115,7 +115,7 @@ export function FixedCostViewBar({
                 <CalendarDays className="size-4" />
                 Costo fijo
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => newExpenseStore.getState().openWith({ destination: "daily" })}>
+              <DropdownMenuItem onSelect={() => newExpenseStore.getState().openWith({ destination: 'daily' })}>
                 <ReceiptText className="size-4" />
                 Gasto general
               </DropdownMenuItem>
@@ -124,5 +124,5 @@ export function FixedCostViewBar({
         </div>
       </div>
     </div>
-  );
+  )
 }

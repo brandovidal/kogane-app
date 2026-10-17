@@ -1,7 +1,7 @@
-import { FileText, HandCoins, MoreHorizontal, Plus } from "lucide-react";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import { CardPeriodSelector } from "../../components/header/CardPeriodSelector";
+import { FileText, HandCoins, MoreHorizontal, Plus } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { CardPeriodSelector } from '../../components/header/CardPeriodSelector'
 
 export function CardDetailHeader({
   onNewExpense,
@@ -9,10 +9,10 @@ export function CardDetailHeader({
   onEdit,
   canRegisterPayment,
 }: {
-  onNewExpense: () => void;
-  onRegisterPayment: () => void;
-  onEdit: () => void;
-  canRegisterPayment: boolean;
+  onNewExpense: () => void
+  onRegisterPayment: () => void
+  onEdit: () => void
+  canRegisterPayment: boolean
 }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
@@ -36,7 +36,7 @@ export function CardDetailHeader({
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onSelect={() => {
-              window.location.href = "/importacion";
+              window.location.href = '/importacion'
             }}
           >
             <FileText className="mr-2 size-4" />
@@ -46,5 +46,5 @@ export function CardDetailHeader({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
+  )
 }

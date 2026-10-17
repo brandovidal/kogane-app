@@ -1,41 +1,41 @@
-import { useEffect, useState } from "react";
-import { History, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
+import { useEffect, useState } from 'react'
+import { History, Plus, SlidersHorizontal, Trash2 } from 'lucide-react'
 
-import { HistoryDialog } from "@/features/history/components/HistoryDialog";
+import { HistoryDialog } from '@/features/history/components/HistoryDialog'
 
-import { useSavePersonSummary, useSetPersonSummariesStatus } from "../hooks/personSummaries";
-import type { PersonSummaryAdjustment, PersonSummaryStatus } from "../types/person-summary.dto";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { Textarea } from "@/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { useSavePersonSummary, useSetPersonSummariesStatus } from '../hooks/personSummaries'
+import type { PersonSummaryAdjustment, PersonSummaryStatus } from '../types/person-summary.dto'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Textarea } from '@/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
 
 export const PERSON_SUMMARY_STATUS_LABELS: Record<PersonSummaryStatus, string> = {
-  draft: "Borrador",
-  in_progress: "En progreso",
-  paid: "Pagado",
-};
+  draft: 'Borrador',
+  in_progress: 'En progreso',
+  paid: 'Pagado',
+}
 
 export interface PersonSummaryData {
   /** Row of the month; the history of the cortes hangs from it */
-  id?: string;
-  status: PersonSummaryStatus;
-  cutoffDate: string | null;
-  collectBy: string | null;
-  note: string | null;
-  adjustments: PersonSummaryAdjustment[];
+  id?: string
+  status: PersonSummaryStatus
+  cutoffDate: string | null
+  collectBy: string | null
+  note: string | null
+  adjustments: PersonSummaryAdjustment[]
 }
 
 export const EMPTY_PERSON_SUMMARY: PersonSummaryData = {
-  status: "draft",
+  status: 'draft',
   cutoffDate: null,
   collectBy: null,
   note: null,
   adjustments: [],
-};
+}
 
-const dateOnly = (value: string | null) => (value ? value.slice(0, 10) : "");
+const dateOnly = (value: string | null) => (value ? value.slice(0, 10) : '')
 
 // Status of a person's month (draft → in progress → paid) and the details that go with it
 export function PersonSummaryControls({
@@ -45,14 +45,14 @@ export function PersonSummaryControls({
   year,
   summary,
 }: {
-  personId: string;
-  name: string;
-  month: number;
-  year: number;
-  summary: PersonSummaryData;
+  personId: string
+  name: string
+  month: number
+  year: number
+  summary: PersonSummaryData
 }) {
-  const setStatus = useSetPersonSummariesStatus();
-  const [open, setOpen] = useState(false);
+  const setStatus = useSetPersonSummariesStatus()
+  const [open, setOpen] = useState(false)
   return (
     <div className="flex shrink-0 items-center gap-1">
       <Select
@@ -90,7 +90,7 @@ export function PersonSummaryControls({
       </Button>
       <PersonSummaryDialog open={open} onOpenChange={setOpen} personId={personId} name={name} month={month} year={year} summary={summary} />
     </div>
-  );
+  )
 }
 
 function PersonSummaryDialog({
@@ -102,38 +102,38 @@ function PersonSummaryDialog({
   year,
   summary,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  personId: string;
-  name: string;
-  month: number;
-  year: number;
-  summary: PersonSummaryData;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  personId: string
+  name: string
+  month: number
+  year: number
+  summary: PersonSummaryData
 }) {
-  const save = useSavePersonSummary();
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [cutoffDate, setCutoffDate] = useState("");
-  const [collectBy, setCollectBy] = useState("");
-  const [note, setNote] = useState("");
-  const [adjustments, setAdjustments] = useState<{ description: string; amount: string }[]>([]);
+  const save = useSavePersonSummary()
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [cutoffDate, setCutoffDate] = useState('')
+  const [collectBy, setCollectBy] = useState('')
+  const [note, setNote] = useState('')
+  const [adjustments, setAdjustments] = useState<{ description: string; amount: string }[]>([])
 
   useEffect(() => {
-    if (!open) return;
-    setCutoffDate(dateOnly(summary.cutoffDate));
-    setCollectBy(dateOnly(summary.collectBy));
-    setNote(summary.note ?? "");
+    if (!open) return
+    setCutoffDate(dateOnly(summary.cutoffDate))
+    setCollectBy(dateOnly(summary.collectBy))
+    setNote(summary.note ?? '')
     setAdjustments(
       summary.adjustments.map((item) => ({
         description: item.description,
         amount: String(item.amount),
       })),
-    );
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps -- only when it opens
+    )
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps -- only when it opens
 
-  const rows = adjustments.filter((item) => item.description.trim());
-  const valid = rows.every((item) => Number.isFinite(Number(item.amount)));
+  const rows = adjustments.filter((item) => item.description.trim())
+  const valid = rows.every((item) => Number.isFinite(Number(item.amount)))
   const patch = (index: number, next: Partial<(typeof adjustments)[number]>) =>
-    setAdjustments(adjustments.map((item, i) => (i === index ? { ...item, ...next } : item)));
+    setAdjustments(adjustments.map((item, i) => (i === index ? { ...item, ...next } : item)))
 
   return (
     <ResponsiveDialog
@@ -196,7 +196,7 @@ function PersonSummaryDialog({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Ajustes manuales</label>
-            <Button type="button" size="sm" variant="outline" onClick={() => setAdjustments([...adjustments, { description: "", amount: "" }])}>
+            <Button type="button" size="sm" variant="outline" onClick={() => setAdjustments([...adjustments, { description: '', amount: '' }])}>
               <Plus className="mr-1 h-4 w-4" /> Agregar ajuste
             </Button>
           </div>
@@ -229,5 +229,5 @@ function PersonSummaryDialog({
         <HistoryDialog title={`corte de ${name}`} entity="exp_person_summaries" id={summary.id} onClose={() => setHistoryOpen(false)} />
       )}
     </ResponsiveDialog>
-  );
+  )
 }

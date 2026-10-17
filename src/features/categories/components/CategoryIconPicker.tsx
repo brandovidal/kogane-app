@@ -1,8 +1,8 @@
-import { useMemo } from "react";
-import { Check, ChevronDown, CircleOff, Search } from "lucide-react";
+import { useMemo } from 'react'
+import { Check, ChevronDown, CircleOff, Search } from 'lucide-react'
 
-import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
-import { CATEGORY_ICON_OPTIONS, matchesCategoryIcon, normalizeCategoryIconName } from "@/features/categories/lib/category-icons";
+import { CategoryIcon } from '@/features/categories/components/CategoryIcon'
+import { CATEGORY_ICON_OPTIONS, matchesCategoryIcon, normalizeCategoryIconName } from '@/features/categories/lib/category-icons'
 import {
   Combobox,
   ComboboxContent,
@@ -14,10 +14,10 @@ import {
   ComboboxTrigger,
   ComboboxValue,
   createComboboxItems,
-} from "@/ui/combobox";
+} from '@/ui/combobox'
 
-const NO_ICON = "__no_icon__";
-const pickerOptions = [{ value: NO_ICON, label: "Sin icono" }, ...CATEGORY_ICON_OPTIONS.map(({ value, label }) => ({ value, label }))];
+const NO_ICON = '__no_icon__'
+const pickerOptions = [{ value: NO_ICON, label: 'Sin icono' }, ...CATEGORY_ICON_OPTIONS.map(({ value, label }) => ({ value, label }))]
 
 export function CategoryIconPicker({ value, color, onChange }: { value: string | null; color: string; onChange: (value: string | null) => void }) {
   const items = useMemo(
@@ -27,8 +27,8 @@ export function CategoryIconPicker({ value, color, onChange }: { value: string |
         getLabel: (option) => option.label,
       }),
     [],
-  );
-  const selectedValue = normalizeCategoryIconName(value) ?? NO_ICON;
+  )
+  const selectedValue = normalizeCategoryIconName(value) ?? NO_ICON
 
   return (
     <Combobox
@@ -70,5 +70,5 @@ export function CategoryIconPicker({ value, color, onChange }: { value: string |
         <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">No se encontraron iconos.</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
-  );
+  )
 }

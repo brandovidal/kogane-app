@@ -1,23 +1,23 @@
-import type { ImportUploadCardProps } from "../types/import-types";
-import { AlertCircle, FileUp, Lock, ShieldCheck } from "lucide-react";
-import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
-import { PersonSelect } from "@/features/settings/components/people/PersonSelect";
-import { Button } from "@/ui/button";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
-import { Switch } from "@/ui/switch";
-import { cn } from "@/shared/utils/cn";
-import { uploadErrorText } from "@/features/statements/lib/statement-view";
-import { SOURCE_LABELS } from "@/features/imports/constants/import-options";
-import type { ImportSource } from "@/features/imports/types/import-types";
-import { useImportUpload } from "../hooks/useImportUpload";
-import { ImportDropzone } from "./ImportDropzone";
-import { ImportFileCard } from "./ImportFileCard";
-import { ImportProcessing } from "./ImportProcessing";
+import type { ImportUploadCardProps } from '../types/import-types'
+import { AlertCircle, FileUp, Lock, ShieldCheck } from 'lucide-react'
+import { PaymentMethodSelect } from '@/features/settings/components/payment-methods/PaymentMethodSelect'
+import { PersonSelect } from '@/features/settings/components/people/PersonSelect'
+import { Button } from '@/ui/button'
+import { PasswordInput } from '@/shared/components/forms/PasswordInput'
+import { Switch } from '@/ui/switch'
+import { cn } from '@/shared/utils/cn'
+import { uploadErrorText } from '@/features/statements/lib/statement-view'
+import { SOURCE_LABELS } from '@/features/imports/constants/import-options'
+import type { ImportSource } from '@/features/imports/types/import-types'
+import { useImportUpload } from '../hooks/useImportUpload'
+import { ImportDropzone } from './ImportDropzone'
+import { ImportFileCard } from './ImportFileCard'
+import { ImportProcessing } from './ImportProcessing'
 
 const SOURCE_SHORT: Record<ImportSource, string> = {
-  statement: "Estado de cuenta",
-  notion: "Notion",
-};
+  statement: 'Estado de cuenta',
+  notion: 'Notion',
+}
 
 // Importación en un solo paso por pantalla (boards I1–I6): elegir → archivo listo → (contraseña) → procesando
 export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
@@ -46,11 +46,11 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
     cancel,
     reset,
     send,
-  } = useImportUpload(onRead);
+  } = useImportUpload(onRead)
 
-  const statement = source === "statement";
-  const hasFiles = files.length > 0;
-  const passwordWrong = needsPassword && reason !== "missing";
+  const statement = source === 'statement'
+  const hasFiles = files.length > 0
+  const passwordWrong = needsPassword && reason !== 'missing'
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-4">
@@ -64,8 +64,8 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
             disabled={upload.isPending}
             onClick={() => selectSource(key)}
             className={cn(
-              "rounded-md px-3 py-1 font-medium transition-colors",
-              source === key ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
+              'rounded-md px-3 py-1 font-medium transition-colors',
+              source === key ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {SOURCE_SHORT[key]}
@@ -95,7 +95,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
                   allowEmpty={false}
                   aria-required
                   aria-invalid={cardMissing}
-                  className={cardMissing ? "border-destructive" : undefined}
+                  className={cardMissing ? 'border-destructive' : undefined}
                   value={cardId}
                   onChange={setCardId}
                   placeholder="Selecciona una tarjeta"
@@ -130,7 +130,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   aria-invalid={passwordWrong}
-                  className={passwordWrong ? "border-destructive" : undefined}
+                  className={passwordWrong ? 'border-destructive' : undefined}
                 />
                 {error && (
                   <p role="alert" className="text-xs text-destructive">
@@ -140,7 +140,7 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
               </div>
               <label className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Switch checked={savePassword} onCheckedChange={setSavePassword} />
-                Recordar para {cardName ?? "esta tarjeta"}
+                Recordar para {cardName ?? 'esta tarjeta'}
                 <a href="/configuracion/personas" className="ml-auto underline-offset-2 hover:underline">
                   Gestionar en Configuración
                 </a>
@@ -172,12 +172,12 @@ export function ImportUploadCard({ onRead }: ImportUploadCardProps) {
         </div>
       )}
       <p className="text-center text-xs text-muted-foreground">
-        {SOURCE_LABELS[source]} · nada se guarda hasta que lo apruebes. Las capturas entran por{" "}
+        {SOURCE_LABELS[source]} · nada se guarda hasta que lo apruebes. Las capturas entran por{' '}
         <a className="underline" href="/mensajes">
           Mensajes
         </a>
         .
       </p>
     </div>
-  );
+  )
 }

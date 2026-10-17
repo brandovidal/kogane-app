@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Banknote, LogOut, User, UserCheck } from "lucide-react";
+import { useState } from 'react'
+import { Banknote, LogOut, User, UserCheck } from 'lucide-react'
 
-import { useLogout, useMe, useStopImpersonation } from "@/features/auth/hooks/auth";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
+import { useLogout, useMe, useStopImpersonation } from '@/features/auth/hooks/auth'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,29 +11,29 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
-import { withQuery } from "@/shared/api/query";
-import { incomesHref } from "@/features/incomes/lib/income-links";
-import { periodFromParams } from "@/shared/lib/period";
-import { periodStore } from "@/shared/stores/period.store";
-import { SettingsMenuItems } from "@/features/settings/components/navigation/SettingsMenuItems";
-import { ThemeMenuItems } from "@/shared/components/theme/ThemeMenuItems";
-import { AUTH_ROLE, AUTH_ROLE_LABELS } from "../constants/roles";
+} from '@/ui/dropdown-menu'
+import { withQuery } from '@/shared/api/query'
+import { incomesHref } from '@/features/incomes/lib/income-links'
+import { periodFromParams } from '@/shared/lib/period'
+import { periodStore } from '@/shared/stores/period.store'
+import { SettingsMenuItems } from '@/features/settings/components/navigation/SettingsMenuItems'
+import { ThemeMenuItems } from '@/shared/components/theme/ThemeMenuItems'
+import { AUTH_ROLE, AUTH_ROLE_LABELS } from '../constants/roles'
 
 // The person in the header: profile, sign out, and — for a superadmin who entered as someone (the backdoor) — the way
 // back. Its request also sends whoever has no session to Entrar (P23)
 function UserMenuView() {
-  const { data: me } = useMe();
-  const logout = useLogout();
-  const stop = useStopImpersonation();
-  const [incomeLink, setIncomeLink] = useState("/presupuesto?tab=ingresos");
-  if (!me) return null;
+  const { data: me } = useMe()
+  const logout = useLogout()
+  const stop = useStopImpersonation()
+  const [incomeLink, setIncomeLink] = useState('/presupuesto?tab=ingresos')
+  if (!me) return null
 
   const initials = me.name
     .split(/\s+/)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
-    .join("");
+    .join('')
 
   return (
     <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ function UserMenuView() {
       )}
       <DropdownMenu
         onOpenChange={(open) => {
-          if (open) setIncomeLink(incomesHref(periodFromParams(new URLSearchParams(window.location.search), periodStore.getState())));
+          if (open) setIncomeLink(incomesHref(periodFromParams(new URLSearchParams(window.location.search), periodStore.getState())))
         }}
       >
         <DropdownMenuTrigger asChild>
@@ -86,7 +86,7 @@ function UserMenuView() {
               disabled={stop.isPending}
               onSelect={() =>
                 stop.mutate(undefined, {
-                  onSuccess: () => window.location.replace("/configuracion/usuarios"),
+                  onSuccess: () => window.location.replace('/configuracion/usuarios'),
                 })
               }
             >
@@ -99,7 +99,7 @@ function UserMenuView() {
             disabled={logout.isPending}
             onSelect={() =>
               logout.mutate(undefined, {
-                onSuccess: () => window.location.replace("/entrar"),
+                onSuccess: () => window.location.replace('/entrar'),
               })
             }
           >
@@ -108,7 +108,7 @@ function UserMenuView() {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
+  )
 }
 
-export const UserMenu = withQuery(UserMenuView);
+export const UserMenu = withQuery(UserMenuView)

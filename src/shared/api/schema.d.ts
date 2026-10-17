@@ -4,8321 +4,8318 @@
  */
 
 export interface paths {
-  "/v1/health": {
+  '/v1/health': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Database, Redis and Telegram webhook status (always 200 while the process is up) */
-    get: operations["HealthController_getHealth_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/telegram/webhook": {
+    get: operations['HealthController_getHealth_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/telegram/webhook': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /**
      * Telegram webhook (called by Telegram only)
      * @description Registered with `make telegram URL=<public-url>`. Answers 200 at once and processes the update in the chat queue. Chats outside TELEGRAM_ALLOWED_CHAT_IDS also get 200 and are ignored.
      */
-    post: operations["TelegramController_receiveUpdate_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts": {
+    post: operations['TelegramController_receiveUpdate_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Installments, oldest first, with balance and timing (upcoming · due · late) */
-    get: operations["DebtsController_list_v1"];
-    put?: never;
+    get: operations['DebtsController_list_v1']
+    put?: never
     /** Create a debt; installments: n creates one row per month */
-    post: operations["DebtsController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts/summary": {
+    post: operations['DebtsController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts/summary': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Per person: owed to me · I owe · net, late and due this month (PEN); by month optionally */
-    get: operations["DebtsController_summary_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts/card-check": {
+    get: operations['DebtsController_summary_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts/card-check': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** What others owe of a card and month vs the statement of that month (D114) */
-    get: operations["DebtsController_cardCheck_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts/carry-over": {
+    get: operations['DebtsController_cardCheck_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts/carry-over': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** "Arrastrar saldos pendientes": open installments of earlier months move to the target month (dryRun counts) */
-    post: operations["DebtsController_carryOver_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts/bulk": {
+    post: operations['DebtsController_carryOver_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts/bulk': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** One action over several debts: pay, amortize, cashback, spread an abono, clone, reset, card or delete */
-    post: operations["DebtsController_bulk_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts/{id}": {
+    post: operations['DebtsController_bulk_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** One installment with its confirmed payments */
-    get: operations["DebtsController_get_v1"];
-    put?: never;
-    post?: never;
+    get: operations['DebtsController_get_v1']
+    put?: never
+    post?: never
     /** Delete one installment and its payments */
-    delete: operations["DebtsController_delete_v1"];
-    options?: never;
-    head?: never;
+    delete: operations['DebtsController_delete_v1']
+    options?: never
+    head?: never
     /** Edit one installment; paidAmount and status follow the payments */
-    patch: operations["DebtsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/debts/{id}/payments": {
+    patch: operations['DebtsController_update_v1']
+    trace?: never
+  }
+  '/v1/debts/{id}/payments': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Register a payment (422 DEBT_PAYMENT_EXCEEDS_BALANCE above the balance) */
-    post: operations["DebtsController_addPayment_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/debts/{id}/payments/{paymentId}": {
+    post: operations['DebtsController_addPayment_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/debts/{id}/payments/{paymentId}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Delete a payment; the balance and status are recomputed */
-    delete: operations["DebtsController_deletePayment_v1"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/attachments": {
+    delete: operations['DebtsController_deletePayment_v1']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/attachments': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Files of one record, oldest first, each with a signed link */
-    get: operations["AttachmentsController_list_v1"];
-    put?: never;
+    get: operations['AttachmentsController_list_v1']
+    put?: never
     /** Attach a file to a loan, an investment, an installment, a contribution or an expense */
-    post: operations["AttachmentsController_upload_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/attachments/{id}": {
+    post: operations['AttachmentsController_upload_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/attachments/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Delete a file; it leaves the bucket if nothing else uses it */
-    delete: operations["AttachmentsController_delete_v1"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/incomes": {
+    delete: operations['AttachmentsController_delete_v1']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/incomes': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Extra incomes of a month */
-    get: operations["IncomesController_list_v1"];
-    put?: never;
+    get: operations['IncomesController_list_v1']
+    put?: never
     /** Add an extra income (month and year default to receivedAt) */
-    post: operations["IncomesController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/incomes/{id}": {
+    post: operations['IncomesController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/incomes/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Delete an extra income */
-    delete: operations["IncomesController_delete_v1"];
-    options?: never;
-    head?: never;
+    delete: operations['IncomesController_delete_v1']
+    options?: never
+    head?: never
     /** Edit an extra income */
-    patch: operations["IncomesController_update_v1"];
-    trace?: never;
-  };
-  "/v1/category-budgets": {
+    patch: operations['IncomesController_update_v1']
+    trace?: never
+  }
+  '/v1/category-budgets': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Spent vs limit per category in a month (status ok · warning · over) */
-    get: operations["CategoryBudgetsController_list_v1"];
+    get: operations['CategoryBudgetsController_list_v1']
     /** Set the limit of a category, for every month or for one month */
-    put: operations["CategoryBudgetsController_upsert_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/category-budgets/{id}": {
+    put: operations['CategoryBudgetsController_upsert_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/category-budgets/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Remove a category limit */
-    delete: operations["CategoryBudgetsController_delete_v1"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/budget-settings": {
+    delete: operations['CategoryBudgetsController_delete_v1']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/budget-settings': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** What adds to the budget besides fixed costs, cards and day to day */
-    get: operations["BudgetSettingsController_get_v1"];
+    get: operations['BudgetSettingsController_get_v1']
     /** Switch Recurrentes or Plataformas on or off in the budget */
-    put: operations["BudgetSettingsController_update_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/reports/debts": {
+    put: operations['BudgetSettingsController_update_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/reports/debts': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Debts per person (me debe · le debo · neto) and open installments, as Excel or PDF */
-    get: operations["ReportsController_debts_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications": {
+    get: operations['ReportsController_debts_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** History of notifications, newest first */
-    get: operations["NotificationsController_history_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/recent": {
+    get: operations['NotificationsController_history_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/recent': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Latest notifications for the bell (from Redis, rebuilt from the database) */
-    get: operations["NotificationsController_recent_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/unread-count": {
+    get: operations['NotificationsController_recent_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/unread-count': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Unread notifications (the number on the bell) */
-    get: operations["NotificationsController_unreadCount_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/read-all": {
+    get: operations['NotificationsController_unreadCount_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/read-all': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Mark every notification as read */
-    post: operations["NotificationsController_readAll_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/{id}/read": {
+    post: operations['NotificationsController_readAll_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/{id}/read': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     /** Mark one notification as read (also when it was answered in Telegram) */
-    patch: operations["NotificationsController_read_v1"];
-    trace?: never;
-  };
-  "/v1/notifications/{id}/unread": {
+    patch: operations['NotificationsController_read_v1']
+    trace?: never
+  }
+  '/v1/notifications/{id}/unread': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     /** Mark one notification as unread again (the bell counts it) */
-    patch: operations["NotificationsController_unread_v1"];
-    trace?: never;
-  };
-  "/v1/notifications/settings": {
+    patch: operations['NotificationsController_unread_v1']
+    trace?: never
+  }
+  '/v1/notifications/settings': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Which kinds of notification go to Telegram and to the web bell */
-    get: operations["NotificationsController_settings_v1"];
+    get: operations['NotificationsController_settings_v1']
     /** Change the channels of some kinds; the rest stay as they are */
-    put: operations["NotificationsController_updateSettings_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/run/{job}": {
+    put: operations['NotificationsController_updateSettings_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/run/{job}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Run a scheduled job now (make notify JOB=…); notices already sent are not repeated */
-    post: operations["NotificationsController_run_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/collect": {
+    post: operations['NotificationsController_run_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/collect': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Cobrar por Mensajes: send now the cobros notices of a month (one per person), once per person and day */
-    post: operations["NotificationsController_collect_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/notifications/remind-debts": {
+    post: operations['NotificationsController_collect_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/notifications/remind-debts': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Recordar pago: one reminder per person for the selected debts; paid ones are left out */
-    post: operations["NotificationsController_remindDebts_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/reminders": {
+    post: operations['NotificationsController_remindDebts_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/reminders': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** What closes or is due in the next days (at most 45), from the Redis list */
-    get: operations["RemindersController_list_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/calendar": {
+    get: operations['RemindersController_list_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/calendar': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Card closing and payment days, due dates and recurring expenses between two days (at most 100) */
-    get: operations["CalendarController_events_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/calendar/installments": {
+    get: operations['CalendarController_events_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/calendar/installments': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Card installments of the next months, including the ones still to be generated */
-    get: operations["CalendarController_installments_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/calendar/pay": {
+    get: operations['CalendarController_installments_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/calendar/pay': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Pay a calendar event: card statement (total, minimum or in parts), fixed cost, subscription or debt installment, with day, medio, cuenta de salida and note */
-    post: operations["CalendarController_payEvent_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/expenses/{resource}": {
+    post: operations['CalendarController_payEvent_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/expenses/{resource}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** List a table (month/year filter by payment month, or by spent date for daily expenses) */
-    get: operations["ExpensesController_findMany_v1"];
-    put?: never;
-    post: operations["ExpensesController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/expenses/{resource}/{id}": {
+    get: operations['ExpensesController_findMany_v1']
+    put?: never
+    post: operations['ExpensesController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/expenses/{resource}/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations["ExpensesController_findById_v1"];
-    put?: never;
-    post?: never;
-    delete: operations["ExpensesController_delete_v1"];
-    options?: never;
-    head?: never;
-    patch: operations["ExpensesController_update_v1"];
-    trace?: never;
-  };
-  "/v1/expense-moves": {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get: operations['ExpensesController_findById_v1']
+    put?: never
+    post?: never
+    delete: operations['ExpensesController_delete_v1']
+    options?: never
+    head?: never
+    patch: operations['ExpensesController_update_v1']
+    trace?: never
+  }
+  '/v1/expense-moves': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Move a row and its whole series between fixed costs, Recurrentes and Plataformas (dryRun counts it) */
-    post: operations["ExpenseMovesController_move_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/card-reviews": {
+    post: operations['ExpenseMovesController_move_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/card-reviews': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Mark card charges as checked against the statement (reviewed: false unmarks them) */
-    post: operations["CardReviewsController_review_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/recurring-expenses/from-series": {
+    post: operations['CardReviewsController_review_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/recurring-expenses/from-series': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** "Pasar desde Costos fijos… / Plataformas…": a monthly template from a series (409 RECURRING_TEMPLATE_EXISTS) */
-    post: operations["RecurringExpensesController_fromSeries_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/recurring-expenses/generate": {
+    post: operations['RecurringExpensesController_fromSeries_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/recurring-expenses/generate': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Create the pending rows of a month from the active recurring expenses (never twice) */
-    post: operations["RecurringExpensesController_generate_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/people": {
+    post: operations['RecurringExpensesController_generate_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/people': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** People (active and inactive) */
-    get: operations["PeopleController_findAll_v1"];
-    put?: never;
+    get: operations['PeopleController_findAll_v1']
+    put?: never
     /** Add a person; isDefault clears the previous default */
-    post: operations["PeopleController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/people/{id}": {
+    post: operations['PeopleController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/people/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Deactivate a person (expenses keep pointing to it) */
-    delete: operations["PeopleController_deactivate_v1"];
-    options?: never;
-    head?: never;
-    patch: operations["PeopleController_update_v1"];
-    trace?: never;
-  };
-  "/v1/payment-methods/{id}/holders": {
+    delete: operations['PeopleController_deactivate_v1']
+    options?: never
+    head?: never
+    patch: operations['PeopleController_update_v1']
+    trace?: never
+  }
+  '/v1/payment-methods/{id}/holders': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Titular and additional people of a credit card (D116) */
-    get: operations["PaymentMethodsController_holders_v1"];
+    get: operations['PaymentMethodsController_holders_v1']
     /** Replace the titular and additional people of a credit card; statements assign by them */
-    put: operations["PaymentMethodsController_saveHolders_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/payment-methods/{id}/statement-password": {
+    put: operations['PaymentMethodsController_saveHolders_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/payment-methods/{id}/statement-password': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     /** Save or remove (null) the password of the statement PDFs of a card (I12); only hasStatementPassword is answered */
-    put: operations["PaymentMethodsController_saveStatementPassword_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/payment-methods": {
+    put: operations['PaymentMethodsController_saveStatementPassword_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/payment-methods': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Payment methods (credit cards included, with their billing days) */
-    get: operations["PaymentMethodsController_findAll_v1"];
-    put?: never;
-    post: operations["PaymentMethodsController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/payment-methods/{id}": {
+    get: operations['PaymentMethodsController_findAll_v1']
+    put?: never
+    post: operations['PaymentMethodsController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/payment-methods/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Deactivate a payment method (expenses keep pointing to it) */
-    delete: operations["PaymentMethodsController_deactivate_v1"];
-    options?: never;
-    head?: never;
-    patch: operations["PaymentMethodsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/accounts": {
+    delete: operations['PaymentMethodsController_deactivate_v1']
+    options?: never
+    head?: never
+    patch: operations['PaymentMethodsController_update_v1']
+    trace?: never
+  }
+  '/v1/accounts': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Accounts payments leave from, active ones first */
-    get: operations["AccountsController_findAll_v1"];
-    put?: never;
+    get: operations['AccountsController_findAll_v1']
+    put?: never
     /** Create an account; a bank account needs its bank */
-    post: operations["AccountsController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/accounts/{id}": {
+    post: operations['AccountsController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/accounts/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Deactivate an account (payments keep pointing to it) */
-    delete: operations["AccountsController_deactivate_v1"];
-    options?: never;
-    head?: never;
-    patch: operations["AccountsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/categories": {
+    delete: operations['AccountsController_deactivate_v1']
+    options?: never
+    head?: never
+    patch: operations['AccountsController_update_v1']
+    trace?: never
+  }
+  '/v1/categories': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations["CategoriesController_findAll_v1"];
-    put?: never;
-    post: operations["CategoriesController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/categories/{id}": {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get: operations['CategoriesController_findAll_v1']
+    put?: never
+    post: operations['CategoriesController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/categories/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Delete a category (409 CATALOG_ITEM_IN_USE while expenses use it) */
-    delete: operations["CategoriesController_delete_v1"];
-    options?: never;
-    head?: never;
-    patch: operations["CategoriesController_update_v1"];
-    trace?: never;
-  };
-  "/v1/budget-groups": {
+    delete: operations['CategoriesController_delete_v1']
+    options?: never
+    head?: never
+    patch: operations['CategoriesController_update_v1']
+    trace?: never
+  }
+  '/v1/budget-groups': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Budget groups (Relación de gastos) with their share of the income */
-    get: operations["BudgetGroupsController_findAll_v1"];
-    put?: never;
-    post: operations["BudgetGroupsController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/budget-groups/{id}": {
+    get: operations['BudgetGroupsController_findAll_v1']
+    put?: never
+    post: operations['BudgetGroupsController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/budget-groups/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Delete a budget group (409 CATALOG_ITEM_IN_USE while categories belong to it) */
-    delete: operations["BudgetGroupsController_delete_v1"];
-    options?: never;
-    head?: never;
-    patch: operations["BudgetGroupsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/drafts": {
+    delete: operations['BudgetGroupsController_delete_v1']
+    options?: never
+    head?: never
+    patch: operations['BudgetGroupsController_update_v1']
+    trace?: never
+  }
+  '/v1/drafts': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Borrador: expenses pending review (tab=review), failed or discarded, from every channel */
-    get: operations["DraftsController_list_v1"];
-    put?: never;
+    get: operations['DraftsController_list_v1']
+    put?: never
     /** Nuevo gasto: create a draft from the web form (then POST /drafts/:id/save) */
-    post: operations["DraftsController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/drafts/{id}": {
+    post: operations['DraftsController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/drafts/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** One draft, with a short-lived link to its screenshot when it has one */
-    get: operations["DraftsController_get_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
+    get: operations['DraftsController_get_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     /** Edit the fields of a draft; missing fields are recomputed */
-    patch: operations["DraftsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/drafts/{id}/save": {
+    patch: operations['DraftsController_update_v1']
+    trace?: never
+  }
+  '/v1/drafts/{id}/save': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Save into its destination table (422 EXPENSE_NOT_SAVEABLE while fields are missing) */
-    post: operations["DraftsController_save_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/drafts/{id}/discard": {
+    post: operations['DraftsController_save_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/drafts/{id}/discard': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations["DraftsController_discard_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/drafts/{id}/retry": {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post: operations['DraftsController_discard_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/drafts/{id}/retry': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Run the AI again on a failed draft (text, image or voice note) */
-    post: operations["DraftsController_retry_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/messages": {
+    post: operations['DraftsController_retry_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/messages': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Mensajes: send text, an image or a voice note to Kogane; returns the bot replies */
-    post: operations["MessagesController_send_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/messages/actions": {
+    post: operations['MessagesController_send_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/messages/actions': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Press a button of a bot reply (its "data") */
-    post: operations["MessagesController_action_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/summary": {
+    post: operations['MessagesController_action_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/summary': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Month totals by destination and person, budget, extra incomes, spending per category and group, surplus */
-    get: operations["SummaryController_get_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/summary/history": {
+    get: operations['SummaryController_get_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/summary/history': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Salary, extra incomes, spent and surplus of the last months up to month/year */
-    get: operations["SummaryController_history_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/summary/budget": {
+    get: operations['SummaryController_history_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/summary/budget': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     /** Set the salary and spending limit of a month */
-    put: operations["SummaryController_setBudget_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/person-summaries": {
+    put: operations['SummaryController_setBudget_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/person-summaries': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** What was decided for each person in a month (a person without a row is a draft) */
-    get: operations["PersonSummariesController_list_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/person-summaries/status": {
+    get: operations['PersonSummariesController_list_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/person-summaries/status': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Cambio en masa: the same status for several people of a month */
-    post: operations["PersonSummariesController_setStatus_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/person-summaries/{personId}": {
+    post: operations['PersonSummariesController_setStatus_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/person-summaries/{personId}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     /** Save the status, cutoff date, collect-by date, note or adjustments of a person and month */
-    put: operations["PersonSummariesController_save_v1"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/statements": {
+    put: operations['PersonSummariesController_save_v1']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/statements': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Statements read, newest month first, with their row counts */
-    get: operations["StatementsController_list_v1"];
-    put?: never;
+    get: operations['StatementsController_list_v1']
+    put?: never
     /** Read a statement PDF and reconcile it with the card expenses of its month */
-    post: operations["StatementsController_upload_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/statements/{id}/file": {
+    post: operations['StatementsController_upload_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/statements/{id}/file': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** "Ver estado de cuenta": a signed link (10 minutes) to its PDF; url null when not kept */
-    get: operations["StatementsController_file_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/statements/{id}": {
+    get: operations['StatementsController_file_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/statements/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** A statement with its rows, the card expenses missing from it and both totals */
-    get: operations["StatementsController_get_v1"];
-    put?: never;
-    post?: never;
+    get: operations['StatementsController_get_v1']
+    put?: never
+    post?: never
     /** Delete a statement and its rows (the expenses it created stay) */
-    delete: operations["StatementsController_delete_v1"];
-    options?: never;
-    head?: never;
+    delete: operations['StatementsController_delete_v1']
+    options?: never
+    head?: never
     /** Assign the statement to another person */
-    patch: operations["StatementsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/statements/{id}/rows/assign": {
+    patch: operations['StatementsController_update_v1']
+    trace?: never
+  }
+  '/v1/statements/{id}/rows/assign': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Give several purchases not saved yet to a person (the additional card or who pays it) */
-    post: operations["StatementsController_assignRows_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/statements/{id}/create-new": {
+    post: operations['StatementsController_assignRows_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/statements/{id}/create-new': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Create the new rows (all, or the given ones even if matched or ignored) as pending card expenses */
-    post: operations["StatementsController_createNew_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/statements/{id}/rows/{rowId}": {
+    post: operations['StatementsController_createNew_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/statements/{id}/rows/{rowId}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     /** Ignore a row, bring an ignored one back, or give it your description */
-    patch: operations["StatementsController_updateRow_v1"];
-    trace?: never;
-  };
-  "/v1/commitments": {
+    patch: operations['StatementsController_updateRow_v1']
+    trace?: never
+  }
+  '/v1/commitments': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Loans and investments with their progress (paid installments, current one, late) */
-    get: operations["CommitmentsController_list_v1"];
-    put?: never;
+    get: operations['CommitmentsController_list_v1']
+    put?: never
     /** Create it; with a complete plan and a category every installment is created as a fixed cost */
-    post: operations["CommitmentsController_create_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/commitments/{id}": {
+    post: operations['CommitmentsController_create_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/commitments/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** One loan or investment with its installments and contributions */
-    get: operations["CommitmentsController_get_v1"];
-    put?: never;
-    post?: never;
+    get: operations['CommitmentsController_get_v1']
+    put?: never
+    post?: never
     /** Delete it and its contributions; its installments stay as fixed costs */
-    delete: operations["CommitmentsController_delete_v1"];
-    options?: never;
-    head?: never;
+    delete: operations['CommitmentsController_delete_v1']
+    options?: never
+    head?: never
     /** Edit it (cancellation amount, status…); installments that exist are not touched */
-    patch: operations["CommitmentsController_update_v1"];
-    trace?: never;
-  };
-  "/v1/commitments/{id}/installments": {
+    patch: operations['CommitmentsController_update_v1']
+    trace?: never
+  }
+  '/v1/commitments/{id}/installments': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Create the installments of the plan that do not exist yet as fixed costs */
-    post: operations["CommitmentsController_createInstallments_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/commitments/{id}/contributions": {
+    post: operations['CommitmentsController_createInstallments_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/commitments/{id}/contributions': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Register what you put into an investment (stocks, bitcoin…) */
-    post: operations["CommitmentsController_addContribution_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/commitments/{id}/contributions/{contributionId}": {
+    post: operations['CommitmentsController_addContribution_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/commitments/{id}/contributions/{contributionId}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Delete a contribution and its files */
-    delete: operations["CommitmentsController_deleteContribution_v1"];
-    options?: never;
-    head?: never;
+    delete: operations['CommitmentsController_deleteContribution_v1']
+    options?: never
+    head?: never
     /** Edit a contribution */
-    patch: operations["CommitmentsController_updateContribution_v1"];
-    trace?: never;
-  };
-  "/v1/history": {
+    patch: operations['CommitmentsController_updateContribution_v1']
+    trace?: never
+  }
+  '/v1/history': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Every change, newest first, filtered by table, record, source and dates (30 per page) */
-    get: operations["HistoryController_list_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/history/{entity}/{id}": {
+    get: operations['HistoryController_list_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/history/{entity}/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Timeline of one record: what changed, when and from where */
-    get: operations["HistoryController_timeline_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/config": {
+    get: operations['HistoryController_timeline_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/config': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** What the sign-in page offers (Google only when it is set up) */
-    get: operations["AuthController_config_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/login": {
+    get: operations['AuthController_config_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/login': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Sign in with email or mobile and password (5 failures lock that identifier for 15 minutes) */
-    post: operations["AuthController_login_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/logout": {
+    post: operations['AuthController_login_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/logout': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Sign out: the session is deleted and the cookie cleared */
-    post: operations["AuthController_logout_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/me": {
+    post: operations['AuthController_logout_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/me': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** The signed-in user (401 SESSION_REQUIRED without a session) */
-    get: operations["AuthController_me_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
+    get: operations['AuthController_me_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     /** Edit your own profile: name, nickname, mobile and DNI (409 PHONE_TAKEN) */
-    patch: operations["AuthController_updateProfile_v1"];
-    trace?: never;
-  };
-  "/v1/auth/impersonation/stop": {
+    patch: operations['AuthController_updateProfile_v1']
+    trace?: never
+  }
+  '/v1/auth/impersonation/stop': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** A superadmin who entered as another user goes back to their own account */
-    post: operations["AuthController_stopImpersonation_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/invite/{token}": {
+    post: operations['AuthController_stopImpersonation_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/invite/{token}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Whose invitation it is (410 INVITE_INVALID when it expired or was used) */
-    get: operations["AuthController_invite_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/accept-invite": {
+    get: operations['AuthController_invite_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/accept-invite': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Open an invitation with a password: the email is proven by the link; they are signed in */
-    post: operations["AuthController_acceptInvite_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/forgot-password": {
+    post: operations['AuthController_acceptInvite_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/forgot-password': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** "¿Olvidaste tu contraseña?": emails a one-use link (60 minutes). Same answer whether the email exists or not */
-    post: operations["AuthController_forgotPassword_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/reset-password": {
+    post: operations['AuthController_forgotPassword_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/reset-password': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Choose a new password with the emailed link (410 RESET_LINK_INVALID); other sessions are closed */
-    post: operations["AuthController_resetPassword_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/password": {
+    post: operations['AuthController_resetPassword_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/password': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Set or change the password (the current one is required when there is one) */
-    post: operations["AuthController_password_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/google": {
+    post: operations['AuthController_password_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/google': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Where to send the browser to sign in with Google (keeps a state cookie, one use) */
-    get: operations["AuthController_google_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/google/link": {
+    get: operations['AuthController_google_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/google/link': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Start linking Google to the signed-in account; the Google email must match */
-    get: operations["AuthController_googleLink_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/google/callback": {
+    get: operations['AuthController_googleLink_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/google/callback': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Where Google sends the browser back: signs in and redirects to the web (a browser route) */
-    get: operations["AuthController_googleCallback_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/telegram-link": {
+    get: operations['AuthController_googleCallback_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/telegram-link': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** A t.me link that links a Telegram chat to this user (15 minutes, one use) */
-    post: operations["AuthController_telegramLink_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/auth/telegram": {
+    post: operations['AuthController_telegramLink_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/auth/telegram': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Unlink the Telegram chat of this user */
-    delete: operations["AuthController_unlinkTelegram_v1"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/users": {
+    delete: operations['AuthController_unlinkTelegram_v1']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/users': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** The users and the invitations still open */
-    get: operations["UsersController_list_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/users/invites": {
+    get: operations['UsersController_list_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/users/invites': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Invite an email: emails it when the mail is set up and returns the link either way (shown once, valid for 7 days) */
-    post: operations["UsersController_invite_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/users/invites/{id}": {
+    post: operations['UsersController_invite_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/users/invites/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Cancel an invitation */
-    delete: operations["UsersController_revoke_v1"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/users/{id}/impersonate": {
+    delete: operations['UsersController_revoke_v1']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/users/{id}/impersonate': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Superadmin: enter as another user for a few hours (the history records the superadmin as the actor) */
-    post: operations["UsersController_impersonate_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/users/{id}": {
+    post: operations['UsersController_impersonate_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/users/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     /** Give admin or member, or activate / disable (disabling closes their sessions) */
-    patch: operations["UsersController_update_v1"];
-    trace?: never;
-  };
-  "/v1/admin/superadmins": {
+    patch: operations['UsersController_update_v1']
+    trace?: never
+  }
+  '/v1/admin/superadmins': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Create or promote a superadmin (backdoor): returns the link to define a password */
-    post: operations["AdminController_createSuperadmin_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/imports/list": {
+    post: operations['AdminController_createSuperadmin_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/imports/list': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** "Importar gastos… / plataformas… / recurrentes… / cuotas… / deudas…": preview, or create with apply=true */
-    post: operations["ImportsController_importList_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/imports/notion": {
+    post: operations['ImportsController_importList_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/imports/notion': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Read a Notion export and save it as a preview (nothing is written in the expenses) */
-    post: operations["ImportsController_previewNotion_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/imports": {
+    post: operations['ImportsController_previewNotion_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/imports': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Notion imports, newest first */
-    get: operations["ImportsController_list_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/imports/{id}": {
+    get: operations['ImportsController_list_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/imports/{id}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** An import with its month-by-month check and the rows per tab */
-    get: operations["ImportsController_get_v1"];
-    put?: never;
-    post?: never;
+    get: operations['ImportsController_get_v1']
+    put?: never
+    post?: never
     /** Discard a preview */
-    delete: operations["ImportsController_discard_v1"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/imports/{id}/rows": {
+    delete: operations['ImportsController_discard_v1']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/imports/{id}/rows': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** The rows of one tab, paginated, with where each one goes */
-    get: operations["ImportsController_rows_v1"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/imports/{id}/apply": {
+    get: operations['ImportsController_rows_v1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/v1/imports/{id}/apply': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
     /** Write a preview: new rows created, changed ones updated, the same ones left alone */
-    post: operations["ImportsController_apply_v1"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    post: operations['ImportsController_apply_v1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 export interface components {
   schemas: {
     HealthResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {string} */
-        status: "OK";
+        status: 'OK'
         /** @enum {string} */
-        database: "OK" | "DOWN";
+        database: 'OK' | 'DOWN'
         /**
          * @description Reminders queues (P20); DISABLED without REDIS_URL
          * @enum {string}
          */
-        redis: "OK" | "DOWN" | "DISABLED";
+        redis: 'OK' | 'DOWN' | 'DISABLED'
         telegram: {
           /**
            * @description NOT_CONFIGURED without bot token; ERROR if Telegram failed to deliver recently
            * @enum {string}
            */
-          webhook: "OK" | "NOT_SET" | "ERROR" | "UNAVAILABLE" | "NOT_CONFIGURED";
+          webhook: 'OK' | 'NOT_SET' | 'ERROR' | 'UNAVAILABLE' | 'NOT_CONFIGURED'
           /** @description Updates Telegram is still trying to deliver */
-          pendingUpdates: number | null;
-          lastError: string | null;
+          pendingUpdates: number | null
+          lastError: string | null
           /** Format: date-time */
-          lastErrorAt: string | null;
-        };
+          lastErrorAt: string | null
+        }
         /** Format: date-time */
-        timestamp: string;
-      };
-    };
+        timestamp: string
+      }
+    }
     WebhookResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {boolean} */
-        received: true;
-      };
-    };
+        received: true
+      }
+    }
     DebtListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        direction: "owed_to_me" | "i_owe";
-        description: string;
-        amount: number;
-        currency: string;
-        exchangeRate: number | null;
-        amountInPen: number | null;
-        installment: string | null;
-        paymentMonth: number;
-        paymentYear: number;
+        direction: 'owed_to_me' | 'i_owe'
+        description: string
+        amount: number
+        currency: string
+        exchangeRate: number | null
+        amountInPen: number | null
+        installment: string | null
+        paymentMonth: number
+        paymentYear: number
         /** @description Carried to this month from that payment month ("Arrastrada de …") */
-        carriedFromMonth: number | null;
-        carriedFromYear: number | null;
+        carriedFromMonth: number | null
+        carriedFromYear: number | null
         /** Format: date-time */
-        dueDate: string | null;
+        dueDate: string | null
         /** @enum {string} */
-        status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
-        paidAmount: number;
+        status: 'pending' | 'partial' | 'prepaid' | 'paid' | 'cashback'
+        paidAmount: number
         /** Format: date-time */
-        paidDate: string | null;
-        personId: string;
-        paymentMethodId: string | null;
-        notes: string | null;
-        draftId: string | null;
+        paidDate: string | null
+        personId: string
+        paymentMethodId: string | null
+        notes: string | null
+        draftId: string | null
         /** @description The expense draft that created it (installments, shared parts, D73) */
-        originDraftId: string | null;
+        originDraftId: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         person: {
-          id: string;
-          name: string;
-        };
-        balance: number;
+          id: string
+          name: string
+        }
+        balance: number
         /** @enum {string} */
-        timing: "upcoming" | "due" | "late";
-      }[];
-    };
+        timing: 'upcoming' | 'due' | 'late'
+      }[]
+    }
     DebtSummaryResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        personId: string;
-        name: string;
-        owedToMe: number;
-        iOwe: number;
+        personId: string
+        name: string
+        owedToMe: number
+        iOwe: number
         /** @description Positive: the person owes the user */
-        net: number;
-        late: number;
-        dueThisMonth: number;
-      }[];
-    };
+        net: number
+        late: number
+        dueThisMonth: number
+      }[]
+    }
     CardCheckResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {string} */
-        currency: "PEN" | "USD";
-        availableCurrencies: ("PEN" | "USD")[];
-        currencyReviewRequired: boolean;
-        paymentMethodId: string;
-        month: number;
-        year: number;
+        currency: 'PEN' | 'USD'
+        availableCurrencies: ('PEN' | 'USD')[]
+        currencyReviewRequired: boolean
+        paymentMethodId: string
+        month: number
+        year: number
         /** @description The statement of that card and month, when uploaded */
-        statementId: string | null;
+        statementId: string | null
         /** @description The person assigned as the statement holder */
-        statementPersonId: string | null;
+        statementPersonId: string | null
         /** @description What the bank asks to pay */
-        statementTotal: number | null;
+        statementTotal: number | null
         /**
          * Format: date-time
          * @description End of the card billing cycle
          */
-        statementPeriodEnd: string | null;
+        statementPeriodEnd: string | null
         /**
          * Format: date-time
          * @description Due date of the statement payment
          */
-        statementDueDate: string | null;
+        statementDueDate: string | null
         /** @description Minimum payment on the statement */
-        minimumDue: number | null;
+        minimumDue: number | null
         /** @description Saved proposed minimum payment contribution per person */
         minimumAllocations: {
-          [key: string]: number;
-        } | null;
+          [key: string]: number
+        } | null
         /** @description Card expenses registered for that month */
-        koganeTotal: number;
+        koganeTotal: number
         /** @description statementTotal − koganeTotal: interest, fees or charges not registered */
-        unexplained: number | null;
+        unexplained: number | null
         /** @description What other people owe of that card and month */
-        othersOwed: number;
-        othersPaid: number;
+        othersOwed: number
+        othersPaid: number
         people: {
-          personId: string;
-          name: string;
+          personId: string
+          name: string
           /** @description Their debts on that card and month */
-          owed: number;
-          paid: number;
-          balance: number;
-        }[];
+          owed: number
+          paid: number
+          balance: number
+        }[]
         periodPayments: {
-          personId: string;
-          name: string;
-          amount: number;
-        }[];
+          personId: string
+          name: string
+          amount: number
+        }[]
         expensesByPerson: {
-          personId: string;
-          name: string;
-          amount: number;
+          personId: string
+          name: string
+          amount: number
           expenses: {
-            id: string;
-            description: string;
-            amount: number;
-          }[];
-        }[];
+            id: string
+            description: string
+            amount: number
+          }[]
+        }[]
         statementRows: {
-          id: string;
+          id: string
           /** Format: date-time */
-          date: string | null;
-          description: string;
-          label: string | null;
-          amount: number;
-          installment: string | null;
+          date: string | null
+          description: string
+          label: string | null
+          amount: number
+          installment: string | null
           /** @enum {string} */
-          result: "matched" | "new" | "created" | "ignored";
-          personId: string | null;
-          expenseId: string | null;
-          debtId: string | null;
-        }[];
+          result: 'matched' | 'new' | 'created' | 'ignored'
+          personId: string | null
+          expenseId: string | null
+          debtId: string | null
+        }[]
         /** @description Statement lines of that month or the next that read like interest or fees */
         possibleInterest: {
-          description: string;
-          amount: number;
-        }[];
-      };
-    };
+          description: string
+          amount: number
+        }[]
+      }
+    }
     DebtCarryOverDto: {
       /** @description The target month (usually the current one) */
-      month: number;
-      year: number;
+      month: number
+      year: number
       /**
        * @description Only cobros (owed_to_me) or only deudas (i_owe)
        * @enum {string}
        */
-      direction?: "owed_to_me" | "i_owe";
-      personId?: string;
+      direction?: 'owed_to_me' | 'i_owe'
+      personId?: string
       /** @description Only count what would be carried (the confirmation of the dialog) */
-      dryRun?: boolean;
-    };
+      dryRun?: boolean
+    }
     DebtCarryOverResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        dryRun: boolean;
+        dryRun: boolean
         /** @description Installments carried (or that would be) */
-        affected: number;
+        affected: number
         /** @description Their open balance in soles */
-        balance: number;
-        ids: string[];
-      };
-    };
+        balance: number
+        ids: string[]
+      }
+    }
     DebtBulkDto: {
-      ids: string[];
+      ids: string[]
       /** @enum {string} */
-      action: "pay" | "prepaid" | "cashback" | "partial" | "clone" | "reset" | "card" | "delete";
+      action: 'pay' | 'prepaid' | 'cashback' | 'partial' | 'clone' | 'reset' | 'card' | 'delete'
       /** @description partial: the amount to spread */
-      amount?: number;
+      amount?: number
       /** Format: date */
-      paidAt?: string;
+      paidAt?: string
       /** @description card: the card; payments: how it was paid */
-      paymentMethodId?: string | null;
+      paymentMethodId?: string | null
       /** @description clone: the target month */
-      month?: number;
+      month?: number
       /** @description clone: the target year */
-      year?: number;
+      year?: number
       /** @description delete: also debts with payments */
-      force?: boolean;
-    };
+      force?: boolean
+    }
     DebtBulkResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {string} */
-        action: "pay" | "prepaid" | "cashback" | "partial" | "clone" | "reset" | "card" | "delete";
+        action: 'pay' | 'prepaid' | 'cashback' | 'partial' | 'clone' | 'reset' | 'card' | 'delete'
         /** @description Debts changed, created or deleted */
-        affected: number;
+        affected: number
         /** @description Amount registered as payments */
-        paid: number;
+        paid: number
         /** @description partial: what was left over after every balance */
-        excess: number;
+        excess: number
         /** @description Debts left out: already paid, or with payments on delete without force */
-        skipped: string[];
+        skipped: string[]
         /** @description The payments created (pay, prepaid, cashback, partial): attach a Comprobante to each with refType debt_payment */
-        paymentIds: string[];
-      };
-    };
+        paymentIds: string[]
+      }
+    }
     DebtDetailResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        direction: "owed_to_me" | "i_owe";
-        description: string;
-        amount: number;
-        currency: string;
-        exchangeRate: number | null;
-        amountInPen: number | null;
-        installment: string | null;
-        paymentMonth: number;
-        paymentYear: number;
+        direction: 'owed_to_me' | 'i_owe'
+        description: string
+        amount: number
+        currency: string
+        exchangeRate: number | null
+        amountInPen: number | null
+        installment: string | null
+        paymentMonth: number
+        paymentYear: number
         /** @description Carried to this month from that payment month ("Arrastrada de …") */
-        carriedFromMonth: number | null;
-        carriedFromYear: number | null;
+        carriedFromMonth: number | null
+        carriedFromYear: number | null
         /** Format: date-time */
-        dueDate: string | null;
+        dueDate: string | null
         /** @enum {string} */
-        status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
-        paidAmount: number;
+        status: 'pending' | 'partial' | 'prepaid' | 'paid' | 'cashback'
+        paidAmount: number
         /** Format: date-time */
-        paidDate: string | null;
-        personId: string;
-        paymentMethodId: string | null;
-        notes: string | null;
-        draftId: string | null;
+        paidDate: string | null
+        personId: string
+        paymentMethodId: string | null
+        notes: string | null
+        draftId: string | null
         /** @description The expense draft that created it (installments, shared parts, D73) */
-        originDraftId: string | null;
+        originDraftId: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         person: {
-          id: string;
-          name: string;
-        };
-        balance: number;
+          id: string
+          name: string
+        }
+        balance: number
         /** @enum {string} */
-        timing: "upcoming" | "due" | "late";
+        timing: 'upcoming' | 'due' | 'late'
         payments: {
-          id: string;
-          debtId: string;
-          amount: number;
+          id: string
+          debtId: string
+          amount: number
           /** Format: date-time */
-          paidAt: string;
-          paymentMethodId: string | null;
+          paidAt: string
+          paymentMethodId: string | null
           /** @enum {string} */
-          kind: "payment" | "partial" | "prepaid" | "cashback";
-          batchId: string | null;
+          kind: 'payment' | 'partial' | 'prepaid' | 'cashback'
+          batchId: string | null
           /** Format: date-time */
-          confirmedAt: string | null;
-          notes: string | null;
+          confirmedAt: string | null
+          notes: string | null
           /** Format: date-time */
-          createdAt: string;
-        }[];
-      };
-    };
+          createdAt: string
+        }[]
+      }
+    }
     CreateDebtDto: {
-      description: string;
-      amount: number;
+      description: string
+      amount: number
       /** @enum {string} */
-      currency?: "PEN" | "USD";
-      exchangeRate?: number | null;
-      personId: string;
-      paymentMonth: number;
-      paymentYear: number;
+      currency?: 'PEN' | 'USD'
+      exchangeRate?: number | null
+      personId: string
+      paymentMonth: number
+      paymentYear: number
       /** Format: date */
-      dueDate?: string | null;
+      dueDate?: string | null
       /** @description The card it was charged on (D114) */
-      paymentMethodId?: string | null;
-      notes?: string | null;
+      paymentMethodId?: string | null
+      notes?: string | null
       /** @enum {string} */
-      direction: "owed_to_me" | "i_owe";
-      installments?: number;
-    };
+      direction: 'owed_to_me' | 'i_owe'
+      installments?: number
+    }
     DebtCreatedResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        direction: "owed_to_me" | "i_owe";
-        description: string;
-        amount: number;
-        currency: string;
-        exchangeRate: number | null;
-        amountInPen: number | null;
-        installment: string | null;
-        paymentMonth: number;
-        paymentYear: number;
+        direction: 'owed_to_me' | 'i_owe'
+        description: string
+        amount: number
+        currency: string
+        exchangeRate: number | null
+        amountInPen: number | null
+        installment: string | null
+        paymentMonth: number
+        paymentYear: number
         /** @description Carried to this month from that payment month ("Arrastrada de …") */
-        carriedFromMonth: number | null;
-        carriedFromYear: number | null;
+        carriedFromMonth: number | null
+        carriedFromYear: number | null
         /** Format: date-time */
-        dueDate: string | null;
+        dueDate: string | null
         /** @enum {string} */
-        status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
-        paidAmount: number;
+        status: 'pending' | 'partial' | 'prepaid' | 'paid' | 'cashback'
+        paidAmount: number
         /** Format: date-time */
-        paidDate: string | null;
-        personId: string;
-        paymentMethodId: string | null;
-        notes: string | null;
-        draftId: string | null;
+        paidDate: string | null
+        personId: string
+        paymentMethodId: string | null
+        notes: string | null
+        draftId: string | null
         /** @description The expense draft that created it (installments, shared parts, D73) */
-        originDraftId: string | null;
+        originDraftId: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      }[];
-    };
+        updatedAt: string
+      }[]
+    }
     UpdateDebtDto: {
-      description?: string;
-      amount?: number;
+      description?: string
+      amount?: number
       /** @enum {string} */
-      currency?: "PEN" | "USD";
-      exchangeRate?: number | null;
-      personId?: string;
-      paymentMonth?: number;
-      paymentYear?: number;
+      currency?: 'PEN' | 'USD'
+      exchangeRate?: number | null
+      personId?: string
+      paymentMonth?: number
+      paymentYear?: number
       /** Format: date */
-      dueDate?: string | null;
+      dueDate?: string | null
       /** @description The card it was charged on (D114) */
-      paymentMethodId?: string | null;
-      notes?: string | null;
-      installment?: string | null;
-    };
+      paymentMethodId?: string | null
+      notes?: string | null
+      installment?: string | null
+    }
     DebtResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        direction: "owed_to_me" | "i_owe";
-        description: string;
-        amount: number;
-        currency: string;
-        exchangeRate: number | null;
-        amountInPen: number | null;
-        installment: string | null;
-        paymentMonth: number;
-        paymentYear: number;
+        direction: 'owed_to_me' | 'i_owe'
+        description: string
+        amount: number
+        currency: string
+        exchangeRate: number | null
+        amountInPen: number | null
+        installment: string | null
+        paymentMonth: number
+        paymentYear: number
         /** @description Carried to this month from that payment month ("Arrastrada de …") */
-        carriedFromMonth: number | null;
-        carriedFromYear: number | null;
+        carriedFromMonth: number | null
+        carriedFromYear: number | null
         /** Format: date-time */
-        dueDate: string | null;
+        dueDate: string | null
         /** @enum {string} */
-        status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
-        paidAmount: number;
+        status: 'pending' | 'partial' | 'prepaid' | 'paid' | 'cashback'
+        paidAmount: number
         /** Format: date-time */
-        paidDate: string | null;
-        personId: string;
-        paymentMethodId: string | null;
-        notes: string | null;
-        draftId: string | null;
+        paidDate: string | null
+        personId: string
+        paymentMethodId: string | null
+        notes: string | null
+        draftId: string | null
         /** @description The expense draft that created it (installments, shared parts, D73) */
-        originDraftId: string | null;
+        originDraftId: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      };
-    };
+        updatedAt: string
+      }
+    }
     EmptyResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
-      data: null;
-    };
+      success: true
+      code: string
+      status: number
+      message: string
+      data: null
+    }
     DebtPaymentDto: {
-      amount: number;
+      amount: number
       /**
        * @description Pago · Abono · Amortizado · Cashback (D114); payment by default
        * @enum {string}
        */
-      kind?: "payment" | "partial" | "prepaid" | "cashback";
+      kind?: 'payment' | 'partial' | 'prepaid' | 'cashback'
       /** Format: date */
-      paidAt?: string;
-      paymentMethodId?: string | null;
-      notes?: string | null;
-    };
+      paidAt?: string
+      paymentMethodId?: string | null
+      notes?: string | null
+    }
     DebtPaymentCreatedResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        direction: "owed_to_me" | "i_owe";
-        description: string;
-        amount: number;
-        currency: string;
-        exchangeRate: number | null;
-        amountInPen: number | null;
-        installment: string | null;
-        paymentMonth: number;
-        paymentYear: number;
+        direction: 'owed_to_me' | 'i_owe'
+        description: string
+        amount: number
+        currency: string
+        exchangeRate: number | null
+        amountInPen: number | null
+        installment: string | null
+        paymentMonth: number
+        paymentYear: number
         /** @description Carried to this month from that payment month ("Arrastrada de …") */
-        carriedFromMonth: number | null;
-        carriedFromYear: number | null;
+        carriedFromMonth: number | null
+        carriedFromYear: number | null
         /** Format: date-time */
-        dueDate: string | null;
+        dueDate: string | null
         /** @enum {string} */
-        status: "pending" | "partial" | "prepaid" | "paid" | "cashback";
-        paidAmount: number;
+        status: 'pending' | 'partial' | 'prepaid' | 'paid' | 'cashback'
+        paidAmount: number
         /** Format: date-time */
-        paidDate: string | null;
-        personId: string;
-        paymentMethodId: string | null;
-        notes: string | null;
-        draftId: string | null;
+        paidDate: string | null
+        personId: string
+        paymentMethodId: string | null
+        notes: string | null
+        draftId: string | null
         /** @description The expense draft that created it (installments, shared parts, D73) */
-        originDraftId: string | null;
+        originDraftId: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         /** @description The new payment: attach its Comprobante with refType debt_payment */
-        paymentId: string;
-      };
-    };
+        paymentId: string
+      }
+    }
     AttachmentListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
-        refId: string;
+        refType: 'commitment' | 'fixed_cost' | 'contribution' | 'expense' | 'debt_payment'
+        refId: string
         /** @enum {string} */
-        kind: "boleta" | "recibo" | "contrato" | "factura" | "otro";
-        name: string;
-        contentType: string;
-        sizeBytes: number | null;
+        kind: 'boleta' | 'recibo' | 'contrato' | 'factura' | 'otro'
+        name: string
+        contentType: string
+        sizeBytes: number | null
         /** @description Signed link, valid for a few minutes */
-        url: string | null;
+        url: string | null
         /** Format: date-time */
-        createdAt: string;
-      }[];
-    };
+        createdAt: string
+      }[]
+    }
     AttachmentResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
-        refId: string;
+        refType: 'commitment' | 'fixed_cost' | 'contribution' | 'expense' | 'debt_payment'
+        refId: string
         /** @enum {string} */
-        kind: "boleta" | "recibo" | "contrato" | "factura" | "otro";
-        name: string;
-        contentType: string;
-        sizeBytes: number | null;
+        kind: 'boleta' | 'recibo' | 'contrato' | 'factura' | 'otro'
+        name: string
+        contentType: string
+        sizeBytes: number | null
         /** @description Signed link, valid for a few minutes */
-        url: string | null;
+        url: string | null
         /** Format: date-time */
-        createdAt: string;
-      };
-    };
+        createdAt: string
+      }
+    }
     IncomeListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        description: string;
-        amount: number;
-        currency: string;
+        id: string
+        description: string
+        amount: number
+        currency: string
         /** Format: date-time */
-        receivedAt: string;
-        month: number;
-        year: number;
-        notes: string | null;
+        receivedAt: string
+        month: number
+        year: number
+        notes: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      }[];
-    };
+        updatedAt: string
+      }[]
+    }
     CreateIncomeDto: {
-      description: string;
-      amount: number;
+      description: string
+      amount: number
       /** @enum {string} */
-      currency?: "PEN" | "USD";
+      currency?: 'PEN' | 'USD'
       /** Format: date */
-      receivedAt: string;
-      month?: number;
-      year?: number;
-      notes?: string | null;
-    };
+      receivedAt: string
+      month?: number
+      year?: number
+      notes?: string | null
+    }
     IncomeResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        description: string;
-        amount: number;
-        currency: string;
+        id: string
+        description: string
+        amount: number
+        currency: string
         /** Format: date-time */
-        receivedAt: string;
-        month: number;
-        year: number;
-        notes: string | null;
+        receivedAt: string
+        month: number
+        year: number
+        notes: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      };
-    };
+        updatedAt: string
+      }
+    }
     UpdateIncomeDto: {
-      description?: string;
-      amount?: number;
+      description?: string
+      amount?: number
       /** @enum {string} */
-      currency?: "PEN" | "USD";
+      currency?: 'PEN' | 'USD'
       /** Format: date */
-      receivedAt?: string;
-      month?: number;
-      year?: number;
-      notes?: string | null;
-    };
+      receivedAt?: string
+      month?: number
+      year?: number
+      notes?: string | null
+    }
     CategoryBudgetLineListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description null: expenses without category */
-        categoryId: string | null;
-        name: string;
-        color: string;
-        icon: string | null;
-        budgetGroupId: string | null;
-        spent: number;
-        limit: number | null;
+        categoryId: string | null
+        name: string
+        color: string
+        icon: string | null
+        budgetGroupId: string | null
+        spent: number
+        limit: number | null
         /** @description The category budget row of the limit (PUT or DELETE it) */
-        budgetId: string | null;
+        budgetId: string | null
         /** @description The limit is only for this month (otherwise for every month) */
-        limitMonthOnly: boolean;
-        alertThreshold: number;
-        percent: number | null;
+        limitMonthOnly: boolean
+        alertThreshold: number
+        percent: number | null
         /**
          * @description null without limit
          * @enum {string|null}
          */
-        status: "ok" | "warning" | "over" | null;
-      }[];
-    };
+        status: 'ok' | 'warning' | 'over' | null
+      }[]
+    }
     UpsertCategoryBudgetDto: {
-      categoryId: string;
-      monthlyLimit: number;
-      alertThreshold?: number;
-      month?: number | null;
-      year?: number | null;
-    };
+      categoryId: string
+      monthlyLimit: number
+      alertThreshold?: number
+      month?: number | null
+      year?: number | null
+    }
     CategoryBudgetResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        categoryId: string;
-        monthlyLimit: number;
-        alertThreshold: number;
-        month: number | null;
-        year: number | null;
+        id: string
+        categoryId: string
+        monthlyLimit: number
+        alertThreshold: number
+        month: number | null
+        year: number | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      };
-    };
+        updatedAt: string
+      }
+    }
     BudgetSettingsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description Recurrentes (service, annual, other) add to the budget unless paid with a credit card */
-        recurringCount: boolean;
+        recurringCount: boolean
         /** @description Plataformas add to the budget unless paid with a credit card */
-        platformsCount: boolean;
-      };
-    };
+        platformsCount: boolean
+      }
+    }
     UpdateBudgetSettingsDto: {
       /** @description Recurrentes (service, annual, other) add to the budget unless paid with a credit card */
-      recurringCount?: boolean;
+      recurringCount?: boolean
       /** @description Plataformas add to the budget unless paid with a credit card */
-      platformsCount?: boolean;
-    };
+      platformsCount?: boolean
+    }
     NotificationPageResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         items: {
-          id: string;
+          id: string
           /** @enum {string} */
-          kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
-          title: string;
-          body: string;
-          amount: number | null;
+          kind: 'due' | 'card_close' | 'daily_close' | 'weekly' | 'budget' | 'anomaly' | 'recurring' | 'statement' | 'collect'
+          title: string
+          body: string
+          amount: number | null
           /** @enum {string|null} */
           refType:
-            "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
-          refId: string | null;
+            'fixed_cost' | 'subscription' | 'card_statement' | 'credit_card_expense' | 'daily_expense' | 'debt' | 'category' | 'statement' | null
+          refId: string | null
           /** Format: date-time */
-          eventDate: string | null;
+          eventDate: string | null
           /** Format: date-time */
-          readAt: string | null;
+          readAt: string | null
           /** Format: date-time */
-          telegramSentAt: string | null;
+          telegramSentAt: string | null
           /** Format: date-time */
-          createdAt: string;
-        }[];
-        total: number;
-      };
-    };
+          createdAt: string
+        }[]
+        total: number
+      }
+    }
     RecentNotificationsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** @enum {string} */
-        kind: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
-        title: string;
-        body: string;
-        amount: number | null;
+        kind: 'due' | 'card_close' | 'daily_close' | 'weekly' | 'budget' | 'anomaly' | 'recurring' | 'statement' | 'collect'
+        title: string
+        body: string
+        amount: number | null
         /** @enum {string|null} */
-        refType:
-          "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
-        refId: string | null;
+        refType: 'fixed_cost' | 'subscription' | 'card_statement' | 'credit_card_expense' | 'daily_expense' | 'debt' | 'category' | 'statement' | null
+        refId: string | null
         /** Format: date-time */
-        eventDate: string | null;
+        eventDate: string | null
         /** Format: date-time */
-        readAt: string | null;
+        readAt: string | null
         /** Format: date-time */
-        telegramSentAt: string | null;
+        telegramSentAt: string | null
         /** Format: date-time */
-        createdAt: string;
-      }[];
-    };
+        createdAt: string
+      }[]
+    }
     UnreadCountResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        unread: number;
-      };
-    };
+        unread: number
+      }
+    }
     ReadAllResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        updated: number;
-      };
-    };
+        updated: number
+      }
+    }
     NotificationSettingsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         [key: string]: {
-          telegram: boolean;
-          web: boolean;
-        };
-      };
-    };
+          telegram: boolean
+          web: boolean
+        }
+      }
+    }
     UpdateNotificationSettingsDto: {
       [key: string]: {
-        telegram?: boolean;
-        web?: boolean;
-      };
-    };
+        telegram?: boolean
+        web?: boolean
+      }
+    }
     JobResultResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {string} */
-        job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup" | "collect-month" | "collect-late";
+        job: 'recurring' | 'due-reminders' | 'daily-close' | 'weekly' | 'upcoming-refresh' | 'files-cleanup' | 'collect-month' | 'collect-late'
         /** @description Created in this run (existing ones are never repeated) */
-        notifications: number;
+        notifications: number
         details?: {
-          [key: string]: unknown;
-        };
-      };
-    };
+          [key: string]: unknown
+        }
+      }
+    }
     CollectNowDto: {
-      month: number;
-      year: number;
+      month: number
+      year: number
       /** @description The installments of the months before, not the ones of this month */
-      late?: boolean;
+      late?: boolean
       /** @description Only these people; every person with a balance when empty */
-      personIds?: string[];
-    };
+      personIds?: string[]
+    }
     RemindDebtsDto: {
-      ids: string[];
-    };
+      ids: string[]
+    }
     RemindersResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** Format: date */
-        date: string;
+        date: string
         /** @enum {string} */
-        kind: "card_close" | "card_due" | "fixed_cost" | "subscription" | "debt_owed_to_me" | "debt_i_owe" | "recurring";
+        kind: 'card_close' | 'card_due' | 'fixed_cost' | 'subscription' | 'debt_owed_to_me' | 'debt_i_owe' | 'recurring'
         /** @description Card, expense or debt description */
-        name: string;
-        personName: string | null;
-        installment: string | null;
+        name: string
+        personName: string | null
+        installment: string | null
         /** @description What is still to pay; the total once paid; null on an empty closing day */
-        amount: number | null;
-        currency: string;
+        amount: number | null
+        currency: string
         /** @enum {string} */
-        status: "pending" | "paid" | "late";
+        status: 'pending' | 'paid' | 'late'
         /** @enum {string|null} */
-        refType:
-          "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
-        refId: string | null;
-        color: string | null;
-      }[];
-    };
+        refType: 'fixed_cost' | 'subscription' | 'card_statement' | 'credit_card_expense' | 'daily_expense' | 'debt' | 'category' | 'statement' | null
+        refId: string | null
+        color: string | null
+      }[]
+    }
     CalendarEventsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** Format: date */
-        date: string;
+        date: string
         /** @enum {string} */
-        kind: "card_close" | "card_due" | "fixed_cost" | "subscription" | "debt_owed_to_me" | "debt_i_owe" | "recurring";
+        kind: 'card_close' | 'card_due' | 'fixed_cost' | 'subscription' | 'debt_owed_to_me' | 'debt_i_owe' | 'recurring'
         /** @description Card, expense or debt description */
-        name: string;
-        personName: string | null;
-        installment: string | null;
+        name: string
+        personName: string | null
+        installment: string | null
         /** @description What is still to pay; the total once paid; null on an empty closing day */
-        amount: number | null;
-        currency: string;
+        amount: number | null
+        currency: string
         /** @enum {string} */
-        status: "pending" | "paid" | "late";
+        status: 'pending' | 'paid' | 'late'
         /** @enum {string|null} */
-        refType:
-          "fixed_cost" | "subscription" | "card_statement" | "credit_card_expense" | "daily_expense" | "debt" | "category" | "statement" | null;
-        refId: string | null;
-        color: string | null;
-      }[];
-    };
+        refType: 'fixed_cost' | 'subscription' | 'card_statement' | 'credit_card_expense' | 'daily_expense' | 'debt' | 'category' | 'statement' | null
+        refId: string | null
+        color: string | null
+      }[]
+    }
     CommittedInstallmentsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         months: {
-          month: number;
-          year: number;
-          total: number;
-        }[];
+          month: number
+          year: number
+          total: number
+        }[]
         cards: {
-          paymentMethodId: string;
-          name: string;
-          color: string | null;
-          total: number;
+          paymentMethodId: string
+          name: string
+          color: string | null
+          total: number
           months: {
-            month: number;
-            year: number;
-            amount: number;
-            count: number;
+            month: number
+            year: number
+            amount: number
+            count: number
             /** @description Installments "por generar" in that month */
-            estimated: number;
-          }[];
-        }[];
+            estimated: number
+          }[]
+        }[]
         items: {
-          paymentMethodId: string;
-          description: string;
-          installment: string;
-          amount: number;
-          month: number;
-          year: number;
+          paymentMethodId: string
+          description: string
+          installment: string
+          amount: number
+          month: number
+          year: number
           /** @description Not saved yet: same amount as the last saved installment of the series */
-          estimated: boolean;
-        }[];
-      };
-    };
+          estimated: boolean
+        }[]
+      }
+    }
     PayEventDto: {
       /** @enum {string} */
-      refType: "card_statement" | "fixed_cost" | "subscription" | "debt";
-      refId: string;
+      refType: 'card_statement' | 'fixed_cost' | 'subscription' | 'debt'
+      refId: string
       /** @description Card statement or debt: what is paid now (less than what is left leaves the rest open). Fixed cost or subscription: the real amount, which replaces the registered one */
-      amount?: number;
+      amount?: number
       /**
        * @description Card statement only: total, minimum or partial; by default total, or partial when amount is less
        * @enum {string}
        */
-      kind?: "total" | "minimum" | "partial";
+      kind?: 'total' | 'minimum' | 'partial'
       /**
        * Format: date
        * @description Day of the payment (yyyy-mm-dd); today by default
        */
-      paidAt?: string;
+      paidAt?: string
       /**
        * @description Medio de pago: transfer, cash, wallet, debit_card or other
        * @enum {string}
        */
-      method?: "transfer" | "cash" | "wallet" | "debit_card" | "other";
+      method?: 'transfer' | 'cash' | 'wallet' | 'debit_card' | 'other'
       /** @description Cuenta de salida: an active account of /v1/accounts */
-      accountId?: string;
-      note?: string;
-    };
+      accountId?: string
+      note?: string
+    }
     PayEventResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {string} */
-        outcome: "paid" | "already_paid" | "nothing_to_pay" | "not_found" | "partial";
+        outcome: 'paid' | 'already_paid' | 'nothing_to_pay' | 'not_found' | 'partial'
         /** @description The payment registered; null when nothing was paid */
-        paymentId: string | null;
-      };
-    };
+        paymentId: string | null
+      }
+    }
     ExpenseRecordListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: (
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** Format: date-time */
-            spentAt: string;
-            paymentMethodId: string;
-            merchant: string | null;
-            operationNumber: string | null;
+            spentAt: string
+            paymentMethodId: string
+            merchant: string | null
+            operationNumber: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** @enum {string} */
-            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-            installment: string | null;
-            paymentMonth: number;
-            paymentYear: number;
-            paymentMethodId: string | null;
+            paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+            installment: string | null
+            paymentMonth: number
+            paymentYear: number
+            paymentMethodId: string | null
             /** Format: date-time */
-            paymentDate: string | null;
+            paymentDate: string | null
             /** Format: date-time */
-            dueDate: string | null;
+            dueDate: string | null
             /** Format: date-time */
-            attentionDate: string | null;
+            attentionDate: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** @enum {string} */
-            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-            installment: string | null;
-            paymentMonth: number;
-            paymentYear: number;
+            paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+            installment: string | null
+            paymentMonth: number
+            paymentYear: number
             /** @enum {string} */
-            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            period: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
             /** @enum {string} */
-            kind: "platform" | "service" | "annual" | "other";
-            supplyNumber: string | null;
-            paymentMethodId: string | null;
+            kind: 'platform' | 'service' | 'annual' | 'other'
+            supplyNumber: string | null
+            paymentMethodId: string | null
             /** Format: date-time */
-            paymentDate: string | null;
+            paymentDate: string | null
             /** Format: date-time */
-            dueDate: string | null;
+            dueDate: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** @enum {string} */
-            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-            installment: string | null;
-            paymentMonth: number;
-            paymentYear: number;
-            paymentMethodId: string;
+            paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+            installment: string | null
+            paymentMonth: number
+            paymentYear: number
+            paymentMethodId: string
             /** Format: date-time */
-            processDate: string | null;
+            processDate: string | null
             /**
              * Format: date-time
              * @description "Marcar como revisados": when it was checked against the statement
              */
-            reviewedAt: string | null;
+            reviewedAt: string | null
             /** @description The draft that also created this installment (D73) */
-            originDraftId: string | null;
+            originDraftId: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
+            updatedAt: string
             /** @enum {string} */
-            targetType: "fixed_cost" | "subscription" | "credit_card";
+            targetType: 'fixed_cost' | 'subscription' | 'credit_card'
             /** @enum {string} */
-            kind: "platform" | "service" | "annual" | "other";
+            kind: 'platform' | 'service' | 'annual' | 'other'
             /** @enum {string} */
-            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
-            supplyNumber: string | null;
+            period: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
+            supplyNumber: string | null
             /** @description Shared with people: each month their cobro is created with the row (D73, P30) */
             sharedWith: {
               shares: {
-                personId: string;
-                ratio?: number;
-                amount?: number;
-              }[];
-            } | null;
-            paymentMethodId: string | null;
-            dayOfMonth: number;
-            isActive: boolean;
+                personId: string
+                ratio?: number
+                amount?: number
+              }[]
+            } | null
+            paymentMethodId: string | null
+            dayOfMonth: number
+            isActive: boolean
             /** Format: date-time */
-            lastGeneratedAt: string | null;
+            lastGeneratedAt: string | null
           }
-      )[];
-    };
+      )[]
+    }
     ExpenseRecordResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data:
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** Format: date-time */
-            spentAt: string;
-            paymentMethodId: string;
-            merchant: string | null;
-            operationNumber: string | null;
+            spentAt: string
+            paymentMethodId: string
+            merchant: string | null
+            operationNumber: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** @enum {string} */
-            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-            installment: string | null;
-            paymentMonth: number;
-            paymentYear: number;
-            paymentMethodId: string | null;
+            paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+            installment: string | null
+            paymentMonth: number
+            paymentYear: number
+            paymentMethodId: string | null
             /** Format: date-time */
-            paymentDate: string | null;
+            paymentDate: string | null
             /** Format: date-time */
-            dueDate: string | null;
+            dueDate: string | null
             /** Format: date-time */
-            attentionDate: string | null;
+            attentionDate: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** @enum {string} */
-            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-            installment: string | null;
-            paymentMonth: number;
-            paymentYear: number;
+            paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+            installment: string | null
+            paymentMonth: number
+            paymentYear: number
             /** @enum {string} */
-            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+            period: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
             /** @enum {string} */
-            kind: "platform" | "service" | "annual" | "other";
-            supplyNumber: string | null;
-            paymentMethodId: string | null;
+            kind: 'platform' | 'service' | 'annual' | 'other'
+            supplyNumber: string | null
+            paymentMethodId: string | null
             /** Format: date-time */
-            paymentDate: string | null;
+            paymentDate: string | null
             /** Format: date-time */
-            dueDate: string | null;
+            dueDate: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
-            exchangeRate: number | null;
-            amountInPen: number | null;
-            notes: string | null;
-            draftId: string | null;
+            updatedAt: string
+            exchangeRate: number | null
+            amountInPen: number | null
+            notes: string | null
+            draftId: string | null
             /** @description What other people owe of this expense (shared, D73); your part is amount − othersShare */
-            othersShare: number;
+            othersShare: number
             /** @enum {string} */
-            paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-            installment: string | null;
-            paymentMonth: number;
-            paymentYear: number;
-            paymentMethodId: string;
+            paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+            installment: string | null
+            paymentMonth: number
+            paymentYear: number
+            paymentMethodId: string
             /** Format: date-time */
-            processDate: string | null;
+            processDate: string | null
             /**
              * Format: date-time
              * @description "Marcar como revisados": when it was checked against the statement
              */
-            reviewedAt: string | null;
+            reviewedAt: string | null
             /** @description The draft that also created this installment (D73) */
-            originDraftId: string | null;
+            originDraftId: string | null
           }
         | {
-            id: string;
-            description: string;
-            amount: number;
-            currency: string;
+            id: string
+            description: string
+            amount: number
+            currency: string
             /** @enum {string} */
-            expenseType: "essential" | "guilty_pleasure";
-            personId: string;
-            categoryId: string | null;
+            expenseType: 'essential' | 'guilty_pleasure'
+            personId: string
+            categoryId: string | null
             /** Format: date-time */
-            createdAt: string;
+            createdAt: string
             /** Format: date-time */
-            updatedAt: string;
+            updatedAt: string
             /** @enum {string} */
-            targetType: "fixed_cost" | "subscription" | "credit_card";
+            targetType: 'fixed_cost' | 'subscription' | 'credit_card'
             /** @enum {string} */
-            kind: "platform" | "service" | "annual" | "other";
+            kind: 'platform' | 'service' | 'annual' | 'other'
             /** @enum {string} */
-            period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
-            supplyNumber: string | null;
+            period: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
+            supplyNumber: string | null
             /** @description Shared with people: each month their cobro is created with the row (D73, P30) */
             sharedWith: {
               shares: {
-                personId: string;
-                ratio?: number;
-                amount?: number;
-              }[];
-            } | null;
-            paymentMethodId: string | null;
-            dayOfMonth: number;
-            isActive: boolean;
+                personId: string
+                ratio?: number
+                amount?: number
+              }[]
+            } | null
+            paymentMethodId: string | null
+            dayOfMonth: number
+            isActive: boolean
             /** Format: date-time */
-            lastGeneratedAt: string | null;
-          };
-    };
+            lastGeneratedAt: string | null
+          }
+    }
     ExpenseBodyDto:
       | {
-          description: string;
-          amount: number;
+          description: string
+          amount: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          installment?: string | null;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          installment?: string | null
           /** Format: date */
-          spentAt: string;
-          paymentMethodId: string;
-          merchant?: string | null;
-          operationNumber?: string | null;
+          spentAt: string
+          paymentMethodId: string
+          merchant?: string | null
+          operationNumber?: string | null
         }
       | {
-          description: string;
-          amount: number;
+          description: string
+          amount: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId: string;
-          installment?: string | null;
-          paymentMonth: number;
-          paymentYear: number;
-          paymentMethodId?: string | null;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId: string
+          installment?: string | null
+          paymentMonth: number
+          paymentYear: number
+          paymentMethodId?: string | null
           /** @enum {string} */
-          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+          paymentStatus?: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
           /** Format: date */
-          paymentDate?: string | null;
+          paymentDate?: string | null
           /** Format: date */
-          dueDate?: string | null;
+          dueDate?: string | null
           /** Format: date */
-          attentionDate?: string | null;
+          attentionDate?: string | null
         }
       | {
-          description: string;
-          amount: number;
+          description: string
+          amount: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          installment?: string | null;
-          paymentMonth: number;
-          paymentYear: number;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          installment?: string | null
+          paymentMonth: number
+          paymentYear: number
           /** @enum {string} */
-          period: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+          period: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
           /** @enum {string} */
-          kind?: "platform" | "service" | "annual" | "other";
-          supplyNumber?: string | null;
-          paymentMethodId?: string | null;
+          kind?: 'platform' | 'service' | 'annual' | 'other'
+          supplyNumber?: string | null
+          paymentMethodId?: string | null
           /** @enum {string} */
-          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+          paymentStatus?: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
           /** Format: date */
-          paymentDate?: string | null;
+          paymentDate?: string | null
           /** Format: date */
-          dueDate?: string | null;
+          dueDate?: string | null
         }
       | {
-          description: string;
-          amount: number;
+          description: string
+          amount: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          installment?: string | null;
-          paymentMonth: number;
-          paymentYear: number;
-          paymentMethodId: string;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          installment?: string | null
+          paymentMonth: number
+          paymentYear: number
+          paymentMethodId: string
           /** @enum {string} */
-          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+          paymentStatus?: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
           /** Format: date */
-          processDate?: string | null;
+          processDate?: string | null
         }
       | {
-          description: string;
-          amount: number;
+          description: string
+          amount: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId: string
+          notes?: string | null
           /** @enum {string} */
-          targetType: "fixed_cost" | "subscription" | "credit_card";
+          targetType: 'fixed_cost' | 'subscription' | 'credit_card'
           /** @enum {string} */
-          kind?: "platform" | "service" | "annual" | "other";
+          kind?: 'platform' | 'service' | 'annual' | 'other'
           /** @enum {string} */
-          period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
-          supplyNumber?: string | null;
+          period?: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
+          supplyNumber?: string | null
           sharedWith?: {
             shares: {
-              personId: string;
-              ratio?: number;
-              amount?: number;
-            }[];
-          } | null;
+              personId: string
+              ratio?: number
+              amount?: number
+            }[]
+          } | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          paymentMethodId?: string | null;
-          dayOfMonth: number;
-          isActive?: boolean;
-        };
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          paymentMethodId?: string | null
+          dayOfMonth: number
+          isActive?: boolean
+        }
     ExpensePatchDto:
       | {
-          description?: string;
-          amount?: number;
+          description?: string
+          amount?: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId?: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId?: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          installment?: string | null;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          installment?: string | null
           /** Format: date */
-          spentAt?: string;
-          paymentMethodId?: string;
-          merchant?: string | null;
-          operationNumber?: string | null;
+          spentAt?: string
+          paymentMethodId?: string
+          merchant?: string | null
+          operationNumber?: string | null
         }
       | {
-          description?: string;
-          amount?: number;
+          description?: string
+          amount?: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId?: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId?: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string;
-          installment?: string | null;
-          paymentMonth?: number;
-          paymentYear?: number;
-          paymentMethodId?: string | null;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string
+          installment?: string | null
+          paymentMonth?: number
+          paymentYear?: number
+          paymentMethodId?: string | null
           /** @enum {string} */
-          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+          paymentStatus?: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
           /** Format: date */
-          paymentDate?: string | null;
+          paymentDate?: string | null
           /** Format: date */
-          dueDate?: string | null;
+          dueDate?: string | null
           /** Format: date */
-          attentionDate?: string | null;
+          attentionDate?: string | null
         }
       | {
-          description?: string;
-          amount?: number;
+          description?: string
+          amount?: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId?: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId?: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          installment?: string | null;
-          paymentMonth?: number;
-          paymentYear?: number;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          installment?: string | null
+          paymentMonth?: number
+          paymentYear?: number
           /** @enum {string} */
-          period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+          period?: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
           /** @enum {string} */
-          kind?: "platform" | "service" | "annual" | "other";
-          supplyNumber?: string | null;
-          paymentMethodId?: string | null;
+          kind?: 'platform' | 'service' | 'annual' | 'other'
+          supplyNumber?: string | null
+          paymentMethodId?: string | null
           /** @enum {string} */
-          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+          paymentStatus?: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
           /** Format: date */
-          paymentDate?: string | null;
+          paymentDate?: string | null
           /** Format: date */
-          dueDate?: string | null;
+          dueDate?: string | null
         }
       | {
-          description?: string;
-          amount?: number;
+          description?: string
+          amount?: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId?: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId?: string
+          notes?: string | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          installment?: string | null;
-          paymentMonth?: number;
-          paymentYear?: number;
-          paymentMethodId?: string;
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          installment?: string | null
+          paymentMonth?: number
+          paymentYear?: number
+          paymentMethodId?: string
           /** @enum {string} */
-          paymentStatus?: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
+          paymentStatus?: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
           /** Format: date */
-          processDate?: string | null;
+          processDate?: string | null
         }
       | {
-          description?: string;
-          amount?: number;
+          description?: string
+          amount?: number
           /**
            * @default PEN
            * @enum {string}
            */
-          currency: "PEN" | "USD";
-          exchangeRate?: number | null;
-          personId?: string;
-          notes?: string | null;
+          currency: 'PEN' | 'USD'
+          exchangeRate?: number | null
+          personId?: string
+          notes?: string | null
           /** @enum {string} */
-          targetType?: "fixed_cost" | "subscription" | "credit_card";
+          targetType?: 'fixed_cost' | 'subscription' | 'credit_card'
           /** @enum {string} */
-          kind?: "platform" | "service" | "annual" | "other";
+          kind?: 'platform' | 'service' | 'annual' | 'other'
           /** @enum {string} */
-          period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
-          supplyNumber?: string | null;
+          period?: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
+          supplyNumber?: string | null
           sharedWith?: {
             shares: {
-              personId: string;
-              ratio?: number;
-              amount?: number;
-            }[];
-          } | null;
+              personId: string
+              ratio?: number
+              amount?: number
+            }[]
+          } | null
           /** @enum {string} */
-          expenseType?: "essential" | "guilty_pleasure";
-          categoryId?: string | null;
-          paymentMethodId?: string | null;
-          dayOfMonth?: number;
-          isActive?: boolean;
-        };
+          expenseType?: 'essential' | 'guilty_pleasure'
+          categoryId?: string | null
+          paymentMethodId?: string | null
+          dayOfMonth?: number
+          isActive?: boolean
+        }
     MoveSeriesDto: {
       /**
        * @description Table of the row the user picked
        * @enum {string}
        */
-      resource: "fixed-costs" | "subscriptions";
-      id: string;
+      resource: 'fixed-costs' | 'subscriptions'
+      id: string
       /** @enum {string} */
-      to: "fixed-costs" | "subscriptions";
+      to: 'fixed-costs' | 'subscriptions'
       /**
        * @description Required when moving to subscriptions
        * @enum {string}
        */
-      kind?: "platform" | "service" | "annual" | "other";
+      kind?: 'platform' | 'service' | 'annual' | 'other'
       /**
        * @description Subscriptions only; monthly when it comes from a fixed cost
        * @enum {string}
        */
-      period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual";
+      period?: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual'
       /** @description For rows without a category when moving to fixed costs */
-      categoryId?: string;
+      categoryId?: string
       /** @description Only count what would move (the confirmation of the dialog) */
-      dryRun?: boolean;
+      dryRun?: boolean
       /**
        * @description move by default; copy: new unpaid rows in the target (the series and its templates stay as they are)
        * @enum {string}
        */
-      mode?: "move" | "copy";
+      mode?: 'move' | 'copy'
       /** @description Only the rows from this payment month on ("Desde el mes"); the whole series without it */
       from?: {
-        month: number;
-        year: number;
-      };
-    };
+        month: number
+        year: number
+      }
+    }
     MoveSeriesResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        dryRun: boolean;
+        dryRun: boolean
         /** @enum {string} */
-        mode: "move" | "copy";
+        mode: 'move' | 'copy'
         /** @description Rows of the series */
-        count: number;
+        count: number
         /** @description First payment month of the series */
         from: {
-          month: number;
-          year: number;
-        } | null;
+          month: number
+          year: number
+        } | null
         /** @description Last payment month of the series */
         until: {
-          month: number;
-          year: number;
-        } | null;
+          month: number
+          year: number
+        } | null
         /** @description Recurring templates moved with it */
-        templates: number;
+        templates: number
         /** @description Rows that need categoryId to become fixed costs */
-        withoutCategory: number;
+        withoutCategory: number
         /** @description Rows with an /editar copy open: finish or cancel it first */
         blocked: {
-          id: string;
-          month: number;
-          year: number;
-        }[];
-      };
-    };
+          id: string
+          month: number
+          year: number
+        }[]
+      }
+    }
     CardReviewDto: {
-      ids: string[];
+      ids: string[]
       /** @default true */
-      reviewed: boolean;
-    };
+      reviewed: boolean
+    }
     CardReviewResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description Card charges marked (or unmarked) */
-        affected: number;
+        affected: number
         /** @description ISO date set on them; null when unmarked */
-        reviewedAt: string | null;
-      };
-    };
+        reviewedAt: string | null
+      }
+    }
     RecurringFromSeriesDto: {
       /** @enum {string} */
-      resource: "fixed-costs" | "subscriptions";
+      resource: 'fixed-costs' | 'subscriptions'
       /** @description Any row of the series (same description and person); its latest row is copied */
-      id: string;
-    };
+      id: string
+    }
     GenerateRecurringDto: {
-      month?: number;
-      year?: number;
-    };
+      month?: number
+      year?: number
+    }
     RecurringGenerationResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        month: number;
-        year: number;
+        month: number
+        year: number
         created: {
-          recurringId: string;
+          recurringId: string
           /** @description The new row of its table */
-          id: string;
+          id: string
           /** @enum {string} */
-          targetType: "fixed_cost" | "subscription" | "credit_card";
-          description: string;
-          amount: number;
-          currency: string;
+          targetType: 'fixed_cost' | 'subscription' | 'credit_card'
+          description: string
+          amount: number
+          currency: string
           /** Format: date */
-          date: string;
-        }[];
+          date: string
+        }[]
         skipped: {
-          recurringId: string;
-          description: string;
+          recurringId: string
+          description: string
           /** @enum {string} */
-          reason: "already_generated" | "not_due" | "missing_card" | "missing_category";
-        }[];
-      };
-    };
+          reason: 'already_generated' | 'not_due' | 'missing_card' | 'missing_category'
+        }[]
+      }
+    }
     PersonListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
-        aliases: string[];
-        isActive: boolean;
-        isDefault: boolean;
+        updatedAt: string
+        name: string
+        aliases: string[]
+        isActive: boolean
+        isDefault: boolean
         /** @description Masked: only the last 3 characters (D94) */
-        documentNumber: string | null;
-        appearsIn: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
-      }[];
-    };
+        documentNumber: string | null
+        appearsIn: ('fixed_costs' | 'platforms' | 'cards' | 'recurring')[]
+      }[]
+    }
     CreatePersonDto: {
-      name: string;
-      aliases?: string[];
-      isDefault?: boolean;
-      isActive?: boolean;
-      documentNumber?: string | null;
+      name: string
+      aliases?: string[]
+      isDefault?: boolean
+      isActive?: boolean
+      documentNumber?: string | null
       /** @description Pages where the person can be picked; Cobros y deudas lists everyone and Día a día is always the user */
-      appearsIn?: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
-    };
+      appearsIn?: ('fixed_costs' | 'platforms' | 'cards' | 'recurring')[]
+    }
     PersonResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
-        aliases: string[];
-        isActive: boolean;
-        isDefault: boolean;
+        updatedAt: string
+        name: string
+        aliases: string[]
+        isActive: boolean
+        isDefault: boolean
         /** @description Masked: only the last 3 characters (D94) */
-        documentNumber: string | null;
-        appearsIn: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
-      };
-    };
+        documentNumber: string | null
+        appearsIn: ('fixed_costs' | 'platforms' | 'cards' | 'recurring')[]
+      }
+    }
     UpdatePersonDto: {
-      name?: string;
-      aliases?: string[];
-      isDefault?: boolean;
-      isActive?: boolean;
-      documentNumber?: string | null;
+      name?: string
+      aliases?: string[]
+      isDefault?: boolean
+      isActive?: boolean
+      documentNumber?: string | null
       /** @description Pages where the person can be picked; Cobros y deudas lists everyone and Día a día is always the user */
-      appearsIn?: ("fixed_costs" | "platforms" | "cards" | "recurring")[];
-    };
+      appearsIn?: ('fixed_costs' | 'platforms' | 'cards' | 'recurring')[]
+    }
     CardHolderListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        paymentMethodId: string;
-        personId: string;
+        id: string
+        paymentMethodId: string
+        personId: string
         /** @enum {string} */
-        role: "titular" | "additional";
-        last4: string | null;
+        role: 'titular' | 'additional'
+        last4: string | null
         person: {
-          id: string;
-          name: string;
-          aliases: string[];
-        };
-      }[];
-    };
+          id: string
+          name: string
+          aliases: string[]
+        }
+      }[]
+    }
     CardHoldersDto: {
       holders: {
-        personId: string;
+        personId: string
         /** @enum {string} */
-        role: "titular" | "additional";
-        last4?: string | null;
-      }[];
-    };
+        role: 'titular' | 'additional'
+        last4?: string | null
+      }[]
+    }
     StatementPasswordDto: {
       /** @description The password of the statement PDFs of this card; null removes it */
-      password: string | null;
-    };
+      password: string | null
+    }
     PaymentMethodResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
+        updatedAt: string
+        name: string
         /** @enum {string} */
-        type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-        code: string | null;
-        aliases: string[];
-        isActive: boolean;
-        showInBot: boolean;
-        billingCloseDay: number | null;
-        paymentDueDay: number | null;
-        supportsAmortization: boolean;
-        supportsCashback: boolean;
-        bank: string | null;
-        network: string | null;
+        type: 'credit_card' | 'debit_card' | 'wallet' | 'cash' | 'bank_transfer'
+        code: string | null
+        aliases: string[]
+        isActive: boolean
+        showInBot: boolean
+        billingCloseDay: number | null
+        paymentDueDay: number | null
+        supportsAmortization: boolean
+        supportsCashback: boolean
+        bank: string | null
+        network: string | null
         /** @enum {string|null} */
-        currency: "PEN" | "USD" | null;
-        creditLimit: number | null;
-        comment: string | null;
-        color: string | null;
+        currency: 'PEN' | 'USD' | null
+        creditLimit: number | null
+        comment: string | null
+        color: string | null
         /** @description A statement PDF password is saved for this card (I12); never returned */
-        hasStatementPassword: boolean;
-      };
-    };
+        hasStatementPassword: boolean
+      }
+    }
     PaymentMethodListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
+        updatedAt: string
+        name: string
         /** @enum {string} */
-        type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-        code: string | null;
-        aliases: string[];
-        isActive: boolean;
-        showInBot: boolean;
-        billingCloseDay: number | null;
-        paymentDueDay: number | null;
-        supportsAmortization: boolean;
-        supportsCashback: boolean;
-        bank: string | null;
-        network: string | null;
+        type: 'credit_card' | 'debit_card' | 'wallet' | 'cash' | 'bank_transfer'
+        code: string | null
+        aliases: string[]
+        isActive: boolean
+        showInBot: boolean
+        billingCloseDay: number | null
+        paymentDueDay: number | null
+        supportsAmortization: boolean
+        supportsCashback: boolean
+        bank: string | null
+        network: string | null
         /** @enum {string|null} */
-        currency: "PEN" | "USD" | null;
-        creditLimit: number | null;
-        comment: string | null;
-        color: string | null;
+        currency: 'PEN' | 'USD' | null
+        creditLimit: number | null
+        comment: string | null
+        color: string | null
         /** @description A statement PDF password is saved for this card (I12); never returned */
-        hasStatementPassword: boolean;
-      }[];
-    };
+        hasStatementPassword: boolean
+      }[]
+    }
     CreatePaymentMethodDto: {
-      name: string;
+      name: string
       /** @enum {string} */
-      type: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-      code?: string | null;
-      aliases?: string[];
-      isActive?: boolean;
-      showInBot?: boolean;
-      billingCloseDay?: number | null;
-      paymentDueDay?: number | null;
-      supportsAmortization?: boolean;
-      supportsCashback?: boolean;
-      bank?: string | null;
-      network?: string | null;
+      type: 'credit_card' | 'debit_card' | 'wallet' | 'cash' | 'bank_transfer'
+      code?: string | null
+      aliases?: string[]
+      isActive?: boolean
+      showInBot?: boolean
+      billingCloseDay?: number | null
+      paymentDueDay?: number | null
+      supportsAmortization?: boolean
+      supportsCashback?: boolean
+      bank?: string | null
+      network?: string | null
       /** @enum {string|null} */
-      currency?: "PEN" | "USD" | null;
-      creditLimit?: number | null;
-      comment?: string | null;
-      color?: string | null;
-    };
+      currency?: 'PEN' | 'USD' | null
+      creditLimit?: number | null
+      comment?: string | null
+      color?: string | null
+    }
     UpdatePaymentMethodDto: {
-      name?: string;
+      name?: string
       /** @enum {string} */
-      type?: "credit_card" | "debit_card" | "wallet" | "cash" | "bank_transfer";
-      code?: string | null;
-      aliases?: string[];
-      isActive?: boolean;
-      showInBot?: boolean;
-      billingCloseDay?: number | null;
-      paymentDueDay?: number | null;
-      supportsAmortization?: boolean;
-      supportsCashback?: boolean;
-      bank?: string | null;
-      network?: string | null;
+      type?: 'credit_card' | 'debit_card' | 'wallet' | 'cash' | 'bank_transfer'
+      code?: string | null
+      aliases?: string[]
+      isActive?: boolean
+      showInBot?: boolean
+      billingCloseDay?: number | null
+      paymentDueDay?: number | null
+      supportsAmortization?: boolean
+      supportsCashback?: boolean
+      bank?: string | null
+      network?: string | null
       /** @enum {string|null} */
-      currency?: "PEN" | "USD" | null;
-      creditLimit?: number | null;
-      comment?: string | null;
-      color?: string | null;
-    };
+      currency?: 'PEN' | 'USD' | null
+      creditLimit?: number | null
+      comment?: string | null
+      color?: string | null
+    }
     AccountListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
+        updatedAt: string
+        name: string
         /** @enum {string} */
-        type: "bank_account" | "wallet" | "cash";
-        bank: string | null;
+        type: 'bank_account' | 'wallet' | 'cash'
+        bank: string | null
         /** @enum {string} */
-        currency: "PEN" | "USD";
-        color: string | null;
-        isActive: boolean;
-      }[];
-    };
+        currency: 'PEN' | 'USD'
+        color: string | null
+        isActive: boolean
+      }[]
+    }
     CreateAccountDto: {
-      name: string;
+      name: string
       /** @enum {string} */
-      type: "bank_account" | "wallet" | "cash";
-      bank?: string | null;
+      type: 'bank_account' | 'wallet' | 'cash'
+      bank?: string | null
       /** @enum {string} */
-      currency?: "PEN" | "USD";
-      color?: string | null;
-      isActive?: boolean;
-    };
+      currency?: 'PEN' | 'USD'
+      color?: string | null
+      isActive?: boolean
+    }
     AccountResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
+        updatedAt: string
+        name: string
         /** @enum {string} */
-        type: "bank_account" | "wallet" | "cash";
-        bank: string | null;
+        type: 'bank_account' | 'wallet' | 'cash'
+        bank: string | null
         /** @enum {string} */
-        currency: "PEN" | "USD";
-        color: string | null;
-        isActive: boolean;
-      };
-    };
+        currency: 'PEN' | 'USD'
+        color: string | null
+        isActive: boolean
+      }
+    }
     UpdateAccountDto: {
-      name?: string;
+      name?: string
       /** @enum {string} */
-      type?: "bank_account" | "wallet" | "cash";
-      bank?: string | null;
+      type?: 'bank_account' | 'wallet' | 'cash'
+      bank?: string | null
       /** @enum {string} */
-      currency?: "PEN" | "USD";
-      color?: string | null;
-      isActive?: boolean;
-    };
+      currency?: 'PEN' | 'USD'
+      color?: string | null
+      isActive?: boolean
+    }
     CategoryListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
-        color: string;
-        icon: string | null;
-        isDefault: boolean;
-        budgetGroupId: string | null;
-      }[];
-    };
+        updatedAt: string
+        name: string
+        color: string
+        icon: string | null
+        isDefault: boolean
+        budgetGroupId: string | null
+      }[]
+    }
     CreateCategoryDto: {
-      name: string;
-      color?: string;
-      icon?: string | null;
-      isDefault?: boolean;
-      budgetGroupId?: string | null;
-    };
+      name: string
+      color?: string
+      icon?: string | null
+      isDefault?: boolean
+      budgetGroupId?: string | null
+    }
     CategoryResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
-        color: string;
-        icon: string | null;
-        isDefault: boolean;
-        budgetGroupId: string | null;
-      };
-    };
+        updatedAt: string
+        name: string
+        color: string
+        icon: string | null
+        isDefault: boolean
+        budgetGroupId: string | null
+      }
+    }
     UpdateCategoryDto: {
-      name?: string;
-      color?: string;
-      icon?: string | null;
-      isDefault?: boolean;
-      budgetGroupId?: string | null;
-    };
+      name?: string
+      color?: string
+      icon?: string | null
+      isDefault?: boolean
+      budgetGroupId?: string | null
+    }
     BudgetGroupListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
-        emoji: string;
-        percentage: number;
-        order: number;
-      }[];
-    };
+        updatedAt: string
+        name: string
+        emoji: string
+        percentage: number
+        order: number
+      }[]
+    }
     CreateBudgetGroupDto: {
-      name: string;
-      emoji?: string;
-      percentage?: number;
-      order?: number;
-    };
+      name: string
+      emoji?: string
+      percentage?: number
+      order?: number
+    }
     BudgetGroupResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
+        id: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        name: string;
-        emoji: string;
-        percentage: number;
-        order: number;
-      };
-    };
+        updatedAt: string
+        name: string
+        emoji: string
+        percentage: number
+        order: number
+      }
+    }
     UpdateBudgetGroupDto: {
-      name?: string;
-      emoji?: string;
-      percentage?: number;
-      order?: number;
-    };
+      name?: string
+      emoji?: string
+      percentage?: number
+      order?: number
+    }
     DraftListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         items: {
-          id: string;
-          channel: string;
-          chatId: string;
-          messageId: string;
-          itemIndex: number;
-          inputType: string;
-          documentType: string | null;
-          rawText: string | null;
-          mediaFileId: string | null;
-          mediaUniqueId: string | null;
-          fileId: string | null;
-          status: string;
-          pendingField: string | null;
-          destination: string | null;
-          description: string | null;
-          amount: number | null;
-          currency: string | null;
-          exchangeRate: number | null;
+          id: string
+          channel: string
+          chatId: string
+          messageId: string
+          itemIndex: number
+          inputType: string
+          documentType: string | null
+          rawText: string | null
+          mediaFileId: string | null
+          mediaUniqueId: string | null
+          fileId: string | null
+          status: string
+          pendingField: string | null
+          destination: string | null
+          description: string | null
+          amount: number | null
+          currency: string | null
+          exchangeRate: number | null
           /** Format: date-time */
-          spentAt: string | null;
-          expenseType: string | null;
-          installment: string | null;
-          period: string | null;
+          spentAt: string | null
+          expenseType: string | null
+          installment: string | null
+          period: string | null
           /** @description Subscriptions: platform when empty (D107) */
-          kind: string | null;
-          supplyNumber: string | null;
-          merchant: string | null;
-          operationNumber: string | null;
-          notes: string | null;
-          personId: string | null;
-          paymentMethodId: string | null;
-          categoryId: string | null;
+          kind: string | null
+          supplyNumber: string | null
+          merchant: string | null
+          operationNumber: string | null
+          notes: string | null
+          personId: string | null
+          paymentMethodId: string | null
+          categoryId: string | null
           /** @description Shared expense (D73): the user paid it all; each person owes a ratio of the total or an amount */
           sharedWith: {
             shares: {
-              personId: string;
-              ratio?: number;
-              amount?: number;
-            }[];
-          } | null;
+              personId: string
+              ratio?: number
+              amount?: number
+            }[]
+          } | null
           /** @description /editar (D76): the saved draft this copy replaces */
-          replacesDraftId: string | null;
+          replacesDraftId: string | null
           confidence: {
-            [key: string]: number;
-          };
-          missingFields: string[];
+            [key: string]: number
+          }
+          missingFields: string[]
           /** Format: date-time */
-          confirmedAt: string | null;
+          confirmedAt: string | null
           /** Format: date-time */
-          createdAt: string;
+          createdAt: string
           /** Format: date-time */
-          updatedAt: string;
-        }[];
-        total: number;
-      };
-    };
+          updatedAt: string
+        }[]
+        total: number
+      }
+    }
     DraftDetailResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        channel: string;
-        chatId: string;
-        messageId: string;
-        itemIndex: number;
-        inputType: string;
-        documentType: string | null;
-        rawText: string | null;
-        mediaFileId: string | null;
-        mediaUniqueId: string | null;
-        fileId: string | null;
-        status: string;
-        pendingField: string | null;
-        destination: string | null;
-        description: string | null;
-        amount: number | null;
-        currency: string | null;
-        exchangeRate: number | null;
+        id: string
+        channel: string
+        chatId: string
+        messageId: string
+        itemIndex: number
+        inputType: string
+        documentType: string | null
+        rawText: string | null
+        mediaFileId: string | null
+        mediaUniqueId: string | null
+        fileId: string | null
+        status: string
+        pendingField: string | null
+        destination: string | null
+        description: string | null
+        amount: number | null
+        currency: string | null
+        exchangeRate: number | null
         /** Format: date-time */
-        spentAt: string | null;
-        expenseType: string | null;
-        installment: string | null;
-        period: string | null;
+        spentAt: string | null
+        expenseType: string | null
+        installment: string | null
+        period: string | null
         /** @description Subscriptions: platform when empty (D107) */
-        kind: string | null;
-        supplyNumber: string | null;
-        merchant: string | null;
-        operationNumber: string | null;
-        notes: string | null;
-        personId: string | null;
-        paymentMethodId: string | null;
-        categoryId: string | null;
+        kind: string | null
+        supplyNumber: string | null
+        merchant: string | null
+        operationNumber: string | null
+        notes: string | null
+        personId: string | null
+        paymentMethodId: string | null
+        categoryId: string | null
         /** @description Shared expense (D73): the user paid it all; each person owes a ratio of the total or an amount */
         sharedWith: {
           shares: {
-            personId: string;
-            ratio?: number;
-            amount?: number;
-          }[];
-        } | null;
+            personId: string
+            ratio?: number
+            amount?: number
+          }[]
+        } | null
         /** @description /editar (D76): the saved draft this copy replaces */
-        replacesDraftId: string | null;
+        replacesDraftId: string | null
         confidence: {
-          [key: string]: number;
-        };
-        missingFields: string[];
+          [key: string]: number
+        }
+        missingFields: string[]
         /** Format: date-time */
-        confirmedAt: string | null;
+        confirmedAt: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-        mediaUrl: string | null;
-      };
-    };
+        updatedAt: string
+        mediaUrl: string | null
+      }
+    }
     DraftFieldsDto: {
       /** @enum {string|null} */
-      destination?: "daily" | "fixed_cost" | "subscription" | "credit_card" | "receivable" | "payable" | "discard" | null;
-      description?: string | null;
-      amount?: number | null;
+      destination?: 'daily' | 'fixed_cost' | 'subscription' | 'credit_card' | 'receivable' | 'payable' | 'discard' | null
+      description?: string | null
+      amount?: number | null
       /** @enum {string|null} */
-      currency?: "PEN" | "USD" | null;
+      currency?: 'PEN' | 'USD' | null
       /** Format: date */
-      spentAt?: string | null;
+      spentAt?: string | null
       /** @enum {string|null} */
-      expenseType?: "essential" | "guilty_pleasure" | null;
-      installment?: string | null;
+      expenseType?: 'essential' | 'guilty_pleasure' | null
+      installment?: string | null
       /** @enum {string|null} */
-      period?: "biweekly" | "monthly" | "quarterly" | "semiannual" | "annual" | null;
+      period?: 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'annual' | null
       /** @enum {string|null} */
-      kind?: "platform" | "service" | "annual" | "other" | null;
-      supplyNumber?: string | null;
-      personId?: string | null;
-      paymentMethodId?: string | null;
-      categoryId?: string | null;
-      merchant?: string | null;
-      operationNumber?: string | null;
-      notes?: string | null;
+      kind?: 'platform' | 'service' | 'annual' | 'other' | null
+      supplyNumber?: string | null
+      personId?: string | null
+      paymentMethodId?: string | null
+      categoryId?: string | null
+      merchant?: string | null
+      operationNumber?: string | null
+      notes?: string | null
       sharedWith?: {
         shares: {
-          personId: string;
-          ratio?: number;
-          amount?: number;
-        }[];
-      } | null;
-    };
+          personId: string
+          ratio?: number
+          amount?: number
+        }[]
+      } | null
+    }
     DraftResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        channel: string;
-        chatId: string;
-        messageId: string;
-        itemIndex: number;
-        inputType: string;
-        documentType: string | null;
-        rawText: string | null;
-        mediaFileId: string | null;
-        mediaUniqueId: string | null;
-        fileId: string | null;
-        status: string;
-        pendingField: string | null;
-        destination: string | null;
-        description: string | null;
-        amount: number | null;
-        currency: string | null;
-        exchangeRate: number | null;
+        id: string
+        channel: string
+        chatId: string
+        messageId: string
+        itemIndex: number
+        inputType: string
+        documentType: string | null
+        rawText: string | null
+        mediaFileId: string | null
+        mediaUniqueId: string | null
+        fileId: string | null
+        status: string
+        pendingField: string | null
+        destination: string | null
+        description: string | null
+        amount: number | null
+        currency: string | null
+        exchangeRate: number | null
         /** Format: date-time */
-        spentAt: string | null;
-        expenseType: string | null;
-        installment: string | null;
-        period: string | null;
+        spentAt: string | null
+        expenseType: string | null
+        installment: string | null
+        period: string | null
         /** @description Subscriptions: platform when empty (D107) */
-        kind: string | null;
-        supplyNumber: string | null;
-        merchant: string | null;
-        operationNumber: string | null;
-        notes: string | null;
-        personId: string | null;
-        paymentMethodId: string | null;
-        categoryId: string | null;
+        kind: string | null
+        supplyNumber: string | null
+        merchant: string | null
+        operationNumber: string | null
+        notes: string | null
+        personId: string | null
+        paymentMethodId: string | null
+        categoryId: string | null
         /** @description Shared expense (D73): the user paid it all; each person owes a ratio of the total or an amount */
         sharedWith: {
           shares: {
-            personId: string;
-            ratio?: number;
-            amount?: number;
-          }[];
-        } | null;
+            personId: string
+            ratio?: number
+            amount?: number
+          }[]
+        } | null
         /** @description /editar (D76): the saved draft this copy replaces */
-        replacesDraftId: string | null;
+        replacesDraftId: string | null
         confidence: {
-          [key: string]: number;
-        };
-        missingFields: string[];
+          [key: string]: number
+        }
+        missingFields: string[]
         /** Format: date-time */
-        confirmedAt: string | null;
+        confirmedAt: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      };
-    };
+        updatedAt: string
+      }
+    }
     DraftSavedResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        draftId: string;
-        destination: string | null;
-        recordId: string;
-      };
-    };
+        draftId: string
+        destination: string | null
+        recordId: string
+      }
+    }
     ConversationResultResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         replies: {
           /** @description HTML: <b>, <i> and escaped user text */
-          text: string;
+          text: string
           buttons?: {
-            label: string;
-            data: string;
-          }[][];
+            label: string
+            data: string
+          }[][]
           /** @description Replace the message that had the pressed button */
-          edit?: boolean;
-        }[];
+          edit?: boolean
+        }[]
         /** @description Short toast for the pressed button */
-        notice?: string;
-      };
-    };
+        notice?: string
+      }
+    }
     MessageActionDto: {
-      data: string;
-    };
+      data: string
+    }
     SummaryResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        month: number;
-        year: number;
+        month: number
+        year: number
         totals: {
-          destination: string;
-          currency: string;
-          personId: string;
-          total: number;
-          count: number;
-        }[];
+          destination: string
+          currency: string
+          personId: string
+          total: number
+          count: number
+        }[]
         /** @description PEN spent: day to day + fixed costs + cards (subscriptions are card charges, D46) */
-        spentPen: number;
+        spentPen: number
         budget: {
-          salary: number;
-          limitPercent: number;
-          limit: number;
+          salary: number
+          limitPercent: number
+          limit: number
           /** @description No salary for this month: the latest one, saved with PUT /v1/summary/budget */
-          isProposal: boolean;
-        } | null;
+          isProposal: boolean
+        } | null
         incomes: {
-          id: string;
-          description: string;
-          amount: number;
-          currency: string;
+          id: string
+          description: string
+          amount: number
+          currency: string
           /** Format: date-time */
-          receivedAt: string;
-          month: number;
-          year: number;
-          notes: string | null;
+          receivedAt: string
+          month: number
+          year: number
+          notes: string | null
           /** Format: date-time */
-          createdAt: string;
+          createdAt: string
           /** Format: date-time */
-          updatedAt: string;
-        }[];
+          updatedAt: string
+        }[]
         /** @description PEN extra incomes of the month */
-        extraIncome: number;
+        extraIncome: number
         /** @description Salary + extra incomes − spent (D65) */
-        surplus: number | null;
+        surplus: number | null
         byCategory: {
           /** @description null: expenses without category */
-          categoryId: string | null;
-          name: string;
-          color: string;
-          icon: string | null;
-          budgetGroupId: string | null;
-          spent: number;
-          limit: number | null;
+          categoryId: string | null
+          name: string
+          color: string
+          icon: string | null
+          budgetGroupId: string | null
+          spent: number
+          limit: number | null
           /** @description The category budget row of the limit (PUT or DELETE it) */
-          budgetId: string | null;
+          budgetId: string | null
           /** @description The limit is only for this month (otherwise for every month) */
-          limitMonthOnly: boolean;
-          alertThreshold: number;
-          percent: number | null;
+          limitMonthOnly: boolean
+          alertThreshold: number
+          percent: number | null
           /**
            * @description null without limit
            * @enum {string|null}
            */
-          status: "ok" | "warning" | "over" | null;
-        }[];
+          status: 'ok' | 'warning' | 'over' | null
+        }[]
         budgetGroups: {
-          id: string;
-          name: string;
-          emoji: string;
-          percentage: number;
-          order: number;
+          id: string
+          name: string
+          emoji: string
+          percentage: number
+          order: number
           /** @description Salary × percentage */
-          amount: number | null;
-          spent: number;
-          percent: number | null;
+          amount: number | null
+          spent: number
+          percent: number | null
           /** Format: date-time */
-          createdAt: string;
+          createdAt: string
           /** Format: date-time */
-          updatedAt: string;
-        }[];
-      };
-    };
+          updatedAt: string
+        }[]
+      }
+    }
     SummaryHistoryResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        month: number;
-        year: number;
-        salary: number | null;
-        extraIncome: number;
-        spentPen: number;
-        surplus: number | null;
-      }[];
-    };
+        month: number
+        year: number
+        salary: number | null
+        extraIncome: number
+        spentPen: number
+        surplus: number | null
+      }[]
+    }
     MonthlyBudgetDto: {
-      month: number;
-      year: number;
-      salary: number;
-      limitPercent?: number;
-    };
+      month: number
+      year: number
+      salary: number
+      limitPercent?: number
+    }
     MonthlyBudgetResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        month: number;
-        year: number;
-        salary: number;
-        limitPercent: number;
+        id: string
+        month: number
+        year: number
+        salary: number
+        limitPercent: number
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      };
-    };
+        updatedAt: string
+      }
+    }
     PersonSummaryListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        personId: string;
-        month: number;
-        year: number;
+        id: string
+        personId: string
+        month: number
+        year: number
         /** @enum {string} */
-        status: "draft" | "in_progress" | "paid";
+        status: 'draft' | 'in_progress' | 'paid'
         /** Format: date-time */
-        cutoffDate: string | null;
+        cutoffDate: string | null
         /** Format: date-time */
-        collectBy: string | null;
-        note: string | null;
+        collectBy: string | null
+        note: string | null
         adjustments: {
-          description: string;
-          amount: number;
-        }[];
+          description: string
+          amount: number
+        }[]
         /** @description Sum of the adjustments (positive: they owe more) */
-        adjustmentTotal: number;
+        adjustmentTotal: number
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      }[];
-    };
+        updatedAt: string
+      }[]
+    }
     BulkPersonSummaryStatusDto: {
-      month: number;
-      year: number;
-      personIds: string[];
+      month: number
+      year: number
+      personIds: string[]
       /** @enum {string} */
-      status: "draft" | "in_progress" | "paid";
-    };
+      status: 'draft' | 'in_progress' | 'paid'
+    }
     SavePersonSummaryDto: {
-      month: number;
-      year: number;
+      month: number
+      year: number
       /** @enum {string} */
-      status?: "draft" | "in_progress" | "paid";
+      status?: 'draft' | 'in_progress' | 'paid'
       /**
        * Format: date
        * @description Fecha de corte (YYYY-MM-DD); null clears it
        */
-      cutoffDate?: string | null;
+      cutoffDate?: string | null
       /**
        * Format: date
        * @description Fecha límite de cobro (YYYY-MM-DD); null clears it
        */
-      collectBy?: string | null;
-      note?: string | null;
+      collectBy?: string | null
+      note?: string | null
       /** @description Replaces the manual adjustments of that month */
       adjustments?: {
-        description: string;
+        description: string
         /** @description Positive: they owe more */
-        amount: number;
-      }[];
-    };
+        amount: number
+      }[]
+    }
     PersonSummaryResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        personId: string;
-        month: number;
-        year: number;
+        id: string
+        personId: string
+        month: number
+        year: number
         /** @enum {string} */
-        status: "draft" | "in_progress" | "paid";
+        status: 'draft' | 'in_progress' | 'paid'
         /** Format: date-time */
-        cutoffDate: string | null;
+        cutoffDate: string | null
         /** Format: date-time */
-        collectBy: string | null;
-        note: string | null;
+        collectBy: string | null
+        note: string | null
         adjustments: {
-          description: string;
-          amount: number;
-        }[];
+          description: string
+          amount: number
+        }[]
         /** @description Sum of the adjustments (positive: they owe more) */
-        adjustmentTotal: number;
+        adjustmentTotal: number
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
-      };
-    };
+        updatedAt: string
+      }
+    }
     StatementResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        currencyReviewRequired: boolean;
+        currencyReviewRequired: boolean
         balances: {
           /** @enum {string} */
-          currency: "PEN" | "USD";
-          totalDue: number | null;
-          minimumDue: number | null;
-          previousBalance: number | null;
-          previousPayments: number | null;
-          monthlyPayment: number | null;
-          koganeTotal: number;
-          difference: number | null;
+          currency: 'PEN' | 'USD'
+          totalDue: number | null
+          minimumDue: number | null
+          previousBalance: number | null
+          previousPayments: number | null
+          monthlyPayment: number | null
+          koganeTotal: number
+          difference: number | null
           /** @description Purchases without an installment plan, no interest/fees */
-          directConsumption: number;
+          directConsumption: number
           /** @description Purchases with an installment plan ("2/6"), no interest/fees */
-          installmentConsumption: number;
+          installmentConsumption: number
           /** @description Interest, insurance, commissions, ITF… as itemized rows */
-          itemizedCharges: number;
-        }[];
-        id: string;
-        paymentMethodId: string;
-        personId: string | null;
-        cardName: string;
-        paymentMonth: number;
-        paymentYear: number;
+          itemizedCharges: number
+        }[]
+        id: string
+        paymentMethodId: string
+        personId: string | null
+        cardName: string
+        paymentMonth: number
+        paymentYear: number
         /** Format: date-time */
-        periodStart: string | null;
+        periodStart: string | null
         /** Format: date-time */
-        periodEnd: string | null;
+        periodEnd: string | null
         /** Format: date-time */
-        dueDate: string | null;
-        totalDue: number | null;
-        minimumDue: number | null;
-        previousBalance: number | null;
-        previousPayments: number | null;
-        monthlyPayment: number | null;
-        currency: string;
+        dueDate: string | null
+        totalDue: number | null
+        minimumDue: number | null
+        previousBalance: number | null
+        previousPayments: number | null
+        monthlyPayment: number | null
+        currency: string
         /** @enum {string} */
-        source: "template" | "ai";
-        fileId: string | null;
+        source: 'template' | 'ai'
+        fileId: string | null
         /** @enum {string} */
-        status: "review" | "done";
+        status: 'review' | 'done'
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         rows: {
-          id: string;
-          statementId: string;
+          id: string
+          statementId: string
           /** Format: date-time */
-          date: string | null;
+          date: string | null
           /** @description As the bank wrote it (never edited) */
-          description: string;
+          description: string
           /** @description Your description: the name of the expense it creates */
-          label: string | null;
-          amount: number;
-          currency: string;
-          installment: string | null;
-          locked: boolean;
+          label: string | null
+          amount: number
+          currency: string
+          installment: string | null
+          locked: boolean
           /** @enum {string} */
-          result: "matched" | "new" | "created" | "ignored";
-          expenseId: string | null;
+          result: 'matched' | 'new' | 'created' | 'ignored'
+          expenseId: string | null
           /** @description Who it belongs to: the person of its expense, the one chosen for the row, or the statement's */
-          personId: string | null;
+          personId: string | null
           /** @description The cobro created with it when the purchase is another person's (D116) */
-          debtId: string | null;
+          debtId: string | null
           /** Format: date-time */
-          createdAt: string;
-        }[];
+          createdAt: string
+        }[]
         /** @description Card expenses of the month that are not in the statement */
         missing: {
-          id: string;
-          description: string;
-          amount: number;
-          currency: string;
-          processDate: string | null;
-          installment: string | null;
-          personId: string;
-        }[];
+          id: string
+          description: string
+          amount: number
+          currency: string
+          processDate: string | null
+          installment: string | null
+          personId: string
+        }[]
         /** @description Card expenses registered for that payment month */
-        koganeTotal: number;
+        koganeTotal: number
         /** @description totalDue − koganeTotal */
-        difference: number | null;
-      };
-    };
+        difference: number | null
+      }
+    }
     StatementListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        currencyReviewRequired: boolean;
+        currencyReviewRequired: boolean
         balances: {
           /** @enum {string} */
-          currency: "PEN" | "USD";
-          totalDue: number | null;
-          minimumDue: number | null;
-          previousBalance: number | null;
-          previousPayments: number | null;
-          monthlyPayment: number | null;
-        }[];
-        id: string;
-        paymentMethodId: string;
-        personId: string | null;
-        cardName: string;
-        paymentMonth: number;
-        paymentYear: number;
+          currency: 'PEN' | 'USD'
+          totalDue: number | null
+          minimumDue: number | null
+          previousBalance: number | null
+          previousPayments: number | null
+          monthlyPayment: number | null
+        }[]
+        id: string
+        paymentMethodId: string
+        personId: string | null
+        cardName: string
+        paymentMonth: number
+        paymentYear: number
         /** Format: date-time */
-        periodStart: string | null;
+        periodStart: string | null
         /** Format: date-time */
-        periodEnd: string | null;
+        periodEnd: string | null
         /** Format: date-time */
-        dueDate: string | null;
-        totalDue: number | null;
-        minimumDue: number | null;
-        previousBalance: number | null;
-        previousPayments: number | null;
-        monthlyPayment: number | null;
-        currency: string;
+        dueDate: string | null
+        totalDue: number | null
+        minimumDue: number | null
+        previousBalance: number | null
+        previousPayments: number | null
+        monthlyPayment: number | null
+        currency: string
         /** @enum {string} */
-        source: "template" | "ai";
-        fileId: string | null;
+        source: 'template' | 'ai'
+        fileId: string | null
         /** @enum {string} */
-        status: "review" | "done";
+        status: 'review' | 'done'
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         counts: {
-          matched: number;
-          new: number;
-          created: number;
-          ignored: number;
-        };
-      }[];
-    };
+          matched: number
+          new: number
+          created: number
+          ignored: number
+        }
+      }[]
+    }
     StatementFileResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description Signed link to the PDF (10 minutes); null when the file was not kept */
-        url: string | null;
-      };
-    };
+        url: string | null
+      }
+    }
     UpdateStatementDto: {
-      personId?: string;
-      paymentMethodId?: string;
+      personId?: string
+      paymentMethodId?: string
       /** @enum {string} */
-      currency?: "PEN" | "USD";
-      minimumDue?: number | null;
+      currency?: 'PEN' | 'USD'
+      minimumDue?: number | null
       minimumAllocations?: {
-        [key: string]: number;
-      } | null;
+        [key: string]: number
+      } | null
       balances?: {
         /** @enum {string} */
-        currency: "PEN" | "USD";
-        totalDue?: number | null;
-        minimumDue?: number | null;
-        previousBalance?: number | null;
-        previousPayments?: number | null;
-        monthlyPayment?: number | null;
-      }[];
-    };
+        currency: 'PEN' | 'USD'
+        totalDue?: number | null
+        minimumDue?: number | null
+        previousBalance?: number | null
+        previousPayments?: number | null
+        monthlyPayment?: number | null
+      }[]
+    }
     AssignRowsDto: {
-      rowIds: string[];
-      personId: string | null;
-    };
+      rowIds: string[]
+      personId: string | null
+    }
     CreateNewRowsDto: {
       /** @description Only these rows (also matched or ignored ones: created anyway); without it every new row */
-      rowIds?: string[];
-    };
+      rowIds?: string[]
+    }
     UpdateRowDto: {
       /** @enum {string} */
-      result?: "ignored" | "new";
+      result?: 'ignored' | 'new'
       /** @description Your description; empty goes back to the bank text */
-      label?: string | null;
+      label?: string | null
       /** @description Who made it; null goes back to the statement's person */
-      personId?: string | null;
-    };
+      personId?: string | null
+    }
     CommitmentListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        name: string;
+        id: string
+        name: string
         /** @enum {string} */
-        kind: "loan" | "investment";
+        kind: 'loan' | 'investment'
         /** @enum {string} */
-        subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
-        entity: string | null;
-        currency: string;
-        totalAmount: number | null;
-        installmentCount: number | null;
-        installmentAmount: number | null;
-        dueDay: number | null;
-        startMonth: number | null;
-        startYear: number | null;
-        cancellationAmount: number | null;
+        subtype: 'loan' | 'land' | 'property' | 'vehicle' | 'stocks' | 'crypto' | 'other'
+        entity: string | null
+        currency: string
+        totalAmount: number | null
+        installmentCount: number | null
+        installmentAmount: number | null
+        dueDay: number | null
+        startMonth: number | null
+        startYear: number | null
+        cancellationAmount: number | null
         /** Format: date-time */
-        cancellationDate: string | null;
+        cancellationDate: string | null
         /**
          * @description active turns paid on its own when every installment is paid
          * @enum {string}
          */
-        status: "active" | "paid" | "cancelled";
-        personId: string;
-        categoryId: string | null;
-        notes: string | null;
+        status: 'active' | 'paid' | 'cancelled'
+        personId: string
+        categoryId: string | null
+        notes: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         /** @description Null without an installments plan */
         progress: {
-          installmentCount: number;
+          installmentCount: number
           /** @description Installments that exist as fixed costs */
-          createdCount: number;
-          paidCount: number;
-          remainingCount: number;
+          createdCount: number
+          paidCount: number
+          remainingCount: number
           /** @description The one of this month; 0 before the first */
-          currentInstallment: number;
-          paidAmount: number;
-          pendingAmount: number;
-          lateCount: number;
-          nextDueDate: string | null;
-        } | null;
-        contributionCount: number;
+          currentInstallment: number
+          paidAmount: number
+          pendingAmount: number
+          lateCount: number
+          nextDueDate: string | null
+        } | null
+        contributionCount: number
         /** @description What was put in, from its contributions */
-        contributedAmount: number;
-        attachmentCount: number;
-      }[];
-    };
+        contributedAmount: number
+        attachmentCount: number
+      }[]
+    }
     CommitmentDetailResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        name: string;
+        id: string
+        name: string
         /** @enum {string} */
-        kind: "loan" | "investment";
+        kind: 'loan' | 'investment'
         /** @enum {string} */
-        subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
-        entity: string | null;
-        currency: string;
-        totalAmount: number | null;
-        installmentCount: number | null;
-        installmentAmount: number | null;
-        dueDay: number | null;
-        startMonth: number | null;
-        startYear: number | null;
-        cancellationAmount: number | null;
+        subtype: 'loan' | 'land' | 'property' | 'vehicle' | 'stocks' | 'crypto' | 'other'
+        entity: string | null
+        currency: string
+        totalAmount: number | null
+        installmentCount: number | null
+        installmentAmount: number | null
+        dueDay: number | null
+        startMonth: number | null
+        startYear: number | null
+        cancellationAmount: number | null
         /** Format: date-time */
-        cancellationDate: string | null;
+        cancellationDate: string | null
         /**
          * @description active turns paid on its own when every installment is paid
          * @enum {string}
          */
-        status: "active" | "paid" | "cancelled";
-        personId: string;
-        categoryId: string | null;
-        notes: string | null;
+        status: 'active' | 'paid' | 'cancelled'
+        personId: string
+        categoryId: string | null
+        notes: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** Format: date-time */
-        updatedAt: string;
+        updatedAt: string
         /** @description Null without an installments plan */
         progress: {
-          installmentCount: number;
+          installmentCount: number
           /** @description Installments that exist as fixed costs */
-          createdCount: number;
-          paidCount: number;
-          remainingCount: number;
+          createdCount: number
+          paidCount: number
+          remainingCount: number
           /** @description The one of this month; 0 before the first */
-          currentInstallment: number;
-          paidAmount: number;
-          pendingAmount: number;
-          lateCount: number;
-          nextDueDate: string | null;
-        } | null;
-        contributionCount: number;
+          currentInstallment: number
+          paidAmount: number
+          pendingAmount: number
+          lateCount: number
+          nextDueDate: string | null
+        } | null
+        contributionCount: number
         /** @description What was put in, from its contributions */
-        contributedAmount: number;
-        attachmentCount: number;
+        contributedAmount: number
+        attachmentCount: number
         installments: {
-          id: string;
-          installment: string | null;
-          paymentMonth: number;
-          paymentYear: number;
+          id: string
+          installment: string | null
+          paymentMonth: number
+          paymentYear: number
           /** Format: date-time */
-          dueDate: string | null;
+          dueDate: string | null
           /** Format: date-time */
-          paymentDate: string | null;
-          amount: number;
+          paymentDate: string | null
+          amount: number
           /** @enum {string} */
-          paymentStatus: "not_started" | "pending" | "partially_paid" | "deposited" | "waived" | "paid" | "amortized" | "cashback" | "skipped";
-          attachmentCount: number;
-        }[];
+          paymentStatus: 'not_started' | 'pending' | 'partially_paid' | 'deposited' | 'waived' | 'paid' | 'amortized' | 'cashback' | 'skipped'
+          attachmentCount: number
+        }[]
         contributions: {
-          id: string;
-          commitmentId: string;
+          id: string
+          commitmentId: string
           /** Format: date-time */
-          date: string;
-          amount: number;
-          currency: string;
-          quantity: number | null;
-          unit: string | null;
-          notes: string | null;
-          attachmentCount: number;
-        }[];
-      };
-    };
+          date: string
+          amount: number
+          currency: string
+          quantity: number | null
+          unit: string | null
+          notes: string | null
+          attachmentCount: number
+        }[]
+      }
+    }
     CreateCommitmentDto: {
-      name: string;
+      name: string
       /** @enum {string} */
-      subtype: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
-      entity?: string | null;
+      subtype: 'loan' | 'land' | 'property' | 'vehicle' | 'stocks' | 'crypto' | 'other'
+      entity?: string | null
       /** @enum {string} */
-      currency?: "PEN" | "USD";
+      currency?: 'PEN' | 'USD'
       /** @description What the asset costs; installmentCount × amount by default */
-      totalAmount?: number | null;
-      installmentCount?: number | null;
-      installmentAmount?: number | null;
-      dueDay?: number | null;
+      totalAmount?: number | null
+      installmentCount?: number | null
+      installmentAmount?: number | null
+      dueDay?: number | null
       /** @description Month of installment 1 */
-      startMonth?: number | null;
-      startYear?: number | null;
+      startMonth?: number | null
+      startYear?: number | null
       /** @description What cancelling it costs today */
-      cancellationAmount?: number | null;
+      cancellationAmount?: number | null
       /**
        * Format: date
        * @description The day that amount was quoted
        */
-      cancellationDate?: string | null;
+      cancellationDate?: string | null
       /** @description The owner; you by default */
-      personId?: string;
+      personId?: string
       /** @description Category of its installments (required to create them) */
-      categoryId?: string | null;
-      notes?: string | null;
+      categoryId?: string | null
+      notes?: string | null
       /** @enum {string} */
-      kind: "loan" | "investment";
+      kind: 'loan' | 'investment'
       /** @description Create every installment as a fixed cost (true by default when the plan is complete) */
-      createInstallments?: boolean;
-    };
+      createInstallments?: boolean
+    }
     UpdateCommitmentDto: {
-      name?: string;
+      name?: string
       /** @enum {string} */
-      subtype?: "loan" | "land" | "property" | "vehicle" | "stocks" | "crypto" | "other";
-      entity?: string | null;
+      subtype?: 'loan' | 'land' | 'property' | 'vehicle' | 'stocks' | 'crypto' | 'other'
+      entity?: string | null
       /** @enum {string} */
-      currency?: "PEN" | "USD";
+      currency?: 'PEN' | 'USD'
       /** @description What the asset costs; installmentCount × amount by default */
-      totalAmount?: number | null;
-      installmentCount?: number | null;
-      installmentAmount?: number | null;
-      dueDay?: number | null;
+      totalAmount?: number | null
+      installmentCount?: number | null
+      installmentAmount?: number | null
+      dueDay?: number | null
       /** @description Month of installment 1 */
-      startMonth?: number | null;
-      startYear?: number | null;
+      startMonth?: number | null
+      startYear?: number | null
       /** @description What cancelling it costs today */
-      cancellationAmount?: number | null;
+      cancellationAmount?: number | null
       /**
        * Format: date
        * @description The day that amount was quoted
        */
-      cancellationDate?: string | null;
+      cancellationDate?: string | null
       /** @description The owner; you by default */
-      personId?: string;
+      personId?: string
       /** @description Category of its installments (required to create them) */
-      categoryId?: string | null;
-      notes?: string | null;
+      categoryId?: string | null
+      notes?: string | null
       /** @enum {string} */
-      status?: "active" | "paid" | "cancelled";
-    };
+      status?: 'active' | 'paid' | 'cancelled'
+    }
     GeneratedInstallmentsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description Installments that were missing */
-        created: number;
-      };
-    };
+        created: number
+      }
+    }
     ContributionDto: {
       /** Format: date */
-      date: string;
-      amount: number;
+      date: string
+      amount: number
       /** @enum {string} */
-      currency?: "PEN" | "USD";
+      currency?: 'PEN' | 'USD'
       /** @description 0.0042 */
-      quantity?: number | null;
+      quantity?: number | null
       /** @description BTC · acciones */
-      unit?: string | null;
-      notes?: string | null;
-    };
+      unit?: string | null
+      notes?: string | null
+    }
     ContributionResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        commitmentId: string;
+        id: string
+        commitmentId: string
         /** Format: date-time */
-        date: string;
-        amount: number;
-        currency: string;
-        quantity: number | null;
-        unit: string | null;
-        notes: string | null;
-        attachmentCount: number;
-      };
-    };
+        date: string
+        amount: number
+        currency: string
+        quantity: number | null
+        unit: string | null
+        notes: string | null
+        attachmentCount: number
+      }
+    }
     UpdateContributionDto: {
       /** Format: date */
-      date?: string;
-      amount?: number;
+      date?: string
+      amount?: number
       /** @enum {string} */
-      currency?: "PEN" | "USD";
+      currency?: 'PEN' | 'USD'
       /** @description 0.0042 */
-      quantity?: number | null;
+      quantity?: number | null
       /** @description BTC · acciones */
-      unit?: string | null;
-      notes?: string | null;
-    };
+      unit?: string | null
+      notes?: string | null
+    }
     HistoryPageResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         items: {
-          id: string;
-          entity: string;
-          entityId: string;
+          id: string
+          entity: string
+          entityId: string
           /** @enum {string} */
-          action: "create" | "update" | "delete" | "restore";
+          action: 'create' | 'update' | 'delete' | 'restore'
           /** @enum {string} */
-          source: "web" | "bot" | "import" | "scheduler" | "cli";
-          actorId: string | null;
-          batchId: string | null;
+          source: 'web' | 'bot' | 'import' | 'scheduler' | 'cli'
+          actorId: string | null
+          batchId: string | null
           /** Format: date-time */
-          createdAt: string;
+          createdAt: string
           /** @description What the record is called (its name or description), if it is known */
-          title: string | null;
+          title: string | null
           changes: {
-            field: string;
+            field: string
             /** @description null on a create */
-            before: unknown;
+            before: unknown
             /** @description null on a delete */
-            after: unknown;
-          }[];
-        }[];
-        total: number;
-        page: number;
-        pageSize: number;
+            after: unknown
+          }[]
+        }[]
+        total: number
+        page: number
+        pageSize: number
         /** @description id → name of the people, cards, categories… the changes mention */
         labels: {
-          [key: string]: string;
-        };
-      };
-    };
+          [key: string]: string
+        }
+      }
+    }
     AuthConfigResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description Google sign-in is set up */
-        google: boolean;
+        google: boolean
         /** @description Invitations and password reset links can be emailed */
-        mail: boolean;
-      };
-    };
+        mail: boolean
+      }
+    }
     LoginDto: {
       /** @description The email, or the mobile an admin registered (9 digits) */
-      identifier: string;
-      password: string;
-    };
+      identifier: string
+      password: string
+    }
     SessionUserResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        name: string;
-        email: string;
-        phone: string | null;
-        nickname: string | null;
+        id: string
+        name: string
+        email: string
+        phone: string | null
+        nickname: string | null
         /** @description Only the last 3 digits (D94) */
-        documentMasked: string | null;
+        documentMasked: string | null
         /** @enum {string} */
-        role: "superadmin" | "admin" | "member";
+        role: 'superadmin' | 'admin' | 'member'
         /** @enum {string} */
-        status: "invited" | "active" | "disabled";
-        hasPassword: boolean;
-        googleLinked: boolean;
-        telegramLinked: boolean;
+        status: 'invited' | 'active' | 'disabled'
+        hasPassword: boolean
+        googleLinked: boolean
+        telegramLinked: boolean
         /** Format: date-time */
-        lastLoginAt: string | null;
+        lastLoginAt: string | null
         /** @description A superadmin who entered as this user (the backdoor): the web shows a banner to go back */
         impersonatedBy: {
-          id: string;
-          name: string;
-        } | null;
-      };
-    };
+          id: string
+          name: string
+        } | null
+      }
+    }
     UpdateProfileDto: {
-      name?: string;
+      name?: string
       /** @description How the app greets them; null clears it */
-      nickname?: string | null;
+      nickname?: string | null
       /** @description Mobile (9 digits in Peru); also signs in with the password; empty or null clears it */
-      phone?: string | null;
+      phone?: string | null
       /** @description DNI: goes to their Yo (D94), never back in the clear */
-      documentNumber?: string | null;
-    };
+      documentNumber?: string | null
+    }
     InvitePreviewResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        email: string;
+        email: string
         /** @enum {string} */
-        role: "superadmin" | "admin" | "member";
-      };
-    };
+        role: 'superadmin' | 'admin' | 'member'
+      }
+    }
     AcceptInviteDto: {
-      token: string;
+      token: string
       /** @description Their name; the part of the email before @ by default */
-      name?: string;
-      password: string;
-    };
+      name?: string
+      password: string
+    }
     ForgotPasswordDto: {
       /** @description The email of the account; the answer is the same whether it exists or not */
-      email: string;
-    };
+      email: string
+    }
     ResetPasswordDto: {
       /** @description The token of the emailed link (?restablecer=…) */
-      token: string;
-      password: string;
-    };
+      token: string
+      password: string
+    }
     ChangePasswordDto: {
       /** @description Required when the account already has a password */
-      current?: string;
-      next: string;
-    };
+      current?: string
+      next: string
+    }
     GoogleStartResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description Where to send the browser to sign in */
-        url: string;
-      };
-    };
+        url: string
+      }
+    }
     TelegramLinkResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @description t.me link that opens the bot with the code */
-        url: string;
+        url: string
         /** Format: date-time */
-        expiresAt: string;
-      };
-    };
+        expiresAt: string
+      }
+    }
     UsersListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         users: {
-          id: string;
-          name: string;
-          email: string;
-          phone: string | null;
-          nickname: string | null;
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          nickname: string | null
           /** @description Only the last 3 digits (D94) */
-          documentMasked: string | null;
+          documentMasked: string | null
           /** @enum {string} */
-          role: "superadmin" | "admin" | "member";
+          role: 'superadmin' | 'admin' | 'member'
           /** @enum {string} */
-          status: "invited" | "active" | "disabled";
-          hasPassword: boolean;
-          googleLinked: boolean;
-          telegramLinked: boolean;
+          status: 'invited' | 'active' | 'disabled'
+          hasPassword: boolean
+          googleLinked: boolean
+          telegramLinked: boolean
           /** Format: date-time */
-          lastLoginAt: string | null;
+          lastLoginAt: string | null
           /** @description A superadmin who entered as this user (the backdoor): the web shows a banner to go back */
           impersonatedBy: {
-            id: string;
-            name: string;
-          } | null;
-        }[];
+            id: string
+            name: string
+          } | null
+        }[]
         invites: {
-          id: string;
-          email: string;
+          id: string
+          email: string
           /** @enum {string} */
-          role: "superadmin" | "admin" | "member";
+          role: 'superadmin' | 'admin' | 'member'
           /** Format: date-time */
-          expiresAt: string;
+          expiresAt: string
           /** Format: date-time */
-          createdAt: string;
-        }[];
-      };
-    };
+          createdAt: string
+        }[]
+      }
+    }
     CreateInviteDto: {
-      email: string;
+      email: string
       /**
        * @default member
        * @enum {string}
        */
-      role: "admin" | "member";
+      role: 'admin' | 'member'
       /**
        * @description Also email the invitation (only when the mail is set up)
        * @default true
        */
-      send: boolean;
-    };
+      send: boolean
+    }
     CreatedInviteResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        email: string;
+        id: string
+        email: string
         /** @enum {string} */
-        role: "superadmin" | "admin" | "member";
+        role: 'superadmin' | 'admin' | 'member'
         /** Format: date-time */
-        expiresAt: string;
+        expiresAt: string
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         /** @description The link to hand over: shown once, only its hash is kept */
-        url: string;
+        url: string
         /** @description The invitation went out by email too */
-        emailed: boolean;
-      };
-    };
+        emailed: boolean
+      }
+    }
     UpdateUserDto: {
       /** @enum {string} */
-      role?: "admin" | "member";
+      role?: 'admin' | 'member'
       /** @enum {string} */
-      status?: "active" | "disabled";
-    };
+      status?: 'active' | 'disabled'
+    }
     CreateSuperadminDto: {
-      email: string;
-      name?: string;
-      phone?: string;
+      email: string
+      name?: string
+      phone?: string
       /** @description DNI: goes to their Yo (D94), never back in the clear */
-      documentNumber?: string;
-    };
+      documentNumber?: string
+    }
     SuperadminCreatedResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         user: {
-          id: string;
-          name: string;
-          email: string;
-          phone: string | null;
-          nickname: string | null;
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          nickname: string | null
           /** @description Only the last 3 digits (D94) */
-          documentMasked: string | null;
+          documentMasked: string | null
           /** @enum {string} */
-          role: "superadmin" | "admin" | "member";
+          role: 'superadmin' | 'admin' | 'member'
           /** @enum {string} */
-          status: "invited" | "active" | "disabled";
-          hasPassword: boolean;
-          googleLinked: boolean;
-          telegramLinked: boolean;
+          status: 'invited' | 'active' | 'disabled'
+          hasPassword: boolean
+          googleLinked: boolean
+          telegramLinked: boolean
           /** Format: date-time */
-          lastLoginAt: string | null;
+          lastLoginAt: string | null
           /** @description A superadmin who entered as this user (the backdoor): the web shows a banner to go back */
           impersonatedBy: {
-            id: string;
-            name: string;
-          } | null;
-        };
+            id: string
+            name: string
+          } | null
+        }
         /** @description The link to define a password (7 days, one use); Google needs nothing */
-        url: string;
-      };
-    };
+        url: string
+      }
+    }
     ListImportResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         /** @enum {string} */
-        target: "daily-expenses" | "platforms" | "recurring-expenses" | "receivables" | "payables";
-        applied: boolean;
-        total: number;
+        target: 'daily-expenses' | 'platforms' | 'recurring-expenses' | 'receivables' | 'payables'
+        applied: boolean
+        total: number
         /** @description Rows that would be created (preview) */
-        ready: number;
+        ready: number
         /** @description Rows created (apply) */
-        created: number;
-        withIssues: number;
+        created: number
+        withIssues: number
         rows: {
           /** @description Line of the CSV (the header is 1) */
-          line: number;
-          description: string | null;
-          amount: number | null;
+          line: number
+          description: string | null
+          amount: number | null
           /** @enum {string} */
-          status: "ready" | "issue" | "created";
+          status: 'ready' | 'issue' | 'created'
           /** @description In Spanish, as the preview shows them */
-          issues: string[];
-        }[];
-      };
-    };
+          issues: string[]
+        }[]
+      }
+    }
     ImportDetailResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        source: string;
-        sourceDir: string;
+        id: string
+        source: string
+        sourceDir: string
         /** @enum {string} */
-        status: "preview" | "applied";
-        files: number;
+        status: 'preview' | 'applied'
+        files: number
         /** @description New rows (on a preview: to create) */
-        created: number;
+        created: number
         /** @description Rows that changed in Notion */
-        updated: number;
+        updated: number
         /** @description Same rows as the last import: not touched */
-        unchanged: number;
+        unchanged: number
         /** Format: date-time */
-        appliedAt: string | null;
+        appliedAt: string | null
         /** Format: date-time */
-        createdAt: string;
+        createdAt: string
         summary: {
           files: {
-            file: string;
-            base: string;
-            rows: number;
-          }[];
+            file: string
+            base: string
+            rows: number
+          }[]
           months: {
-            month: number;
-            year: number;
+            month: number
+            year: number
             /** @description Fixed costs + cards of the payment month in soles, everyone’s */
-            spent: number;
-            salary: number | null;
-            surplus: number | null;
+            spent: number
+            salary: number | null
+            surplus: number | null
             /** @description Rows linked to the Resumen page of the month, as Notion adds them */
-            linked: number;
+            linked: number
             /** @description "Gastos" of that Resumen page: equal to linked when all came through */
-            notionSpent: number | null;
-          }[];
-        };
+            notionSpent: number | null
+          }[]
+        }
         /** @description Rows per tab */
         tabs: {
-          [key: string]: number;
-        };
-        blocked: number;
-        warnings: number;
-      };
-    };
+          [key: string]: number
+        }
+        blocked: number
+        warnings: number
+      }
+    }
     ImportListResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        id: string;
-        source: string;
-        sourceDir: string;
+        id: string
+        source: string
+        sourceDir: string
         /** @enum {string} */
-        status: "preview" | "applied";
-        files: number;
+        status: 'preview' | 'applied'
+        files: number
         /** @description New rows (on a preview: to create) */
-        created: number;
+        created: number
         /** @description Rows that changed in Notion */
-        updated: number;
+        updated: number
         /** @description Same rows as the last import: not touched */
-        unchanged: number;
+        unchanged: number
         /** Format: date-time */
-        appliedAt: string | null;
+        appliedAt: string | null
         /** Format: date-time */
-        createdAt: string;
-      }[];
-    };
+        createdAt: string
+      }[]
+    }
     ImportRowsResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
         items: {
-          id: string;
+          id: string
           /** @enum {string} */
-          kind: "expense" | "group" | "budget" | "issue";
+          kind: 'expense' | 'group' | 'budget' | 'issue'
           /** @enum {string} */
-          status: "new" | "changed" | "unchanged" | "blocked" | "warning";
-          message: string | null;
-          file: string;
-          line: number;
-          targetTable: string | null;
-          targetId: string | null;
+          status: 'new' | 'changed' | 'unchanged' | 'blocked' | 'warning'
+          message: string | null
+          file: string
+          line: number
+          targetTable: string | null
+          targetId: string | null
           /** @description Where it goes: "Tarjetas ▸ IO · Setiembre 2026" */
-          destination: string | null;
-          description: string | null;
-          amount: number | null;
-          currency: string | null;
-          month: number | null;
-          year: number | null;
+          destination: string | null
+          description: string | null
+          amount: number | null
+          currency: string | null
+          month: number | null
+          year: number | null
           /** @description The Kogane row that is written */
           data: {
-            [key: string]: unknown;
-          };
+            [key: string]: unknown
+          }
           /** @description The Notion CSV row */
           raw: {
-            [key: string]: string;
-          };
-        }[];
-        total: number;
-        page: number;
-        pageSize: number;
-      };
-    };
+            [key: string]: string
+          }
+        }[]
+        total: number
+        page: number
+        pageSize: number
+      }
+    }
     ApplyImportResponseDto: {
       /** @enum {boolean} */
-      success: true;
-      code: string;
-      status: number;
-      message: string;
+      success: true
+      code: string
+      status: number
+      message: string
       data: {
-        batchId: string;
-        created: number;
-        updated: number;
-        unchanged: number;
-        payments: number;
-        groups: number;
-        budgets: number;
-      };
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+        batchId: string
+        created: number
+        updated: number
+        unchanged: number
+        payments: number
+        groups: number
+        budgets: number
+      }
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 export interface operations {
   HealthController_getHealth_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HealthResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HealthResponseDto']
+        }
+      }
+    }
+  }
   TelegramController_receiveUpdate_v1: {
     parameters: {
-      query?: never;
+      query?: never
       header: {
         /** @description TELEGRAM_WEBHOOK_SECRET */
-        "x-telegram-bot-api-secret-token": string;
-      };
-      path?: never;
-      cookie?: never;
-    };
+        'x-telegram-bot-api-secret-token': string
+      }
+      path?: never
+      cookie?: never
+    }
     /** @description Telegram Update: https://core.telegram.org/bots/api#update (message or callback_query) */
     requestBody: {
       content: {
-        "application/json": Record<string, never>;
-      };
-    };
+        'application/json': Record<string, never>
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["WebhookResponseDto"];
-        };
-      };
+          'application/json': components['schemas']['WebhookResponseDto']
+        }
+      }
       /** @description Missing or wrong secret header */
       401: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   DebtsController_list_v1: {
     parameters: {
       query?: {
-        personId?: string;
-        direction?: "owed_to_me" | "i_owe";
-        status?: "pending" | "partial" | "prepaid" | "paid" | "cashback";
-        month?: number;
-        year?: number;
+        personId?: string
+        direction?: 'owed_to_me' | 'i_owe'
+        status?: 'pending' | 'partial' | 'prepaid' | 'paid' | 'cashback'
+        month?: number
+        year?: number
         /** @description With month and year: that month and every earlier one */
-        until?: string;
+        until?: string
         /** @description First payment month of a range (YYYY-MM); ignored with month and year */
-        from?: string;
+        from?: string
         /** @description Last payment month of a range (YYYY-MM); ignored with month and year */
-        to?: string;
+        to?: string
         /** @description The card the debts were charged on (D114) */
-        paymentMethodId?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        paymentMethodId?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtListResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateDebtDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateDebtDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtCreatedResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtCreatedResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_summary_v1: {
     parameters: {
       query?: {
-        month?: number;
-        year?: number;
-        until?: string;
+        month?: number
+        year?: number
+        until?: string
         /** @description First payment month of a range (YYYY-MM) */
-        from?: string;
+        from?: string
         /** @description Last payment month of a range (YYYY-MM) */
-        to?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        to?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtSummaryResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtSummaryResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_cardCheck_v1: {
     parameters: {
       query: {
-        paymentMethodId: string;
-        month: number;
-        year: number;
-        currency?: "PEN" | "USD";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        paymentMethodId: string
+        month: number
+        year: number
+        currency?: 'PEN' | 'USD'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CardCheckResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CardCheckResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_carryOver_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DebtCarryOverDto"];
-      };
-    };
+        'application/json': components['schemas']['DebtCarryOverDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtCarryOverResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtCarryOverResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_bulk_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DebtBulkDto"];
-      };
-    };
+        'application/json': components['schemas']['DebtBulkDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtBulkResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtBulkResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_get_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtDetailResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateDebtDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateDebtDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_addPayment_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DebtPaymentDto"];
-      };
-    };
+        'application/json': components['schemas']['DebtPaymentDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtPaymentCreatedResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtPaymentCreatedResponseDto']
+        }
+      }
+    }
+  }
   DebtsController_deletePayment_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-        paymentId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+        paymentId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DebtResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DebtResponseDto']
+        }
+      }
+    }
+  }
   AttachmentsController_list_v1: {
     parameters: {
       query: {
-        refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
-        refId: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        refType: 'commitment' | 'fixed_cost' | 'contribution' | 'expense' | 'debt_payment'
+        refId: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AttachmentListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AttachmentListResponseDto']
+        }
+      }
+    }
+  }
   AttachmentsController_upload_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "multipart/form-data": {
+        'multipart/form-data': {
           /**
            * Format: binary
            * @description Image, PDF, Word, Excel or text (≤ 15 MB)
            */
-          file: string;
+          file: string
           /** @enum {string} */
-          refType: "commitment" | "fixed_cost" | "contribution" | "expense" | "debt_payment";
-          refId: string;
+          refType: 'commitment' | 'fixed_cost' | 'contribution' | 'expense' | 'debt_payment'
+          refId: string
           /** @enum {string} */
-          kind?: "boleta" | "recibo" | "contrato" | "factura" | "otro";
-          name?: string;
-        };
-      };
-    };
+          kind?: 'boleta' | 'recibo' | 'contrato' | 'factura' | 'otro'
+          name?: string
+        }
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AttachmentResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AttachmentResponseDto']
+        }
+      }
+    }
+  }
   AttachmentsController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   IncomesController_list_v1: {
     parameters: {
       query: {
-        month: number;
-        year: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        month: number
+        year: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["IncomeListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['IncomeListResponseDto']
+        }
+      }
+    }
+  }
   IncomesController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateIncomeDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateIncomeDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["IncomeResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['IncomeResponseDto']
+        }
+      }
+    }
+  }
   IncomesController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   IncomesController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateIncomeDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateIncomeDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["IncomeResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['IncomeResponseDto']
+        }
+      }
+    }
+  }
   CategoryBudgetsController_list_v1: {
     parameters: {
       query: {
-        month: number;
-        year: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        month: number
+        year: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CategoryBudgetLineListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CategoryBudgetLineListResponseDto']
+        }
+      }
+    }
+  }
   CategoryBudgetsController_upsert_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpsertCategoryBudgetDto"];
-      };
-    };
+        'application/json': components['schemas']['UpsertCategoryBudgetDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CategoryBudgetResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CategoryBudgetResponseDto']
+        }
+      }
+    }
+  }
   CategoryBudgetsController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   BudgetSettingsController_get_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["BudgetSettingsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['BudgetSettingsResponseDto']
+        }
+      }
+    }
+  }
   BudgetSettingsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateBudgetSettingsDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateBudgetSettingsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["BudgetSettingsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['BudgetSettingsResponseDto']
+        }
+      }
+    }
+  }
   ReportsController_debts_v1: {
     parameters: {
       query: {
-        format: "xlsx" | "pdf";
+        format: 'xlsx' | 'pdf'
         /** @description Only that person; without it, everyone */
-        personId?: string;
+        personId?: string
         /** @description Cobros (owed_to_me) or Deudas (i_owe); both without it */
-        direction?: "owed_to_me" | "i_owe";
-        month?: number;
-        year?: number;
-        until?: string;
-        person?: string;
-        state?: ("pending" | "partial" | "prepaid" | "paid" | "cashback") | ("upcoming" | "due" | "late") | "open";
-        card?: string;
-        origin?: "shared" | "loan";
-        q?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        direction?: 'owed_to_me' | 'i_owe'
+        month?: number
+        year?: number
+        until?: string
+        person?: string
+        state?: ('pending' | 'partial' | 'prepaid' | 'paid' | 'cashback') | ('upcoming' | 'due' | 'late') | 'open'
+        card?: string
+        origin?: 'shared' | 'loan'
+        q?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description The file (attachment) */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-          "application/pdf": string;
-        };
-      };
-    };
-  };
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': string
+          'application/pdf': string
+        }
+      }
+    }
+  }
   NotificationsController_history_v1: {
     parameters: {
       query?: {
-        kind?: "due" | "card_close" | "daily_close" | "weekly" | "budget" | "anomaly" | "recurring" | "statement" | "collect";
-        unread?: "true" | "false";
-        limit?: number;
-        offset?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        kind?: 'due' | 'card_close' | 'daily_close' | 'weekly' | 'budget' | 'anomaly' | 'recurring' | 'statement' | 'collect'
+        unread?: 'true' | 'false'
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["NotificationPageResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['NotificationPageResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_recent_v1: {
     parameters: {
       query?: {
-        limit?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["RecentNotificationsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['RecentNotificationsResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_unreadCount_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["UnreadCountResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['UnreadCountResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_readAll_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ReadAllResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ReadAllResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_read_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_unread_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_settings_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["NotificationSettingsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['NotificationSettingsResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_updateSettings_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateNotificationSettingsDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateNotificationSettingsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["NotificationSettingsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['NotificationSettingsResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_run_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        job: "recurring" | "due-reminders" | "daily-close" | "weekly" | "upcoming-refresh" | "files-cleanup" | "collect-month" | "collect-late";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        job: 'recurring' | 'due-reminders' | 'daily-close' | 'weekly' | 'upcoming-refresh' | 'files-cleanup' | 'collect-month' | 'collect-late'
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["JobResultResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['JobResultResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_collect_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CollectNowDto"];
-      };
-    };
+        'application/json': components['schemas']['CollectNowDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["JobResultResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['JobResultResponseDto']
+        }
+      }
+    }
+  }
   NotificationsController_remindDebts_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["RemindDebtsDto"];
-      };
-    };
+        'application/json': components['schemas']['RemindDebtsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["JobResultResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['JobResultResponseDto']
+        }
+      }
+    }
+  }
   RemindersController_list_v1: {
     parameters: {
       query?: {
-        days?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        days?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["RemindersResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['RemindersResponseDto']
+        }
+      }
+    }
+  }
   CalendarController_events_v1: {
     parameters: {
       query: {
-        from: string;
-        to: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        from: string
+        to: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CalendarEventsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CalendarEventsResponseDto']
+        }
+      }
+    }
+  }
   CalendarController_installments_v1: {
     parameters: {
       query?: {
-        months?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        months?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CommittedInstallmentsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CommittedInstallmentsResponseDto']
+        }
+      }
+    }
+  }
   CalendarController_payEvent_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["PayEventDto"];
-      };
-    };
+        'application/json': components['schemas']['PayEventDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PayEventResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PayEventResponseDto']
+        }
+      }
+    }
+  }
   ExpensesController_findMany_v1: {
     parameters: {
       query?: {
-        month?: number;
-        year?: number;
+        month?: number
+        year?: number
         /** @description First month of a range (YYYY-MM, included); ignored with month and year */
-        from?: string;
+        from?: string
         /** @description Last month of a range (YYYY-MM, included); ignored with month and year */
-        to?: string;
-        personId?: string;
-        paymentMethodId?: string;
+        to?: string
+        personId?: string
+        paymentMethodId?: string
         /** @description Subscriptions only: platform = Plataformas, recurring = Recurrentes (D107) */
-        kind?: "platform" | "recurring";
-      };
-      header?: never;
+        kind?: 'platform' | 'recurring'
+      }
+      header?: never
       path: {
-        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        resource: 'daily-expenses' | 'fixed-costs' | 'subscriptions' | 'credit-card-expenses' | 'recurring-expenses'
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ExpenseRecordListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ExpenseRecordListResponseDto']
+        }
+      }
+    }
+  }
   ExpensesController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-      };
-      cookie?: never;
-    };
+        resource: 'daily-expenses' | 'fixed-costs' | 'subscriptions' | 'credit-card-expenses' | 'recurring-expenses'
+      }
+      cookie?: never
+    }
     /** @description Columns of the table (validated per resource) */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ExpenseBodyDto"];
-      };
-    };
+        'application/json': components['schemas']['ExpenseBodyDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ExpenseRecordResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ExpenseRecordResponseDto']
+        }
+      }
+    }
+  }
   ExpensesController_findById_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        resource: 'daily-expenses' | 'fixed-costs' | 'subscriptions' | 'credit-card-expenses' | 'recurring-expenses'
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ExpenseRecordResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ExpenseRecordResponseDto']
+        }
+      }
+    }
+  }
   ExpensesController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        resource: 'daily-expenses' | 'fixed-costs' | 'subscriptions' | 'credit-card-expenses' | 'recurring-expenses'
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       204: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   ExpensesController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        resource: "daily-expenses" | "fixed-costs" | "subscriptions" | "credit-card-expenses" | "recurring-expenses";
-        id: string;
-      };
-      cookie?: never;
-    };
+        resource: 'daily-expenses' | 'fixed-costs' | 'subscriptions' | 'credit-card-expenses' | 'recurring-expenses'
+        id: string
+      }
+      cookie?: never
+    }
     /** @description Columns to change (validated per resource) */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ExpensePatchDto"];
-      };
-    };
+        'application/json': components['schemas']['ExpensePatchDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ExpenseRecordResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ExpenseRecordResponseDto']
+        }
+      }
+    }
+  }
   ExpenseMovesController_move_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["MoveSeriesDto"];
-      };
-    };
+        'application/json': components['schemas']['MoveSeriesDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["MoveSeriesResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['MoveSeriesResponseDto']
+        }
+      }
+    }
+  }
   CardReviewsController_review_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CardReviewDto"];
-      };
-    };
+        'application/json': components['schemas']['CardReviewDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CardReviewResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CardReviewResponseDto']
+        }
+      }
+    }
+  }
   RecurringExpensesController_fromSeries_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["RecurringFromSeriesDto"];
-      };
-    };
+        'application/json': components['schemas']['RecurringFromSeriesDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ExpenseRecordResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ExpenseRecordResponseDto']
+        }
+      }
+    }
+  }
   RecurringExpensesController_generate_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["GenerateRecurringDto"];
-      };
-    };
+        'application/json': components['schemas']['GenerateRecurringDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["RecurringGenerationResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['RecurringGenerationResponseDto']
+        }
+      }
+    }
+  }
   PeopleController_findAll_v1: {
     parameters: {
       query?: {
         /** @description Only the people who can be picked on that page (the owner always) */
-        module?: "fixed_costs" | "platforms" | "cards" | "recurring";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        module?: 'fixed_costs' | 'platforms' | 'cards' | 'recurring'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonListResponseDto']
+        }
+      }
+    }
+  }
   PeopleController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreatePersonDto"];
-      };
-    };
+        'application/json': components['schemas']['CreatePersonDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonResponseDto']
+        }
+      }
+    }
+  }
   PeopleController_deactivate_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonResponseDto']
+        }
+      }
+    }
+  }
   PeopleController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdatePersonDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdatePersonDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_holders_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CardHolderListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CardHolderListResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_saveHolders_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CardHoldersDto"];
-      };
-    };
+        'application/json': components['schemas']['CardHoldersDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CardHolderListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CardHolderListResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_saveStatementPassword_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["StatementPasswordDto"];
-      };
-    };
+        'application/json': components['schemas']['StatementPasswordDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PaymentMethodResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PaymentMethodResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_findAll_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PaymentMethodListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PaymentMethodListResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreatePaymentMethodDto"];
-      };
-    };
+        'application/json': components['schemas']['CreatePaymentMethodDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PaymentMethodResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PaymentMethodResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_deactivate_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PaymentMethodResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PaymentMethodResponseDto']
+        }
+      }
+    }
+  }
   PaymentMethodsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdatePaymentMethodDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdatePaymentMethodDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PaymentMethodResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PaymentMethodResponseDto']
+        }
+      }
+    }
+  }
   AccountsController_findAll_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AccountListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AccountListResponseDto']
+        }
+      }
+    }
+  }
   AccountsController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateAccountDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateAccountDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AccountResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AccountResponseDto']
+        }
+      }
+    }
+  }
   AccountsController_deactivate_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AccountResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AccountResponseDto']
+        }
+      }
+    }
+  }
   AccountsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateAccountDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateAccountDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AccountResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AccountResponseDto']
+        }
+      }
+    }
+  }
   CategoriesController_findAll_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CategoryListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CategoryListResponseDto']
+        }
+      }
+    }
+  }
   CategoriesController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateCategoryDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateCategoryDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CategoryResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CategoryResponseDto']
+        }
+      }
+    }
+  }
   CategoriesController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       204: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   CategoriesController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateCategoryDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateCategoryDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CategoryResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CategoryResponseDto']
+        }
+      }
+    }
+  }
   BudgetGroupsController_findAll_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["BudgetGroupListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['BudgetGroupListResponseDto']
+        }
+      }
+    }
+  }
   BudgetGroupsController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateBudgetGroupDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateBudgetGroupDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["BudgetGroupResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['BudgetGroupResponseDto']
+        }
+      }
+    }
+  }
   BudgetGroupsController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       204: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   BudgetGroupsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateBudgetGroupDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateBudgetGroupDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["BudgetGroupResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['BudgetGroupResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_list_v1: {
     parameters: {
       query?: {
-        tab?: "review" | "failed" | "discarded";
-        limit?: number;
-        offset?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        tab?: 'review' | 'failed' | 'discarded'
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftListResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DraftFieldsDto"];
-      };
-    };
+        'application/json': components['schemas']['DraftFieldsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_get_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftDetailResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DraftFieldsDto"];
-      };
-    };
+        'application/json': components['schemas']['DraftFieldsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_save_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftSavedResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftSavedResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_discard_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftResponseDto']
+        }
+      }
+    }
+  }
   DraftsController_retry_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["DraftDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['DraftDetailResponseDto']
+        }
+      }
+    }
+  }
   MessagesController_send_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "multipart/form-data": {
+        'multipart/form-data': {
           /** @description Generated by the browser; a retry with the same id is ignored */
-          messageId: string;
+          messageId: string
           /** @description Message, command ("/resumen") or caption of the image */
-          text?: string;
+          text?: string
           /** @description Voice notes only */
-          durationSeconds?: number;
+          durationSeconds?: number
           /**
            * Format: binary
            * @description Image or voice note (≤ 10 MB)
            */
-          file?: string;
-        };
-      };
-    };
+          file?: string
+        }
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ConversationResultResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ConversationResultResponseDto']
+        }
+      }
+    }
+  }
   MessagesController_action_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["MessageActionDto"];
-      };
-    };
+        'application/json': components['schemas']['MessageActionDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ConversationResultResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ConversationResultResponseDto']
+        }
+      }
+    }
+  }
   SummaryController_get_v1: {
     parameters: {
       query: {
-        month: number;
-        year: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        month: number
+        year: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SummaryResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SummaryResponseDto']
+        }
+      }
+    }
+  }
   SummaryController_history_v1: {
     parameters: {
       query: {
-        month: number;
-        year: number;
-        months?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        month: number
+        year: number
+        months?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SummaryHistoryResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SummaryHistoryResponseDto']
+        }
+      }
+    }
+  }
   SummaryController_setBudget_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["MonthlyBudgetDto"];
-      };
-    };
+        'application/json': components['schemas']['MonthlyBudgetDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["MonthlyBudgetResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['MonthlyBudgetResponseDto']
+        }
+      }
+    }
+  }
   PersonSummariesController_list_v1: {
     parameters: {
       query: {
-        month: number;
-        year: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        month: number
+        year: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonSummaryListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonSummaryListResponseDto']
+        }
+      }
+    }
+  }
   PersonSummariesController_setStatus_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["BulkPersonSummaryStatusDto"];
-      };
-    };
+        'application/json': components['schemas']['BulkPersonSummaryStatusDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonSummaryListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonSummaryListResponseDto']
+        }
+      }
+    }
+  }
   PersonSummariesController_save_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        personId: string;
-      };
-      cookie?: never;
-    };
+        personId: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SavePersonSummaryDto"];
-      };
-    };
+        'application/json': components['schemas']['SavePersonSummaryDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["PersonSummaryResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['PersonSummaryResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_list_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementListResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_upload_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "multipart/form-data": {
+        'multipart/form-data': {
           /**
            * Format: binary
            * @description Statement PDF (≤ 15 MB)
            */
-          file: string;
+          file: string
           /** @description Only when the saved document number does not open it */
-          password?: string;
+          password?: string
           /** @description Only when the statement does not say which card */
-          paymentMethodId?: string;
+          paymentMethodId?: string
           /** @description Optional person override; otherwise detected from the statement holder */
-          personId?: string;
+          personId?: string
           /** @description Save the typed password on the card of the statement (I12), if it opened it */
-          saveCardPassword?: boolean;
+          saveCardPassword?: boolean
           /** @description Save the typed password as the document number of the statement person (if it opened it) */
-          savePassword?: boolean;
-        };
-      };
-    };
+          savePassword?: boolean
+        }
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_file_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementFileResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementFileResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_get_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateStatementDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateStatementDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_assignRows_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AssignRowsDto"];
-      };
-    };
+        'application/json': components['schemas']['AssignRowsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_createNew_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateNewRowsDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateNewRowsDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementResponseDto']
+        }
+      }
+    }
+  }
   StatementsController_updateRow_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-        rowId: string;
-      };
-      cookie?: never;
-    };
+        id: string
+        rowId: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateRowDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateRowDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["StatementResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['StatementResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_list_v1: {
     parameters: {
       query?: {
-        kind?: "loan" | "investment";
-        status?: "active" | "paid" | "cancelled";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        kind?: 'loan' | 'investment'
+        status?: 'active' | 'paid' | 'cancelled'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CommitmentListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CommitmentListResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_create_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateCommitmentDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateCommitmentDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CommitmentDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CommitmentDetailResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_get_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CommitmentDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CommitmentDetailResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_delete_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateCommitmentDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateCommitmentDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CommitmentDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CommitmentDetailResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_createInstallments_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["GeneratedInstallmentsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['GeneratedInstallmentsResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_addContribution_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ContributionDto"];
-      };
-    };
+        'application/json': components['schemas']['ContributionDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ContributionResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ContributionResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_deleteContribution_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-        contributionId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+        contributionId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   CommitmentsController_updateContribution_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-        contributionId: string;
-      };
-      cookie?: never;
-    };
+        id: string
+        contributionId: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateContributionDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateContributionDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ContributionResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ContributionResponseDto']
+        }
+      }
+    }
+  }
   HistoryController_list_v1: {
     parameters: {
       query?: {
         /** @description A group of screens in the app */
-        module?: "expenses" | "debts" | "commitments" | "budget" | "settings" | "imports";
+        module?: 'expenses' | 'debts' | 'commitments' | 'budget' | 'settings' | 'imports'
         /** @description The table: exp_fixed_costs, cat_people… */
-        entity?: string;
+        entity?: string
         /** @description One record (with entity) */
-        id?: string;
-        source?: "web" | "bot" | "import" | "scheduler" | "cli";
-        from?: string;
+        id?: string
+        source?: 'web' | 'bot' | 'import' | 'scheduler' | 'cli'
+        from?: string
         /** @description Inclusive: the whole day */
-        to?: string;
-        page?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        to?: string
+        page?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HistoryPageResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HistoryPageResponseDto']
+        }
+      }
+    }
+  }
   HistoryController_timeline_v1: {
     parameters: {
       query?: {
-        page?: number;
-      };
-      header?: never;
+        page?: number
+      }
+      header?: never
       path: {
-        entity: string;
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        entity: string
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HistoryPageResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HistoryPageResponseDto']
+        }
+      }
+    }
+  }
   AuthController_config_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["AuthConfigResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['AuthConfigResponseDto']
+        }
+      }
+    }
+  }
   AuthController_login_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["LoginDto"];
-      };
-    };
+        'application/json': components['schemas']['LoginDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AuthController_logout_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   AuthController_me_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AuthController_updateProfile_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateProfileDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateProfileDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AuthController_stopImpersonation_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AuthController_invite_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        token: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        token: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["InvitePreviewResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['InvitePreviewResponseDto']
+        }
+      }
+    }
+  }
   AuthController_acceptInvite_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AcceptInviteDto"];
-      };
-    };
+        'application/json': components['schemas']['AcceptInviteDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AuthController_forgotPassword_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ForgotPasswordDto"];
-      };
-    };
+        'application/json': components['schemas']['ForgotPasswordDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   AuthController_resetPassword_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ResetPasswordDto"];
-      };
-    };
+        'application/json': components['schemas']['ResetPasswordDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AuthController_password_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ChangePasswordDto"];
-      };
-    };
+        'application/json': components['schemas']['ChangePasswordDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   AuthController_google_v1: {
     parameters: {
       query?: {
         /** @description A path of the web to go back to after signing in */
-        returnTo?: string;
+        returnTo?: string
         /** @description The token of an invitation, when they came from its link */
-        invite?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        invite?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["GoogleStartResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['GoogleStartResponseDto']
+        }
+      }
+    }
+  }
   AuthController_googleLink_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["GoogleStartResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['GoogleStartResponseDto']
+        }
+      }
+    }
+  }
   AuthController_googleCallback_v1: {
     parameters: {
       query?: {
-        code?: string;
-        state?: string;
-        error?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        code?: string
+        state?: string
+        error?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Redirect to the web: the page asked for, or /entrar?error=… */
       302: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   AuthController_telegramLink_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["TelegramLinkResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['TelegramLinkResponseDto']
+        }
+      }
+    }
+  }
   AuthController_unlinkTelegram_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   UsersController_list_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["UsersListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['UsersListResponseDto']
+        }
+      }
+    }
+  }
   UsersController_invite_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateInviteDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateInviteDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["CreatedInviteResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['CreatedInviteResponseDto']
+        }
+      }
+    }
+  }
   UsersController_revoke_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   UsersController_impersonate_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   UsersController_update_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
+        id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateUserDto"];
-      };
-    };
+        'application/json': components['schemas']['UpdateUserDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SessionUserResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SessionUserResponseDto']
+        }
+      }
+    }
+  }
   AdminController_createSuperadmin_v1: {
     parameters: {
-      query?: never;
+      query?: never
       header: {
         /** @description ADMIN_BOOTSTRAP_KEY */
-        "x-admin-key": string;
-      };
-      path?: never;
-      cookie?: never;
-    };
+        'x-admin-key': string
+      }
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateSuperadminDto"];
-      };
-    };
+        'application/json': components['schemas']['CreateSuperadminDto']
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["SuperadminCreatedResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['SuperadminCreatedResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_importList_v1: {
     parameters: {
       query: {
         /** @description The list: daily-expenses, platforms, recurring-expenses, receivables or payables */
-        target: "daily-expenses" | "platforms" | "recurring-expenses" | "receivables" | "payables";
+        target: 'daily-expenses' | 'platforms' | 'recurring-expenses' | 'receivables' | 'payables'
         /** @description Create the ready rows; without it only a preview */
-        apply?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+        apply?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "multipart/form-data": {
+        'multipart/form-data': {
           /**
            * Format: binary
            * @description CSV with the columns of "Exportar lista (CSV)" (Descripción, Monto, Moneda, Fecha, Mes de pago…)
            */
-          file: string;
-        };
-      };
-    };
+          file: string
+        }
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ListImportResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ListImportResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_previewNotion_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "multipart/form-data": {
+        'multipart/form-data': {
           /** @description The ZIP exported by Notion, or its CSV files */
-          files: string[];
-        };
-      };
-    };
+          files: string[]
+        }
+      }
+    }
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ImportDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ImportDetailResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_list_v1: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ImportListResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ImportListResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_get_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ImportDetailResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ImportDetailResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_discard_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["EmptyResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['EmptyResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_rows_v1: {
     parameters: {
       query?: {
-        tab?: "cards" | "fixed_costs" | "platforms" | "debts" | "budget" | "issues";
-        status?: "new" | "changed" | "unchanged" | "blocked" | "warning";
+        tab?: 'cards' | 'fixed_costs' | 'platforms' | 'debts' | 'budget' | 'issues'
+        status?: 'new' | 'changed' | 'unchanged' | 'blocked' | 'warning'
         /** @description Search in the description */
-        q?: string;
-        page?: number;
-        pageSize?: number;
-      };
-      header?: never;
+        q?: string
+        page?: number
+        pageSize?: number
+      }
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ImportRowsResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ImportRowsResponseDto']
+        }
+      }
+    }
+  }
   ImportsController_apply_v1: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ApplyImportResponseDto"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ApplyImportResponseDto']
+        }
+      }
+    }
+  }
 }

@@ -1,16 +1,16 @@
-import { Trash2 } from "lucide-react";
-import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
-import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
-import { Button } from "@/ui/button";
-import { SheetDescription, SheetTitle } from "@/ui/sheet";
-import { FixedCostPeriodSelector } from "@/features/fixed-costs/components/header/FixedCostPeriodSelector";
-import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { usePeriod } from "@/shared/stores/period.store";
-import { PLATFORM_SHEET_FILTER_KEYS, VIEW_PERIOD_KEYS } from "../../constants/platforms";
-import type { ViewPeriod } from "../../types/platform-filter-types";
-import { SUBSCRIPTION_STATUSES } from "../../constants/subscriptions";
-import { countPlatformFilters } from "../../lib/platform-filters";
-import { PlatformFilterFields } from "./PlatformFilterFields";
+import { Trash2 } from 'lucide-react'
+import type { ExpenseFilterValues } from '@/features/expenses/types/expense-filters'
+import { FilterSheetShell } from '@/shared/components/filters/FilterSheetShell'
+import { Button } from '@/ui/button'
+import { SheetDescription, SheetTitle } from '@/ui/sheet'
+import { FixedCostPeriodSelector } from '@/features/fixed-costs/components/header/FixedCostPeriodSelector'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
+import { usePeriod } from '@/shared/stores/period.store'
+import { PLATFORM_SHEET_FILTER_KEYS, VIEW_PERIOD_KEYS } from '../../constants/platforms'
+import type { ViewPeriod } from '../../types/platform-filter-types'
+import { SUBSCRIPTION_STATUSES } from '../../constants/subscriptions'
+import { countPlatformFilters } from '../../lib/platform-filters'
+import { PlatformFilterFields } from './PlatformFilterFields'
 
 export function PlatformFilterSheet({
   open,
@@ -22,23 +22,23 @@ export function PlatformFilterSheet({
   personCounts,
   paymentMethodCounts,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  filters: ExpenseFilterValues;
-  onFiltersChange: (filters: ExpenseFilterValues) => void;
-  resultCount: number;
-  totalCount: number;
-  personCounts: Record<string, number>;
-  paymentMethodCounts: Record<string, number>;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  filters: ExpenseFilterValues
+  onFiltersChange: (filters: ExpenseFilterValues) => void
+  resultCount: number
+  totalCount: number
+  personCounts: Record<string, number>
+  paymentMethodCounts: Record<string, number>
 }) {
-  const selectedMonth = usePeriod((state) => state.month);
-  const selectedYear = usePeriod((state) => state.year);
+  const selectedMonth = usePeriod((state) => state.month)
+  const selectedYear = usePeriod((state) => state.year)
   const [viewPeriod, setViewPeriod] = useUrlFilters<ViewPeriod>(VIEW_PERIOD_KEYS, {
     month: String(selectedMonth),
     year: String(selectedYear),
-  });
-  const hasPeriod = !!(viewPeriod.month || viewPeriod.year || viewPeriod.desde || viewPeriod.hasta);
-  const count = countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS) + Number(hasPeriod);
+  })
+  const hasPeriod = !!(viewPeriod.month || viewPeriod.year || viewPeriod.desde || viewPeriod.hasta)
+  const count = countPlatformFilters(filters, PLATFORM_SHEET_FILTER_KEYS) + Number(hasPeriod)
   return (
     <FilterSheetShell
       open={open}
@@ -66,8 +66,8 @@ export function PlatformFilterSheet({
             size="sm"
             disabled={count === 0}
             onClick={() => {
-              onFiltersChange({ q: filters.q });
-              setViewPeriod({});
+              onFiltersChange({ q: filters.q })
+              setViewPeriod({})
             }}
           >
             <Trash2 className="size-4" />
@@ -94,5 +94,5 @@ export function PlatformFilterSheet({
         paymentMethodCounts={paymentMethodCounts}
       />
     </FilterSheetShell>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { LoaderCircle } from "lucide-react";
-import { Marker, MarkerContent, MarkerIcon } from "@/ui/marker";
+import { LoaderCircle } from 'lucide-react'
+import { Marker, MarkerContent, MarkerIcon } from '@/ui/marker'
 
 export function HistoryTimelineLoading() {
   return (
@@ -22,5 +22,5 @@ export function HistoryTimelineLoading() {
         ))}
       </div>
     </div>
-  );
+  )
 }

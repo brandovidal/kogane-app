@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { ListOrdered, SlidersHorizontal, X } from "lucide-react";
-import { countActiveExpenseFilters, hasActiveFilters, usesPanel } from "../../lib/expense-filters";
-import type { ExpenseFilterKey } from "../../types/expense-filters";
-import { INSTALLMENT_FILTER_OPTIONS } from "../../constants/expense-filters";
-import type { ExpenseFiltersProps } from "../../types/expense-filter-props";
-import { FilterSelect } from "@/shared/components/filters/FilterSelect";
-import { SearchField } from "@/shared/components/filters/SearchField";
-import { Button } from "@/ui/button";
-import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
-import { GroupingMenu } from "@/shared/components/toolbar/GroupingMenu";
-import { CountedToolbarButton } from "@/shared/components/toolbar/CountedToolbarButton";
-import { ExpenseFilterFields } from "./ExpenseFilterFields";
-import { PersonFilterFields } from "@/shared/components/filters/PersonFilterFields";
-import { ExpenseFiltersPanel } from "./ExpenseFiltersPanel";
+import { useState } from 'react'
+import { ListOrdered, SlidersHorizontal, X } from 'lucide-react'
+import { countActiveExpenseFilters, hasActiveFilters, usesPanel } from '../../lib/expense-filters'
+import type { ExpenseFilterKey } from '../../types/expense-filters'
+import { INSTALLMENT_FILTER_OPTIONS } from '../../constants/expense-filters'
+import type { ExpenseFiltersProps } from '../../types/expense-filter-props'
+import { FilterSelect } from '@/shared/components/filters/FilterSelect'
+import { SearchField } from '@/shared/components/filters/SearchField'
+import { Button } from '@/ui/button'
+import { RecordListToolbar } from '@/shared/components/toolbar/RecordListToolbar'
+import { GroupingMenu } from '@/shared/components/toolbar/GroupingMenu'
+import { CountedToolbarButton } from '@/shared/components/toolbar/CountedToolbarButton'
+import { ExpenseFilterFields } from './ExpenseFilterFields'
+import { PersonFilterFields } from '@/shared/components/filters/PersonFilterFields'
+import { ExpenseFiltersPanel } from './ExpenseFiltersPanel'
 
 export function ExpenseFilters({
   fields,
@@ -45,18 +45,18 @@ export function ExpenseFilters({
   onClearFilters,
   activeMarkers = false,
 }: ExpenseFiltersProps) {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const open = filterOpen ?? internalOpen;
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = filterOpen ?? internalOpen
   const setOpen = (next: boolean) => {
-    setInternalOpen(next);
-    onFilterOpenChange?.(next);
-  };
-  const set = (key: ExpenseFilterKey, next: string | undefined) => onChange({ ...value, [key]: next || undefined });
-  const has = (key: ExpenseFilterKey) => fields.includes(key);
-  const panel = usesPanel(fields);
-  const count = countActiveExpenseFilters(value, fields) + extraFilterCount;
+    setInternalOpen(next)
+    onFilterOpenChange?.(next)
+  }
+  const set = (key: ExpenseFilterKey, next: string | undefined) => onChange({ ...value, [key]: next || undefined })
+  const has = (key: ExpenseFilterKey) => fields.includes(key)
+  const panel = usesPanel(fields)
+  const count = countActiveExpenseFilters(value, fields) + extraFilterCount
 
-  const personControl = has("person") && <PersonFilterFields value={value.person} onChange={(next) => set("person", next)} width="w-56" />;
+  const personControl = has('person') && <PersonFilterFields value={value.person} onChange={(next) => set('person', next)} width="w-56" />
 
   const controls = (
     <ExpenseFilterFields
@@ -69,26 +69,26 @@ export function ExpenseFilters({
       searchInPanel={searchInPanel}
       activeMarkers={activeMarkers}
     />
-  );
+  )
 
-  const search = has("q") && (
+  const search = has('q') && (
     <SearchField
-      className={`${searchInPanel ? "hidden lg:block " : ""}w-full sm:w-56 sm:shrink-0`}
+      className={`${searchInPanel ? 'hidden lg:block ' : ''}w-full sm:w-56 sm:shrink-0`}
       placeholder="Buscar..."
-      value={value.q ?? ""}
-      onChange={(next) => set("q", next)}
+      value={value.q ?? ''}
+      onChange={(next) => set('q', next)}
     />
-  );
+  )
   const actions = (
     <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:justify-end">
-      {has("person") && !personInPanel && personControl}
-      {has("installments") && !installmentsInPanel && (
+      {has('person') && !personInPanel && personControl}
+      {has('installments') && !installmentsInPanel && (
         <FilterSelect
           label="Cuota"
           icon={ListOrdered}
           value={value.installments}
           options={INSTALLMENT_FILTER_OPTIONS}
-          onChange={(next) => set("installments", next)}
+          onChange={(next) => set('installments', next)}
           width="w-[145px]"
           labelClassName="text-sm font-medium"
         />
@@ -121,7 +121,7 @@ export function ExpenseFilters({
       )}
       {groupByOptions && onGroupByChange && (
         <GroupingMenu
-          value={groupBy ?? "none"}
+          value={groupBy ?? 'none'}
           onChange={onGroupByChange}
           options={groupByOptions}
           hideEmpty={
@@ -146,7 +146,7 @@ export function ExpenseFilters({
         </>
       )}
     </div>
-  );
+  )
   return (
     <RecordListToolbar
       primary={
@@ -159,10 +159,10 @@ export function ExpenseFilters({
           search
         )
       }
-      primaryClassName={primaryControls ? "sm:min-w-[min(100%,32rem)]" : undefined}
+      primaryClassName={primaryControls ? 'sm:min-w-[min(100%,32rem)]' : undefined}
       actions={actions}
       applied={appliedFilters}
       view={viewToggle}
     />
-  );
+  )
 }

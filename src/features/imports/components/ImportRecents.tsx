@@ -1,7 +1,7 @@
-import { formatDate } from "@/shared/lib/dates";
-import { Badge } from "@/ui/badge";
-import { BATCH_STATUS } from "@/features/imports/constants/import-options";
-import type { HistoryItem } from "../types/import-types";
+import { formatDate } from '@/shared/lib/dates'
+import { Badge } from '@/ui/badge'
+import { BATCH_STATUS } from '@/features/imports/constants/import-options'
+import type { HistoryItem } from '../types/import-types'
 
 // «Recientes» junto a la carga (boards I1–I6)
 export function ImportRecents({
@@ -10,10 +10,10 @@ export function ImportRecents({
   onSelect,
   onViewAll,
 }: {
-  items: HistoryItem[];
-  limit?: number;
-  onSelect: (key: string) => void;
-  onViewAll: () => void;
+  items: HistoryItem[]
+  limit?: number
+  onSelect: (key: string) => void
+  onViewAll: () => void
 }) {
   return (
     <aside className="space-y-2" aria-label="Recientes">
@@ -39,9 +39,9 @@ export function ImportRecents({
               {formatDate(item.createdAt)} · {item.detail}
             </span>
           </span>
-          <Badge variant={item.pending ? "default" : "secondary"}>{BATCH_STATUS[item.status] ?? item.status}</Badge>
+          <Badge variant={item.pending ? 'default' : 'secondary'}>{BATCH_STATUS[item.status] ?? item.status}</Badge>
         </button>
       ))}
     </aside>
-  );
+  )
 }

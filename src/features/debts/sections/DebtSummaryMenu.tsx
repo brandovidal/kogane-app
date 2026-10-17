@@ -1,20 +1,20 @@
-import { BellRing, Copy, Download, MoreHorizontal, RefreshCw, Snowflake } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { BellRing, Copy, Download, MoreHorizontal, RefreshCw, Snowflake } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
-import { useCollectNow } from "@/features/notifications/hooks/notifications";
-import { useSetPersonSummariesStatus } from "../hooks/personSummaries";
-import { PERSON_SUMMARY_STATUS_LABELS, EMPTY_PERSON_SUMMARY } from "./PersonSummaryControls";
-import type { PersonSummaryStatus } from "../types/person-summary.dto";
-import { downloadCsv } from "@/shared/lib/export-csv";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { useCollectNow } from '@/features/notifications/hooks/notifications'
+import { useSetPersonSummariesStatus } from '../hooks/personSummaries'
+import { PERSON_SUMMARY_STATUS_LABELS, EMPTY_PERSON_SUMMARY } from './PersonSummaryControls'
+import type { PersonSummaryStatus } from '../types/person-summary.dto'
+import { downloadCsv } from '@/shared/lib/export-csv'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/ui/dropdown-menu'
 
 interface SummaryRow {
-  personId: string;
-  name: string;
-  total: number;
-  records: number;
+  personId: string
+  name: string
+  total: number
+  records: number
 }
 
 // "⋯" of the Resumen header: freeze every draft at once, export the month, re-read it, share the view
@@ -24,35 +24,35 @@ export function DebtSummaryMenu({
   month,
   year,
 }: {
-  rows: SummaryRow[];
-  statusOf: (personId: string) => PersonSummaryStatus | undefined;
-  month: number;
-  year: number;
+  rows: SummaryRow[]
+  statusOf: (personId: string) => PersonSummaryStatus | undefined
+  month: number
+  year: number
 }) {
-  const queryClient = useQueryClient();
-  const setStatus = useSetPersonSummariesStatus();
-  const collect = useCollectNow();
-  const withBalance = rows.filter((row) => row.total > 0);
-  const drafts = rows.filter((row) => (statusOf(row.personId) ?? EMPTY_PERSON_SUMMARY.status) === "draft");
+  const queryClient = useQueryClient()
+  const setStatus = useSetPersonSummariesStatus()
+  const collect = useCollectNow()
+  const withBalance = rows.filter((row) => row.total > 0)
+  const drafts = rows.filter((row) => (statusOf(row.personId) ?? EMPTY_PERSON_SUMMARY.status) === 'draft')
 
   const exportCsv = () =>
     downloadCsv(
-      `resumen-${year}-${String(month).padStart(2, "0")}.csv`,
-      ["Persona", "Estado", "Registros", "Saldo"],
-      rows.map((row) => [row.name, PERSON_SUMMARY_STATUS_LABELS[statusOf(row.personId) ?? "draft"], row.records, row.total.toFixed(2)]),
-    );
+      `resumen-${year}-${String(month).padStart(2, '0')}.csv`,
+      ['Persona', 'Estado', 'Registros', 'Saldo'],
+      rows.map((row) => [row.name, PERSON_SUMMARY_STATUS_LABELS[statusOf(row.personId) ?? 'draft'], row.records, row.total.toFixed(2)]),
+    )
   const recalculate = () => {
-    void queryClient.invalidateQueries();
-    toast.success("Borradores recalculados");
-  };
+    void queryClient.invalidateQueries()
+    toast.success('Borradores recalculados')
+  }
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Enlace copiado");
+      await navigator.clipboard.writeText(window.location.href)
+      toast.success('Enlace copiado')
     } catch {
-      toast.error("No se pudo copiar el enlace");
+      toast.error('No se pudo copiar el enlace')
     }
-  };
+  }
 
   return (
     <DropdownMenu>
@@ -69,7 +69,7 @@ export function DebtSummaryMenu({
               month,
               year,
               personIds: drafts.map((row) => row.personId),
-              status: "in_progress",
+              status: 'in_progress',
             })
           }
         >
@@ -78,8 +78,8 @@ export function DebtSummaryMenu({
             Pasar todo a En progreso
             <span className="text-xs text-muted-foreground">
               {drafts.length
-                ? `Congela montos de ${drafts.length} ${drafts.length === 1 ? "persona" : "personas"} en borrador`
-                : "No hay personas en borrador"}
+                ? `Congela montos de ${drafts.length} ${drafts.length === 1 ? 'persona' : 'personas'} en borrador`
+                : 'No hay personas en borrador'}
             </span>
           </span>
         </DropdownMenuItem>
@@ -97,7 +97,7 @@ export function DebtSummaryMenu({
           <span className="flex flex-col">
             Cobrar a todos por Mensajes
             <span className="text-xs text-muted-foreground">
-              {withBalance.length ? `Un aviso por persona con saldo (${withBalance.length}), listo para reenviar` : "Nadie tiene saldo este mes"}
+              {withBalance.length ? `Un aviso por persona con saldo (${withBalance.length}), listo para reenviar` : 'Nadie tiene saldo este mes'}
             </span>
           </span>
         </DropdownMenuItem>
@@ -117,5 +117,5 @@ export function DebtSummaryMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

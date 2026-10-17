@@ -1,17 +1,17 @@
-import type { ReactNode } from "react";
-import { Check, Pencil, X } from "lucide-react";
-import { Button } from "@/ui/button";
-import { cn } from "@/shared/utils/cn";
-import { formatCurrency } from "@/shared/lib/currency";
-import { draftState, missingLabels } from "@/features/drafts/lib/draft-view";
+import type { ReactNode } from 'react'
+import { Check, Pencil, X } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { cn } from '@/shared/utils/cn'
+import { formatCurrency } from '@/shared/lib/currency'
+import { draftState, missingLabels } from '@/features/drafts/lib/draft-view'
 
 interface DraftCardDraft {
-  id: string;
-  description: string | null;
-  rawText: string | null;
-  amount: number | null;
-  currency: string | null;
-  missingFields: string[];
+  id: string
+  description: string | null
+  rawText: string | null
+  amount: number | null
+  currency: string | null
+  missingFields: string[]
 }
 
 // Tarjeta de Borrador (board B1): estado, monto, lo que falta y las acciones
@@ -24,40 +24,40 @@ export function DraftCard({
   onEdit,
   onDiscard,
 }: {
-  draft: DraftCardDraft;
+  draft: DraftCardDraft
   /** Líneas "Etiqueta: valor" (destino, persona, reparto, origen). */
-  rows: { label: string; value: ReactNode }[];
-  discarded?: boolean;
-  busy?: boolean;
-  onSave: () => void;
-  onEdit: () => void;
-  onDiscard: () => void;
+  rows: { label: string; value: ReactNode }[]
+  discarded?: boolean
+  busy?: boolean
+  onSave: () => void
+  onEdit: () => void
+  onDiscard: () => void
 }) {
-  const incomplete = draftState(draft) === "incomplete";
-  const missing = missingLabels(draft);
+  const incomplete = draftState(draft) === 'incomplete'
+  const missing = missingLabels(draft)
 
   return (
-    <article className={cn("flex h-full flex-col gap-3 rounded-2xl border bg-card p-4", incomplete && "border-amber-500/30")}>
+    <article className={cn('flex h-full flex-col gap-3 rounded-2xl border bg-card p-4', incomplete && 'border-amber-500/30')}>
       <header className="space-y-0.5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="min-w-0 truncate font-semibold">{draft.description ?? draft.rawText ?? "Sin descripción"}</h3>
+          <h3 className="min-w-0 truncate font-semibold">{draft.description ?? draft.rawText ?? 'Sin descripción'}</h3>
           <span
             className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium",
+              'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium',
               incomplete
-                ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
-                : "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                ? 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
             )}
           >
             <i className="size-1.5 rounded-full bg-current" />
-            {incomplete ? "Falta info" : "Listo"}
+            {incomplete ? 'Falta info' : 'Listo'}
           </span>
         </div>
-        <p className="line-clamp-2 text-xs italic text-muted-foreground">{draft.rawText ? `«${draft.rawText}»` : "«sin texto · captura»"}</p>
+        <p className="line-clamp-2 text-xs italic text-muted-foreground">{draft.rawText ? `«${draft.rawText}»` : '«sin texto · captura»'}</p>
       </header>
 
-      <p className={cn("text-2xl font-bold tabular-nums", draft.amount == null && "text-muted-foreground")}>
-        {draft.amount != null ? formatCurrency(draft.amount, draft.currency ?? "PEN") : "Sin monto"}
+      <p className={cn('text-2xl font-bold tabular-nums', draft.amount == null && 'text-muted-foreground')}>
+        {draft.amount != null ? formatCurrency(draft.amount, draft.currency ?? 'PEN') : 'Sin monto'}
       </p>
 
       {incomplete && (
@@ -106,5 +106,5 @@ export function DraftCard({
         )}
       </footer>
     </article>
-  );
+  )
 }

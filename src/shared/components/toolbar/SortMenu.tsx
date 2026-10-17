@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactElement } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,30 +6,30 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+} from '@/ui/dropdown-menu'
 
 export interface SortMenuProps {
-  value?: string;
-  onChange: (value: string | undefined) => void;
-  options: readonly { value: string; label: string }[];
-  trigger: ReactElement;
-  originalLabel?: string;
-  label?: string;
-  align?: "start" | "center" | "end";
-  className?: string;
+  value?: string
+  onChange: (value: string | undefined) => void
+  options: readonly { value: string; label: string }[]
+  trigger: ReactElement
+  originalLabel?: string
+  label?: string
+  align?: 'start' | 'center' | 'end'
+  className?: string
 }
 
-const ORIGINAL_ORDER = "__original__";
+const ORIGINAL_ORDER = '__original__'
 
 export function SortMenu({
   value,
   onChange,
   options,
   trigger,
-  originalLabel = "Orden original",
-  label = "Ordenar por",
-  align = "start",
-  className = "w-60",
+  originalLabel = 'Orden original',
+  label = 'Ordenar por',
+  align = 'start',
+  className = 'w-60',
 }: SortMenuProps) {
   return (
     <DropdownMenu>
@@ -46,5 +46,5 @@ export function SortMenu({
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

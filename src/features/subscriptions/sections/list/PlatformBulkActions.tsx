@@ -1,21 +1,21 @@
-import { useState } from "react";
-import { Copy, Download, LoaderCircle, Trash2 } from "lucide-react";
-import { BulkActionsToolbar } from "@/shared/components/toolbar/BulkActionsToolbar";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import { SUBSCRIPTION_STATUSES } from "../../constants/subscriptions";
-import type { usePlatformBulkActions } from "../../hooks/usePlatformBulkActions";
+import { useState } from 'react'
+import { Copy, Download, LoaderCircle, Trash2 } from 'lucide-react'
+import { BulkActionsToolbar } from '@/shared/components/toolbar/BulkActionsToolbar'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { StatusBadge } from '@/features/expenses/components/StatusBadge'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { SUBSCRIPTION_STATUSES } from '../../constants/subscriptions'
+import type { usePlatformBulkActions } from '../../hooks/usePlatformBulkActions'
 
 export function PlatformBulkActions({ bulk, onExport }: { bulk: ReturnType<typeof usePlatformBulkActions>; onExport: () => void }) {
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const count = bulk.selectedItems.length;
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const count = bulk.selectedItems.length
   return (
     <>
       <BulkActionsToolbar count={count} pending={bulk.pending} onClear={bulk.clear}>
         {bulk.pending && <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />}
-        <Button type="button" variant="ghost" size="sm" disabled={bulk.pending} onClick={() => void bulk.run("duplicate")}>
+        <Button type="button" variant="ghost" size="sm" disabled={bulk.pending} onClick={() => void bulk.run('duplicate')}>
           <Copy className="size-4" />
           Duplicar
         </Button>
@@ -27,7 +27,7 @@ export function PlatformBulkActions({ bulk, onExport }: { bulk: ReturnType<typeo
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {SUBSCRIPTION_STATUSES.map((status) => (
-              <DropdownMenuItem key={status} onSelect={() => void bulk.run("status", status)}>
+              <DropdownMenuItem key={status} onSelect={() => void bulk.run('status', status)}>
                 <StatusBadge status={status} />
               </DropdownMenuItem>
             ))}
@@ -57,11 +57,11 @@ export function PlatformBulkActions({ bulk, onExport }: { bulk: ReturnType<typeo
       <DeleteConfirmationDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title={`¿Eliminar ${count} ${count === 1 ? "plataforma" : "plataformas"}?`}
+        title={`¿Eliminar ${count} ${count === 1 ? 'plataforma' : 'plataformas'}?`}
         description="Se eliminarán los registros seleccionados y sus archivos. Esta acción no se puede deshacer."
         pending={bulk.pending}
-        onConfirm={() => void bulk.run("delete").then(() => setDeleteOpen(false))}
+        onConfirm={() => void bulk.run('delete').then(() => setDeleteOpen(false))}
       />
     </>
-  );
+  )
 }

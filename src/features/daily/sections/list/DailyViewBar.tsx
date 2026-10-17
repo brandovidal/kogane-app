@@ -1,38 +1,38 @@
-import { CalendarDays, ChevronDown, ListOrdered, Plus, Table2 } from "lucide-react";
-import { toast } from "sonner";
+import { CalendarDays, ChevronDown, ListOrdered, Plus, Table2 } from 'lucide-react'
+import { toast } from 'sonner'
 
-import type { DailyLayout } from "../../types/daily-types";
-import { DAILY_LAYOUTS } from "../../constants/daily";
-import type { ExportMenuItem } from "@/shared/components/toolbar/ExportMenu";
-import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import { DESTINATION_LABELS } from "@/features/drafts/constants/destinations";
-import { useNewExpense } from "@/features/new-expense/stores/new-expense.store";
-import { cn } from "@/shared/utils/cn";
+import type { DailyLayout } from '../../types/daily-types'
+import { DAILY_LAYOUTS } from '../../constants/daily'
+import type { ExportMenuItem } from '@/shared/components/toolbar/ExportMenu'
+import { ExportMenu } from '@/shared/components/toolbar/ExportMenu'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { DESTINATION_LABELS } from '@/features/drafts/constants/destinations'
+import { useNewExpense } from '@/features/new-expense/stores/new-expense.store'
+import { cn } from '@/shared/utils/cn'
 
 const layoutIcons = {
   list: Table2,
   day: ListOrdered,
   calendar: CalendarDays,
-} as const;
+} as const
 
 export function DailyViewBar({
   layout,
   onLayoutChange,
   exportItems,
 }: {
-  layout: DailyLayout;
-  onLayoutChange: (layout: DailyLayout) => void;
-  exportItems: ExportMenuItem[];
+  layout: DailyLayout
+  onLayoutChange: (layout: DailyLayout) => void
+  exportItems: ExportMenuItem[]
 }) {
-  const openNewExpense = useNewExpense((state) => state.openWith);
+  const openNewExpense = useNewExpense((state) => state.openWith)
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div role="tablist" aria-label="Vistas de Día a día" className="flex min-w-0 items-center gap-1 overflow-x-auto">
         {DAILY_LAYOUTS.map(({ value, label }) => {
-          const Icon = layoutIcons[value];
+          const Icon = layoutIcons[value]
           return (
             <button
               key={value}
@@ -41,14 +41,14 @@ export function DailyViewBar({
               aria-selected={layout === value}
               onClick={() => onLayoutChange(value)}
               className={cn(
-                "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                layout === value && "bg-accent text-foreground ring-1 ring-border/70",
+                'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                layout === value && 'bg-accent text-foreground ring-1 ring-border/70',
               )}
             >
               <Icon className="size-4" />
               {label}
             </button>
-          );
+          )
         })}
         <Button
           type="button"
@@ -57,7 +57,7 @@ export function DailyViewBar({
           title="Más vistas: próximamente"
           aria-label="Más vistas, próximamente"
           className="shrink-0 rounded-sm border border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
-          onClick={() => toast.info("La creación de vistas personalizadas estará disponible próximamente.")}
+          onClick={() => toast.info('La creación de vistas personalizadas estará disponible próximamente.')}
         >
           <Plus className="size-4" />
         </Button>
@@ -70,7 +70,7 @@ export function DailyViewBar({
             type="button"
             size="sm"
             className="h-9 gap-1 rounded-l-sm rounded-r-none px-4"
-            onClick={() => openNewExpense({ destination: "daily" })}
+            onClick={() => openNewExpense({ destination: 'daily' })}
           >
             <Plus className="size-4" /> Nuevo gasto
           </Button>
@@ -81,7 +81,7 @@ export function DailyViewBar({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-48">
-              {(["daily", "credit_card", "fixed_cost", "subscription", "receivable", "payable"] as const).map((destination) => (
+              {(['daily', 'credit_card', 'fixed_cost', 'subscription', 'receivable', 'payable'] as const).map((destination) => (
                 <DropdownMenuItem key={destination} onSelect={() => openNewExpense({ destination })}>
                   {DESTINATION_LABELS[destination]}
                 </DropdownMenuItem>
@@ -91,5 +91,5 @@ export function DailyViewBar({
         </div>
       </div>
     </div>
-  );
+  )
 }

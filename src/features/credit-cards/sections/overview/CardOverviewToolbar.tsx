@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
-import { Layers, ListFilter } from "lucide-react";
-import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
-import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
-import { SearchField } from "@/shared/components/filters/SearchField";
-import { useMe } from "@/shared/api/hooks/catalogs";
-import { CardOverviewFilterSheet } from "./CardOverviewFilterSheet";
-import { CARD_OVERVIEW_FILTER_KEYS, CARD_OVERVIEW_GROUP_OPTIONS, type CardOverviewGroupBy } from "../../constants/filters";
-import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
+import { useMemo, useState } from 'react'
+import { Layers, ListFilter } from 'lucide-react'
+import type { ExpenseFilterValues } from '@/features/expenses/types/expense-filters'
+import { ActiveExpenseFilterChips } from '@/features/expenses/components/filters/ActiveExpenseFilterChips'
+import { SearchField } from '@/shared/components/filters/SearchField'
+import { useMe } from '@/shared/api/hooks/catalogs'
+import { CardOverviewFilterSheet } from './CardOverviewFilterSheet'
+import { CARD_OVERVIEW_FILTER_KEYS, CARD_OVERVIEW_GROUP_OPTIONS, type CardOverviewGroupBy } from '../../constants/filters'
+import { countActiveExpenseFilters } from '@/features/expenses/lib/expense-filters'
 import {
   AppliedFilterSection,
   AppliedGroupChips,
@@ -15,9 +15,9 @@ import {
   CountedToolbarButton,
   GroupingMenu,
   ViewModeToggle,
-} from "@/shared/components/toolbar";
-import { Button } from "@/ui/button";
-import type { CreditCardExpense } from "@/shared/api/types";
+} from '@/shared/components/toolbar'
+import { Button } from '@/ui/button'
+import type { CreditCardExpense } from '@/shared/api/types'
 
 export function CardOverviewToolbar({
   filters,
@@ -28,34 +28,34 @@ export function CardOverviewToolbar({
   onGroupByChange,
   paymentMethodRecords,
 }: {
-  filters: ExpenseFilterValues;
-  onFiltersChange: (filters: ExpenseFilterValues) => void;
-  layout: "cards" | "table";
-  onLayoutChange: (layout: "cards" | "table") => void;
-  groupBy: CardOverviewGroupBy[];
-  onGroupByChange: (groupBy: CardOverviewGroupBy[]) => void;
-  paymentMethodRecords: Pick<CreditCardExpense, "paymentMethodId">[];
+  filters: ExpenseFilterValues
+  onFiltersChange: (filters: ExpenseFilterValues) => void
+  layout: 'cards' | 'table'
+  onLayoutChange: (layout: 'cards' | 'table') => void
+  groupBy: CardOverviewGroupBy[]
+  onGroupByChange: (groupBy: CardOverviewGroupBy[]) => void
+  paymentMethodRecords: Pick<CreditCardExpense, 'paymentMethodId'>[]
 }) {
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [showApplied, setShowApplied] = useState(false);
-  const me = useMe();
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [showApplied, setShowApplied] = useState(false)
+  const me = useMe()
   const paymentMethodCounts = useMemo(
     () =>
       paymentMethodRecords.reduce<Record<string, number>>((counts, expense) => {
-        if (expense.paymentMethodId) counts[expense.paymentMethodId] = (counts[expense.paymentMethodId] ?? 0) + 1;
-        return counts;
+        if (expense.paymentMethodId) counts[expense.paymentMethodId] = (counts[expense.paymentMethodId] ?? 0) + 1
+        return counts
       }, {}),
     [paymentMethodRecords],
-  );
-  const filterCount = countActiveExpenseFilters(filters, CARD_OVERVIEW_FILTER_KEYS);
-  const appliedCount = filterCount + groupBy.length;
+  )
+  const filterCount = countActiveExpenseFilters(filters, CARD_OVERVIEW_FILTER_KEYS)
+  const appliedCount = filterCount + groupBy.length
 
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1" role="toolbar" aria-label="Herramientas de tarjetas">
           <SearchField
-            value={filters.q ?? ""}
+            value={filters.q ?? ''}
             onChange={(q) => onFiltersChange({ ...filters, q: q || undefined })}
             placeholder="Buscar"
             shortcut="/"
@@ -94,8 +94,8 @@ export function CardOverviewToolbar({
         <AppliedViewSummary
           onAddFilter={() => setFilterOpen(true)}
           onReset={() => {
-            onFiltersChange({});
-            onGroupByChange([]);
+            onFiltersChange({})
+            onGroupByChange([])
           }}
           resetDisabled={appliedCount === 0}
         >
@@ -117,7 +117,7 @@ export function CardOverviewToolbar({
                 maxVisibleItems={3}
                 collapsible={false}
                 showClearAll={false}
-                formatFilterLabel={(key, label) => (key === "method" ? "Tarjeta" : label)}
+                formatFilterLabel={(key, label) => (key === 'method' ? 'Tarjeta' : label)}
               />
             </AppliedFilterSection>
           )}
@@ -128,9 +128,9 @@ export function CardOverviewToolbar({
         onOpenChange={setFilterOpen}
         filters={filters}
         onFiltersChange={onFiltersChange}
-        fields={CARD_OVERVIEW_FILTER_KEYS.filter((field) => field !== "q")}
+        fields={CARD_OVERVIEW_FILTER_KEYS.filter((field) => field !== 'q')}
         paymentMethodCounts={paymentMethodCounts}
       />
     </>
-  );
+  )
 }

@@ -1,112 +1,112 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
-import { useAddDebtPayment } from "@/features/debts/hooks/debts";
-import { useUploadAttachment } from "@/features/attachments/hooks";
-import { PendingAttachmentsPanel } from "@/features/attachments/components/PendingAttachmentsPanel";
-import type { PendingAttachmentUpload } from "@/features/attachments/types/pending-attachment-upload";
-import { toast } from "sonner";
-import type { Debt } from "@/shared/api/types";
-import { usePaymentMethods } from "@/shared/api/hooks/catalogs";
-import { PaymentMethodLabel } from "@/features/settings/components/payment-methods/PaymentMethodLabel";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { formatCurrency } from "@/shared/lib/currency";
-import { toIsoDate } from "@/shared/lib/dates";
-import { Button } from "@/ui/button";
-import { PaymentBalancePreview } from "./PaymentBalancePreview";
-import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/ui/select";
+import { useAddDebtPayment } from '@/features/debts/hooks/debts'
+import { useUploadAttachment } from '@/features/attachments/hooks'
+import { PendingAttachmentsPanel } from '@/features/attachments/components/PendingAttachmentsPanel'
+import type { PendingAttachmentUpload } from '@/features/attachments/types/pending-attachment-upload'
+import { toast } from 'sonner'
+import type { Debt } from '@/shared/api/types'
+import { usePaymentMethods } from '@/shared/api/hooks/catalogs'
+import { PaymentMethodLabel } from '@/features/settings/components/payment-methods/PaymentMethodLabel'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { formatCurrency } from '@/shared/lib/currency'
+import { toIsoDate } from '@/shared/lib/dates'
+import { Button } from '@/ui/button'
+import { PaymentBalancePreview } from './PaymentBalancePreview'
+import { Input } from '@/ui/input'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/ui/select'
 
-type PaymentKind = "payment" | "prepaid" | "cashback";
-type PaymentScope = "total" | "partial";
+type PaymentKind = 'payment' | 'prepaid' | 'cashback'
+type PaymentScope = 'total' | 'partial'
 
 interface DebtPaymentDialogProps {
-  debt?: Debt;
-  onOpenChange: (open: boolean) => void;
+  debt?: Debt
+  onOpenChange: (open: boolean) => void
 }
 
 // A payment towards one installment, with its kind (D114): kogane-api recomputes the balance and the status (D60)
 export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps) {
-  const addPayment = useAddDebtPayment();
-  const uploadAttachment = useUploadAttachment({ quiet: true });
-  const [proof, setProof] = useState<PendingAttachmentUpload[]>([]);
-  const [amount, setAmount] = useState("");
-  const [paidAt, setPaidAt] = useState(toIsoDate(new Date()));
-  const [kind, setKind] = useState<PaymentKind>("payment");
-  const [scope, setScope] = useState<PaymentScope>("total");
-  const [methodId, setMethodId] = useState<string | null>(null);
-  const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? [];
-  const method = methods.find((item) => item.id === methodId);
-  const canAmortize = method?.type === "credit_card" && method.supportsAmortization;
-  const canCashback = method?.type === "credit_card" && method.supportsCashback;
+  const addPayment = useAddDebtPayment()
+  const uploadAttachment = useUploadAttachment({ quiet: true })
+  const [proof, setProof] = useState<PendingAttachmentUpload[]>([])
+  const [amount, setAmount] = useState('')
+  const [paidAt, setPaidAt] = useState(toIsoDate(new Date()))
+  const [kind, setKind] = useState<PaymentKind>('payment')
+  const [scope, setScope] = useState<PaymentScope>('total')
+  const [methodId, setMethodId] = useState<string | null>(null)
+  const methods = usePaymentMethods().data?.filter((method) => method.isActive) ?? []
+  const method = methods.find((item) => item.id === methodId)
+  const canAmortize = method?.type === 'credit_card' && method.supportsAmortization
+  const canCashback = method?.type === 'credit_card' && method.supportsCashback
 
   useEffect(() => {
     if (debt) {
-      setAmount(String(debt.balance));
-      setPaidAt(toIsoDate(new Date()));
-      setKind("payment");
-      setScope("total");
-      setMethodId(null);
-      setProof([]);
+      setAmount(String(debt.balance))
+      setPaidAt(toIsoDate(new Date()))
+      setKind('payment')
+      setScope('total')
+      setMethodId(null)
+      setProof([])
     }
-  }, [debt]);
+  }, [debt])
 
-  const value = Number(amount);
+  const value = Number(amount)
   const valid =
     debt &&
     value > 0 &&
     value <= debt.balance &&
     !!methodId &&
-    (kind !== "payment" || (scope === "total" ? value >= debt.balance - 0.005 : value < debt.balance - 0.005));
+    (kind !== 'payment' || (scope === 'total' ? value >= debt.balance - 0.005 : value < debt.balance - 0.005))
   const changeAmount = (next: string) => {
-    setAmount(next);
-    if (debt && kind === "payment") setScope(Number(next) < debt.balance ? "partial" : "total");
-  };
+    setAmount(next)
+    if (debt && kind === 'payment') setScope(Number(next) < debt.balance ? 'partial' : 'total')
+  }
 
   const changeMethod = (next: string) => {
-    setMethodId(next);
-    setKind("payment");
-  };
+    setMethodId(next)
+    setKind('payment')
+  }
 
   const handleSave = () => {
-    if (!debt || !valid) return;
+    if (!debt || !valid) return
     addPayment.mutate(
       {
         id: debt.id,
         body: {
           amount: value,
           paidAt,
-          kind: kind === "payment" ? (scope === "partial" ? "partial" : "payment") : kind,
+          kind: kind === 'payment' ? (scope === 'partial' ? 'partial' : 'payment') : kind,
           paymentMethodId: methodId,
         },
       },
       {
         onSuccess: async (payment) => {
-          onOpenChange(false);
+          onOpenChange(false)
           // The Comprobante hangs from the payment just created (refType debt_payment)
-          const [file] = proof;
-          if (!file) return;
+          const [file] = proof
+          if (!file) return
           try {
             await uploadAttachment.mutateAsync({
               file: file.file,
-              refType: "debt_payment",
+              refType: 'debt_payment',
               refId: payment.paymentId,
               kind: file.kind,
-            });
-            toast.success("Comprobante adjuntado");
+            })
+            toast.success('Comprobante adjuntado')
           } catch {
-            toast.error("El pago se guardó, pero no se pudo subir el comprobante. Puedes adjuntarlo después.");
+            toast.error('El pago se guardó, pero no se pudo subir el comprobante. Puedes adjuntarlo después.')
           }
         },
       },
-    );
-  };
+    )
+  }
 
   return (
     <ResponsiveDialog
       open={!!debt}
       onOpenChange={onOpenChange}
       title="Registrar pago"
-      description={debt ? `${debt.description}${debt.installment ? ` ${debt.installment}` : ""} · ${debt.person.name}` : ""}
+      description={debt ? `${debt.description}${debt.installment ? ` ${debt.installment}` : ''} · ${debt.person.name}` : ''}
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -122,7 +122,7 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Aplicación del pago</label>
-            <Select value={scope} disabled={kind !== "payment"} onValueChange={(next) => setScope(next as PaymentScope)}>
+            <Select value={scope} disabled={kind !== 'payment'} onValueChange={(next) => setScope(next as PaymentScope)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -153,13 +153,13 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
           </div>
         </div>
         <p className="-mt-2 text-xs text-muted-foreground">
-          {kind === "prepaid"
-            ? "Amortización: pago adelantado que reduce el saldo de esta deuda."
-            : kind === "cashback"
-              ? "Cashback: devolución o reintegro que reduce el saldo adeudado."
-              : scope === "partial"
-                ? "Pago parcial (abono): reduce el saldo y deja la diferencia pendiente."
-                : "Pago total: cubre el saldo completo de esta cuota."}
+          {kind === 'prepaid'
+            ? 'Amortización: pago adelantado que reduce el saldo de esta deuda.'
+            : kind === 'cashback'
+              ? 'Cashback: devolución o reintegro que reduce el saldo adeudado.'
+              : scope === 'partial'
+                ? 'Pago parcial (abono): reduce el saldo y deja la diferencia pendiente.'
+                : 'Pago total: cubre el saldo completo de esta cuota.'}
         </p>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
@@ -177,7 +177,7 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
             <label className="text-sm font-medium">
               Medio de pago <span className="text-destructive">*</span>
             </label>
-            <Select value={methodId ?? ""} onValueChange={changeMethod}>
+            <Select value={methodId ?? ''} onValueChange={changeMethod}>
               <SelectTrigger aria-label="Medio de pago obligatorio">
                 <SelectValue placeholder="Selecciona un medio" />
               </SelectTrigger>
@@ -185,7 +185,7 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
                 <SelectGroup>
                   <SelectLabel>Tarjetas</SelectLabel>
                   {methods
-                    .filter((method) => method.type === "credit_card")
+                    .filter((method) => method.type === 'credit_card')
                     .map((method) => (
                       <SelectItem key={method.id} value={method.id}>
                         <PaymentMethodLabel name={method.name} type={method.type} color={method.color} />
@@ -196,7 +196,7 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
                 <SelectGroup>
                   <SelectLabel>Cuentas y otros medios</SelectLabel>
                   {methods
-                    .filter((method) => method.type !== "credit_card")
+                    .filter((method) => method.type !== 'credit_card')
                     .map((method) => (
                       <SelectItem key={method.id} value={method.id}>
                         <PaymentMethodLabel name={method.name} type={method.type} color={method.color} />
@@ -220,5 +220,5 @@ export function DebtPaymentDialog({ debt, onOpenChange }: DebtPaymentDialogProps
         {debt && <PaymentBalancePreview balance={debt.balance} amount={value} currency={debt.currency} />}
       </div>
     </ResponsiveDialog>
-  );
+  )
 }

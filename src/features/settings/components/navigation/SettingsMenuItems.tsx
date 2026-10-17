@@ -1,9 +1,9 @@
-import { SETTINGS_MENU_LINKS } from "../../constants/menu";
-import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/ui/dropdown-menu";
+import { SETTINGS_MENU_LINKS } from '../../constants/menu'
+import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/ui/dropdown-menu'
 
 export function SettingsMenuItems({ isAdmin }: { isAdmin: boolean }) {
-  const general = SETTINGS_MENU_LINKS.filter((link) => !link.adminOnly);
-  const admin = isAdmin ? SETTINGS_MENU_LINKS.filter((link) => link.adminOnly) : [];
+  const general = SETTINGS_MENU_LINKS.filter((link) => !link.adminOnly)
+  const admin = isAdmin ? SETTINGS_MENU_LINKS.filter((link) => link.adminOnly) : []
 
   return (
     <>
@@ -33,5 +33,5 @@ export function SettingsMenuItems({ isAdmin }: { isAdmin: boolean }) {
         </>
       )}
     </>
-  );
+  )
 }

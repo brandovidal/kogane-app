@@ -1,2 +1,2 @@
-export { SettingsMenuItems } from "./SettingsMenuItems";
-export { SettingsShell } from "./SettingsShell";
+export { SettingsMenuItems } from './SettingsMenuItems'
+export { SettingsShell } from './SettingsShell'

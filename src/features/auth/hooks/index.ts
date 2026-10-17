@@ -15,4 +15,4 @@ export {
   useUpdateUser,
   useImpersonate,
   useStopImpersonation,
-} from "./auth";
+} from './auth'

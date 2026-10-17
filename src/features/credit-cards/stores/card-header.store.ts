@@ -1,11 +1,11 @@
-import { useStore } from "zustand";
-import { createStore } from "zustand/vanilla";
+import { useStore } from 'zustand'
+import { createStore } from 'zustand/vanilla'
 
 interface CardHeaderState {
-  count: number | null;
-  title: string | null;
-  setCount: (count: number | null) => void;
-  setTitle: (title: string | null) => void;
+  count: number | null
+  title: string | null
+  setCount: (count: number | null) => void
+  setTitle: (title: string | null) => void
 }
 
 export const cardHeaderStore = createStore<CardHeaderState>()((set) => ({
@@ -13,6 +13,6 @@ export const cardHeaderStore = createStore<CardHeaderState>()((set) => ({
   title: null,
   setCount: (count) => set({ count }),
   setTitle: (title) => set({ title }),
-}));
+}))
 
-export const useCardHeader = <T>(selector: (state: CardHeaderState) => T) => useStore(cardHeaderStore, selector);
+export const useCardHeader = <T>(selector: (state: CardHeaderState) => T) => useStore(cardHeaderStore, selector)

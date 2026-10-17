@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 export function AppliedFilterSection({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -6,5 +6,5 @@ export function AppliedFilterSection({ label, children }: { label: string; child
       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       {children}
     </div>
-  );
+  )
 }

@@ -1,1 +1,1 @@
-export { GeneralSettingsView } from "./GeneralSettingsView";
+export { GeneralSettingsView } from './GeneralSettingsView'

@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Check, Copy, LogIn, Trash2, UserPlus } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react'
+import { Check, Copy, LogIn, Trash2, UserPlus } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { useAuthConfig, useImpersonate, useInviteUser, useMe, useRevokeInvite, useUpdateUser, useUsers } from "@/features/auth/hooks/auth";
-import { formatDate } from "@/shared/lib/dates";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+import { useAuthConfig, useImpersonate, useInviteUser, useMe, useRevokeInvite, useUpdateUser, useUsers } from '@/features/auth/hooks/auth'
+import { formatDate } from '@/shared/lib/dates'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,49 +15,49 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/ui/alert-dialog";
-import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+} from '@/ui/alert-dialog'
+import { Input } from '@/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
 
 const ROLE_LABELS: Record<string, string> = {
-  superadmin: "Superadmin",
-  admin: "Admin",
-  member: "Miembro",
-};
+  superadmin: 'Superadmin',
+  admin: 'Admin',
+  member: 'Miembro',
+}
 const STATUS_LABELS: Record<string, string> = {
-  active: "Activo",
-  invited: "Invitado",
-  disabled: "Desactivado",
-};
+  active: 'Activo',
+  invited: 'Invitado',
+  disabled: 'Desactivado',
+}
 
 export function UsersPanel() {
-  const { data: me } = useMe();
-  const { data } = useUsers(true);
-  const mail = useAuthConfig().data?.mail ?? false;
-  const invite = useInviteUser();
-  const revoke = useRevokeInvite();
-  const update = useUpdateUser();
-  const impersonate = useImpersonate();
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"member" | "admin">("member");
+  const { data: me } = useMe()
+  const { data } = useUsers(true)
+  const mail = useAuthConfig().data?.mail ?? false
+  const invite = useInviteUser()
+  const revoke = useRevokeInvite()
+  const update = useUpdateUser()
+  const impersonate = useImpersonate()
+  const [email, setEmail] = useState('')
+  const [role, setRole] = useState<'member' | 'admin'>('member')
   const [created, setCreated] = useState<{
-    email: string;
-    url: string;
-    emailed: boolean;
-  } | null>(null);
-  const [copied, setCopied] = useState(false);
+    email: string
+    url: string
+    emailed: boolean
+  } | null>(null)
+  const [copied, setCopied] = useState(false)
   const [inviteToRevoke, setInviteToRevoke] = useState<{
-    id: string;
-    email: string;
-  } | null>(null);
-  if (!me || !data) return null;
+    id: string
+    email: string
+  } | null>(null)
+  if (!me || !data) return null
 
   const copy = async (url: string) => {
-    await navigator.clipboard.writeText(url).catch(() => undefined);
-    setCopied(true);
-    toast.success("Enlace copiado");
-    setTimeout(() => setCopied(false), 2000);
-  };
+    await navigator.clipboard.writeText(url).catch(() => undefined)
+    setCopied(true)
+    toast.success('Enlace copiado')
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className="max-w-4xl space-y-4">
@@ -65,10 +65,10 @@ export function UsersPanel() {
         <CardHeader>
           <CardTitle className="text-base">Invitar</CardTitle>
           <CardDescription>
-            Se crea un enlace de 7 días.{" "}
+            Se crea un enlace de 7 días.{' '}
             {mail
-              ? "También se envía por correo desde la cuenta de Gmail configurada."
-              : "Aquí no hay correo configurado: pasa el enlace tú (WhatsApp, por ejemplo)."}{" "}
+              ? 'También se envía por correo desde la cuenta de Gmail configurada.'
+              : 'Aquí no hay correo configurado: pasa el enlace tú (WhatsApp, por ejemplo).'}{' '}
             Quien lo abre entra con Google o elige una contraseña.
           </CardDescription>
         </CardHeader>
@@ -76,7 +76,7 @@ export function UsersPanel() {
           <form
             className="grid gap-2 sm:grid-cols-[1fr_140px_auto]"
             onSubmit={(event) => {
-              event.preventDefault();
+              event.preventDefault()
               invite.mutate(
                 { email: email.trim(), role, send: true },
                 {
@@ -86,14 +86,14 @@ export function UsersPanel() {
                       url: result.url,
                       emailed: result.emailed,
                     }),
-                    setEmail("")
+                    setEmail('')
                   ),
                 },
-              );
+              )
             }}
           >
             <Input type="email" placeholder="correo@ejemplo.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Select value={role} onValueChange={(value) => setRole(value as "member" | "admin")}>
+            <Select value={role} onValueChange={(value) => setRole(value as 'member' | 'admin')}>
               <SelectTrigger aria-label="Rol">
                 <SelectValue />
               </SelectTrigger>
@@ -111,12 +111,12 @@ export function UsersPanel() {
               <p>
                 {created.emailed ? (
                   <>
-                    Correo enviado a <span className="font-medium">{created.email}</span>.{" "}
+                    Correo enviado a <span className="font-medium">{created.email}</span>.{' '}
                   </>
                 ) : (
                   <>
                     Enlace para <span className="font-medium">{created.email}</span>
-                    {mail ? " (el correo no salió: pásalo tú)" : ""}:{" "}
+                    {mail ? ' (el correo no salió: pásalo tú)' : ''}:{' '}
                   </>
                 )}
                 (se muestra una sola vez)
@@ -159,18 +159,18 @@ export function UsersPanel() {
         <CardContent>
           <ul className="divide-y rounded-md border text-sm">
             {data.users.map((user) => {
-              const isSuper = user.role === "superadmin";
-              const self = user.id === me.id;
+              const isSuper = user.role === 'superadmin'
+              const self = user.id === me.id
               return (
                 <li key={user.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium">
                       {user.name}
-                      {self ? " (tú)" : ""}
+                      {self ? ' (tú)' : ''}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
                       {user.email}
-                      {user.phone ? ` · ${user.phone}` : ""}
+                      {user.phone ? ` · ${user.phone}` : ''}
                     </p>
                   </div>
                   {isSuper ? (
@@ -181,7 +181,7 @@ export function UsersPanel() {
                       onValueChange={(value) =>
                         update.mutate({
                           id: user.id,
-                          body: { role: value as "admin" | "member" },
+                          body: { role: value as 'admin' | 'member' },
                         })
                       }
                     >
@@ -194,7 +194,7 @@ export function UsersPanel() {
                       </SelectContent>
                     </Select>
                   )}
-                  <Badge variant={user.status === "active" ? "secondary" : "outline"}>{STATUS_LABELS[user.status] ?? user.status}</Badge>
+                  <Badge variant={user.status === 'active' ? 'secondary' : 'outline'}>{STATUS_LABELS[user.status] ?? user.status}</Badge>
                   {!isSuper && !self && (
                     <Button
                       variant="outline"
@@ -204,15 +204,15 @@ export function UsersPanel() {
                         update.mutate({
                           id: user.id,
                           body: {
-                            status: user.status === "disabled" ? "active" : "disabled",
+                            status: user.status === 'disabled' ? 'active' : 'disabled',
                           },
                         })
                       }
                     >
-                      {user.status === "disabled" ? "Activar" : "Desactivar"}
+                      {user.status === 'disabled' ? 'Activar' : 'Desactivar'}
                     </Button>
                   )}
-                  {me.role === "superadmin" && !self && user.status === "active" && (
+                  {me.role === 'superadmin' && !self && user.status === 'active' && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -220,7 +220,7 @@ export function UsersPanel() {
                       disabled={impersonate.isPending}
                       onClick={() =>
                         impersonate.mutate(user.id, {
-                          onSuccess: () => window.location.replace("/"),
+                          onSuccess: () => window.location.replace('/'),
                         })
                       }
                     >
@@ -228,7 +228,7 @@ export function UsersPanel() {
                     </Button>
                   )}
                 </li>
-              );
+              )
             })}
           </ul>
         </CardContent>
@@ -254,11 +254,11 @@ export function UsersPanel() {
                 })
               }
             >
-              {revoke.isPending ? "Eliminando…" : "Eliminar invitación"}
+              {revoke.isPending ? 'Eliminando…' : 'Eliminar invitación'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }

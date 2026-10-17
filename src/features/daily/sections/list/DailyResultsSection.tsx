@@ -1,34 +1,34 @@
-import type { Category, DailyExpense } from "@/shared/api/types";
-import type { Column, ViewMode } from "@/shared/types/data-view";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { GroupedDataView } from "@/shared/components/data-display/GroupedDataView";
-import { Button } from "@/ui/button";
-import { DailyCalendar } from "../../views/DailyCalendarView";
-import { dayKey, dayLabel } from "../../lib/day-label";
-import type { DailyLayout } from "../../types/daily-types";
+import type { Category, DailyExpense } from '@/shared/api/types'
+import type { Column, ViewMode } from '@/shared/types/data-view'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { GroupedDataView } from '@/shared/components/data-display/GroupedDataView'
+import { Button } from '@/ui/button'
+import { DailyCalendar } from '../../views/DailyCalendarView'
+import { dayKey, dayLabel } from '../../lib/day-label'
+import type { DailyLayout } from '../../types/daily-types'
 
-type CatalogName = (id?: string | null) => string;
+type CatalogName = (id?: string | null) => string
 
 export interface DailyResultsSectionProps {
-  expenses: DailyExpense[];
-  totalExpenses: number;
-  loading: boolean;
-  personIds: string[];
-  categories: Category[];
-  personName: CatalogName;
-  categoryName: CatalogName;
-  columns: Column<DailyExpense>[];
-  view: ViewMode;
-  groupBy: string;
-  hideEmptyGroups: boolean;
-  layout: DailyLayout;
-  year: number;
-  month: number;
-  today: Date | null;
-  onEdit: (expense: DailyExpense) => void;
-  onNewExpense: () => void;
-  selected: Set<string>;
-  onSelectedChange: (selected: Set<string>) => void;
+  expenses: DailyExpense[]
+  totalExpenses: number
+  loading: boolean
+  personIds: string[]
+  categories: Category[]
+  personName: CatalogName
+  categoryName: CatalogName
+  columns: Column<DailyExpense>[]
+  view: ViewMode
+  groupBy: string
+  hideEmptyGroups: boolean
+  layout: DailyLayout
+  year: number
+  month: number
+  today: Date | null
+  onEdit: (expense: DailyExpense) => void
+  onNewExpense: () => void
+  selected: Set<string>
+  onSelectedChange: (selected: Set<string>) => void
 }
 
 export function DailyResultsSection({
@@ -52,7 +52,7 @@ export function DailyResultsSection({
   selected,
   onSelectedChange,
 }: DailyResultsSectionProps) {
-  if (loading) return null;
+  if (loading) return null
 
   if (expenses.length === 0) {
     return totalExpenses ? (
@@ -73,11 +73,11 @@ export function DailyResultsSection({
           </div>
         }
       />
-    );
+    )
   }
 
-  if (layout === "calendar") {
-    return <DailyCalendar year={year} month={month} expenses={expenses} onEdit={onEdit} onNewExpense={onNewExpense} />;
+  if (layout === 'calendar') {
+    return <DailyCalendar year={year} month={month} expenses={expenses} onEdit={onEdit} onNewExpense={onNewExpense} />
   }
 
   return (
@@ -86,17 +86,17 @@ export function DailyResultsSection({
       columns={columns}
       rowKey={(expense) => expense.id}
       view={view}
-      groupBy={layout === "day" ? "day" : groupBy}
+      groupBy={layout === 'day' ? 'day' : groupBy}
       hideEmptyGroups={hideEmptyGroups}
       selected={selected}
       onSelectedChange={onSelectedChange}
-      knownGroups={(field) => (field === "person" ? personIds : field === "category" ? categories.map((category) => category.id) : undefined)}
+      knownGroups={(field) => (field === 'person' ? personIds : field === 'category' ? categories.map((category) => category.id) : undefined)}
       groupKey={(expense, key) =>
-        key === "day" ? dayKey(expense.spentAt) : key === "person" ? (expense.personId ?? "none") : (expense.categoryId ?? "none")
+        key === 'day' ? dayKey(expense.spentAt) : key === 'person' ? (expense.personId ?? 'none') : (expense.categoryId ?? 'none')
       }
       groupLabel={(key, field) =>
-        field === "day" ? dayLabel(key, today) : key === "none" ? "Sin asignar" : field === "person" ? personName(key) : categoryName(key)
+        field === 'day' ? dayLabel(key, today) : key === 'none' ? 'Sin asignar' : field === 'person' ? personName(key) : categoryName(key)
       }
     />
-  );
+  )
 }

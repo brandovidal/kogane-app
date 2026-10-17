@@ -1,49 +1,49 @@
-import { useState } from "react";
-import { LoaderCircle, Plus } from "lucide-react";
-import { useDeleteIncome, useIncomes, type Income } from "../hooks/budget";
-import { IncomeDialog } from "./IncomeDialog";
-import { incomeColumns } from "../lib/income-columns";
-import { incomeTotals } from "../lib/income-totals";
-import { IncomeSummarySection } from "../sections/IncomeSummarySection";
-import { useSummary } from "@/features/budget/hooks/summary";
-import { SalaryDialog } from "@/features/budget/components/dialogs/SalaryDialog";
-import { withQuery } from "@/shared/api/query";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { DataView } from "@/shared/components/data-display/DataView";
-import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
-import { PeriodFields } from "@/shared/components/forms/PeriodFields";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import { PERIOD_YEAR_MIN, PERIOD_YEAR_MAX } from "@/shared/constants/period";
-import { useViewMode } from "@/shared/hooks/useViewMode";
-import { useUrlPeriod } from "@/shared/hooks/useUrlPeriod";
-import { getMonthName } from "@/shared/lib/dates";
-import { usePeriod } from "@/shared/stores/period.store";
-import type { MonthlyPeriod } from "@/shared/types/period";
-import { Button } from "@/ui/button";
+import { useState } from 'react'
+import { LoaderCircle, Plus } from 'lucide-react'
+import { useDeleteIncome, useIncomes, type Income } from '../hooks/budget'
+import { IncomeDialog } from './IncomeDialog'
+import { incomeColumns } from '../lib/income-columns'
+import { incomeTotals } from '../lib/income-totals'
+import { IncomeSummarySection } from '../sections/IncomeSummarySection'
+import { useSummary } from '@/features/budget/hooks/summary'
+import { SalaryDialog } from '@/features/budget/components/dialogs/SalaryDialog'
+import { withQuery } from '@/shared/api/query'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { DataView } from '@/shared/components/data-display/DataView'
+import { ViewToggle } from '@/shared/components/data-display/ViewToggle'
+import { PeriodFields } from '@/shared/components/forms/PeriodFields'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { PERIOD_YEAR_MIN, PERIOD_YEAR_MAX } from '@/shared/constants/period'
+import { useViewMode } from '@/shared/hooks/useViewMode'
+import { useUrlPeriod } from '@/shared/hooks/useUrlPeriod'
+import { getMonthName } from '@/shared/lib/dates'
+import { usePeriod } from '@/shared/stores/period.store'
+import type { MonthlyPeriod } from '@/shared/types/period'
+import { Button } from '@/ui/button'
 
 function IncomesPageView() {
   useUrlPeriod({
     minYear: PERIOD_YEAR_MIN,
     maxYear: PERIOD_YEAR_MAX,
     defaultToCurrent: true,
-  });
-  const month = usePeriod((state) => state.month);
-  const year = usePeriod((state) => state.year);
-  const setPeriod = usePeriod((state) => state.setPeriod);
-  const changePeriod = (period: MonthlyPeriod) => setPeriod(period.month, period.year);
-  const query = useIncomes(month, year);
-  const summary = useSummary(month, year);
-  const incomes = query.data ?? [];
-  const deleteIncome = useDeleteIncome();
-  const [editing, setEditing] = useState<Income | null | undefined>(undefined);
-  const [deleting, setDeleting] = useState<Income | null>(null);
-  const [salaryOpen, setSalaryOpen] = useState(false);
-  const [view, setView] = useViewMode("incomes", "table");
+  })
+  const month = usePeriod((state) => state.month)
+  const year = usePeriod((state) => state.year)
+  const setPeriod = usePeriod((state) => state.setPeriod)
+  const changePeriod = (period: MonthlyPeriod) => setPeriod(period.month, period.year)
+  const query = useIncomes(month, year)
+  const summary = useSummary(month, year)
+  const incomes = query.data ?? []
+  const deleteIncome = useDeleteIncome()
+  const [editing, setEditing] = useState<Income | null | undefined>(undefined)
+  const [deleting, setDeleting] = useState<Income | null>(null)
+  const [salaryOpen, setSalaryOpen] = useState(false)
+  const [view, setView] = useViewMode('incomes', 'table')
   const columns = incomeColumns({
     onEdit: setEditing,
     onDelete: setDeleting,
     deleting: deleteIncome.isPending,
-  });
+  })
 
   return (
     <div className="space-y-6">
@@ -121,7 +121,7 @@ function IncomesPageView() {
       <DeleteConfirmationDialog
         open={!!deleting}
         onOpenChange={(open) => {
-          if (!open) setDeleting(null);
+          if (!open) setDeleting(null)
         }}
         title="Eliminar ingreso"
         description={<>Se eliminará «{deleting?.description}» y se actualizará el total de su mes. Esta acción no se puede deshacer.</>}
@@ -130,11 +130,11 @@ function IncomesPageView() {
           if (deleting)
             deleteIncome.mutate(deleting.id, {
               onSuccess: () => setDeleting(null),
-            });
+            })
         }}
       />
     </div>
-  );
+  )
 }
 
-export const IncomesPage = withQuery(IncomesPageView);
+export const IncomesPage = withQuery(IncomesPageView)

@@ -1,1 +1,1 @@
-export { PaymentMethodIcon, type PaymentMethodIconProps } from "@/shared/components/data-display/PaymentMethodIcon";
+export { PaymentMethodIcon, type PaymentMethodIconProps } from '@/shared/components/data-display/PaymentMethodIcon'

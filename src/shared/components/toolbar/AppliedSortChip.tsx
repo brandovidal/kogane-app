@@ -1,5 +1,5 @@
-import { ArrowDown, ArrowUp, X } from "lucide-react";
-import { AppliedFilterSection } from "./AppliedFilterSection";
+import { ArrowDown, ArrowUp, X } from 'lucide-react'
+import { AppliedFilterSection } from './AppliedFilterSection'
 
 export function AppliedSortChip({ label, descending, onRemove }: { label: string; descending: boolean; onRemove: () => void }) {
   return (
@@ -17,5 +17,5 @@ export function AppliedSortChip({ label, descending, onRemove }: { label: string
         </button>
       </span>
     </AppliedFilterSection>
-  );
+  )
 }

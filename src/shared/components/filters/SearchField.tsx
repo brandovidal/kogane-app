@@ -1,19 +1,19 @@
-import { useRef } from "react";
-import { Search } from "lucide-react";
+import { useRef } from 'react'
+import { Search } from 'lucide-react'
 
-import { cn } from "@/shared/utils/cn";
-import { useSearchShortcut } from "@/shared/hooks/useSearchShortcut";
-import { Input } from "@/ui/input";
+import { cn } from '@/shared/utils/cn'
+import { useSearchShortcut } from '@/shared/hooks/useSearchShortcut'
+import { Input } from '@/ui/input'
 
 export interface SearchFieldProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  label?: string;
-  className?: string;
-  labelClassName?: string;
-  active?: boolean;
-  shortcut?: string;
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  label?: string
+  className?: string
+  labelClassName?: string
+  active?: boolean
+  shortcut?: string
 }
 
 export function SearchField({
@@ -22,25 +22,25 @@ export function SearchField({
   placeholder,
   label,
   className,
-  labelClassName = "text-xs font-medium text-muted-foreground",
+  labelClassName = 'text-xs font-medium text-muted-foreground',
   active = value.trim().length > 0,
   shortcut,
 }: SearchFieldProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  useSearchShortcut(inputRef, shortcut);
+  const inputRef = useRef<HTMLInputElement>(null)
+  useSearchShortcut(inputRef, shortcut)
 
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn('space-y-1.5', className)}>
       {label && <div className={labelClassName}>{label}</div>}
       <div className="relative">
-        <Search className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 ${active ? "text-primary" : "text-muted-foreground"}`} />
+        <Search className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
         <Input
           ref={inputRef}
           aria-label={label ?? placeholder}
           placeholder={placeholder}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className={`h-9 pl-9 ${shortcut ? "pr-9 " : ""}${active ? "border-primary/60 bg-primary/5 ring-1 ring-primary/20" : ""}`}
+          className={`h-9 pl-9 ${shortcut ? 'pr-9 ' : ''}${active ? 'border-primary/60 bg-primary/5 ring-1 ring-primary/20' : ''}`}
         />
         {shortcut && (
           <kbd
@@ -52,5 +52,5 @@ export function SearchField({
         )}
       </div>
     </div>
-  );
+  )
 }

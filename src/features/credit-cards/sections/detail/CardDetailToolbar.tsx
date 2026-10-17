@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { ArrowDownUp, Columns3, Layers, SlidersHorizontal } from "lucide-react";
-import type { ExpenseFilterValues } from "@/features/expenses/types/expense-filters";
-import type { ExpenseFilterKey } from "@/features/expenses/types/expense-filters";
-import { ExpenseFilters } from "@/features/expenses/components/filters/ExpenseFilters";
-import { ActiveExpenseFilterChips } from "@/features/expenses/components/filters/ActiveExpenseFilterChips";
-import { countActiveExpenseFilters } from "@/features/expenses/lib/expense-filters";
-import { useMe } from "@/shared/api/hooks/catalogs";
+import { useState } from 'react'
+import { ArrowDownUp, Columns3, Layers, SlidersHorizontal } from 'lucide-react'
+import type { ExpenseFilterValues } from '@/features/expenses/types/expense-filters'
+import type { ExpenseFilterKey } from '@/features/expenses/types/expense-filters'
+import { ExpenseFilters } from '@/features/expenses/components/filters/ExpenseFilters'
+import { ActiveExpenseFilterChips } from '@/features/expenses/components/filters/ActiveExpenseFilterChips'
+import { countActiveExpenseFilters } from '@/features/expenses/lib/expense-filters'
+import { useMe } from '@/shared/api/hooks/catalogs'
 import {
   AppliedFilterSection,
   AppliedGroupChips,
@@ -19,36 +19,36 @@ import {
   ViewModeToggle,
   ViewSettingsMenu,
   type ColumnVisibilityOption,
-} from "@/shared/components/toolbar";
-import type { ViewMode } from "@/shared/types/data-view";
-import { Button } from "@/ui/button";
-import { DropdownMenuItem } from "@/ui/dropdown-menu";
-import { CARD_DETAIL_GROUP_OPTIONS } from "../../constants/filters";
-import { CREDIT_CARD_STATUSES } from "../../constants/statuses";
-import type { CardDetailGroupBy } from "../../constants/filters";
+} from '@/shared/components/toolbar'
+import type { ViewMode } from '@/shared/types/data-view'
+import { Button } from '@/ui/button'
+import { DropdownMenuItem } from '@/ui/dropdown-menu'
+import { CARD_DETAIL_GROUP_OPTIONS } from '../../constants/filters'
+import { CREDIT_CARD_STATUSES } from '../../constants/statuses'
+import type { CardDetailGroupBy } from '../../constants/filters'
 
 const SORT_OPTIONS = [
-  { value: "date-desc", label: "Fecha: más reciente" },
-  { value: "date-asc", label: "Fecha: más antigua" },
-  { value: "amount-desc", label: "Monto: mayor a menor" },
-  { value: "amount-asc", label: "Monto: menor a mayor" },
-  { value: "description-asc", label: "Descripción: A–Z" },
-] as const;
+  { value: 'date-desc', label: 'Fecha: más reciente' },
+  { value: 'date-asc', label: 'Fecha: más antigua' },
+  { value: 'amount-desc', label: 'Monto: mayor a menor' },
+  { value: 'amount-asc', label: 'Monto: menor a mayor' },
+  { value: 'description-asc', label: 'Descripción: A–Z' },
+] as const
 
 export interface CardDetailToolbarProps {
-  filters: ExpenseFilterValues;
-  onFiltersChange: (filters: ExpenseFilterValues) => void;
-  shown: number;
-  total: number;
-  groupBy: CardDetailGroupBy[];
-  onGroupByChange: (groupBy: CardDetailGroupBy[]) => void;
-  sort?: string;
-  onSortChange: (sort: string | undefined) => void;
-  view: ViewMode;
-  onViewChange: (view: ViewMode) => void;
-  fields: readonly ExpenseFilterKey[];
-  columns: readonly ColumnVisibilityOption[];
-  onResetView: () => void;
+  filters: ExpenseFilterValues
+  onFiltersChange: (filters: ExpenseFilterValues) => void
+  shown: number
+  total: number
+  groupBy: CardDetailGroupBy[]
+  onGroupByChange: (groupBy: CardDetailGroupBy[]) => void
+  sort?: string
+  onSortChange: (sort: string | undefined) => void
+  view: ViewMode
+  onViewChange: (view: ViewMode) => void
+  fields: readonly ExpenseFilterKey[]
+  columns: readonly ColumnVisibilityOption[]
+  onResetView: () => void
 }
 
 export function CardDetailToolbar({
@@ -66,13 +66,13 @@ export function CardDetailToolbar({
   columns,
   onResetView,
 }: CardDetailToolbarProps) {
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [showApplied, setShowApplied] = useState(false);
-  const me = useMe();
-  const filterCount = countActiveExpenseFilters(filters, fields);
-  const appliedCount = filterCount + (sort ? 1 : 0) + groupBy.length;
-  const sortLabel = SORT_OPTIONS.find((option) => option.value === sort)?.label;
-  const visibleColumnCount = columns.filter((column) => column.visible).length;
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [showApplied, setShowApplied] = useState(false)
+  const me = useMe()
+  const filterCount = countActiveExpenseFilters(filters, fields)
+  const appliedCount = filterCount + (sort ? 1 : 0) + groupBy.length
+  const sortLabel = SORT_OPTIONS.find((option) => option.value === sort)?.label
+  const visibleColumnCount = columns.filter((column) => column.visible).length
 
   return (
     <div className="space-y-2">
@@ -162,7 +162,7 @@ export function CardDetailToolbar({
       {showApplied && appliedCount > 0 && (
         <AppliedViewSummary onAddFilter={() => setFilterOpen(true)} onReset={onResetView} resetDisabled={appliedCount === 0}>
           {sortLabel && (
-            <AppliedSortChip label={sortLabel.split(":")[0]} descending={sort?.endsWith("desc") ?? false} onRemove={() => onSortChange(undefined)} />
+            <AppliedSortChip label={sortLabel.split(':')[0]} descending={sort?.endsWith('desc') ?? false} onRemove={() => onSortChange(undefined)} />
           )}
           {groupBy.length > 0 && (
             <AppliedGroupChips
@@ -188,5 +188,5 @@ export function CardDetailToolbar({
         </AppliedViewSummary>
       )}
     </div>
-  );
+  )
 }

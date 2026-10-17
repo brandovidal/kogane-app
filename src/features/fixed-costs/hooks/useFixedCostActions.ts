@@ -1,71 +1,71 @@
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useDeleteExpense, useSaveExpense } from "@/features/expenses/hooks/expenses";
-import { errorMessage } from "@/shared/api/hooks/use-api-mutation";
-import { EXPENSE_RESOURCES, type FixedCost } from "@/shared/api/types";
-import type { MoveSource } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
-import { duplicateBody, nextMonthBody, previousMonthBody } from "@/features/expenses/lib/expense-actions";
-import { expenseKeys } from "@/features/expenses/hooks/expense-keys";
-import { saveExpense } from "@/features/expenses/services/expense.service";
-import type { FixedCostActions } from "@/features/fixed-costs/types/fixed-cost-types";
+import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useDeleteExpense, useSaveExpense } from '@/features/expenses/hooks/expenses'
+import { errorMessage } from '@/shared/api/hooks/use-api-mutation'
+import { EXPENSE_RESOURCES, type FixedCost } from '@/shared/api/types'
+import type { MoveSource } from '@/features/expenses/components/dialogs/MoveSeriesDialog'
+import { duplicateBody, nextMonthBody, previousMonthBody } from '@/features/expenses/lib/expense-actions'
+import { expenseKeys } from '@/features/expenses/hooks/expense-keys'
+import { saveExpense } from '@/features/expenses/services/expense.service'
+import type { FixedCostActions } from '@/features/fixed-costs/types/fixed-cost-types'
 
 export function useFixedCostActions() {
-  const saveFixedCost = useSaveExpense(EXPENSE_RESOURCES.fixedCost);
-  const deleteFixedCost = useDeleteExpense(EXPENSE_RESOURCES.fixedCost);
-  const queryClient = useQueryClient();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<FixedCost>();
-  const [openedItem, setOpenedItem] = useState<FixedCost>();
-  const [openedTab, setOpenedTab] = useState<"detail" | "files" | "history">("detail");
-  const [moving, setMoving] = useState<MoveSource | null>(null);
-  const [copying, setCopying] = useState(false);
+  const saveFixedCost = useSaveExpense(EXPENSE_RESOURCES.fixedCost)
+  const deleteFixedCost = useDeleteExpense(EXPENSE_RESOURCES.fixedCost)
+  const queryClient = useQueryClient()
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingItem, setEditingItem] = useState<FixedCost>()
+  const [openedItem, setOpenedItem] = useState<FixedCost>()
+  const [openedTab, setOpenedTab] = useState<'detail' | 'files' | 'history'>('detail')
+  const [moving, setMoving] = useState<MoveSource | null>(null)
+  const [copying, setCopying] = useState(false)
 
   const copyToMonth = async (costs: FixedCost[], paymentMonth: number, paymentYear: number) => {
-    if (!costs.length || copying) return;
-    setCopying(true);
+    if (!costs.length || copying) return
+    setCopying(true)
     const results = await Promise.allSettled(
       costs.map((cost) => {
-        const body = duplicateBody(EXPENSE_RESOURCES.fixedCost, cost);
-        body.description = cost.description;
-        body.paymentMonth = paymentMonth;
-        body.paymentYear = paymentYear;
-        if (typeof body.dueDate === "string") {
-          const day = Number(body.dueDate.slice(8, 10));
-          const lastDay = new Date(Date.UTC(paymentYear, paymentMonth, 0)).getUTCDate();
-          body.dueDate = `${paymentYear}-${String(paymentMonth).padStart(2, "0")}-${String(Math.min(day, lastDay)).padStart(2, "0")}`;
+        const body = duplicateBody(EXPENSE_RESOURCES.fixedCost, cost)
+        body.description = cost.description
+        body.paymentMonth = paymentMonth
+        body.paymentYear = paymentYear
+        if (typeof body.dueDate === 'string') {
+          const day = Number(body.dueDate.slice(8, 10))
+          const lastDay = new Date(Date.UTC(paymentYear, paymentMonth, 0)).getUTCDate()
+          body.dueDate = `${paymentYear}-${String(paymentMonth).padStart(2, '0')}-${String(Math.min(day, lastDay)).padStart(2, '0')}`
         }
-        return saveExpense(EXPENSE_RESOURCES.fixedCost, { body });
+        return saveExpense(EXPENSE_RESOURCES.fixedCost, { body })
       }),
-    );
-    const copied = results.filter((result) => result.status === "fulfilled").length;
-    const failed = results.filter((result) => result.status === "rejected");
+    )
+    const copied = results.filter((result) => result.status === 'fulfilled').length
+    const failed = results.filter((result) => result.status === 'rejected')
     if (copied) {
       await Promise.all(
-        [expenseKeys.resource(EXPENSE_RESOURCES.fixedCost), ["summary"], ["commitments"]].map((queryKey) =>
+        [expenseKeys.resource(EXPENSE_RESOURCES.fixedCost), ['summary'], ['commitments']].map((queryKey) =>
           queryClient.invalidateQueries({ queryKey }),
         ),
-      );
-      toast.success(`${copied} ${copied === 1 ? "costo copiado" : "costos copiados"}`);
+      )
+      toast.success(`${copied} ${copied === 1 ? 'costo copiado' : 'costos copiados'}`)
     }
     if (failed.length) {
-      const reason = failed[0]?.reason;
+      const reason = failed[0]?.reason
       toast.error(
-        `${failed.length} ${failed.length === 1 ? "costo no se pudo copiar" : "costos no se pudieron copiar"}${reason ? `: ${errorMessage(reason)}` : "."}`,
-      );
+        `${failed.length} ${failed.length === 1 ? 'costo no se pudo copiar' : 'costos no se pudieron copiar'}${reason ? `: ${errorMessage(reason)}` : '.'}`,
+      )
     }
-    setCopying(false);
-  };
+    setCopying(false)
+  }
 
   const actions: FixedCostActions = {
-    onOpen: (cost, tab = "detail") => {
-      setOpenedTab(tab);
-      setOpenedItem(cost);
+    onOpen: (cost, tab = 'detail') => {
+      setOpenedTab(tab)
+      setOpenedItem(cost)
     },
     onEdit: (cost) => {
-      setEditingItem(cost);
-      setOpenedItem(undefined);
-      setDialogOpen(true);
+      setEditingItem(cost)
+      setOpenedItem(undefined)
+      setDialogOpen(true)
     },
     onDuplicate: (cost) =>
       saveFixedCost.mutate({
@@ -81,7 +81,7 @@ export function useFixedCostActions() {
       }),
     onDelete: (cost) => deleteFixedCost.mutateAsync(cost.id),
     onStatusChange: (cost, paymentStatus) => saveFixedCost.mutate({ id: cost.id, body: { paymentStatus } }),
-  };
+  }
 
   return {
     actions,
@@ -94,13 +94,13 @@ export function useFixedCostActions() {
     copying,
     copyToMonth,
     onCreate: () => {
-      setEditingItem(undefined);
-      setDialogOpen(true);
+      setEditingItem(undefined)
+      setDialogOpen(true)
     },
     onCloseDetail: () => setOpenedItem(undefined),
     onEditDetail: () => {
-      if (openedItem) actions.onEdit(openedItem);
+      if (openedItem) actions.onEdit(openedItem)
     },
     onCloseMove: () => setMoving(null),
-  };
+  }
 }

@@ -1,13 +1,13 @@
 ---
-import { PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react'
 
-import NavMenu from "@/layouts/components/navigation/NavMenu.astro";
+import NavMenu from '@/layouts/components/navigation/NavMenu.astro'
 
 interface Props {
-  currentPath: string;
+  currentPath: string
 }
 
-const { currentPath } = Astro.props;
+const { currentPath } = Astro.props
 ---
 
 <aside
@@ -73,87 +73,87 @@ const { currentPath } = Astro.props;
 </aside>
 
 <script is:inline>
-  (function () {
-    const COMPACT_KEY = "kogane:sidebar-compact";
-    const GROUPS_KEY = "kogane:nav-open:v2";
-    const aside = document.querySelector("[data-sidebar]");
-    if (!aside) return;
-    const groups = aside.querySelectorAll("details[data-group]");
+  ;(function () {
+    const COMPACT_KEY = 'kogane:sidebar-compact'
+    const GROUPS_KEY = 'kogane:nav-open:v2'
+    const aside = document.querySelector('[data-sidebar]')
+    if (!aside) return
+    const groups = aside.querySelectorAll('details[data-group]')
     const read = function (key) {
       try {
-        return localStorage.getItem(key);
+        return localStorage.getItem(key)
       } catch {
-        return null;
+        return null
       }
-    };
+    }
     const write = function (key, value) {
       try {
-        localStorage.setItem(key, value);
+        localStorage.setItem(key, value)
       } catch {
         /* not remembered */
       }
-    };
-    const stored = read(GROUPS_KEY);
-    let saved = [];
-    try {
-      saved = JSON.parse(stored || "[]") || [];
-    } catch {
-      saved = [];
     }
-    const opened = [];
-    const current = [];
+    const stored = read(GROUPS_KEY)
+    let saved = []
+    try {
+      saved = JSON.parse(stored || '[]') || []
+    } catch {
+      saved = []
+    }
+    const opened = []
+    const current = []
     groups.forEach(function (group) {
-      if (group.open) opened.push(group.dataset.group);
-      if (group.dataset.current === "true") current.push(group.dataset.group);
-    });
+      if (group.open) opened.push(group.dataset.group)
+      if (group.dataset.current === 'true') current.push(group.dataset.group)
+    })
     let openGroups =
       stored === null
         ? opened
         : saved.concat(
             current.filter(function (label) {
-              return saved.indexOf(label) < 0;
+              return saved.indexOf(label) < 0
             }),
-          );
+          )
 
     const apply = function (compact) {
-      aside.dataset.compact = compact ? "true" : "false";
-      aside.querySelectorAll("[data-sidebar-toggle]").forEach(function (button) {
-        button.setAttribute("aria-label", compact ? "Expandir menú" : "Compactar menú");
-        button.setAttribute("aria-expanded", compact ? "false" : "true");
-      });
+      aside.dataset.compact = compact ? 'true' : 'false'
+      aside.querySelectorAll('[data-sidebar-toggle]').forEach(function (button) {
+        button.setAttribute('aria-label', compact ? 'Expandir menú' : 'Compactar menú')
+        button.setAttribute('aria-expanded', compact ? 'false' : 'true')
+      })
       groups.forEach(function (group) {
-        group.open = compact || openGroups.indexOf(group.dataset.group) >= 0;
-      });
-    };
-    apply(read(COMPACT_KEY) === "1");
+        group.open = compact || openGroups.indexOf(group.dataset.group) >= 0
+      })
+    }
+    apply(read(COMPACT_KEY) === '1')
 
     groups.forEach(function (group) {
-      group.addEventListener("toggle", function () {
-        if (aside.dataset.compact === "true") return;
-        const label = group.dataset.group;
+      group.addEventListener('toggle', function () {
+        if (aside.dataset.compact === 'true') return
+        const label = group.dataset.group
         openGroups = openGroups.filter(function (item) {
-          return item !== label;
-        });
-        if (group.open) openGroups.push(label);
-        write(GROUPS_KEY, JSON.stringify(openGroups));
-      });
-    });
+          return item !== label
+        })
+        if (group.open) openGroups.push(label)
+        write(GROUPS_KEY, JSON.stringify(openGroups))
+      })
+    })
 
-    const search = aside.querySelector("[data-open-search]");
+    const search = aside.querySelector('[data-open-search]')
     if (search) {
-      search.addEventListener("click", function () {
-        window.dispatchEvent(new CustomEvent("kogane:open-search"));
-      });
+      search.addEventListener('click', function () {
+        window.dispatchEvent(new CustomEvent('kogane:open-search'))
+      })
     }
 
-    aside.querySelectorAll("[data-sidebar-toggle]").forEach(function (toggle) {
-      toggle.addEventListener("click", function () {
-        const compact = aside.dataset.compact !== "true";
-        write(COMPACT_KEY, compact ? "1" : "0");
-        apply(compact);
-        const visibleToggle = aside.querySelector(compact ? "[data-sidebar-expand]" : "[data-sidebar-collapse]");
-        if (visibleToggle) visibleToggle.focus();
-      });
-    });
-  })();
+    aside.querySelectorAll('[data-sidebar-toggle]').forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        const compact = aside.dataset.compact !== 'true'
+        write(COMPACT_KEY, compact ? '1' : '0')
+        apply(compact)
+        const visibleToggle = aside.querySelector(compact ? '[data-sidebar-expand]' : '[data-sidebar-collapse]')
+        if (visibleToggle) visibleToggle.focus()
+      })
+    })
+  })()
 </script>

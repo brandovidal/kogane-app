@@ -1,6 +1,6 @@
-import type { Attachment } from "@/shared/api/types";
-import { cn } from "@/shared/utils/cn";
-import { ATTACHMENT_KIND_LABELS } from "../constants/attachments";
+import type { Attachment } from '@/shared/api/types'
+import { cn } from '@/shared/utils/cn'
+import { ATTACHMENT_KIND_LABELS } from '../constants/attachments'
 
 // «Tipo de archivo · se aplica a los que subas ahora» (boards 14b/14c)
 export function AttachmentKindChips({
@@ -8,9 +8,9 @@ export function AttachmentKindChips({
   onChange,
   disabled = false,
 }: {
-  value: Attachment["kind"];
-  onChange: (kind: Attachment["kind"]) => void;
-  disabled?: boolean;
+  value: Attachment['kind']
+  onChange: (kind: Attachment['kind']) => void
+  disabled?: boolean
 }) {
   return (
     <div className="space-y-1.5">
@@ -26,10 +26,10 @@ export function AttachmentKindChips({
             role="radio"
             aria-checked={value === kind}
             disabled={disabled}
-            onClick={() => onChange(kind as Attachment["kind"])}
+            onClick={() => onChange(kind as Attachment['kind'])}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50",
-              value === kind ? "border-primary bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
+              'rounded-full border px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50',
+              value === kind ? 'border-primary bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted',
             )}
           >
             {label}
@@ -37,5 +37,5 @@ export function AttachmentKindChips({
         ))}
       </div>
     </div>
-  );
+  )
 }

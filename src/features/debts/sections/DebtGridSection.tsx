@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { HistoryDialog } from "@/features/history/components/HistoryDialog";
-import { BellRing, ChevronRight, Eye, HandCoins, History, MoreHorizontal, Pencil, RotateCcw, Trash2 } from "lucide-react";
-import { useDeleteDebt, useBulkDebts } from "@/features/debts/hooks/debts";
-import { useRemindDebts } from "@/features/notifications/hooks/notifications";
-import type { Debt } from "@/shared/api/types";
-import { DataView } from "@/shared/components/data-display/DataView";
-import { type Column, type ViewMode } from "@/shared/types/data-view";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { DEBT_TIMING_LABELS } from "@/features/debts/constants/debts";
+import { useState } from 'react'
+import { HistoryDialog } from '@/features/history/components/HistoryDialog'
+import { BellRing, ChevronRight, Eye, HandCoins, History, MoreHorizontal, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { useDeleteDebt, useBulkDebts } from '@/features/debts/hooks/debts'
+import { useRemindDebts } from '@/features/notifications/hooks/notifications'
+import type { Debt } from '@/shared/api/types'
+import { DataView } from '@/shared/components/data-display/DataView'
+import { type Column, type ViewMode } from '@/shared/types/data-view'
+import { StatusBadge } from '@/features/expenses/components/StatusBadge'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { DEBT_TIMING_LABELS } from '@/features/debts/constants/debts'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,14 +19,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/ui/alert-dialog";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Checkbox } from "@/ui/checkbox";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import { Progress } from "@/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { debtBadgeStatus, groupByPersonAndType } from "@/features/debts/lib/debt-filters";
+} from '@/ui/alert-dialog'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Checkbox } from '@/ui/checkbox'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { Progress } from '@/ui/progress'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { debtBadgeStatus, groupByPersonAndType } from '@/features/debts/lib/debt-filters'
 
 export function DebtGridSection({
   debts,
@@ -38,26 +38,26 @@ export function DebtGridSection({
   groupTypes = false,
   cardNames = new Map(),
 }: {
-  debts: Debt[];
-  view: ViewMode;
-  onPay: (debt: Debt) => void;
-  onEdit: (debt: Debt) => void;
-  selected: Set<string>;
-  onSelectedChange: (selected: Set<string>) => void;
-  groupTypes?: boolean;
-  cardNames?: Map<string, string>;
+  debts: Debt[]
+  view: ViewMode
+  onPay: (debt: Debt) => void
+  onEdit: (debt: Debt) => void
+  selected: Set<string>
+  onSelectedChange: (selected: Set<string>) => void
+  groupTypes?: boolean
+  cardNames?: Map<string, string>
 }) {
-  const deleteDebt = useDeleteDebt();
-  const [deleting, setDeleting] = useState<Debt | null>(null);
-  const [resetting, setResetting] = useState<Debt | null>(null);
-  const [historyOf, setHistoryOf] = useState<Debt | null>(null);
-  const remind = useRemindDebts();
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const deleteDebt = useDeleteDebt()
+  const [deleting, setDeleting] = useState<Debt | null>(null)
+  const [resetting, setResetting] = useState<Debt | null>(null)
+  const [historyOf, setHistoryOf] = useState<Debt | null>(null)
+  const remind = useRemindDebts()
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const columns: Column<Debt>[] = [
     {
-      key: "concept",
-      header: "Concepto",
-      role: "title",
+      key: 'concept',
+      header: 'Concepto',
+      role: 'title',
       cell: (debt) => (
         <div>
           <span className="font-medium">
@@ -73,11 +73,11 @@ export function DebtGridSection({
       ),
     },
     {
-      key: "balance",
-      header: "Saldo",
-      role: "amount",
+      key: 'balance',
+      header: 'Saldo',
+      role: 'amount',
       cell: (debt) => {
-        const progress = debt.amount > 0 ? (debt.paidAmount / debt.amount) * 100 : 0;
+        const progress = debt.amount > 0 ? (debt.paidAmount / debt.amount) * 100 : 0
         return (
           <div className="min-w-35 space-y-1">
             <span className="font-semibold tabular-nums">{formatCurrency(debt.balance)}</span>
@@ -86,17 +86,17 @@ export function DebtGridSection({
               Pagado {formatCurrency(debt.paidAmount)} de {formatCurrency(debt.amount)}
             </p>
           </div>
-        );
+        )
       },
     },
     {
-      key: "person",
-      header: "Persona",
+      key: 'person',
+      header: 'Persona',
       cell: (debt) => <span className="text-sm">{debt.person.name}</span>,
     },
     {
-      key: "month",
-      header: "Mes de pago",
+      key: 'month',
+      header: 'Mes de pago',
       cell: (debt) => (
         <span className="text-sm text-muted-foreground">
           {getMonthName(debt.paymentMonth)} {debt.paymentYear}
@@ -104,21 +104,21 @@ export function DebtGridSection({
       ),
     },
     {
-      key: "state",
-      header: "Estado",
+      key: 'state',
+      header: 'Estado',
       cell: (debt) => (
         <span className="inline-flex items-center gap-1">
           <StatusBadge status={debtBadgeStatus(debt.status)} />
-          {debt.balance > 0 && debt.timing === "late" && <StatusBadge status="late" label={DEBT_TIMING_LABELS.late} />}
-          {debt.balance > 0 && debt.timing === "upcoming" && <StatusBadge status="not_started" label={DEBT_TIMING_LABELS.upcoming} />}
+          {debt.balance > 0 && debt.timing === 'late' && <StatusBadge status="late" label={DEBT_TIMING_LABELS.late} />}
+          {debt.balance > 0 && debt.timing === 'upcoming' && <StatusBadge status="not_started" label={DEBT_TIMING_LABELS.upcoming} />}
         </span>
       ),
     },
     {
-      key: "actions",
-      header: "",
-      role: "actions",
-      className: "w-[50px]",
+      key: 'actions',
+      header: '',
+      role: 'actions',
+      className: 'w-[50px]',
       cell: (debt) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -128,7 +128,7 @@ export function DebtGridSection({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild>
-              <a href={`/detalle-deuda?id=${encodeURIComponent(debt.id)}&from=${debt.direction === "owed_to_me" ? "cobros" : "deudas"}`}>
+              <a href={`/detalle-deuda?id=${encodeURIComponent(debt.id)}&from=${debt.direction === 'owed_to_me' ? 'cobros' : 'deudas'}`}>
                 <Eye /> Ver detalle
               </a>
             </DropdownMenuItem>
@@ -139,7 +139,7 @@ export function DebtGridSection({
             <DropdownMenuItem onSelect={() => onPay(debt)} disabled={debt.balance <= 0}>
               <HandCoins /> Registrar pago
             </DropdownMenuItem>
-            {debt.status !== "pending" && (
+            {debt.status !== 'pending' && (
               <DropdownMenuItem onSelect={() => setResetting(debt)}>
                 <RotateCcw /> Corregir estado
               </DropdownMenuItem>
@@ -158,25 +158,25 @@ export function DebtGridSection({
         </DropdownMenu>
       ),
     },
-  ];
+  ]
   if (groupTypes) {
-    const groups = groupByPersonAndType(debts, cardNames);
-    const ownDebts = groups.find((group) => group.type === "Deuda propia")?.debts ?? [];
-    const summaries = groups.filter((group) => group.type !== "Deuda propia");
+    const groups = groupByPersonAndType(debts, cardNames)
+    const ownDebts = groups.find((group) => group.type === 'Deuda propia')?.debts ?? []
+    const summaries = groups.filter((group) => group.type !== 'Deuda propia')
     const toggleGroup = (key: string) =>
       setExpandedGroups((current) => {
-        const next = new Set(current);
-        if (next.has(key)) next.delete(key);
-        else next.add(key);
-        return next;
-      });
+        const next = new Set(current)
+        if (next.has(key)) next.delete(key)
+        else next.add(key)
+        return next
+      })
     const toggleSelection = (items: Debt[], checked: boolean) => {
-      const next = new Set(selected);
-      items.forEach((item) => (checked ? next.add(item.id) : next.delete(item.id)));
-      onSelectedChange(next);
-    };
+      const next = new Set(selected)
+      items.forEach((item) => (checked ? next.add(item.id) : next.delete(item.id)))
+      onSelectedChange(next)
+    }
     const renderDebtRow = (debt: Debt) => (
-      <TableRow key={debt.id} data-state={selected.has(debt.id) ? "selected" : undefined}>
+      <TableRow key={debt.id} data-state={selected.has(debt.id) ? 'selected' : undefined}>
         <TableCell>
           <Checkbox
             aria-label={`Seleccionar ${debt.description}`}
@@ -190,7 +190,7 @@ export function DebtGridSection({
           </TableCell>
         ))}
       </TableRow>
-    );
+    )
     return (
       <>
         <div className="overflow-hidden rounded-md border">
@@ -204,7 +204,7 @@ export function DebtGridSection({
                       debts.length > 0 && debts.every((debt) => selected.has(debt.id))
                         ? true
                         : debts.some((debt) => selected.has(debt.id))
-                          ? "indeterminate"
+                          ? 'indeterminate'
                           : false
                     }
                     onCheckedChange={(checked) => toggleSelection(debts, checked === true)}
@@ -212,7 +212,7 @@ export function DebtGridSection({
                 </TableHead>
                 {columns.map((column) => (
                   <TableHead key={column.key} className={column.className}>
-                    {column.role === "actions" ? "" : column.header}
+                    {column.role === 'actions' ? '' : column.header}
                   </TableHead>
                 ))}
               </TableRow>
@@ -220,42 +220,42 @@ export function DebtGridSection({
             <TableBody>
               {ownDebts.map(renderDebtRow)}
               {summaries.map((group) => {
-                const isPlatform = group.type === "Plataformas";
-                const title = /cmr|falabella/i.test(group.type) ? "CMR (Falabella)" : isPlatform ? "Plataformas · Stream" : group.type;
-                const expanded = expandedGroups.has(group.key);
-                const allSelected = group.debts.every((debt) => selected.has(debt.id));
-                const someSelected = group.debts.some((debt) => selected.has(debt.id));
+                const isPlatform = group.type === 'Plataformas'
+                const title = /cmr|falabella/i.test(group.type) ? 'CMR (Falabella)' : isPlatform ? 'Plataformas · Stream' : group.type
+                const expanded = expandedGroups.has(group.key)
+                const allSelected = group.debts.every((debt) => selected.has(debt.id))
+                const someSelected = group.debts.some((debt) => selected.has(debt.id))
                 return (
                   <>
                     <TableRow key={`${group.key}:summary`} className="bg-muted/30">
                       <TableCell>
                         <Checkbox
                           aria-label={`Seleccionar ${title}`}
-                          checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                          checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                           onCheckedChange={(checked) => toggleSelection(group.debts, checked === true)}
                         />
                       </TableCell>
                       {columns.map((column) => (
                         <TableCell key={column.key} className={column.className}>
-                          {column.role === "title" ? (
+                          {column.role === 'title' ? (
                             <button
                               type="button"
                               className="flex items-center gap-2 text-left font-medium"
                               aria-expanded={expanded}
                               onClick={() => toggleGroup(group.key)}
                             >
-                              <ChevronRight className={`h-4 w-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
+                              <ChevronRight className={`h-4 w-4 transition-transform ${expanded ? 'rotate-90' : ''}`} />
                               {title}
                               <Badge variant="outline" className="text-xs">
                                 {group.debts.length}
                               </Badge>
                             </button>
-                          ) : column.role === "amount" ? (
+                          ) : column.role === 'amount' ? (
                             <div className="font-semibold tabular-nums">
                               {formatCurrency(group.total)}
                               <p className="text-xs font-normal text-muted-foreground">Saldo conjunto</p>
                             </div>
-                          ) : column.role === "actions" ? null : column.key === "person" ? (
+                          ) : column.role === 'actions' ? null : column.key === 'person' ? (
                             <span className="text-sm">{group.name}</span>
                           ) : (
                             <span className="text-muted-foreground">—</span>
@@ -265,7 +265,7 @@ export function DebtGridSection({
                     </TableRow>
                     {expanded && group.debts.map(renderDebtRow)}
                   </>
-                );
+                )
               })}
             </TableBody>
           </Table>
@@ -277,7 +277,7 @@ export function DebtGridSection({
               <AlertDialogDescription>
                 {deleting && deleting.paidAmount > 0
                   ? `Tiene ${formatCurrency(deleting.paidAmount)} pagados: se borran con ella. No se puede deshacer.`
-                  : "No se puede deshacer."}
+                  : 'No se puede deshacer.'}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -298,7 +298,7 @@ export function DebtGridSection({
         <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
         {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
       </>
-    );
+    )
   }
   return (
     <>
@@ -310,7 +310,7 @@ export function DebtGridSection({
             <AlertDialogDescription>
               {deleting && deleting.paidAmount > 0
                 ? `Tiene ${formatCurrency(deleting.paidAmount)} pagados: se borran con ella. No se puede deshacer.`
-                : "No se puede deshacer."}
+                : 'No se puede deshacer.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -331,11 +331,11 @@ export function DebtGridSection({
       <ResetDebtDialog debt={resetting} onClose={() => setResetting(null)} />
       {historyOf && <HistoryDialog title={historyOf.description} entity="exp_debts" id={historyOf.id} onClose={() => setHistoryOf(null)} />}
     </>
-  );
+  )
 }
 
 function ResetDebtDialog({ debt, onClose }: { debt: Debt | null; onClose: () => void }) {
-  const resetDebt = useBulkDebts();
+  const resetDebt = useBulkDebts()
   return (
     <AlertDialog open={!!debt} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent>
@@ -349,12 +349,12 @@ function ResetDebtDialog({ debt, onClose }: { debt: Debt | null; onClose: () => 
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             disabled={resetDebt.isPending}
-            onClick={() => debt && resetDebt.mutate({ ids: [debt.id], action: "reset" }, { onSuccess: onClose })}
+            onClick={() => debt && resetDebt.mutate({ ids: [debt.id], action: 'reset' }, { onSuccess: onClose })}
           >
             Volver a No iniciado
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

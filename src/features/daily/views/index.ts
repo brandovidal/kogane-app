@@ -1,1 +1,1 @@
-export { DailyCalendar } from "./DailyCalendarView";
+export { DailyCalendar } from './DailyCalendarView'

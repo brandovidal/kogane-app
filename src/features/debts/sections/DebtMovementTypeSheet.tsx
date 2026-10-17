@@ -1,8 +1,8 @@
-import { X } from "lucide-react";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
-import { Switch } from "@/ui/switch";
+import { X } from 'lucide-react'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/ui/sheet'
+import { Switch } from '@/ui/switch'
 
 export function DebtMovementTypeSheet({
   showCollections,
@@ -11,13 +11,13 @@ export function DebtMovementTypeSheet({
   onDebtsChange,
   onReset,
 }: {
-  showCollections: boolean;
-  showDebts: boolean;
-  onCollectionsChange: (checked: boolean) => void;
-  onDebtsChange: (checked: boolean) => void;
-  onReset: () => void;
+  showCollections: boolean
+  showDebts: boolean
+  onCollectionsChange: (checked: boolean) => void
+  onDebtsChange: (checked: boolean) => void
+  onReset: () => void
 }) {
-  const activeCount = Number(!showCollections) + Number(!showDebts);
+  const activeCount = Number(!showCollections) + Number(!showDebts)
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -53,5 +53,5 @@ export function DebtMovementTypeSheet({
         </div>
       </SheetContent>
     </Sheet>
-  );
+  )
 }

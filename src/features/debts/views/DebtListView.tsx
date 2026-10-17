@@ -1,19 +1,19 @@
-import { useState, type ReactNode } from "react";
-import { CreditCard, MoveRight, Upload, Wallet } from "lucide-react";
+import { useState, type ReactNode } from 'react'
+import { CreditCard, MoveRight, Upload, Wallet } from 'lucide-react'
 
-import { useDebts } from "@/features/debts/hooks/debts";
-import { useCreditCards } from "@/shared/api/hooks/catalogs";
-import type { Debt } from "@/shared/api/types";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { RecordListToolbar } from "@/shared/components/toolbar/RecordListToolbar";
-import { useViewMode } from "@/shared/hooks/useViewMode";
-import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
-import { useUrlFilters } from "@/shared/hooks/useUrlFilters";
-import { getMonthName } from "@/shared/lib/dates";
-import { usePeriod } from "@/shared/stores/period.store";
-import { Button } from "@/ui/button";
-import { ImportListDialog } from "@/features/imports/components/ImportListDialog";
-import { Switch } from "@/ui/switch";
+import { useDebts } from '@/features/debts/hooks/debts'
+import { useCreditCards } from '@/shared/api/hooks/catalogs'
+import type { Debt } from '@/shared/api/types'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { RecordListToolbar } from '@/shared/components/toolbar/RecordListToolbar'
+import { useViewMode } from '@/shared/hooks/useViewMode'
+import { ViewToggle } from '@/shared/components/data-display/ViewToggle'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
+import { getMonthName } from '@/shared/lib/dates'
+import { usePeriod } from '@/shared/stores/period.store'
+import { Button } from '@/ui/button'
+import { ImportListDialog } from '@/features/imports/components/ImportListDialog'
+import { Switch } from '@/ui/switch'
 import {
   applyDebtFilters,
   DEBT_FILTER_KEYS,
@@ -22,31 +22,31 @@ import {
   groupByPersonAndType,
   type DebtFilterValues,
   type Direction,
-} from "@/features/debts/lib/debt-filters";
-import { DebtIndicators } from "../sections/DebtIndicators";
-import { PeriodStatusNotice } from "@/shared/components/data-display/PeriodStatusNotice";
-import { CardCheckPanel } from "../sections/CardCheckPanel";
-import { DebtBulkBar } from "../sections/DebtBulkBar";
-import { ActiveDebtFilterChips, DebtFilterSheet, DebtGroupingSheet, DebtReportLinks as ReportLinks } from "../sections/DebtListControls";
-import { CollapsibleDebtGroup } from "../sections/DebtGroupsSection";
-import { DebtGridSection } from "../sections/DebtGridSection";
-import { DebtDialog } from "../components/dialogs/DebtDialog";
-import { CarryOverDialog } from "../components/dialogs/CarryOverDialog";
-import { RegisterPaymentDialog } from "../components/dialogs/RegisterPaymentDialog";
-import { useDebtGrouping } from "../hooks/useDebtGrouping";
+} from '@/features/debts/lib/debt-filters'
+import { DebtIndicators } from '../sections/DebtIndicators'
+import { PeriodStatusNotice } from '@/shared/components/data-display/PeriodStatusNotice'
+import { CardCheckPanel } from '../sections/CardCheckPanel'
+import { DebtBulkBar } from '../sections/DebtBulkBar'
+import { ActiveDebtFilterChips, DebtFilterSheet, DebtGroupingSheet, DebtReportLinks as ReportLinks } from '../sections/DebtListControls'
+import { CollapsibleDebtGroup } from '../sections/DebtGroupsSection'
+import { DebtGridSection } from '../sections/DebtGridSection'
+import { DebtDialog } from '../components/dialogs/DebtDialog'
+import { CarryOverDialog } from '../components/dialogs/CarryOverDialog'
+import { RegisterPaymentDialog } from '../components/dialogs/RegisterPaymentDialog'
+import { useDebtGrouping } from '../hooks/useDebtGrouping'
 
 const TEXTS: Record<Direction, { emptyTitle: string; emptyHint: string; createLabel: string }> = {
   owed_to_me: {
-    emptyTitle: "Sin cobros este mes",
-    emptyHint: "Registra lo que te deben o pásalo desde Mensajes para llevar el saldo de cada cuota.",
-    createLabel: "Nuevo cobro",
+    emptyTitle: 'Sin cobros este mes',
+    emptyHint: 'Registra lo que te deben o pásalo desde Mensajes para llevar el saldo de cada cuota.',
+    createLabel: 'Nuevo cobro',
   },
   i_owe: {
-    emptyTitle: "Sin deudas este mes",
-    emptyHint: "Registra lo que debes para llevar el saldo de cada cuota y no pasar la fecha límite.",
-    createLabel: "Nueva deuda",
+    emptyTitle: 'Sin deudas este mes',
+    emptyHint: 'Registra lo que debes para llevar el saldo de cada cuota y no pasar la fecha límite.',
+    createLabel: 'Nueva deuda',
   },
-};
+}
 
 export function DebtListView({
   direction,
@@ -54,40 +54,40 @@ export function DebtListView({
   onPay,
   actions,
 }: {
-  direction: Direction;
-  splitGroupingSheet: boolean;
-  onPay: (debt: Debt) => void;
-  actions: ReactNode;
+  direction: Direction
+  splitGroupingSheet: boolean
+  onPay: (debt: Debt) => void
+  actions: ReactNode
 }) {
-  const month = usePeriod((s) => s.month);
-  const year = usePeriod((s) => s.year);
-  const { data: debts = [], isLoading } = useDebts({ direction });
-  const cards = useCreditCards().data ?? [];
+  const month = usePeriod((s) => s.month)
+  const year = usePeriod((s) => s.year)
+  const { data: debts = [], isLoading } = useDebts({ direction })
+  const cards = useCreditCards().data ?? []
   const defaults: DebtFilterValues = {
     month: String(month),
     year: String(year),
-  };
-  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS, defaults);
-  const { groupedByPerson, groupedByCard, setGroupedByPerson, setGroupedByCard } = useDebtGrouping();
-  const [view, setView] = useViewMode("debts", "table");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [registering, setRegistering] = useState(false);
-  const [carryingOver, setCarryingOver] = useState(false);
-  const [editingDebt, setEditingDebt] = useState<Debt | undefined>();
-  const [creating, setCreating] = useState(false);
-  const [importing, setImporting] = useState(false);
+  }
+  const [filters, setFilters] = useUrlFilters<DebtFilterValues>(DEBT_FILTER_KEYS, defaults)
+  const { groupedByPerson, groupedByCard, setGroupedByPerson, setGroupedByCard } = useDebtGrouping()
+  const [view, setView] = useViewMode('debts', 'table')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [registering, setRegistering] = useState(false)
+  const [carryingOver, setCarryingOver] = useState(false)
+  const [editingDebt, setEditingDebt] = useState<Debt | undefined>()
+  const [creating, setCreating] = useState(false)
+  const [importing, setImporting] = useState(false)
 
-  const shown = applyDebtFilters(debts, filters, { month, year });
-  const checked = shown.filter((debt) => selected.has(debt.id));
-  const card = filters.card ? cards.find((item) => item.id === filters.card) : undefined;
-  const panelMonth = filters.month && filters.month !== "until" ? Number(filters.month) : null;
-  const texts = TEXTS[direction];
-  const cardNames = new Map(cards.map((c) => [c.id, c.name]));
-  const personGroups = groupedByPerson ? groupByPerson(shown) : null;
-  const cardGroups = groupedByCard ? groupByPaymentMethod(shown, cardNames) : null;
-  const personTypeGroups = groupedByPerson && groupedByCard ? groupByPersonAndType(shown, cardNames) : null;
+  const shown = applyDebtFilters(debts, filters, { month, year })
+  const checked = shown.filter((debt) => selected.has(debt.id))
+  const card = filters.card ? cards.find((item) => item.id === filters.card) : undefined
+  const panelMonth = filters.month && filters.month !== 'until' ? Number(filters.month) : null
+  const texts = TEXTS[direction]
+  const cardNames = new Map(cards.map((c) => [c.id, c.name]))
+  const personGroups = groupedByPerson ? groupByPerson(shown) : null
+  const cardGroups = groupedByCard ? groupByPaymentMethod(shown, cardNames) : null
+  const personTypeGroups = groupedByPerson && groupedByCard ? groupByPersonAndType(shown, cardNames) : null
 
-  if (isLoading) return null;
+  if (isLoading) return null
 
   return (
     <div className="min-w-0 space-y-4">
@@ -106,7 +106,7 @@ export function DebtListView({
                 year={year}
                 defaults={defaults}
                 description="Filtra por persona, estado, período, tarjeta u origen."
-                resultLabel={direction === "owed_to_me" ? "cobros" : "deudas"}
+                resultLabel={direction === 'owed_to_me' ? 'cobros' : 'deudas'}
               >
                 {!splitGroupingSheet && (
                   <div className="space-y-3 border-t pt-4">
@@ -123,12 +123,12 @@ export function DebtListView({
                     </label>
                     <p className="text-xs text-muted-foreground">
                       {groupedByPerson && groupedByCard
-                        ? "Una tabla por persona; tarjetas y plataformas se despliegan dentro."
+                        ? 'Una tabla por persona; tarjetas y plataformas se despliegan dentro.'
                         : groupedByPerson
-                          ? "Los cobros se agrupan por persona."
+                          ? 'Los cobros se agrupan por persona.'
                           : groupedByCard
-                            ? "Los cobros se agrupan por tarjeta."
-                            : "Activa uno o ambos para organizar los cobros."}
+                            ? 'Los cobros se agrupan por tarjeta.'
+                            : 'Activa uno o ambos para organizar los cobros.'}
                     </p>
                   </div>
                 )}
@@ -152,7 +152,7 @@ export function DebtListView({
                 <Wallet className="mr-1 h-4 w-4" /> Registrar pago
               </Button>
               <Button size="sm" variant="outline" className="h-9" onClick={() => setImporting(true)}>
-                <Upload className="mr-1 h-4 w-4" /> {direction === "owed_to_me" ? "Importar cuotas" : "Importar deudas"}
+                <Upload className="mr-1 h-4 w-4" /> {direction === 'owed_to_me' ? 'Importar cuotas' : 'Importar deudas'}
               </Button>
               {actions}
             </div>
@@ -171,7 +171,7 @@ export function DebtListView({
                 ? {
                     byPerson: groupedByPerson,
                     byCard: groupedByCard,
-                    onToggle: (key) => (key === "person" ? setGroupedByPerson((current) => !current) : setGroupedByCard((current) => !current)),
+                    onToggle: (key) => (key === 'person' ? setGroupedByPerson((current) => !current) : setGroupedByCard((current) => !current)),
                   }
                 : undefined
             }
@@ -188,7 +188,7 @@ export function DebtListView({
         <PeriodStatusNotice
           month={panelMonth}
           year={Number(filters.year)}
-          billedHint={direction === "owed_to_me" ? "revisa qué falta por cobrar y registra los pagos" : "revisa lo que debes y registra los pagos"}
+          billedHint={direction === 'owed_to_me' ? 'revisa qué falta por cobrar y registra los pagos' : 'revisa lo que debes y registra los pagos'}
         />
       )}
 
@@ -233,7 +233,7 @@ export function DebtListView({
         <div className="space-y-2">
           {cardGroups.map((group) => (
             <CollapsibleDebtGroup
-              key={group.cardId ?? "__no_card__"}
+              key={group.cardId ?? '__no_card__'}
               title={group.cardName}
               total={group.total}
               debts={group.debts}
@@ -275,9 +275,9 @@ export function DebtListView({
       <DebtDialog
         open={!!editingDebt || creating}
         onOpenChange={(open) => {
-          if (open) return;
-          setEditingDebt(undefined);
-          setCreating(false);
+          if (open) return
+          setEditingDebt(undefined)
+          setCreating(false)
         }}
         direction={direction}
         debt={editingDebt}
@@ -285,9 +285,9 @@ export function DebtListView({
       <ImportListDialog
         open={importing}
         onOpenChange={setImporting}
-        target={direction === "owed_to_me" ? "receivables" : "payables"}
-        title={direction === "owed_to_me" ? "Importar cuotas" : "Importar deudas"}
+        target={direction === 'owed_to_me' ? 'receivables' : 'payables'}
+        title={direction === 'owed_to_me' ? 'Importar cuotas' : 'Importar deudas'}
       />
     </div>
-  );
+  )
 }

@@ -1,44 +1,44 @@
-import { useState, type SubmitEvent } from "react";
-import { Eye, EyeOff, LockKeyhole } from "lucide-react";
-import type { useMe } from "@/features/auth/hooks/auth";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
-import { Input } from "@/ui/input";
+import { useState, type SubmitEvent } from 'react'
+import { Eye, EyeOff, LockKeyhole } from 'lucide-react'
+import type { useMe } from '@/features/auth/hooks/auth'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
+import { Input } from '@/ui/input'
 
 export interface ProfileDraft {
-  name: string;
-  nickname: string;
-  phone: string;
-  documentNumber: string;
-  clearDocument: boolean;
+  name: string
+  nickname: string
+  phone: string
+  documentNumber: string
+  clearDocument: boolean
 }
 
 export interface ProfileFieldErrors {
-  name?: string;
-  phone?: string;
-  documentNumber?: string;
+  name?: string
+  phone?: string
+  documentNumber?: string
 }
 
 export function validateProfileDraft(draft: ProfileDraft): ProfileFieldErrors {
-  const errors: ProfileFieldErrors = {};
-  if (!draft.name.trim()) errors.name = "Escribe tu nombre completo.";
+  const errors: ProfileFieldErrors = {}
+  if (!draft.name.trim()) errors.name = 'Escribe tu nombre completo.'
   if (draft.phone && !/^9\d{8}$/.test(draft.phone)) {
-    errors.phone = "Ingresa 9 dígitos que empiecen con 9.";
+    errors.phone = 'Ingresa 9 dígitos que empiecen con 9.'
   }
   if (draft.documentNumber && !/^\d{8}$/.test(draft.documentNumber)) {
-    const remaining = Math.max(8 - draft.documentNumber.length, 0);
-    errors.documentNumber = remaining > 0 ? `El DNI tiene 8 dígitos. Faltan ${remaining}.` : "El DNI debe tener 8 dígitos.";
+    const remaining = Math.max(8 - draft.documentNumber.length, 0)
+    errors.documentNumber = remaining > 0 ? `El DNI tiene 8 dígitos. Faltan ${remaining}.` : 'El DNI debe tener 8 dígitos.'
   }
-  return errors;
+  return errors
 }
 
 function FieldError({ id, children }: { id: string; children?: string }) {
-  if (!children) return null;
+  if (!children) return null
   return (
     <p id={id} className="text-xs text-destructive" role="alert">
       {children}
     </p>
-  );
+  )
 }
 
 export function ProfilePersonalDataCard({
@@ -53,21 +53,21 @@ export function ProfilePersonalDataCard({
   onDiscard,
   onSubmit,
 }: {
-  user: NonNullable<ReturnType<typeof useMe>["data"]>;
-  draft: ProfileDraft;
-  errors: ProfileFieldErrors;
-  hasChanges: boolean;
-  changeCount: number;
-  pending: boolean;
-  savedRecently: boolean;
-  onChange: (next: ProfileDraft) => void;
-  onDiscard: () => void;
-  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
+  user: NonNullable<ReturnType<typeof useMe>['data']>
+  draft: ProfileDraft
+  errors: ProfileFieldErrors
+  hasChanges: boolean
+  changeCount: number
+  pending: boolean
+  savedRecently: boolean
+  onChange: (next: ProfileDraft) => void
+  onDiscard: () => void
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void
 }) {
-  const [documentVisible, setDocumentVisible] = useState(false);
-  const documentErrorId = "profile-document-error";
-  const phoneErrorId = "profile-phone-error";
-  const nameErrorId = "profile-name-error";
+  const [documentVisible, setDocumentVisible] = useState(false)
+  const documentErrorId = 'profile-document-error'
+  const phoneErrorId = 'profile-phone-error'
+  const nameErrorId = 'profile-name-error'
 
   return (
     <Card>
@@ -109,11 +109,11 @@ export function ProfilePersonalDataCard({
                 <span className="inline-flex shrink-0 items-center border-r border-input px-3 text-sm text-muted-foreground">DNI</span>
                 <Input
                   id="profile-document"
-                  type={documentVisible ? "text" : "password"}
+                  type={documentVisible ? 'text' : 'password'}
                   inputMode="numeric"
                   autoComplete="off"
                   maxLength={8}
-                  placeholder={draft.clearDocument ? "Se quitará el DNI" : user.documentMasked ? `Guardado ${user.documentMasked}` : "8 dígitos"}
+                  placeholder={draft.clearDocument ? 'Se quitará el DNI' : user.documentMasked ? `Guardado ${user.documentMasked}` : '8 dígitos'}
                   value={draft.documentNumber}
                   aria-invalid={!!errors.documentNumber}
                   aria-describedby={errors.documentNumber ? documentErrorId : undefined}
@@ -121,7 +121,7 @@ export function ProfilePersonalDataCard({
                   onChange={(event) =>
                     onChange({
                       ...draft,
-                      documentNumber: event.target.value.replace(/\D/g, ""),
+                      documentNumber: event.target.value.replace(/\D/g, ''),
                       clearDocument: false,
                     })
                   }
@@ -131,7 +131,7 @@ export function ProfilePersonalDataCard({
                   variant="ghost"
                   size="icon-sm"
                   className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  aria-label={documentVisible ? "Ocultar DNI" : "Mostrar DNI"}
+                  aria-label={documentVisible ? 'Ocultar DNI' : 'Mostrar DNI'}
                   aria-pressed={documentVisible}
                   onClick={() => setDocumentVisible((visible) => !visible)}
                 >
@@ -150,7 +150,7 @@ export function ProfilePersonalDataCard({
                     })
                   }
                 >
-                  {draft.clearDocument ? "Conservar DNI" : "Quitar DNI"}
+                  {draft.clearDocument ? 'Conservar DNI' : 'Quitar DNI'}
                 </button>
               )}
               <p className="text-xs text-muted-foreground">
@@ -176,7 +176,7 @@ export function ProfilePersonalDataCard({
                   onChange={(event) =>
                     onChange({
                       ...draft,
-                      phone: event.target.value.replace(/\D/g, ""),
+                      phone: event.target.value.replace(/\D/g, ''),
                     })
                   }
                 />
@@ -199,7 +199,7 @@ export function ProfilePersonalDataCard({
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
             <p className="text-xs text-muted-foreground" aria-live="polite">
-              {hasChanges ? "Hay cambios sin guardar" : savedRecently ? "Guardado hace un momento" : "Sin cambios"}
+              {hasChanges ? 'Hay cambios sin guardar' : savedRecently ? 'Guardado hace un momento' : 'Sin cambios'}
             </p>
             <div className="flex items-center gap-2">
               <Button type="button" variant="outline" disabled={!hasChanges || pending} onClick={onDiscard}>
@@ -214,5 +214,5 @@ export function ProfilePersonalDataCard({
         </form>
       </CardContent>
     </Card>
-  );
+  )
 }

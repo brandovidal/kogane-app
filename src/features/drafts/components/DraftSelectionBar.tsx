@@ -1,6 +1,6 @@
-import { Check, Trash2, X } from "lucide-react";
-import { Button } from "@/ui/button";
-import type { SelectionSummary } from "@/features/drafts/lib/draft-filters";
+import { Check, Trash2, X } from 'lucide-react'
+import { Button } from '@/ui/button'
+import type { SelectionSummary } from '@/features/drafts/lib/draft-filters'
 
 // Barra flotante de la selección múltiple (board B3)
 export function DraftSelectionBar({
@@ -10,13 +10,13 @@ export function DraftSelectionBar({
   onDiscard,
   onClear,
 }: {
-  summary: SelectionSummary<unknown>;
-  busy?: boolean;
-  onSaveReady: () => void;
-  onDiscard: () => void;
-  onClear: () => void;
+  summary: SelectionSummary<unknown>
+  busy?: boolean
+  onSaveReady: () => void
+  onDiscard: () => void
+  onClear: () => void
 }) {
-  if (!summary.count) return null;
+  if (!summary.count) return null
   return (
     <div
       role="region"
@@ -25,11 +25,11 @@ export function DraftSelectionBar({
     >
       <div className="min-w-0 flex-1">
         <b className="text-sm">
-          {summary.count} {summary.count === 1 ? "seleccionado" : "seleccionados"}
+          {summary.count} {summary.count === 1 ? 'seleccionado' : 'seleccionados'}
         </b>
         {summary.incomplete > 0 && (
           <p className="text-xs text-amber-600 dark:text-amber-400">
-            {summary.incomplete} {summary.incomplete === 1 ? "incompleto no se guardará" : "incompletos no se guardarán"}
+            {summary.incomplete} {summary.incomplete === 1 ? 'incompleto no se guardará' : 'incompletos no se guardarán'}
           </p>
         )}
       </div>
@@ -43,5 +43,5 @@ export function DraftSelectionBar({
         <X className="size-4" />
       </Button>
     </div>
-  );
+  )
 }

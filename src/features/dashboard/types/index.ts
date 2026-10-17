@@ -1,1 +1,1 @@
-export type { DashboardPaymentTab, CreditCardSummary } from "./dashboard";
+export type { DashboardPaymentTab, CreditCardSummary } from './dashboard'

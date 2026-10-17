@@ -1,27 +1,27 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, type RefObject } from 'react'
 
 export function useSearchShortcut(inputRef: RefObject<HTMLInputElement | null>, shortcut?: string) {
   useEffect(() => {
-    if (shortcut !== "/") return;
+    if (shortcut !== '/') return
 
     const focusOnShortcut = (event: KeyboardEvent) => {
-      const target = event.target;
+      const target = event.target
       if (
-        event.key !== "/" ||
+        event.key !== '/' ||
         event.altKey ||
         event.ctrlKey ||
         event.metaKey ||
         document.querySelector('[role="dialog"], [role="alertdialog"]') ||
-        (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)))
+        (target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)))
       ) {
-        return;
+        return
       }
 
-      event.preventDefault();
-      inputRef.current?.focus();
-    };
+      event.preventDefault()
+      inputRef.current?.focus()
+    }
 
-    window.addEventListener("keydown", focusOnShortcut);
-    return () => window.removeEventListener("keydown", focusOnShortcut);
-  }, [inputRef, shortcut]);
+    window.addEventListener('keydown', focusOnShortcut)
+    return () => window.removeEventListener('keydown', focusOnShortcut)
+  }, [inputRef, shortcut])
 }

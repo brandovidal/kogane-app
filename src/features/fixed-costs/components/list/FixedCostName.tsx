@@ -1,11 +1,11 @@
-import { ArrowUpRight } from "lucide-react";
-import type { FixedCost } from "@/shared/api/types";
-import { Badge } from "@/ui/badge";
-import { AttachmentRecordThumbnail } from "@/features/attachments/components/AttachmentRecordThumbnail";
-import { parseInstallment } from "../../lib/fixed-cost-views";
+import { ArrowUpRight } from 'lucide-react'
+import type { FixedCost } from '@/shared/api/types'
+import { Badge } from '@/ui/badge'
+import { AttachmentRecordThumbnail } from '@/features/attachments/components/AttachmentRecordThumbnail'
+import { parseInstallment } from '../../lib/fixed-cost-views'
 
 export function FixedCostName({ cost, onOpen, showThumbnail = true }: { cost: FixedCost; onOpen: () => void; showThumbnail?: boolean }) {
-  const plan = parseInstallment(cost.installment);
+  const plan = parseInstallment(cost.installment)
 
   return (
     <div className="flex items-center gap-3">
@@ -44,5 +44,5 @@ export function FixedCostName({ cost, onOpen, showThumbnail = true }: { cost: Fi
         )}
       </div>
     </div>
-  );
+  )
 }

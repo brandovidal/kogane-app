@@ -1,2 +1,2 @@
-export { useSettingsNavigation } from "./useSettingsNavigation";
-export { useSettingsPreferences } from "./useSettingsPreferences";
+export { useSettingsNavigation } from './useSettingsNavigation'
+export { useSettingsPreferences } from './useSettingsPreferences'

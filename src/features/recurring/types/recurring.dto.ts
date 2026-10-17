@@ -1,4 +1,4 @@
-import type { Schemas } from "@/shared/api/client";
+import type { Schemas } from '@/shared/api/client'
 
-export type GenerateRecurringDto = Schemas["GenerateRecurringDto"];
-export type RecurringFromSeriesDto = Schemas["RecurringFromSeriesDto"];
+export type GenerateRecurringDto = Schemas['GenerateRecurringDto']
+export type RecurringFromSeriesDto = Schemas['RecurringFromSeriesDto']

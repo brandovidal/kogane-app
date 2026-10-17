@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { LockKeyhole } from "lucide-react";
+import { useState } from 'react'
+import { LockKeyhole } from 'lucide-react'
 
-import { useSaveStatementPassword } from "../hooks/statementPassword";
-import { Button } from "@/ui/button";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
+import { useSaveStatementPassword } from '../hooks/statementPassword'
+import { Button } from '@/ui/button'
+import { PasswordInput } from '@/shared/components/forms/PasswordInput'
 
 // "Contraseña del PDF" of a card: statements of this card open with it, so uploading them never asks again
 export function CardStatementPassword({ cardId, hasPassword }: { cardId: string; hasPassword: boolean }) {
-  const save = useSaveStatementPassword();
-  const [password, setPassword] = useState("");
+  const save = useSaveStatementPassword()
+  const [password, setPassword] = useState('')
 
   return (
     <div className="space-y-1.5">
@@ -19,7 +19,7 @@ export function CardStatementPassword({ cardId, hasPassword }: { cardId: string;
         <PasswordInput
           id="card-statement-password"
           autoComplete="off"
-          placeholder={hasPassword ? "Guardada (escribe otra para cambiarla)" : "Opcional"}
+          placeholder={hasPassword ? 'Guardada (escribe otra para cambiarla)' : 'Opcional'}
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
@@ -27,7 +27,7 @@ export function CardStatementPassword({ cardId, hasPassword }: { cardId: string;
           type="button"
           variant="outline"
           disabled={!password || save.isPending}
-          onClick={() => save.mutate({ id: cardId, password }, { onSuccess: () => setPassword("") })}
+          onClick={() => save.mutate({ id: cardId, password }, { onSuccess: () => setPassword('') })}
         >
           Guardar
         </Button>
@@ -39,5 +39,5 @@ export function CardStatementPassword({ cardId, hasPassword }: { cardId: string;
       </div>
       <p className="text-xs text-muted-foreground">Se guarda aparte y nunca se muestra de nuevo. Los PDF de esta tarjeta se abren con ella.</p>
     </div>
-  );
+  )
 }

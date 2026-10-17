@@ -1,26 +1,26 @@
-import { ViewStatementFileButton } from "./ViewStatementFileButton";
-import { StatementBalanceSummary } from "./StatementBalanceSummary";
-import { StatementPaymentSummary } from "./StatementPaymentSummary";
-import { StatementBalanceHistory } from "./StatementBalanceHistory";
-import { useCallback, useMemo, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, CirclePlus, ListFilter, Replace, Wallet } from "lucide-react";
+import { ViewStatementFileButton } from './ViewStatementFileButton'
+import { StatementBalanceSummary } from './StatementBalanceSummary'
+import { StatementPaymentSummary } from './StatementPaymentSummary'
+import { StatementBalanceHistory } from './StatementBalanceHistory'
+import { useCallback, useMemo, useState } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
+import { CheckCircle2, CirclePlus, ListFilter, Replace, Wallet } from 'lucide-react'
 
-import { nameById, usePeople } from "@/shared/api/hooks/catalogs";
-import { useExpense } from "@/features/expenses/hooks/expenses";
-import { useStatements } from "@/features/statements/hooks/statements";
+import { nameById, usePeople } from '@/shared/api/hooks/catalogs'
+import { useExpense } from '@/features/expenses/hooks/expenses'
+import { useStatements } from '@/features/statements/hooks/statements'
 import {
   useAssignStatementCard,
   useAssignStatementPerson,
   useAssignStatementRows,
   useCreateStatementRows,
   useUpdateStatementRow,
-} from "@/features/statements/hooks/statements";
-import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
-import { PaymentMethodSelect } from "@/features/settings/components/payment-methods/PaymentMethodSelect";
-import { EXPENSE_RESOURCES, type Statement, type StatementRow } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
-import { formatDate, getMonthName } from "@/shared/lib/dates";
+} from '@/features/statements/hooks/statements'
+import { PersonPicker } from '@/features/settings/components/people/PersonPicker'
+import { PaymentMethodSelect } from '@/features/settings/components/payment-methods/PaymentMethodSelect'
+import { EXPENSE_RESOURCES, type Statement, type StatementRow } from '@/shared/api/types'
+import { formatCurrency } from '@/shared/lib/currency'
+import { formatDate, getMonthName } from '@/shared/lib/dates'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,33 +30,33 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/ui/alert-dialog";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Checkbox } from "@/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+} from '@/ui/alert-dialog'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Checkbox } from '@/ui/checkbox'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
 
-import { confirmCreateText, countsOf, ROW_RESULT_LABELS, rowName, rowsOf, totalsOf } from "@/features/statements/lib/statement-view";
-import { EditRowDialog } from "./EditRowDialog";
-import { StatementRowActions } from "./StatementRowActions";
-import { StatementMatchDialog } from "./StatementMatchDialog";
-import { MissingExpenseActions } from "./MissingExpenseActions";
-import { ExpenseEditDialog } from "@/features/expenses/components/ExpenseEditDialog";
-import { StatementTotalCard } from "@/features/credit-cards/components/StatementTotalCard";
-import { DataTableBasic } from "@/shared/components/data-display/DataTableBasic";
-import { useDataTable } from "@/shared/hooks/useDataTable";
+import { confirmCreateText, countsOf, ROW_RESULT_LABELS, rowName, rowsOf, totalsOf } from '@/features/statements/lib/statement-view'
+import { EditRowDialog } from './EditRowDialog'
+import { StatementRowActions } from './StatementRowActions'
+import { StatementMatchDialog } from './StatementMatchDialog'
+import { MissingExpenseActions } from './MissingExpenseActions'
+import { ExpenseEditDialog } from '@/features/expenses/components/ExpenseEditDialog'
+import { StatementTotalCard } from '@/features/credit-cards/components/StatementTotalCard'
+import { DataTableBasic } from '@/shared/components/data-display/DataTableBasic'
+import { useDataTable } from '@/shared/hooks/useDataTable'
 
 interface PendingCreate {
-  rowIds?: string[];
-  title: string;
-  description: string;
+  rowIds?: string[]
+  title: string
+  description: string
 }
 
 // A purchase of someone else on the owner's card becomes their cobro when it is saved (D116)
 const isCollect = (row: StatementRow, statementPersonId: string | null) =>
-  !!row.debtId || (row.result !== "matched" && row.result !== "created" && !!row.personId && row.personId !== statementPersonId);
+  !!row.debtId || (row.result !== 'matched' && row.result !== 'created' && !!row.personId && row.personId !== statementPersonId)
 
 function RowsTable({
   statementId,
@@ -65,76 +65,76 @@ function RowsTable({
   onCreate,
   onReview,
 }: {
-  statementId: string;
-  statementPersonId: string | null;
-  rows: StatementRow[];
-  onCreate: (row: StatementRow) => void;
-  onReview: (row: StatementRow) => void;
+  statementId: string
+  statementPersonId: string | null
+  rows: StatementRow[]
+  onCreate: (row: StatementRow) => void
+  onReview: (row: StatementRow) => void
 }) {
-  const update = useUpdateStatementRow();
-  const assignRows = useAssignStatementRows();
-  const [editingRow, setEditingRow] = useState<StatementRow | null>(null);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [assignTo, setAssignTo] = useState<string | null>(null);
-  const personName = nameById(usePeople().data);
+  const update = useUpdateStatementRow()
+  const assignRows = useAssignStatementRows()
+  const [editingRow, setEditingRow] = useState<StatementRow | null>(null)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [assignTo, setAssignTo] = useState<string | null>(null)
+  const personName = nameById(usePeople().data)
   // Matched and created rows follow the person of their expense: only the others can be given to someone
-  const selectable = rows.filter((row) => (row.result === "new" || row.result === "ignored") && !row.locked);
-  const allChecked = selectable.length > 0 && selectable.every((row) => selected.has(row.id));
+  const selectable = rows.filter((row) => (row.result === 'new' || row.result === 'ignored') && !row.locked)
+  const allChecked = selectable.length > 0 && selectable.every((row) => selected.has(row.id))
   const toggle = useCallback((id: string, on: boolean) => {
     setSelected((current) => {
-      const next = new Set(current);
-      if (on) next.add(id);
-      else next.delete(id);
-      return next;
-    });
-  }, []);
+      const next = new Set(current)
+      if (on) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }, [])
   const assign = () =>
     assignRows.mutate(
       { id: statementId, rowIds: [...selected], personId: assignTo },
       { onSuccess: () => (setSelected(new Set()), setAssignTo(null)) },
-    );
+    )
 
   const columns = useMemo<ColumnDef<StatementRow>[]>(
     () => [
       {
-        id: "select",
+        id: 'select',
         enableSorting: false,
         header: () => (
           <Checkbox
             aria-label="Seleccionar todas"
             disabled={!selectable.length}
-            checked={allChecked ? true : selected.size ? "indeterminate" : false}
+            checked={allChecked ? true : selected.size ? 'indeterminate' : false}
             onCheckedChange={(on) => setSelected(on === true ? new Set(selectable.map((row) => row.id)) : new Set())}
           />
         ),
         cell: ({ row }) => {
-          const item = row.original;
+          const item = row.original
           return (
             <Checkbox
               aria-label="Seleccionar"
-              disabled={item.locked || item.result === "matched" || item.result === "created"}
+              disabled={item.locked || item.result === 'matched' || item.result === 'created'}
               checked={selected.has(item.id)}
               onCheckedChange={(on) => toggle(item.id, on === true)}
             />
-          );
+          )
         },
-        meta: { className: "w-[36px]" },
+        meta: { className: 'w-[36px]' },
       },
       {
-        id: "date",
-        accessorFn: (row) => row.date ?? "",
-        header: "Fecha",
+        id: 'date',
+        accessorFn: (row) => row.date ?? '',
+        header: 'Fecha',
         cell: ({ row }) => (
-          <span className="whitespace-nowrap text-sm text-muted-foreground">{row.original.date ? formatDate(row.original.date) : "—"}</span>
+          <span className="whitespace-nowrap text-sm text-muted-foreground">{row.original.date ? formatDate(row.original.date) : '—'}</span>
         ),
-        meta: { label: "Fecha" },
+        meta: { label: 'Fecha' },
       },
       {
-        id: "description",
+        id: 'description',
         accessorFn: rowName,
-        header: "Descripción",
+        header: 'Descripción',
         cell: ({ row }) => {
-          const item = row.original;
+          const item = row.original
           return (
             <div className="min-w-56">
               {item.expenseId ? (
@@ -156,84 +156,84 @@ function RowsTable({
               )}
               {item.label && <p className="text-xs text-muted-foreground">Banco: {item.description}</p>}
             </div>
-          );
+          )
         },
-        meta: { label: "Descripción" },
+        meta: { label: 'Descripción' },
       },
       {
-        id: "amount",
+        id: 'amount',
         accessorFn: (row) => row.amount,
-        header: "Monto",
+        header: 'Monto',
         cell: ({ row }) => <span className="tabular-nums">{formatCurrency(row.original.amount, row.original.currency)}</span>,
-        meta: { label: "Monto", className: "text-right" },
+        meta: { label: 'Monto', className: 'text-right' },
       },
       {
-        id: "person",
-        accessorFn: (row) => (row.personId ? personName(row.personId) : ""),
-        header: "Persona",
+        id: 'person',
+        accessorFn: (row) => (row.personId ? personName(row.personId) : ''),
+        header: 'Persona',
         cell: ({ row }) => {
-          const item = row.original;
+          const item = row.original
           return (
             <span className="whitespace-nowrap text-sm">
-              {item.personId ? personName(item.personId) : "—"}
+              {item.personId ? personName(item.personId) : '—'}
               {isCollect(item, statementPersonId) && (
                 <Badge variant="outline" className="ml-2 text-[10px]" title="Al guardarlo se crea su cobro">
-                  {item.debtId ? "cobro creado" : "se cobra"}
+                  {item.debtId ? 'cobro creado' : 'se cobra'}
                 </Badge>
               )}
             </span>
-          );
+          )
         },
-        meta: { label: "Persona" },
+        meta: { label: 'Persona' },
       },
       {
-        id: "status",
+        id: 'status',
         accessorFn: (row) => ROW_RESULT_LABELS[row.result],
-        header: "Estado",
+        header: 'Estado',
         cell: ({ row }) => <span className="whitespace-nowrap text-xs text-muted-foreground">{ROW_RESULT_LABELS[row.original.result]}</span>,
-        meta: { label: "Estado" },
+        meta: { label: 'Estado' },
       },
       {
-        id: "actions",
+        id: 'actions',
         enableSorting: false,
         header: () => <span className="sr-only">Acciones</span>,
         cell: ({ row }) => {
-          const item = row.original;
+          const item = row.original
           return (
             <StatementRowActions
               row={item}
               onEdit={() => setEditingRow(item)}
-              onSave={() => (item.expenseId && item.result === "matched" ? onReview(item) : onCreate(item))}
+              onSave={() => (item.expenseId && item.result === 'matched' ? onReview(item) : onCreate(item))}
               onReview={item.expenseId ? () => onReview(item) : undefined}
               onIgnore={() =>
                 update.mutate({
                   id: statementId,
                   rowId: item.id,
-                  result: "ignored",
+                  result: 'ignored',
                 })
               }
               onRestore={() =>
                 update.mutate({
                   id: statementId,
                   rowId: item.id,
-                  result: "new",
+                  result: 'new',
                 })
               }
               saving={update.isPending}
             />
-          );
+          )
         },
-        meta: { label: "Acciones", className: "text-right" },
+        meta: { label: 'Acciones', className: 'text-right' },
       },
     ],
     [allChecked, onCreate, onReview, personName, selectable, selected, statementId, statementPersonId, toggle, update],
-  );
+  )
   const dataTable = useDataTable({
     items: rows,
     columns,
     rowKey: (row) => row.id,
     paginationEnabled: false,
-  });
+  })
 
   return (
     <>
@@ -254,7 +254,7 @@ function RowsTable({
       <div className="overflow-x-auto">
         <DataTableBasic
           table={dataTable}
-          rowClassName={(row) => (row.result === "ignored" ? "opacity-60" : undefined)}
+          rowClassName={(row) => (row.result === 'ignored' ? 'opacity-60' : undefined)}
           rowIsSelected={(row) => selected.has(row.id)}
         />
       </div>
@@ -269,47 +269,47 @@ function RowsTable({
         />
       )}
     </>
-  );
+  )
 }
 
 // A statement read (P14, D95): what it already has, what is new and what is only in Kogane. Every row can be renamed,
 // saved (also a matched or ignored one: same names can be another month or card, the user decides) or ignored
 // The sum of a tab, in soles and in dollars apart
 function TabTotals({ items }: { items: { amount: number; currency?: string | null }[] }) {
-  const totals = totalsOf(items);
-  if (!totals.length) return null;
+  const totals = totalsOf(items)
+  if (!totals.length) return null
   return (
     <span className="text-sm text-muted-foreground">
-      Suma:{" "}
+      Suma:{' '}
       {totals.map((total, index) => (
         <span key={total.currency}>
-          {index > 0 && " · "}
+          {index > 0 && ' · '}
           <span className="font-medium tabular-nums text-foreground">{formatCurrency(total.amount, total.currency)}</span>
         </span>
       ))}
     </span>
-  );
+  )
 }
 
 export function StatementDetail({ statement, onChangeFile }: { statement: Statement; onChangeFile?: () => void }) {
-  const createRows = useCreateStatementRows();
-  const [pending, setPending] = useState<PendingCreate | null>(null);
-  const assignPerson = useAssignStatementPerson();
-  const assignCard = useAssignStatementCard();
-  const personName = nameById(usePeople().data);
-  const statementHistory = useStatements().data ?? [];
-  const [editingExpenseId, setEditingExpenseId] = useState<string>();
-  const { data: editingExpense } = useExpense(EXPENSE_RESOURCES.creditCard, editingExpenseId);
-  const [tab, setTab] = useState<string | null>(null);
-  const [reviewingRowId, setReviewingRowId] = useState<string | null>(null);
-  const reviewingRow = statement.rows.find((row) => row.id === reviewingRowId);
-  const reviewRow = (row: StatementRow) => setReviewingRowId(row.id);
-  const openExpense = (expenseId: string) => setEditingExpenseId(expenseId);
-  const counts = countsOf(statement);
-  const newRows = rowsOf(statement, "new");
-  const matchedRows = rowsOf(statement, "matched");
-  const activeTab = tab ?? (counts.new || statement.rows.some((row) => row.locked) ? "new" : "matched");
-  const where = `${statement.cardName} · ${getMonthName(statement.paymentMonth)} ${statement.paymentYear}`;
+  const createRows = useCreateStatementRows()
+  const [pending, setPending] = useState<PendingCreate | null>(null)
+  const assignPerson = useAssignStatementPerson()
+  const assignCard = useAssignStatementCard()
+  const personName = nameById(usePeople().data)
+  const statementHistory = useStatements().data ?? []
+  const [editingExpenseId, setEditingExpenseId] = useState<string>()
+  const { data: editingExpense } = useExpense(EXPENSE_RESOURCES.creditCard, editingExpenseId)
+  const [tab, setTab] = useState<string | null>(null)
+  const [reviewingRowId, setReviewingRowId] = useState<string | null>(null)
+  const reviewingRow = statement.rows.find((row) => row.id === reviewingRowId)
+  const reviewRow = (row: StatementRow) => setReviewingRowId(row.id)
+  const openExpense = (expenseId: string) => setEditingExpenseId(expenseId)
+  const counts = countsOf(statement)
+  const newRows = rowsOf(statement, 'new')
+  const matchedRows = rowsOf(statement, 'matched')
+  const activeTab = tab ?? (counts.new || statement.rows.some((row) => row.locked) ? 'new' : 'matched')
+  const where = `${statement.cardName} · ${getMonthName(statement.paymentMonth)} ${statement.paymentYear}`
   const history = statementHistory
     .filter(
       (item) =>
@@ -317,15 +317,15 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
         (item.paymentYear < statement.paymentYear || (item.paymentYear === statement.paymentYear && item.paymentMonth < statement.paymentMonth)),
     )
     .sort((a, b) => b.paymentYear - a.paymentYear || b.paymentMonth - a.paymentMonth)
-    .slice(0, 4);
+    .slice(0, 4)
 
-  const collectFrom = (row: StatementRow) => (row.personId && row.personId !== statement.personId ? personName(row.personId) : undefined);
+  const collectFrom = (row: StatementRow) => (row.personId && row.personId !== statement.personId ? personName(row.personId) : undefined)
   const askCreate = (row: StatementRow) =>
     setPending({
       rowIds: [row.id],
       ...confirmCreateText(row, where, collectFrom(row)),
-    });
-  const newCollects = newRows.filter((row) => row.result === "new" && collectFrom(row)).length;
+    })
+  const newCollects = newRows.filter((row) => row.result === 'new' && collectFrom(row)).length
 
   return (
     <Card>
@@ -335,10 +335,10 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
             {where}
           </span>
           <Badge variant="outline" className="shrink-0 whitespace-nowrap">
-            {statement.source === "ai" ? "Leído con AI" : "Leído sin AI"}
+            {statement.source === 'ai' ? 'Leído con AI' : 'Leído sin AI'}
           </Badge>
           <Badge variant="secondary" className="shrink-0 whitespace-nowrap">
-            Pagar hasta {statement.dueDate ? formatDate(statement.dueDate) : "sin fecha"}
+            Pagar hasta {statement.dueDate ? formatDate(statement.dueDate) : 'sin fecha'}
           </Badge>
         </CardTitle>
         <div className="flex flex-wrap items-center gap-4">
@@ -383,10 +383,10 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
             >
               {(
                 [
-                  ["new", CirclePlus, "Nuevos", counts.new],
-                  ["matched", CheckCircle2, "Coinciden", counts.matched],
-                  ["missing", ListFilter, "Solo en Kogane", counts.missing],
-                  ["total", Wallet, "Pago total", null],
+                  ['new', CirclePlus, 'Nuevos', counts.new],
+                  ['matched', CheckCircle2, 'Coinciden', counts.matched],
+                  ['missing', ListFilter, 'Solo en Kogane', counts.missing],
+                  ['total', Wallet, 'Pago total', null],
                 ] as const
               ).map(([value, Icon, label, count]) => (
                 <TabsTrigger key={value} value={value} className="h-auto gap-1.5 whitespace-normal py-2 sm:whitespace-nowrap">
@@ -396,16 +396,16 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
               ))}
             </TabsList>
             <div className="flex flex-wrap items-center gap-3">
-              {activeTab === "new" && <TabTotals items={newRows.filter((row) => row.result === "new")} />}
-              {activeTab === "matched" && <TabTotals items={matchedRows} />}
-              {activeTab === "missing" && <TabTotals items={statement.missing} />}
-              {activeTab === "new" && counts.new > 0 && (
+              {activeTab === 'new' && <TabTotals items={newRows.filter((row) => row.result === 'new')} />}
+              {activeTab === 'matched' && <TabTotals items={matchedRows} />}
+              {activeTab === 'missing' && <TabTotals items={statement.missing} />}
+              {activeTab === 'new' && counts.new > 0 && (
                 <Button
                   size="sm"
                   onClick={() =>
                     setPending({
                       title: `¿Guardar los ${counts.new} nuevos?`,
-                      description: `Se crean como gastos pendientes de ${where}, con el nombre que les diste (o el del banco) y a nombre de su persona.${newCollects ? ` ${newCollects} son de otras personas: también se crea su cobro.` : ""} Los ignorados no se guardan.`,
+                      description: `Se crean como gastos pendientes de ${where}, con el nombre que les diste (o el del banco) y a nombre de su persona.${newCollects ? ` ${newCollects} son de otras personas: también se crea su cobro.` : ''} Los ignorados no se guardan.`,
                     })
                   }
                   disabled={createRows.isPending}
@@ -422,7 +422,7 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
             <div className="mb-4">
               <StatementTotalCard
                 key={statement.id}
-                initialCurrency={statement.currency === "USD" ? "USD" : "PEN"}
+                initialCurrency={statement.currency === 'USD' ? 'USD' : 'PEN'}
                 paymentMethodId={statement.paymentMethodId}
                 cardName={statement.cardName}
                 month={statement.paymentMonth}
@@ -484,7 +484,7 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
                       {statement.missing.map((expense) => (
                         <TableRow key={expense.id}>
                           <TableCell className="text-sm text-muted-foreground">
-                            {expense.processDate ? formatDate(expense.processDate) : "—"}
+                            {expense.processDate ? formatDate(expense.processDate) : '—'}
                           </TableCell>
                           <TableCell>
                             {expense.description} {expense.installment && <Badge variant="outline">{expense.installment}</Badge>}
@@ -524,8 +524,8 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
                   createRows.mutate({
                     id: statement.id,
                     rowIds: pending.rowIds,
-                  });
-                setPending(null);
+                  })
+                setPending(null)
               }}
             >
               Guardar
@@ -550,5 +550,5 @@ export function StatementDetail({ statement, onChangeFile }: { statement: Statem
         expense={editingExpense}
       />
     </Card>
-  );
+  )
 }

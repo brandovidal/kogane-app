@@ -1,15 +1,15 @@
-import { ArrowRight, CalendarDays } from "lucide-react";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Button } from "@/ui/button";
-import { Skeleton } from "@/ui/skeleton";
-import { Progress } from "@/ui/progress";
-import { useNextMonthForecast } from "../hooks/useNextMonthForecast";
+import { ArrowRight, CalendarDays } from 'lucide-react'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Button } from '@/ui/button'
+import { Skeleton } from '@/ui/skeleton'
+import { Progress } from '@/ui/progress'
+import { useNextMonthForecast } from '../hooks/useNextMonthForecast'
 
 export function DashboardNextMonthCard({ month, year }: { month: number; year: number }) {
-  const forecast = useNextMonthForecast(month, year);
-  const percent = forecast.commitmentPercent;
+  const forecast = useNextMonthForecast(month, year)
+  const percent = forecast.commitmentPercent
 
   return (
     <Card className="h-full">
@@ -42,7 +42,7 @@ export function DashboardNextMonthCard({ month, year }: { month: number; year: n
                 className="bg-muted [&_[data-slot=progress-indicator]]:bg-primary"
               />
               <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                <span>{percent == null ? "Registra tu sueldo para ver el compromiso" : `${percent}% del sueldo comprometido`}</span>
+                <span>{percent == null ? 'Registra tu sueldo para ver el compromiso' : `${percent}% del sueldo comprometido`}</span>
                 <span className="shrink-0 font-medium tabular-nums text-foreground">{formatCurrency(forecast.committed)}</span>
               </div>
             </div>
@@ -62,7 +62,7 @@ export function DashboardNextMonthCard({ month, year }: { month: number; year: n
             </dl>
             <div className="flex items-center justify-between border-t pt-2 text-sm">
               <span className="font-medium">Libre del sueldo (est.)</span>
-              <span className={`font-semibold tabular-nums ${forecast.available < 0 ? "text-destructive" : "text-emerald-400"}`}>
+              <span className={`font-semibold tabular-nums ${forecast.available < 0 ? 'text-destructive' : 'text-emerald-400'}`}>
                 {formatCurrency(forecast.available)}
               </span>
             </div>
@@ -70,11 +70,11 @@ export function DashboardNextMonthCard({ month, year }: { month: number; year: n
               <CalendarDays className="size-3.5" />
               {forecast.firstDue
                 ? `Primero vence: ${forecast.firstDue.title} · ${forecast.firstDue.date.slice(8, 10)} ${getMonthName(forecast.month).slice(0, 3).toLowerCase()}`
-                : "Sin vencimientos registrados"}
+                : 'Sin vencimientos registrados'}
             </p>
           </>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

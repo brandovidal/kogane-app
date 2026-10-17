@@ -1,4 +1,4 @@
-export type { ImportSource, HistoryItem, ImportRowsParams } from "./import-types";
+export type { ImportSource, HistoryItem, ImportRowsParams } from './import-types'
 export type {
   ImportUploadCardProps,
   ImportHistoryCardProps,
@@ -6,4 +6,4 @@ export type {
   ImportSummaryTabProps,
   ImportDetailViewProps,
   ImportRowStatusBadgeProps,
-} from "./import-types";
+} from './import-types'

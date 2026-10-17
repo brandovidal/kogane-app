@@ -1,5 +1,5 @@
-import { Fragment } from "react";
-import { CircleCheck } from "lucide-react";
+import { Fragment } from 'react'
+import { CircleCheck } from 'lucide-react'
 import {
   DropdownMenuGroup,
   DropdownMenuLabel,
@@ -9,18 +9,18 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/ui/dropdown-menu";
-import { groupPaymentStatuses } from "../lib/group-payment-statuses";
-import { StatusBadge } from "./StatusBadge";
+} from '@/ui/dropdown-menu'
+import { groupPaymentStatuses } from '../lib/group-payment-statuses'
+import { StatusBadge } from './StatusBadge'
 
 export interface PaymentStatusMenuProps {
-  value: string;
-  options: readonly string[];
-  onChange: (status: string) => void;
+  value: string
+  options: readonly string[]
+  onChange: (status: string) => void
 }
 
 export function PaymentStatusMenu({ value, options, onChange }: PaymentStatusMenuProps) {
-  const groups = groupPaymentStatuses(options);
+  const groups = groupPaymentStatuses(options)
 
   return (
     <DropdownMenuSub>
@@ -49,5 +49,5 @@ export function PaymentStatusMenu({ value, options, onChange }: PaymentStatusMen
         </DropdownMenuRadioGroup>
       </DropdownMenuSubContent>
     </DropdownMenuSub>
-  );
+  )
 }

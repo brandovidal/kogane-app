@@ -1,36 +1,36 @@
-import { ImagePlus, MessageSquare, Mic, type LucideIcon } from "lucide-react";
+import { ImagePlus, MessageSquare, Mic, type LucideIcon } from 'lucide-react'
 
-export type ChatStarter = "text" | "capture" | "voice";
+export type ChatStarter = 'text' | 'capture' | 'voice'
 
 const STARTERS: {
-  id: ChatStarter;
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  example: string;
+  id: ChatStarter
+  icon: LucideIcon
+  title: string
+  description: string
+  example: string
 }[] = [
   {
-    id: "text",
+    id: 'text',
     icon: MessageSquare,
-    title: "Escribe",
-    description: "Con lenguaje natural",
-    example: "almuerzo 25 con yape",
+    title: 'Escribe',
+    description: 'Con lenguaje natural',
+    example: 'almuerzo 25 con yape',
   },
   {
-    id: "capture",
+    id: 'capture',
     icon: ImagePlus,
-    title: "Sube una captura",
-    description: "Yape, Plin o voucher",
-    example: "captura-yape.png",
+    title: 'Sube una captura',
+    description: 'Yape, Plin o voucher',
+    example: 'captura-yape.png',
   },
   {
-    id: "voice",
+    id: 'voice',
     icon: Mic,
-    title: "Graba una nota",
-    description: "Dicta el gasto",
-    example: "«taxi 12 soles»",
+    title: 'Graba una nota',
+    description: 'Dicta el gasto',
+    example: '«taxi 12 soles»',
   },
-];
+]
 
 // Conversación vacía (board M2): tres formas de registrar un gasto
 export function ChatEmptyState({ onPick, disabled }: { onPick: (starter: ChatStarter) => void; disabled?: boolean }) {
@@ -60,5 +60,5 @@ export function ChatEmptyState({ onPick, disabled }: { onPick: (starter: ChatSta
         ))}
       </div>
     </section>
-  );
+  )
 }

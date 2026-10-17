@@ -61,7 +61,7 @@ Cada entorno es un Worker distinto con su propio proyecto de Workers Builds, con
 
 - El nombre del Worker del proyecto debe coincidir con el `name` del entorno en `wrangler.jsonc`; si no, Workers Builds se queja del desajuste o despliega a otro Worker.
 - Los secretos `API_URL` y `API_KEY` se cargan en cada Worker con los valores de su API (dev, qa o producción).
-- Las ramas que no son la de producción de un proyecto usan el comando de versión (`npx wrangler versions upload`) y generan una URL de vista previa sin reemplazar el despliegue. Sin `CLOUDFLARE_ENV`, esa vista previa usa la configuración de nivel superior, es decir, la API de producción: para vistas previas de ramas feature, usa el proyecto de dev.
+- Las ramas que no son la de producción de un proyecto usan el comando de vista previa (`npx wrangler preview`, Wrangler ≥ 4.135.0; el nombre de la vista previa es la rama) y generan una URL de vista previa sin reemplazar el despliegue. Sin `CLOUDFLARE_ENV`, esa vista previa usa la configuración de nivel superior, es decir, la API de producción: para vistas previas de ramas feature, usa el proyecto de dev.
 
 ## 2. Login
 

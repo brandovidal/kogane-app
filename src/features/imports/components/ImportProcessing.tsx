@@ -1,12 +1,12 @@
-import { Check, Loader2 } from "lucide-react";
-import { Button } from "@/ui/button";
-import { cn } from "@/shared/utils/cn";
-import { formatFileSize } from "@/features/messages/lib/chat-view";
-import { currentStep, fileBadge, PROCESSING_STEPS } from "../lib/upload-flow";
+import { Check, Loader2 } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { cn } from '@/shared/utils/cn'
+import { formatFileSize } from '@/features/messages/lib/chat-view'
+import { currentStep, fileBadge, PROCESSING_STEPS } from '../lib/upload-flow'
 
 // Leyendo el archivo (board I6): avance estimado y pasos
-export function ImportProcessing({ file, progress, onCancel }: { file: Pick<File, "name" | "size">; progress: number; onCancel: () => void }) {
-  const step = currentStep(progress);
+export function ImportProcessing({ file, progress, onCancel }: { file: Pick<File, 'name' | 'size'>; progress: number; onCancel: () => void }) {
+  const step = currentStep(progress)
   return (
     <div className="space-y-4 rounded-xl border bg-card p-4">
       <div className="flex items-center gap-3">
@@ -29,7 +29,7 @@ export function ImportProcessing({ file, progress, onCancel }: { file: Pick<File
       </div>
       <ol className="space-y-1.5 text-sm">
         {PROCESSING_STEPS.map((label, index) => (
-          <li key={label} className={cn("flex items-center gap-2", index > step && "text-muted-foreground")}>
+          <li key={label} className={cn('flex items-center gap-2', index > step && 'text-muted-foreground')}>
             {index < step ? (
               <Check className="size-4 text-emerald-600" />
             ) : index === step ? (
@@ -45,5 +45,5 @@ export function ImportProcessing({ file, progress, onCancel }: { file: Pick<File
         Cancelar
       </Button>
     </div>
-  );
+  )
 }

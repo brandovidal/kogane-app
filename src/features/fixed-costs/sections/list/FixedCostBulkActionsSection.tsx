@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { ChevronDown, CircleCheck, Copy, LoaderCircle, Trash2 } from "lucide-react";
-import { BulkActionsToolbar } from "@/shared/components/toolbar/BulkActionsToolbar";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import { groupPaymentStatuses } from "@/features/expenses/lib/group-payment-statuses";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { Button } from "@/ui/button";
+import { useState } from 'react'
+import { ChevronDown, CircleCheck, Copy, LoaderCircle, Trash2 } from 'lucide-react'
+import { BulkActionsToolbar } from '@/shared/components/toolbar/BulkActionsToolbar'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { groupPaymentStatuses } from '@/features/expenses/lib/group-payment-statuses'
+import { StatusBadge } from '@/features/expenses/components/StatusBadge'
+import { Button } from '@/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,18 +12,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
-import { FIXED_COST_STATUSES } from "../../constants/statuses";
-import type { useFixedCostBulkActions } from "../../hooks/useFixedCostBulkActions";
+} from '@/ui/dropdown-menu'
+import { FIXED_COST_STATUSES } from '../../constants/statuses'
+import type { useFixedCostBulkActions } from '../../hooks/useFixedCostBulkActions'
 
 export function FixedCostBulkActionsSection({ bulk }: { bulk: ReturnType<typeof useFixedCostBulkActions> }) {
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const count = bulk.selectedItems.length;
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const count = bulk.selectedItems.length
   return (
     <>
       <BulkActionsToolbar count={count} pending={bulk.pending} onClear={bulk.clear}>
         {bulk.pending && <LoaderCircle aria-hidden="true" className="size-4 animate-spin text-muted-foreground" />}
-        <Button type="button" variant="ghost" size="sm" disabled={bulk.pending} onClick={() => void bulk.run("duplicate")}>
+        <Button type="button" variant="ghost" size="sm" disabled={bulk.pending} onClick={() => void bulk.run('duplicate')}>
           <Copy aria-hidden="true" className="size-4" />
           Duplicar
         </Button>
@@ -41,7 +41,7 @@ export function FixedCostBulkActionsSection({ bulk }: { bulk: ReturnType<typeof 
                 {index > 0 && <DropdownMenuSeparator />}
                 <DropdownMenuLabel className="text-xs text-muted-foreground">{group.label}</DropdownMenuLabel>
                 {group.options.map((status) => (
-                  <DropdownMenuItem key={status} onSelect={() => void bulk.run("status", status)}>
+                  <DropdownMenuItem key={status} onSelect={() => void bulk.run('status', status)}>
                     <StatusBadge status={status} />
                   </DropdownMenuItem>
                 ))}
@@ -76,11 +76,11 @@ export function FixedCostBulkActionsSection({ bulk }: { bulk: ReturnType<typeof 
       <DeleteConfirmationDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title={`¿Eliminar ${count} ${count === 1 ? "costo fijo" : "costos fijos"}?`}
+        title={`¿Eliminar ${count} ${count === 1 ? 'costo fijo' : 'costos fijos'}?`}
         description="Se eliminarán los registros seleccionados y sus archivos. Esta acción no se puede deshacer."
         pending={bulk.pending}
-        onConfirm={() => void bulk.run("delete").then(() => setDeleteOpen(false))}
+        onConfirm={() => void bulk.run('delete').then(() => setDeleteOpen(false))}
       />
     </>
-  );
+  )
 }

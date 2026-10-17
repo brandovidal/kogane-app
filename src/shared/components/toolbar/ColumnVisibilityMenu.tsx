@@ -1,17 +1,17 @@
-import type { ReactElement } from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import { ColumnVisibilityOptions, type ColumnVisibilityOption } from "./ColumnVisibilityOptions";
+import type { ReactElement } from 'react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import { ColumnVisibilityOptions, type ColumnVisibilityOption } from './ColumnVisibilityOptions'
 
 export function ColumnVisibilityMenu({
   columns,
   trigger,
-  align = "end",
-  className = "w-52",
+  align = 'end',
+  className = 'w-52',
 }: {
-  columns: readonly ColumnVisibilityOption[];
-  trigger: ReactElement;
-  align?: "start" | "center" | "end";
-  className?: string;
+  columns: readonly ColumnVisibilityOption[]
+  trigger: ReactElement
+  align?: 'start' | 'center' | 'end'
+  className?: string
 }) {
   return (
     <DropdownMenu>
@@ -22,5 +22,5 @@ export function ColumnVisibilityMenu({
         <ColumnVisibilityOptions columns={columns} />
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

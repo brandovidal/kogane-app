@@ -1,11 +1,11 @@
-import { useSettingsPreferences } from "../../hooks/useSettingsPreferences";
-import { SETTINGS_TIME_ZONES } from "../../constants/preferences";
-import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import { useSettingsPreferences } from '../../hooks/useSettingsPreferences'
+import { SETTINGS_TIME_ZONES } from '../../constants/preferences'
+import { CURRENCY_OPTIONS } from '@/shared/constants/currency'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
 
 export function RegionSection() {
-  const { currency, timeZone, setCurrency, setTimeZone } = useSettingsPreferences();
+  const { currency, timeZone, setCurrency, setTimeZone } = useSettingsPreferences()
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -17,14 +17,14 @@ export function RegionSection() {
           <label className="text-sm font-medium" htmlFor="settings-default-currency">
             Moneda predeterminada
           </label>
-          <Select value={currency} onValueChange={(value) => value && setCurrency(value as "PEN" | "USD")}>
+          <Select value={currency} onValueChange={(value) => value && setCurrency(value as 'PEN' | 'USD')}>
             <SelectTrigger id="settings-default-currency" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {CURRENCY_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.value === "PEN" ? "S/ · Soles peruanos (PEN)" : "$ · Dólares estadounidenses (USD)"}
+                  {option.value === 'PEN' ? 'S/ · Soles peruanos (PEN)' : '$ · Dólares estadounidenses (USD)'}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -35,7 +35,7 @@ export function RegionSection() {
           <label className="text-sm font-medium" htmlFor="settings-time-zone">
             Zona horaria
           </label>
-          <Select value={timeZone} onValueChange={(value) => value && setTimeZone(value as (typeof SETTINGS_TIME_ZONES)[number]["value"])}>
+          <Select value={timeZone} onValueChange={(value) => value && setTimeZone(value as (typeof SETTINGS_TIME_ZONES)[number]['value'])}>
             <SelectTrigger id="settings-time-zone" className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -51,5 +51,5 @@ export function RegionSection() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

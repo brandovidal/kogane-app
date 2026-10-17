@@ -11,4 +11,4 @@ export {
   PRIMARY_PANEL_FILTER_KEYS,
   PRIMARY_FIELDS,
   ADDITIONAL_FIELDS,
-} from "./expense-filters";
+} from './expense-filters'

@@ -1,17 +1,17 @@
-import { CurrencySelect } from "@/shared/components/forms/CurrencySelect";
-import type { CurrencyCode } from "@/shared/constants/currency";
-import { useEffect, useState } from "react";
-import { ChevronRight, Save } from "lucide-react";
+import { CurrencySelect } from '@/shared/components/forms/CurrencySelect'
+import type { CurrencyCode } from '@/shared/constants/currency'
+import { useEffect, useState } from 'react'
+import { ChevronRight, Save } from 'lucide-react'
 
-import { useCardCheck } from "@/features/debts/hooks/debts";
-import { usePeople } from "@/shared/api/hooks/catalogs";
-import { useUpdateStatementMinimum } from "@/features/statements/hooks/statements";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Button } from "@/ui/button";
-import { Card, CardContent } from "@/ui/card";
-import { Input } from "@/ui/input";
-import { Switch } from "@/ui/switch";
+import { useCardCheck } from '@/features/debts/hooks/debts'
+import { usePeople } from '@/shared/api/hooks/catalogs'
+import { useUpdateStatementMinimum } from '@/features/statements/hooks/statements'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Button } from '@/ui/button'
+import { Card, CardContent } from '@/ui/card'
+import { Input } from '@/ui/input'
+import { Switch } from '@/ui/switch'
 
 export function StatementMinimumCard({
   paymentMethodId,
@@ -21,43 +21,43 @@ export function StatementMinimumCard({
   month,
   year,
 }: {
-  paymentMethodId?: string;
-  cardName: string;
-  excludedByFilter?: boolean;
-  totalToCollect?: number;
-  month: number;
-  year: number;
+  paymentMethodId?: string
+  cardName: string
+  excludedByFilter?: boolean
+  totalToCollect?: number
+  month: number
+  year: number
 }) {
-  const [currency, setCurrency] = useState<CurrencyCode>("PEN");
-  const money = (amount: number) => formatCurrency(amount, currency);
-  const { data: check, isLoading } = useCardCheck(paymentMethodId ? { paymentMethodId, month, year, currency } : null);
-  const people = usePeople().data ?? [];
-  const updateMinimum = useUpdateStatementMinimum();
-  const [adjustMode, setAdjustMode] = useState(false);
-  const [adjustments, setAdjustments] = useState<Record<string, string>>({});
+  const [currency, setCurrency] = useState<CurrencyCode>('PEN')
+  const money = (amount: number) => formatCurrency(amount, currency)
+  const { data: check, isLoading } = useCardCheck(paymentMethodId ? { paymentMethodId, month, year, currency } : null)
+  const people = usePeople().data ?? []
+  const updateMinimum = useUpdateStatementMinimum()
+  const [adjustMode, setAdjustMode] = useState(false)
+  const [adjustments, setAdjustments] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    if (!check?.statementId) return;
+    if (!check?.statementId) return
     setAdjustments(
       Object.fromEntries(
         check.expensesByPerson.map((person) => [person.personId, String(check.minimumAllocations?.[person.personId] ?? person.amount)]),
       ),
-    );
+    )
     // reset only when another statement is read, not on every refetch of the same one
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [check?.statementId, check?.currency]);
+  }, [check?.statementId, check?.currency])
 
-  const expensePeople = new Map((check?.expensesByPerson ?? []).map((person) => [person.personId, person]));
+  const expensePeople = new Map((check?.expensesByPerson ?? []).map((person) => [person.personId, person]))
   const participantIds = new Set([
     ...expensePeople.keys(),
     ...(check?.people.map((person) => person.personId) ?? []),
     ...(check?.statementPersonId ? [check.statementPersonId] : []),
-  ]);
+  ])
   const participants = [...participantIds]
     .map((personId) => {
-      const chargePerson = expensePeople.get(personId);
-      const person = people.find((item) => item.id === personId);
-      const name = chargePerson?.name ?? person?.name ?? "Titular";
+      const chargePerson = expensePeople.get(personId)
+      const person = people.find((item) => item.id === personId)
+      const name = chargePerson?.name ?? person?.name ?? 'Titular'
       return {
         personId,
         name,
@@ -68,20 +68,20 @@ export function StatementMinimumCard({
           expenses: [],
         },
         titular: personId === check?.statementPersonId,
-      };
+      }
     })
-    .sort((a, b) => Number(b.titular) - Number(a.titular) || a.name.localeCompare(b.name, "es"));
+    .sort((a, b) => Number(b.titular) - Number(a.titular) || a.name.localeCompare(b.name, 'es'))
   const contributionOf = (personId: string, baseAmount: number) => {
-    const raw = adjustMode ? (adjustments[personId] ?? String(check?.minimumAllocations?.[personId] ?? baseAmount)) : String(baseAmount);
-    const parsed = Number(raw);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-  };
-  const contributionsTotal = participants.reduce((sum, person) => sum + contributionOf(person.personId, person.chargePerson.amount), 0);
-  const minimum = check?.minimumDue ?? null;
-  const remaining = minimum === null ? 0 : Math.max(0, minimum - (check?.othersPaid ?? 0));
-  const covered = minimum !== null && contributionsTotal >= remaining - 0.005;
-  const gap = Math.max(0, remaining - contributionsTotal);
-  const excess = Math.max(0, contributionsTotal - remaining);
+    const raw = adjustMode ? (adjustments[personId] ?? String(check?.minimumAllocations?.[personId] ?? baseAmount)) : String(baseAmount)
+    const parsed = Number(raw)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0
+  }
+  const contributionsTotal = participants.reduce((sum, person) => sum + contributionOf(person.personId, person.chargePerson.amount), 0)
+  const minimum = check?.minimumDue ?? null
+  const remaining = minimum === null ? 0 : Math.max(0, minimum - (check?.othersPaid ?? 0))
+  const covered = minimum !== null && contributionsTotal >= remaining - 0.005
+  const gap = Math.max(0, remaining - contributionsTotal)
+  const excess = Math.max(0, contributionsTotal - remaining)
 
   return (
     <Card>
@@ -108,22 +108,22 @@ export function StatementMinimumCard({
             <div className="grid grid-cols-2 gap-3 text-sm lg:grid-cols-4">
               <div className="rounded-md bg-muted/40 p-2">
                 <p className="text-xs text-muted-foreground">Total del estado</p>
-                <p className="font-semibold tabular-nums">{check.statementTotal == null ? "—" : money(check.statementTotal)}</p>
+                <p className="font-semibold tabular-nums">{check.statementTotal == null ? '—' : money(check.statementTotal)}</p>
               </div>
               <div className="rounded-md bg-emerald-500/10 p-2">
                 <p className="text-xs text-muted-foreground">Pago mínimo</p>
-                <p className="font-semibold tabular-nums text-emerald-300">{minimum == null ? "—" : money(minimum)}</p>
+                <p className="font-semibold tabular-nums text-emerald-300">{minimum == null ? '—' : money(minimum)}</p>
               </div>
               <div className="rounded-md bg-muted/40 p-2">
                 <p className="text-xs text-muted-foreground">Abonado por personas</p>
                 <p className="font-semibold tabular-nums text-sky-300">{money(check.othersPaid)}</p>
               </div>
-              <div className={`rounded-md p-2 ${covered ? "bg-emerald-500/10" : "bg-amber-500/10"}`}>
+              <div className={`rounded-md p-2 ${covered ? 'bg-emerald-500/10' : 'bg-amber-500/10'}`}>
                 <p className="text-xs text-muted-foreground">
-                  {minimum === null ? "Mínimo sin registrar" : covered ? "Mínimo cubierto" : "Falta para el mínimo"}
+                  {minimum === null ? 'Mínimo sin registrar' : covered ? 'Mínimo cubierto' : 'Falta para el mínimo'}
                 </p>
-                <p className={`font-semibold tabular-nums ${covered ? "text-emerald-300" : "text-amber-300"}`}>
-                  {minimum === null ? "—" : covered ? `Excedente ${money(excess)}` : money(gap)}
+                <p className={`font-semibold tabular-nums ${covered ? 'text-emerald-300' : 'text-amber-300'}`}>
+                  {minimum === null ? '—' : covered ? `Excedente ${money(excess)}` : money(gap)}
                 </p>
               </div>
             </div>
@@ -134,11 +134,11 @@ export function StatementMinimumCard({
                     <span className="font-medium">Aportes {cardName}</span>
                     {participants.map((person) => (
                       <span key={person.personId} className="text-muted-foreground">
-                        {person.name}{" "}
+                        {person.name}{' '}
                         <strong className="text-foreground tabular-nums">{money(contributionOf(person.personId, person.chargePerson.amount))}</strong>
                       </span>
                     ))}
-                    <span className={`font-semibold tabular-nums ${covered ? "text-emerald-300" : "text-amber-300"}`}>
+                    <span className={`font-semibold tabular-nums ${covered ? 'text-emerald-300' : 'text-amber-300'}`}>
                       {money(contributionsTotal)} / {money(remaining)}
                     </span>
                   </div>
@@ -151,7 +151,7 @@ export function StatementMinimumCard({
                   <div className="grid min-w-[520px] grid-cols-[minmax(0,1fr)_7rem_9rem] border-b bg-muted/20 px-3 py-2 text-xs font-medium text-muted-foreground">
                     <span>Titular / adicional</span>
                     <span className="text-right">Registros</span>
-                    <span className="text-right">{adjustMode ? "Aporte al mínimo" : `Cobros ${cardName}`}</span>
+                    <span className="text-right">{adjustMode ? 'Aporte al mínimo' : `Cobros ${cardName}`}</span>
                   </div>
                   {participants.map((person) => (
                     <details key={person.personId} className="group border-b last:border-0">
@@ -160,7 +160,7 @@ export function StatementMinimumCard({
                           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
                           <span className="truncate">
                             {person.name}
-                            {person.titular ? " · titular" : ""}
+                            {person.titular ? ' · titular' : ''}
                           </span>
                         </span>
                         <span className="text-right tabular-nums text-muted-foreground">{person.chargePerson.expenses.length}</span>
@@ -203,7 +203,7 @@ export function StatementMinimumCard({
                     <span className="text-right text-xs font-normal text-muted-foreground">
                       {participants.reduce((sum, person) => sum + person.chargePerson.expenses.length, 0)} registros
                     </span>
-                    <span className={`text-right tabular-nums ${covered ? "text-emerald-300" : "text-amber-300"}`}>{money(contributionsTotal)}</span>
+                    <span className={`text-right tabular-nums ${covered ? 'text-emerald-300' : 'text-amber-300'}`}>{money(contributionsTotal)}</span>
                   </div>
                 </div>
                 {adjustMode && (
@@ -237,33 +237,33 @@ export function StatementMinimumCard({
             {minimum === null && (
               <p className="text-sm text-amber-300">
                 No hay pago mínimo guardado.
-                {currency === "PEN" && totalToCollect != null && <> Total de cobros con los filtros aplicados: {money(totalToCollect)}.</>}
+                {currency === 'PEN' && totalToCollect != null && <> Total de cobros con los filtros aplicados: {money(totalToCollect)}.</>}
               </p>
             )}
             <form
               className="flex flex-wrap items-end gap-2 border-t pt-3"
               onSubmit={(event) => {
-                event.preventDefault();
-                const raw = String(new FormData(event.currentTarget).get("minimumDue") ?? "").trim();
-                const value = raw === "" ? null : Number(raw);
-                if (value !== null && (!Number.isFinite(value) || value < 0)) return;
+                event.preventDefault()
+                const raw = String(new FormData(event.currentTarget).get('minimumDue') ?? '').trim()
+                const value = raw === '' ? null : Number(raw)
+                if (value !== null && (!Number.isFinite(value) || value < 0)) return
                 updateMinimum.mutate({
                   id: check.statementId!,
                   currency,
                   minimumDue: value,
-                });
+                })
               }}
             >
               <label className="space-y-1 text-xs text-muted-foreground">
                 <span>
-                  {minimum === null ? "Ingresar pago mínimo" : "Ajustar pago mínimo"}
+                  {minimum === null ? 'Ingresar pago mínimo' : 'Ajustar pago mínimo'}
                   <Input
                     key={`${check.statementId}-${currency}-${minimum}`}
                     name="minimumDue"
                     type="number"
                     min="0"
                     step="0.01"
-                    defaultValue={minimum ?? ""}
+                    defaultValue={minimum ?? ''}
                     className="mt-1 w-44"
                   />
                 </span>
@@ -282,12 +282,12 @@ export function StatementMinimumCard({
             ) : (
               <>
                 No hay estado de cuenta {cardName} para este período.
-                {currency === "PEN" && totalToCollect != null && (
+                {currency === 'PEN' && totalToCollect != null && (
                   <>
-                    {" "}
+                    {' '}
                     Total de cobros con los filtros aplicados: <strong className="text-amber-300">{money(totalToCollect)}</strong>.
                   </>
-                )}{" "}
+                )}{' '}
                 <a className="underline underline-offset-4" href="/importacion">
                   Cargar estado de cuenta
                 </a>
@@ -297,5 +297,5 @@ export function StatementMinimumCard({
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

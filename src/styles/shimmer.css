@@ -1,16 +1,16 @@
 /* Shadcn shimmer utility, from shadcn/tailwind.css. */
 /* shimmer */
 @property --shimmer-angle {
-  syntax: "<angle>";
+  syntax: '<angle>';
   inherits: true;
   initial-value: 20deg;
 }
 @property --shimmer-image {
-  syntax: "*";
+  syntax: '*';
   inherits: false;
 }
 @property --shimmer-text-fill {
-  syntax: "*";
+  syntax: '*';
   inherits: false;
 }
 
@@ -53,7 +53,7 @@
     --_highlight: var(--shimmer-color, oklch(from currentColor max(0.8, calc(l + 0.4)) c h / calc(alpha + 0.4)));
   }
 
-  &:where([dir="rtl"], [dir="rtl"] *) {
+  &:where([dir='rtl'], [dir='rtl'] *) {
     animation-direction: reverse;
   }
 }

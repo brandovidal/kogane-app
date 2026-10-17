@@ -1,18 +1,18 @@
-import { AlertTriangle, ArrowRight, OctagonAlert } from "lucide-react";
+import { AlertTriangle, ArrowRight, OctagonAlert } from 'lucide-react'
 
-import type { Summary } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import type { Summary } from '@/shared/api/types'
+import { formatCurrency } from '@/shared/lib/currency'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/ui/card'
 
-import { STATUS_BAR, STATUS_TEXT, type LimitStatus } from "@/features/budget/lib/budget-view";
+import { STATUS_BAR, STATUS_TEXT, type LimitStatus } from '@/features/budget/lib/budget-view'
 
 export function BudgetVsActual({ summary, compact = false }: { summary: Summary | undefined; compact?: boolean }) {
-  const lines = summary?.byCategory ?? [];
-  const limited = lines.filter((line) => line.limit != null);
-  const unlimited = lines.filter((line) => line.limit == null && line.spent > 0);
+  const lines = summary?.byCategory ?? []
+  const limited = lines.filter((line) => line.limit != null)
+  const unlimited = lines.filter((line) => line.limit == null && line.spent > 0)
 
   return (
-    <Card className={compact ? "h-full" : undefined}>
+    <Card className={compact ? 'h-full' : undefined}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base">Presupuesto vs real</CardTitle>
         {compact && (
@@ -26,7 +26,7 @@ export function BudgetVsActual({ summary, compact = false }: { summary: Summary 
       <CardContent className="space-y-3">
         {!limited.length && (
           <p className="text-sm text-muted-foreground">
-            Sin límites por categoría. Ponlos en{" "}
+            Sin límites por categoría. Ponlos en{' '}
             <a href="/presupuesto" className="text-primary underline">
               Presupuesto
             </a>
@@ -34,11 +34,11 @@ export function BudgetVsActual({ summary, compact = false }: { summary: Summary 
           </p>
         )}
         {(compact ? limited.slice(0, 5) : limited).map((line) => {
-          const status = (line.status ?? "ok") as LimitStatus;
-          const percent = line.percent ?? 0;
+          const status = (line.status ?? 'ok') as LimitStatus
+          const percent = line.percent ?? 0
           return (
             <div
-              key={line.categoryId ?? "none"}
+              key={line.categoryId ?? 'none'}
               className="space-y-1"
               title={`${line.name}: ${formatCurrency(line.spent)} de ${formatCurrency(line.limit ?? 0)}`}
             >
@@ -48,8 +48,8 @@ export function BudgetVsActual({ summary, compact = false }: { summary: Summary 
                   {line.name}
                 </span>
                 <span className={`flex items-center gap-1 tabular-nums ${STATUS_TEXT[status]}`}>
-                  {status === "over" && <OctagonAlert className="h-3.5 w-3.5" aria-label="Excedido" />}
-                  {status === "warning" && <AlertTriangle className="h-3.5 w-3.5" aria-label="Cerca del límite" />}
+                  {status === 'over' && <OctagonAlert className="h-3.5 w-3.5" aria-label="Excedido" />}
+                  {status === 'warning' && <AlertTriangle className="h-3.5 w-3.5" aria-label="Cerca del límite" />}
                   {formatCurrency(line.spent)} / {formatCurrency(line.limit ?? 0)} · {Math.round(percent)} %
                 </span>
               </div>
@@ -57,14 +57,14 @@ export function BudgetVsActual({ summary, compact = false }: { summary: Summary 
                 <div className={`h-2 rounded-full ${STATUS_BAR[status]}`} style={{ width: `${Math.min(percent, 100)}%` }} />
               </div>
             </div>
-          );
+          )
         })}
         {!compact && unlimited.length > 0 && (
           <div className="border-t pt-3">
             <p className="mb-1 text-xs text-muted-foreground">Sin límite</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               {unlimited.map((line) => (
-                <span key={line.categoryId ?? "none"}>
+                <span key={line.categoryId ?? 'none'}>
                   {line.name} <span className="tabular-nums text-muted-foreground">{formatCurrency(line.spent)}</span>
                 </span>
               ))}
@@ -73,5 +73,5 @@ export function BudgetVsActual({ summary, compact = false }: { summary: Summary 
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

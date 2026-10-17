@@ -1,19 +1,19 @@
-import { useEffect } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
-import { THEME_OPTIONS } from "@/shared/constants/theme";
-import { useThemeStore } from "@/shared/hooks/useTheme";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
-import type { ThemePreference } from "@/shared/types/theme";
+import { useEffect } from 'react'
+import { Monitor, Moon, Sun } from 'lucide-react'
+import { THEME_OPTIONS } from '@/shared/constants/theme'
+import { useThemeStore } from '@/shared/hooks/useTheme'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
+import type { ThemePreference } from '@/shared/types/theme'
 
-const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor };
+const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor }
 
 export function AppearanceSection() {
-  const preference = useThemeStore((state) => state.preference);
-  const setTheme = useThemeStore((state) => state.setTheme);
-  const initTheme = useThemeStore((state) => state.initTheme);
+  const preference = useThemeStore((state) => state.preference)
+  const setTheme = useThemeStore((state) => state.setTheme)
+  const initTheme = useThemeStore((state) => state.initTheme)
 
-  useEffect(() => initTheme(), [initTheme]);
+  useEffect(() => initTheme(), [initTheme])
 
   return (
     <Card>
@@ -24,8 +24,8 @@ export function AppearanceSection() {
       <CardContent>
         <div className="settings-theme-options" role="group" aria-label="Apariencia">
           {THEME_OPTIONS.map((option) => {
-            const Icon = THEME_ICONS[option.value];
-            const selected = preference === option.value;
+            const Icon = THEME_ICONS[option.value]
+            const selected = preference === option.value
             return (
               <Button
                 key={option.value}
@@ -39,10 +39,10 @@ export function AppearanceSection() {
                 <Icon aria-hidden="true" className="size-4" />
                 {option.label}
               </Button>
-            );
+            )
           })}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

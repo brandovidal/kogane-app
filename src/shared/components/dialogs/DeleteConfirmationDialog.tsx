@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { LoaderCircle, Trash2 } from "lucide-react";
+import type { ReactNode } from 'react'
+import { LoaderCircle, Trash2 } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -10,16 +10,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/ui/alert-dialog";
-import { buttonVariants } from "@/ui/button";
+} from '@/ui/alert-dialog'
+import { buttonVariants } from '@/ui/button'
 
 export interface DeleteConfirmationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: ReactNode;
-  onConfirm: () => void;
-  pending?: boolean;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description: ReactNode
+  onConfirm: () => void
+  pending?: boolean
 }
 
 export function DeleteConfirmationDialog({ open, onOpenChange, title, description, onConfirm, pending = false }: DeleteConfirmationDialogProps) {
@@ -40,18 +40,18 @@ export function DeleteConfirmationDialog({ open, onOpenChange, title, descriptio
           <AlertDialogAction
             type="button"
             disabled={pending}
-            className={buttonVariants({ variant: "destructive" })}
+            className={buttonVariants({ variant: 'destructive' })}
             onClick={(event) => {
               // The caller closes after success; failures keep the confirmation open.
-              event.preventDefault();
-              if (!pending) onConfirm();
+              event.preventDefault()
+              if (!pending) onConfirm()
             }}
           >
             {pending ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <Trash2 aria-hidden="true" className="size-4" />}
-            {pending ? "Eliminando…" : "Eliminar"}
+            {pending ? 'Eliminando…' : 'Eliminar'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

@@ -1,13 +1,13 @@
-import type { ImportSummaryTabProps } from "../types/import-types";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { monthMatches } from "@/features/imports/lib/import-view";
-import { importSummaryOf } from "../lib/import-summary";
+import type { ImportSummaryTabProps } from '../types/import-types'
+import { CheckCircle2, XCircle } from 'lucide-react'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { monthMatches } from '@/features/imports/lib/import-view'
+import { importSummaryOf } from '../lib/import-summary'
 
 export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
-  const { kpis, months, matching } = importSummaryOf(batch);
+  const { kpis, months, matching } = importSummaryOf(batch)
 
   return (
     <div className="space-y-4">
@@ -22,8 +22,8 @@ export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
 
       <div>
         <p className="mb-2 text-sm">
-          <span className="font-medium">Por mes frente al Resumen de Notion:</span>{" "}
-          <span className={matching === months.length ? "text-emerald-600" : "text-amber-600"}>
+          <span className="font-medium">Por mes frente al Resumen de Notion:</span>{' '}
+          <span className={matching === months.length ? 'text-emerald-600' : 'text-amber-600'}>
             {matching} de {months.length} cuadran
           </span>
           <span className="block text-xs text-muted-foreground">
@@ -47,7 +47,7 @@ export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
                   <TableCell>
                     {getMonthName(month.month)} {month.year}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">{month.salary != null ? formatCurrency(month.salary) : "—"}</TableCell>
+                  <TableCell className="text-right tabular-nums">{month.salary != null ? formatCurrency(month.salary) : '—'}</TableCell>
                   <TableCell className="text-right tabular-nums">{formatCurrency(month.linked)}</TableCell>
                   <TableCell className="text-right tabular-nums">{formatCurrency(month.notionSpent ?? 0)}</TableCell>
                   <TableCell>
@@ -60,7 +60,7 @@ export function ImportSummaryTab({ batch }: ImportSummaryTabProps) {
         </div>
       </div>
 
-      <div className="text-xs text-muted-foreground">Archivos: {batch.summary.files.map((file) => `${file.base} (${file.rows})`).join(" · ")}</div>
+      <div className="text-xs text-muted-foreground">Archivos: {batch.summary.files.map((file) => `${file.base} (${file.rows})`).join(' · ')}</div>
     </div>
-  );
+  )
 }

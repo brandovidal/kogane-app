@@ -1,10 +1,10 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Subscription } from "@/shared/api/types";
-import { formatDayMonth, localTodayKey } from "@/shared/lib/dates";
-import { daysUntilDue } from "@/features/fixed-costs/lib/fixed-cost-summary";
-import { periodStore } from "@/shared/stores/period.store";
-import { cn } from "@/shared/utils/cn";
-import { PlatformMark } from "../components/PlatformMark";
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import type { Subscription } from '@/shared/api/types'
+import { formatDayMonth, localTodayKey } from '@/shared/lib/dates'
+import { daysUntilDue } from '@/features/fixed-costs/lib/fixed-cost-summary'
+import { periodStore } from '@/shared/stores/period.store'
+import { cn } from '@/shared/utils/cn'
+import { PlatformMark } from '../components/PlatformMark'
 import {
   formatPlatformTotals,
   formatPlatformCurrency,
@@ -12,28 +12,28 @@ import {
   platformNativeAmount,
   platformChargesInMonth,
   sumPlatformAmounts,
-} from "../lib/platform-summary";
+} from '../lib/platform-summary'
 
-const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-type Charge = { item: Subscription; date: string };
+const WEEKDAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+type Charge = { item: Subscription; date: string }
 
 function upcomingCharges(items: Subscription[], todayKey: string): Charge[] {
-  const end = new Date(`${todayKey}T12:00:00`);
-  end.setDate(end.getDate() + 90);
-  const endKey = end.toISOString().slice(0, 10);
-  const charges: Charge[] = [];
+  const end = new Date(`${todayKey}T12:00:00`)
+  end.setDate(end.getDate() + 90)
+  const endKey = end.toISOString().slice(0, 10)
+  const charges: Charge[] = []
   for (const item of items) {
-    let cursor = todayKey;
+    let cursor = todayKey
     for (let index = 0; index < 8; index += 1) {
-      const date = nextPlatformChargeDate(item, cursor);
-      if (!date || date > endKey) break;
-      charges.push({ item, date });
-      const next = new Date(`${date}T12:00:00`);
-      next.setDate(next.getDate() + 1);
-      cursor = next.toISOString().slice(0, 10);
+      const date = nextPlatformChargeDate(item, cursor)
+      if (!date || date > endKey) break
+      charges.push({ item, date })
+      const next = new Date(`${date}T12:00:00`)
+      next.setDate(next.getDate() + 1)
+      cursor = next.toISOString().slice(0, 10)
     }
   }
-  return charges.sort((left, right) => left.date.localeCompare(right.date));
+  return charges.sort((left, right) => left.date.localeCompare(right.date))
 }
 
 export function PlatformCalendarView({
@@ -43,29 +43,29 @@ export function PlatformCalendarView({
   year,
   onOpen,
 }: {
-  items: Subscription[];
-  upcomingItems: Subscription[];
-  month: number;
-  year: number;
-  onOpen: (item: Subscription) => void;
+  items: Subscription[]
+  upcomingItems: Subscription[]
+  month: number
+  year: number
+  onOpen: (item: Subscription) => void
 }) {
-  const todayKey = localTodayKey();
-  const days = new Date(year, month, 0).getDate();
-  const offset = (new Date(year, month - 1, 1).getDay() + 6) % 7;
-  const cellCount = Math.ceil((offset + days) / 7) * 7;
-  const byDay = new Map<number, Subscription[]>();
+  const todayKey = localTodayKey()
+  const days = new Date(year, month, 0).getDate()
+  const offset = (new Date(year, month - 1, 1).getDay() + 6) % 7
+  const cellCount = Math.ceil((offset + days) / 7) * 7
+  const byDay = new Map<number, Subscription[]>()
   for (const item of items) {
     for (const chargeDate of platformChargesInMonth(item, month, year)) {
-      const day = Number(chargeDate.slice(8, 10));
-      byDay.set(day, [...(byDay.get(day) ?? []), item]);
+      const day = Number(chargeDate.slice(8, 10))
+      byDay.set(day, [...(byDay.get(day) ?? []), item])
     }
   }
-  const monthCharges = [...byDay.values()].flat();
-  const upcoming = upcomingCharges(upcomingItems, todayKey);
-  const monthName = new Intl.DateTimeFormat("es-PE", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(year, month - 1, 1));
+  const monthCharges = [...byDay.values()].flat()
+  const upcoming = upcomingCharges(upcomingItems, todayKey)
+  const monthName = new Intl.DateTimeFormat('es-PE', {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(year, month - 1, 1))
   return (
     <div className="platform-calendar-layout">
       <section className="min-w-0">
@@ -73,7 +73,7 @@ export function PlatformCalendarView({
           <div className="flex items-baseline gap-2">
             <h2 className="font-semibold capitalize">{monthName}</h2>
             <span className="text-sm text-muted-foreground">
-              {monthCharges.length} {monthCharges.length === 1 ? "cobro" : "cobros"} · {formatPlatformTotals(sumPlatformAmounts(monthCharges))}
+              {monthCharges.length} {monthCharges.length === 1 ? 'cobro' : 'cobros'} · {formatPlatformTotals(sumPlatformAmounts(monthCharges))}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -81,8 +81,8 @@ export function PlatformCalendarView({
               type="button"
               className="rounded px-2 py-1 text-sm hover:bg-accent"
               onClick={() => {
-                const now = new Date();
-                periodStore.getState().setPeriod(now.getMonth() + 1, now.getFullYear());
+                const now = new Date()
+                periodStore.getState().setPeriod(now.getMonth() + 1, now.getFullYear())
               }}
             >
               Hoy
@@ -112,12 +112,12 @@ export function PlatformCalendarView({
             </div>
           ))}
           {Array.from({ length: cellCount }, (_, index) => {
-            const day = index - offset + 1;
-            const inMonth = day > 0 && day <= days;
-            const key = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const shown = inMonth ? day : day <= 0 ? new Date(year, month - 1, day).getDate() : day - days;
+            const day = index - offset + 1
+            const inMonth = day > 0 && day <= days
+            const key = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+            const shown = inMonth ? day : day <= 0 ? new Date(year, month - 1, day).getDate() : day - days
             return (
-              <div key={index} className={cn("platform-calendar-day", !inMonth && "text-muted-foreground/40", key === todayKey && "bg-muted/40")}>
+              <div key={index} className={cn('platform-calendar-day', !inMonth && 'text-muted-foreground/40', key === todayKey && 'bg-muted/40')}>
                 <span className="text-xs font-medium tabular-nums">{shown}</span>
                 {inMonth &&
                   (byDay.get(day) ?? []).map((item) => (
@@ -127,7 +127,7 @@ export function PlatformCalendarView({
                     </button>
                   ))}
               </div>
-            );
+            )
           })}
         </div>
       </section>
@@ -147,7 +147,7 @@ export function PlatformCalendarView({
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{item.description}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {formatDayMonth(date)} · {daysUntilDue(date, todayKey) === 0 ? "hoy" : `en ${daysUntilDue(date, todayKey)} días`}
+                    {formatDayMonth(date)} · {daysUntilDue(date, todayKey) === 0 ? 'hoy' : `en ${daysUntilDue(date, todayKey)} días`}
                   </span>
                 </span>
                 <span className="text-sm font-semibold tabular-nums">{formatPlatformCurrency(platformNativeAmount(item), item.currency)}</span>
@@ -163,5 +163,5 @@ export function PlatformCalendarView({
         </div>
       </aside>
     </div>
-  );
+  )
 }

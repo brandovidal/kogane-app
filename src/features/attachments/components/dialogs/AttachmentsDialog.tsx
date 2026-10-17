@@ -1,7 +1,7 @@
-import { Paperclip } from "lucide-react";
-import type { AttachmentRefType } from "@/shared/api/types";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { AttachmentsPanel } from "../AttachmentsPanel";
+import { Paperclip } from 'lucide-react'
+import type { AttachmentRefType } from '@/shared/api/types'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { AttachmentsPanel } from '../AttachmentsPanel'
 
 // The same panel in a dialog, for the ⋯ of an expense row
 export function AttachmentsDialog({
@@ -10,10 +10,10 @@ export function AttachmentsDialog({
   refId,
   onClose,
 }: {
-  title: string;
-  refType: AttachmentRefType;
-  refId: string;
-  onClose: () => void;
+  title: string
+  refType: AttachmentRefType
+  refId: string
+  onClose: () => void
 }) {
   return (
     <ResponsiveDialog
@@ -26,5 +26,5 @@ export function AttachmentsDialog({
     >
       <AttachmentsPanel refType={refType} refId={refId} dropzone />
     </ResponsiveDialog>
-  );
+  )
 }

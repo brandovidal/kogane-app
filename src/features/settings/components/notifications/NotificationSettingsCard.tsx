@@ -1,21 +1,21 @@
-import { Bell } from "lucide-react";
+import { Bell } from 'lucide-react'
 
-import { useNotificationSettings, useUpdateNotificationSettings } from "@/features/notifications/hooks/notifications";
-import type { NotificationKind } from "@/shared/api/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Switch } from "@/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { useNotificationSettings, useUpdateNotificationSettings } from '@/features/notifications/hooks/notifications'
+import type { NotificationKind } from '@/shared/api/types'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Switch } from '@/ui/switch'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
 
-import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS } from "@/features/notifications/lib/notification-view";
+import { NOTIFICATION_KIND_LABELS, NOTIFICATION_KINDS } from '@/features/notifications/lib/notification-view'
 
-type Channel = "telegram" | "web";
+type Channel = 'telegram' | 'web'
 
 // Configuración ▸ Notificaciones (P20, D86): each kind of notice to Telegram and/or the web bell (/avisos in the bot)
 export function NotificationSettingsCard() {
-  const settings = useNotificationSettings().data;
-  const update = useUpdateNotificationSettings();
+  const settings = useNotificationSettings().data
+  const update = useUpdateNotificationSettings()
 
-  const toggle = (kind: NotificationKind, channel: Channel, value: boolean) => update.mutate({ [kind]: { [channel]: value } });
+  const toggle = (kind: NotificationKind, channel: Channel, value: boolean) => update.mutate({ [kind]: { [channel]: value } })
 
   return (
     <Card>
@@ -39,13 +39,13 @@ export function NotificationSettingsCard() {
             {NOTIFICATION_KINDS.map((kind) => (
               <TableRow key={kind}>
                 <TableCell>{NOTIFICATION_KIND_LABELS[kind]}</TableCell>
-                {(["telegram", "web"] as Channel[]).map((channel) => (
+                {(['telegram', 'web'] as Channel[]).map((channel) => (
                   <TableCell key={channel} className="text-center">
                     <Switch
                       checked={settings?.[kind]?.[channel] ?? false}
                       disabled={!settings || update.isPending}
                       onCheckedChange={(value) => toggle(kind, channel, value)}
-                      aria-label={`${NOTIFICATION_KIND_LABELS[kind]} en ${channel === "web" ? "la web" : "Telegram"}`}
+                      aria-label={`${NOTIFICATION_KIND_LABELS[kind]} en ${channel === 'web' ? 'la web' : 'Telegram'}`}
                     />
                   </TableCell>
                 ))}
@@ -55,5 +55,5 @@ export function NotificationSettingsCard() {
         </Table>
       </CardContent>
     </Card>
-  );
+  )
 }

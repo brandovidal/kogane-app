@@ -1,7 +1,7 @@
-import { MoreHorizontal, Pencil } from "lucide-react";
+import { MoreHorizontal, Pencil } from 'lucide-react'
 
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
 
 // ⋯ of a "Solo en Kogane" expense: it is corrected where it lives, in Tarjetas
 export function MissingExpenseActions({ expenseName, onEdit }: { expenseName: string; onEdit: () => void }) {
@@ -18,5 +18,5 @@ export function MissingExpenseActions({ expenseName, onEdit }: { expenseName: st
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

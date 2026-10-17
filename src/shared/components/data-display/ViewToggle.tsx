@@ -1,21 +1,21 @@
-import { LayoutGrid, Table2 } from "lucide-react";
-import { Button } from "@/ui/button";
+import { LayoutGrid, Table2 } from 'lucide-react'
+import { Button } from '@/ui/button'
 
 export interface ViewToggleProps {
-  view?: "table" | "cards";
-  value?: "table" | "cards";
-  onChange: (view: "table" | "cards") => void;
-  showLabels?: boolean;
+  view?: 'table' | 'cards'
+  value?: 'table' | 'cards'
+  onChange: (view: 'table' | 'cards') => void
+  showLabels?: boolean
 }
 
 export function ViewToggle({ view: viewProp, value, onChange, showLabels = false }: ViewToggleProps) {
-  const view = value ?? viewProp ?? "table";
-  const option = (mode: "table" | "cards", label: string, Icon: typeof Table2) => (
+  const view = value ?? viewProp ?? 'table'
+  const option = (mode: 'table' | 'cards', label: string, Icon: typeof Table2) => (
     <Button
       type="button"
-      variant={view === mode ? "secondary" : "ghost"}
+      variant={view === mode ? 'secondary' : 'ghost'}
       size="sm"
-      className={showLabels ? "h-7 gap-1.5 px-2.5" : "h-7 px-2"}
+      className={showLabels ? 'h-7 gap-1.5 px-2.5' : 'h-7 px-2'}
       aria-pressed={view === mode}
       aria-label={label}
       title={label}
@@ -24,11 +24,11 @@ export function ViewToggle({ view: viewProp, value, onChange, showLabels = false
       <Icon className="h-4 w-4" />
       {showLabels && <span>{label}</span>}
     </Button>
-  );
+  )
   return (
     <div className="flex items-center gap-1 rounded-lg border p-1">
-      {option("table", "Tabla", Table2)}
-      {option("cards", "Tarjetas", LayoutGrid)}
+      {option('table', 'Tabla', Table2)}
+      {option('cards', 'Tarjetas', LayoutGrid)}
     </div>
-  );
+  )
 }

@@ -1,24 +1,24 @@
-import { Plus } from "lucide-react";
-import type { CardOverviewRow } from "../../types/card-overview";
-import { formatCurrency } from "@/shared/lib/currency";
-import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
+import { Plus } from 'lucide-react'
+import type { CardOverviewRow } from '../../types/card-overview'
+import { formatCurrency } from '@/shared/lib/currency'
+import { DataLoadingSkeleton } from '@/shared/components/data-display/DataLoadingSkeleton'
 
 const PERIODS = [
-  { key: "early", label: "Cierre del 1 al 10", from: 1, to: 10 },
-  { key: "middle", label: "Cierre del 11 al 20", from: 11, to: 20 },
-  { key: "late", label: "Cierre del 21 al 31", from: 21, to: 31 },
-] as const;
+  { key: 'early', label: 'Cierre del 1 al 10', from: 1, to: 10 },
+  { key: 'middle', label: 'Cierre del 11 al 20', from: 11, to: 20 },
+  { key: 'late', label: 'Cierre del 21 al 31', from: 21, to: 31 },
+] as const
 
 interface CardClosePeriod {
-  key: string;
-  label: string;
-  from: number;
-  to: number;
-  rows: CardOverviewRow[];
+  key: string
+  label: string
+  from: number
+  to: number
+  rows: CardOverviewRow[]
 }
 
 function CardSwatch({ color }: { color: string | null }) {
-  return <span className="size-8 shrink-0 rounded-lg" style={{ backgroundColor: color ?? "var(--muted)" }} aria-hidden="true" />;
+  return <span className="size-8 shrink-0 rounded-lg" style={{ backgroundColor: color ?? 'var(--muted)' }} aria-hidden="true" />
 }
 
 export function CardOverviewPeriodView({
@@ -27,38 +27,38 @@ export function CardOverviewPeriodView({
   loading,
   error,
 }: {
-  rows: CardOverviewRow[];
-  onNewCard: () => void;
-  loading: boolean;
-  error: boolean;
+  rows: CardOverviewRow[]
+  onNewCard: () => void
+  loading: boolean
+  error: boolean
 }) {
-  if (loading) return <DataLoadingSkeleton variant="cards" />;
+  if (loading) return <DataLoadingSkeleton variant="cards" />
   if (error)
     return (
       <p role="alert" className="py-8 text-center text-sm text-destructive">
         No se pudieron cargar las tarjetas.
       </p>
-    );
+    )
 
   const periods: CardClosePeriod[] = PERIODS.map((period) => ({
     ...period,
     rows: rows.filter((row) => row.closeDay != null && row.closeDay >= period.from && row.closeDay <= period.to),
-  }));
-  const withoutCloseDay = rows.filter((row) => row.closeDay == null || row.closeDay < 1 || row.closeDay > 31);
+  }))
+  const withoutCloseDay = rows.filter((row) => row.closeDay == null || row.closeDay < 1 || row.closeDay > 31)
   if (withoutCloseDay.length)
     periods.push({
-      key: "unset",
-      label: "Sin día de cierre",
+      key: 'unset',
+      label: 'Sin día de cierre',
       from: 0,
       to: 0,
       rows: withoutCloseDay,
-    });
+    })
 
   return (
     <div className="grid gap-3 lg:grid-cols-3 2xl:grid-cols-4">
       {periods.map((period) => {
-        const total = period.rows.reduce((sum, row) => sum + row.total, 0);
-        const pending = period.rows.reduce((sum, row) => sum + row.pending, 0);
+        const total = period.rows.reduce((sum, row) => sum + row.total, 0)
+        const pending = period.rows.reduce((sum, row) => sum + row.pending, 0)
         return (
           <section key={period.key} className="credit-card-surface min-h-56 p-4">
             <div className="flex items-center justify-between gap-3">
@@ -80,10 +80,10 @@ export function CardOverviewPeriodView({
                   </div>
                   <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                     <span>
-                      Cierre día {row.closeDay ?? "—"} · pago día {row.payDay ?? "—"}
+                      Cierre día {row.closeDay ?? '—'} · pago día {row.payDay ?? '—'}
                     </span>
                     <span>
-                      {row.count} {row.count === 1 ? "movimiento" : "movimientos"}
+                      {row.count} {row.count === 1 ? 'movimiento' : 'movimientos'}
                     </span>
                   </div>
                   <div className="mt-1 text-right text-xs">
@@ -100,8 +100,8 @@ export function CardOverviewPeriodView({
               Nueva tarjeta
             </button>
           </section>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

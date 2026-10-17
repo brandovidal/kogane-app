@@ -1,16 +1,16 @@
-import { useState, type ReactNode } from "react";
-import type { Category, FixedCost } from "@/shared/api/types";
-import { CategoryLabel } from "@/features/categories/components/CategoryLabel";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { SummaryCard } from "@/shared/components/data-display/SummaryCard";
-import { formatCurrency } from "@/shared/lib/currency";
-import { cn } from "@/shared/utils/cn";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { FixedCostDue } from "../components/list/FixedCostDue";
-import { findFixedCostSort, monthIndexLabel, type InstallmentSeries } from "../lib/fixed-cost-views";
-import type { CatalogName } from "../types/fixed-cost-types";
-import { AttachmentRecordThumbnail } from "@/features/attachments/components/AttachmentRecordThumbnail";
-import { DataLoadingSkeleton } from "@/shared/components/data-display/DataLoadingSkeleton";
+import { useState, type ReactNode } from 'react'
+import type { Category, FixedCost } from '@/shared/api/types'
+import { CategoryLabel } from '@/features/categories/components/CategoryLabel'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { SummaryCard } from '@/shared/components/data-display/SummaryCard'
+import { formatCurrency } from '@/shared/lib/currency'
+import { cn } from '@/shared/utils/cn'
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { FixedCostDue } from '../components/list/FixedCostDue'
+import { findFixedCostSort, monthIndexLabel, type InstallmentSeries } from '../lib/fixed-cost-views'
+import type { CatalogName } from '../types/fixed-cost-types'
+import { AttachmentRecordThumbnail } from '@/features/attachments/components/AttachmentRecordThumbnail'
+import { DataLoadingSkeleton } from '@/shared/components/data-display/DataLoadingSkeleton'
 
 export function FixedCostInstallmentsView({
   series,
@@ -21,32 +21,32 @@ export function FixedCostInstallmentsView({
   toolbar,
   sort,
 }: {
-  series: InstallmentSeries[];
-  categories: Category[];
-  personName: CatalogName;
-  loading: boolean;
-  onOpen: (cost: FixedCost) => void;
-  toolbar: ReactNode;
-  sort?: string;
+  series: InstallmentSeries[]
+  categories: Category[]
+  personName: CatalogName
+  loading: boolean
+  onOpen: (cost: FixedCost) => void
+  toolbar: ReactNode
+  sort?: string
 }) {
-  const [status, setStatus] = useState<"active" | "done">("active");
-  const sortOption = findFixedCostSort(sort);
+  const [status, setStatus] = useState<'active' | 'done'>('active')
+  const sortOption = findFixedCostSort(sort)
   const shown = series
-    .filter((item) => (status === "active" ? item.remaining > 0 : item.remaining === 0))
+    .filter((item) => (status === 'active' ? item.remaining > 0 : item.remaining === 0))
     .sort((a, b) => {
-      if (!sortOption) return 0;
+      if (!sortOption) return 0
       const comparison =
-        sortOption.column === "description"
+        sortOption.column === 'description'
           ? a.latest.description.localeCompare(b.latest.description)
-          : sortOption.column === "amount"
+          : sortOption.column === 'amount'
             ? (a.latest.amountInPen ?? a.latest.amount) - (b.latest.amountInPen ?? b.latest.amount)
-            : (a.latest.dueDate ?? "9999").localeCompare(b.latest.dueDate ?? "9999");
-      return sortOption.desc ? -comparison : comparison;
-    });
-  const active = series.filter((item) => item.remaining > 0);
-  const monthly = active.reduce((sum, item) => sum + (item.latest.amountInPen ?? item.latest.amount), 0);
-  const balance = active.reduce((sum, item) => sum + item.estimatedBalance, 0);
-  const nextToEnd = [...active].sort((a, b) => a.endIndex - b.endIndex)[0];
+            : (a.latest.dueDate ?? '9999').localeCompare(b.latest.dueDate ?? '9999')
+      return sortOption.desc ? -comparison : comparison
+    })
+  const active = series.filter((item) => item.remaining > 0)
+  const monthly = active.reduce((sum, item) => sum + (item.latest.amountInPen ?? item.latest.amount), 0)
+  const balance = active.reduce((sum, item) => sum + item.estimatedBalance, 0)
+  const nextToEnd = [...active].sort((a, b) => a.endIndex - b.endIndex)[0]
 
   if (loading)
     return (
@@ -55,7 +55,7 @@ export function FixedCostInstallmentsView({
         {toolbar}
         <DataLoadingSkeleton variant="table" columns={9} rows={4} />
       </div>
-    );
+    )
 
   return (
     <div className="space-y-4">
@@ -67,15 +67,15 @@ export function FixedCostInstallmentsView({
             active
               .map((item) => item.latest.description)
               .slice(0, 3)
-              .join(" · ") || "Sin deudas en cuotas"
+              .join(' · ') || 'Sin deudas en cuotas'
           }
         />
         <SummaryCard label="Pago mensual en cuotas" value={formatCurrency(monthly)} detail="Se repite cada mes" />
         <SummaryCard label="Saldo pendiente ≈" value={formatCurrency(balance)} detail="Cuotas que faltan × cuota, sin intereses" />
         <SummaryCard
           label="Próxima en terminar"
-          value={nextToEnd ? `${nextToEnd.latest.description} · ${monthIndexLabel(nextToEnd.endIndex)}` : "—"}
-          detail={nextToEnd ? `${nextToEnd.remaining} ${nextToEnd.remaining === 1 ? "cuota" : "cuotas"} por pagar` : "No hay cuotas activas"}
+          value={nextToEnd ? `${nextToEnd.latest.description} · ${monthIndexLabel(nextToEnd.endIndex)}` : '—'}
+          detail={nextToEnd ? `${nextToEnd.remaining} ${nextToEnd.remaining === 1 ? 'cuota' : 'cuotas'} por pagar` : 'No hay cuotas activas'}
         />
       </section>
 
@@ -83,8 +83,8 @@ export function FixedCostInstallmentsView({
         <div role="radiogroup" aria-label="Estado de la deuda" className="flex gap-0.5 rounded-lg border p-0.5">
           {(
             [
-              ["active", `Activas ${active.length}`],
-              ["done", `Terminadas ${series.length - active.length}`],
+              ['active', `Activas ${active.length}`],
+              ['done', `Terminadas ${series.length - active.length}`],
             ] as const
           ).map(([value, label]) => (
             <button
@@ -93,7 +93,7 @@ export function FixedCostInstallmentsView({
               role="radio"
               aria-checked={status === value}
               onClick={() => setStatus(value)}
-              className={cn("h-7 rounded-md px-3 text-sm text-muted-foreground transition-colors", status === value && "bg-accent text-foreground")}
+              className={cn('h-7 rounded-md px-3 text-sm text-muted-foreground transition-colors', status === value && 'bg-accent text-foreground')}
             >
               {label}
             </button>
@@ -105,7 +105,7 @@ export function FixedCostInstallmentsView({
       {toolbar}
 
       {!shown.length ? (
-        <EmptyState description={status === "active" ? "No hay deudas en cuotas activas." : "Aún no terminaste ninguna deuda en cuotas."} />
+        <EmptyState description={status === 'active' ? 'No hay deudas en cuotas activas.' : 'Aún no terminaste ninguna deuda en cuotas.'} />
       ) : (
         <div className="overflow-hidden rounded-2xl border bg-card">
           <Table>
@@ -124,7 +124,7 @@ export function FixedCostInstallmentsView({
             </TableHeader>
             <TableBody>
               {shown.map((item) => {
-                const category = categories.find((entry) => entry.id === item.latest.categoryId);
+                const category = categories.find((entry) => entry.id === item.latest.categoryId)
                 return (
                   <TableRow key={item.key}>
                     <TableCell>
@@ -143,7 +143,7 @@ export function FixedCostInstallmentsView({
                       </div>
                     </TableCell>
                     <TableCell>
-                      {category ? <CategoryLabel name={category.name} icon={category.icon} color={category.color} className="text-sm" /> : "—"}
+                      {category ? <CategoryLabel name={category.name} icon={category.icon} color={category.color} className="text-sm" /> : '—'}
                     </TableCell>
                     <TableCell className="text-right font-semibold tabular-nums">
                       {formatCurrency(item.latest.amountInPen ?? item.latest.amount)}
@@ -169,14 +169,14 @@ export function FixedCostInstallmentsView({
                       <FixedCostDue cost={item.latest} />
                     </TableCell>
                   </TableRow>
-                );
+                )
               })}
             </TableBody>
-            {status === "active" && (
+            {status === 'active' && (
               <TableFooter>
                 <TableRow>
                   <TableCell colSpan={2} className="text-xs uppercase tracking-wider text-muted-foreground">
-                    {shown.length} {shown.length === 1 ? "deuda" : "deudas"}
+                    {shown.length} {shown.length === 1 ? 'deuda' : 'deudas'}
                   </TableCell>
                   <TableCell className="text-right font-semibold tabular-nums">{formatCurrency(monthly)}</TableCell>
                   <TableCell colSpan={4} />
@@ -189,5 +189,5 @@ export function FixedCostInstallmentsView({
         </div>
       )}
     </div>
-  );
+  )
 }

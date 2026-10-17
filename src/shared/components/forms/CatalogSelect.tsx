@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Search } from "lucide-react";
+import { Check, ChevronDown, Search } from 'lucide-react'
 import {
   Combobox,
   ComboboxCollection,
@@ -14,32 +14,32 @@ import {
   ComboboxTrigger,
   ComboboxValue,
   createComboboxItems,
-} from "@/ui/combobox";
-import type { CatalogOption, CatalogSelectProps } from "@/shared/types/catalog-select";
+} from '@/ui/combobox'
+import type { CatalogOption, CatalogSelectProps } from '@/shared/types/catalog-select'
 
-const EMPTY = "__none__";
+const EMPTY = '__none__'
 
 // Catalog selectors share the searchable combobox interaction used by filters.
 export function CatalogSelectOptions({
   value,
   onChange,
-  placeholder = "Selecciona",
+  placeholder = 'Selecciona',
   allowEmpty,
   className,
   disabled,
   options,
   ...triggerProps
 }: CatalogSelectProps & { options: CatalogOption[] }) {
-  const selectedOption = options.find((option) => option.id === value);
-  const items = createComboboxItems(allowEmpty ? [{ id: EMPTY, name: "—" }, ...options] : options, {
+  const selectedOption = options.find((option) => option.id === value)
+  const items = createComboboxItems(allowEmpty ? [{ id: EMPTY, name: '—' }, ...options] : options, {
     getValue: (option) => option.id,
     getLabel: (option) => option.name,
-  });
-  const groups = new Map<string, CatalogOption[]>();
-  const ungrouped: CatalogOption[] = [];
+  })
+  const groups = new Map<string, CatalogOption[]>()
+  const ungrouped: CatalogOption[] = []
   for (const option of options) {
-    if (option.group) groups.set(option.group, [...(groups.get(option.group) ?? []), option]);
-    else ungrouped.push(option);
+    if (option.group) groups.set(option.group, [...(groups.get(option.group) ?? []), option])
+    else ungrouped.push(option)
   }
 
   return (
@@ -47,13 +47,13 @@ export function CatalogSelectOptions({
       items={items}
       value={value ?? (allowEmpty ? EMPTY : null)}
       onValueChange={(next) => onChange(next === EMPTY || next == null ? null : String(next))}
-      itemToStringLabel={(id) => (id === EMPTY ? "—" : (options.find((option) => option.id === id)?.name ?? ""))}
+      itemToStringLabel={(id) => (id === EMPTY ? '—' : (options.find((option) => option.id === id)?.name ?? ''))}
       autoHighlight
       disabled={disabled}
     >
       <ComboboxTrigger {...triggerProps} className={className}>
         <span className="min-w-0 flex-1 truncate text-left">
-          {allowEmpty && value == null ? "—" : (selectedOption?.content ?? <ComboboxValue placeholder={placeholder} />)}
+          {allowEmpty && value == null ? '—' : (selectedOption?.content ?? <ComboboxValue placeholder={placeholder} />)}
         </span>
         <ChevronDown aria-hidden="true" className="size-4 shrink-0 opacity-50" />
       </ComboboxTrigger>
@@ -112,5 +112,5 @@ export function CatalogSelectOptions({
         <ComboboxEmpty className="px-3 py-6 text-center text-sm text-muted-foreground">No se encontraron opciones.</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
-  );
+  )
 }

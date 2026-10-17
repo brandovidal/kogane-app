@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import type { Category } from "@/shared/api/types";
-import { useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from "@/features/categories/hooks/category-budgets";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { Switch } from "@/ui/switch";
+import type { Category } from '@/shared/api/types'
+import { useDeleteCategoryBudget, useSaveCategoryBudget, type CategoryBudgetLine } from '@/features/categories/hooks/category-budgets'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Switch } from '@/ui/switch'
 
 // The limit of one category: for every month, or only the month on screen (it replaces the general one then)
 export function CategoryLimitDialog({
@@ -15,18 +15,18 @@ export function CategoryLimitDialog({
   year,
   onClose,
 }: {
-  category: Category;
-  line?: CategoryBudgetLine;
-  month: number;
-  year: number;
-  onClose: () => void;
+  category: Category
+  line?: CategoryBudgetLine
+  month: number
+  year: number
+  onClose: () => void
 }) {
-  const save = useSaveCategoryBudget();
-  const remove = useDeleteCategoryBudget();
-  const [limit, setLimit] = useState(line?.limit != null ? String(line.limit) : "");
-  const [threshold, setThreshold] = useState(String(line?.alertThreshold ?? 80));
-  const [monthOnly, setMonthOnly] = useState(line?.limitMonthOnly ?? false);
-  const valid = Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100;
+  const save = useSaveCategoryBudget()
+  const remove = useDeleteCategoryBudget()
+  const [limit, setLimit] = useState(line?.limit != null ? String(line.limit) : '')
+  const [threshold, setThreshold] = useState(String(line?.alertThreshold ?? 80))
+  const [monthOnly, setMonthOnly] = useState(line?.limitMonthOnly ?? false)
+  const valid = Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100
 
   const submit = () =>
     save.mutate(
@@ -37,7 +37,7 @@ export function CategoryLimitDialog({
         ...(monthOnly ? { month, year } : { month: null, year: null }),
       },
       { onSuccess: onClose },
-    );
+    )
 
   return (
     <ResponsiveDialog
@@ -79,5 +79,5 @@ export function CategoryLimitDialog({
         </label>
       </div>
     </ResponsiveDialog>
-  );
+  )
 }

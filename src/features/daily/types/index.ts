@@ -1,1 +1,1 @@
-export type { DailyLayout } from "./daily-types";
+export type { DailyLayout } from './daily-types'

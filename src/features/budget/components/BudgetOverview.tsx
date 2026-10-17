@@ -1,25 +1,25 @@
-import { useState } from "react";
-import { Gauge, Pencil, Plus } from "lucide-react";
+import { useState } from 'react'
+import { Gauge, Pencil, Plus } from 'lucide-react'
 
-import { BudgetGroupDialog } from "@/features/budget-groups/components/BudgetGroupDialog";
-import { useBudgetGroupSummaries } from "@/features/budget-groups/hooks/useBudgetGroupSummaries";
-import { CategoryDialog } from "@/features/categories/components/CategoryDialog";
-import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
-import { CategoryLimitDialog } from "@/features/categories/components/CategoryLimitDialog";
-import { useCategoryBudgets } from "@/features/categories/hooks/category-budgets";
-import { useSummary } from "@/features/budget/hooks/summary";
-import { SalaryDialog } from "@/features/budget/components/dialogs/SalaryDialog";
-import { useCategories } from "@/shared/api/hooks/catalogs";
-import type { BudgetGroup, Category } from "@/shared/api/types";
-import { useViewMode } from "@/shared/hooks/useViewMode";
-import { ViewToggle } from "@/shared/components/data-display/ViewToggle";
-import { formatCurrency } from "@/shared/lib/currency";
-import { usePeriod } from "@/shared/stores/period.store";
-import { Button } from "@/ui/button";
-import { Progress } from "@/ui/progress";
-import { BudgetSwitches } from "./BudgetSwitches";
-import { STATUS_TEXT } from "../lib/budget-view";
-import { buildOverview, type OverviewCategory, type OverviewGroup } from "../lib/budget-overview";
+import { BudgetGroupDialog } from '@/features/budget-groups/components/BudgetGroupDialog'
+import { useBudgetGroupSummaries } from '@/features/budget-groups/hooks/useBudgetGroupSummaries'
+import { CategoryDialog } from '@/features/categories/components/CategoryDialog'
+import { CategoryIcon } from '@/features/categories/components/CategoryIcon'
+import { CategoryLimitDialog } from '@/features/categories/components/CategoryLimitDialog'
+import { useCategoryBudgets } from '@/features/categories/hooks/category-budgets'
+import { useSummary } from '@/features/budget/hooks/summary'
+import { SalaryDialog } from '@/features/budget/components/dialogs/SalaryDialog'
+import { useCategories } from '@/shared/api/hooks/catalogs'
+import type { BudgetGroup, Category } from '@/shared/api/types'
+import { useViewMode } from '@/shared/hooks/useViewMode'
+import { ViewToggle } from '@/shared/components/data-display/ViewToggle'
+import { formatCurrency } from '@/shared/lib/currency'
+import { usePeriod } from '@/shared/stores/period.store'
+import { Button } from '@/ui/button'
+import { Progress } from '@/ui/progress'
+import { BudgetSwitches } from './BudgetSwitches'
+import { STATUS_TEXT } from '../lib/budget-view'
+import { buildOverview, type OverviewCategory, type OverviewGroup } from '../lib/budget-overview'
 
 function Stat({ label, value, hint, action }: { label: string; value: string; hint: string; action?: React.ReactNode }) {
   return (
@@ -31,48 +31,48 @@ function Stat({ label, value, hint, action }: { label: string; value: string; hi
       <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
       <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
     </div>
-  );
+  )
 }
 
 function UsageBar({ category }: { category: OverviewCategory }) {
-  if (category.limit == null) return <span className="text-xs text-muted-foreground">Sin límite</span>;
+  if (category.limit == null) return <span className="text-xs text-muted-foreground">Sin límite</span>
   return (
     <div className="flex items-center gap-2">
       <Progress
         value={Math.min(category.percent, 100)}
-        className={`h-2 w-28 ${category.status === "over" ? "[&>div]:bg-destructive" : category.status === "warning" ? "[&>div]:bg-amber-500" : ""}`}
+        className={`h-2 w-28 ${category.status === 'over' ? '[&>div]:bg-destructive' : category.status === 'warning' ? '[&>div]:bg-amber-500' : ''}`}
       />
       <span className={`text-xs tabular-nums ${STATUS_TEXT[category.status]}`}>{category.percent} %</span>
     </div>
-  );
+  )
 }
 
 // Presupuesto ▸ Resumen: salary and limit, what counts, and every group with its categories, limits and use (D78, D96)
 export function BudgetOverview() {
-  const month = usePeriod((s) => s.month);
-  const year = usePeriod((s) => s.year);
-  const summary = useSummary(month, year).data;
-  const { summaries } = useBudgetGroupSummaries(month, year);
-  const lines = useCategoryBudgets(month, year).data ?? [];
-  const categories = useCategories().data ?? [];
-  const [view, setView] = useViewMode("budget-overview", "cards");
-  const [salaryOpen, setSalaryOpen] = useState(false);
+  const month = usePeriod((s) => s.month)
+  const year = usePeriod((s) => s.year)
+  const summary = useSummary(month, year).data
+  const { summaries } = useBudgetGroupSummaries(month, year)
+  const lines = useCategoryBudgets(month, year).data ?? []
+  const categories = useCategories().data ?? []
+  const [view, setView] = useViewMode('budget-overview', 'cards')
+  const [salaryOpen, setSalaryOpen] = useState(false)
   const [groupDialog, setGroupDialog] = useState<{
-    open: boolean;
-    group?: BudgetGroup;
-  }>({ open: false });
+    open: boolean
+    group?: BudgetGroup
+  }>({ open: false })
   const [categoryDialog, setCategoryDialog] = useState<{
-    open: boolean;
-    category?: Category;
-  }>({ open: false });
-  const [limitOf, setLimitOf] = useState<OverviewCategory | null>(null);
+    open: boolean
+    category?: Category
+  }>({ open: false })
+  const [limitOf, setLimitOf] = useState<OverviewCategory | null>(null)
 
-  const { groups, totals } = buildOverview(summaries, lines);
-  const budget = summary?.budget;
-  const salary = budget?.salary ?? 0;
-  const groupOf = (id: string) => summaries.find((s) => s.group.id === id)?.group;
-  const categoryOf = (id: string) => categories.find((c) => c.id === id);
-  const assignedPercent = groups.reduce((sum, g) => sum + g.percentage, 0);
+  const { groups, totals } = buildOverview(summaries, lines)
+  const budget = summary?.budget
+  const salary = budget?.salary ?? 0
+  const groupOf = (id: string) => summaries.find((s) => s.group.id === id)?.group
+  const categoryOf = (id: string) => categories.find((c) => c.id === id)
+  const assignedPercent = groups.reduce((sum, g) => sum + g.percentage, 0)
 
   const categoryRow = (category: OverviewCategory) => (
     <div
@@ -109,7 +109,7 @@ export function BudgetOverview() {
         </Button>
       </span>
     </div>
-  );
+  )
 
   const groupBlock = (group: OverviewGroup) => (
     <section key={group.id} className="overflow-hidden rounded-xl border">
@@ -123,7 +123,7 @@ export function BudgetOverview() {
         <p className="text-sm tabular-nums">
           {formatCurrency(group.assigned)} <span className="text-xs text-muted-foreground">asignado</span>
         </p>
-        <p className={`text-sm tabular-nums ${group.available < 0 ? "text-destructive" : "text-emerald-600 dark:text-emerald-400"}`}>
+        <p className={`text-sm tabular-nums ${group.available < 0 ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'}`}>
           {formatCurrency(group.available)} <span className="text-xs text-muted-foreground">disponible</span>
         </p>
         <Button
@@ -142,7 +142,7 @@ export function BudgetOverview() {
         group.categories.map(categoryRow)
       )}
     </section>
-  );
+  )
 
   return (
     <div className="space-y-6">
@@ -175,7 +175,7 @@ export function BudgetOverview() {
         </Button>
       </div>
 
-      {view === "cards" ? (
+      {view === 'cards' ? (
         <div className="space-y-4">{groups.map(groupBlock)}</div>
       ) : (
         <div className="overflow-hidden rounded-xl border">
@@ -198,7 +198,7 @@ export function BudgetOverview() {
                 <span className="truncate text-muted-foreground">
                   {group.emoji} {group.name}
                 </span>
-                <span className="text-right tabular-nums">{category.limit != null ? formatCurrency(category.limit) : "—"}</span>
+                <span className="text-right tabular-nums">{category.limit != null ? formatCurrency(category.limit) : '—'}</span>
                 <span className="text-right tabular-nums">{formatCurrency(category.spent)}</span>
                 <UsageBar category={category} />
               </button>
@@ -225,5 +225,5 @@ export function BudgetOverview() {
       )}
       {salaryOpen && <SalaryDialog open onOpenChange={setSalaryOpen} initialPeriod={{ month, year }} onSaved={() => setSalaryOpen(false)} />}
     </div>
-  );
+  )
 }

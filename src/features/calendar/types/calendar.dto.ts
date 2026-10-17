@@ -1,3 +1,3 @@
-import type { Schemas } from "@/shared/api/client";
+import type { Schemas } from '@/shared/api/client'
 
-export type PayEventDto = Schemas["PayEventDto"];
+export type PayEventDto = Schemas['PayEventDto']

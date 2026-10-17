@@ -1,30 +1,30 @@
-import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import { NameAvatar } from "@/shared/components/data-display/NameAvatar";
-import { PERSON_FILTER_LABELS } from "@/shared/constants/person-filter";
+import { MultiSelect } from '@/shared/components/filters/MultiSelect'
+import { NameAvatar } from '@/shared/components/data-display/NameAvatar'
+import { PERSON_FILTER_LABELS } from '@/shared/constants/person-filter'
 
 export interface PersonFilterOption {
-  value: string;
-  name: string;
-  initials?: string;
-  count?: number;
-  aliases?: readonly string[];
-  unassigned?: boolean;
+  value: string
+  name: string
+  initials?: string
+  count?: number
+  aliases?: readonly string[]
+  unassigned?: boolean
 }
 
 export interface PersonFilterProps {
-  value: string[];
-  onChange: (value: string[]) => void;
-  options: PersonFilterOption[];
-  includeUnassigned?: boolean;
-  label?: string;
-  activeMarker?: boolean;
-  width?: string;
-  labelClassName?: string;
-  className?: string;
-  presentation?: "popover" | "inline" | "responsive-sheet";
-  multiple?: boolean;
-  emptySelectionLabel?: string;
-  triggerClassName?: string;
+  value: string[]
+  onChange: (value: string[]) => void
+  options: PersonFilterOption[]
+  includeUnassigned?: boolean
+  label?: string
+  activeMarker?: boolean
+  width?: string
+  labelClassName?: string
+  className?: string
+  presentation?: 'popover' | 'inline' | 'responsive-sheet'
+  multiple?: boolean
+  emptySelectionLabel?: string
+  triggerClassName?: string
 }
 
 export function PersonFilter({
@@ -32,12 +32,12 @@ export function PersonFilter({
   onChange,
   options,
   includeUnassigned = true,
-  label = "Persona",
+  label = 'Persona',
   activeMarker = true,
-  width = "w-full",
-  labelClassName = "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground",
+  width = 'w-full',
+  labelClassName = 'text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground',
   className,
-  presentation = "responsive-sheet",
+  presentation = 'responsive-sheet',
   multiple = true,
   emptySelectionLabel,
   triggerClassName,
@@ -51,7 +51,7 @@ export function PersonFilter({
       searchTerms: option.aliases,
       count: option.count,
       separatorBefore: option.unassigned && index > 0,
-    }));
+    }))
 
   return (
     <div className={className}>
@@ -80,5 +80,5 @@ export function PersonFilter({
         triggerClassName={triggerClassName}
       />
     </div>
-  );
+  )
 }

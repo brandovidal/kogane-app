@@ -1,40 +1,40 @@
-import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Download, ExternalLink, X } from "lucide-react";
-import { Button } from "@/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/ui/carousel";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/ui/dialog";
-import { getFileIcon } from "@/shared/lib/file-icons";
-import { ATTACHMENT_KIND_LABELS } from "../../constants/attachments";
-import { formatAttachmentSize } from "../../lib/attachment-size";
-import type { AttachmentPreviewDialogProps } from "../../types/attachment-preview";
-import { AttachmentPreviewMedia } from "../AttachmentPreviewMedia";
+import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, Download, ExternalLink, X } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/ui/carousel'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '@/ui/dialog'
+import { getFileIcon } from '@/shared/lib/file-icons'
+import { ATTACHMENT_KIND_LABELS } from '../../constants/attachments'
+import { formatAttachmentSize } from '../../lib/attachment-size'
+import type { AttachmentPreviewDialogProps } from '../../types/attachment-preview'
+import { AttachmentPreviewMedia } from '../AttachmentPreviewMedia'
 
 export function AttachmentPreviewDialog({ files, initialIndex = 0, onClose }: AttachmentPreviewDialogProps) {
-  const startIndex = Math.max(0, Math.min(initialIndex, files.length - 1));
-  const [selected, setSelected] = useState(startIndex);
-  const [api, setApi] = useState<CarouselApi>();
-  const options = useMemo(() => ({ startIndex, loop: false }), [startIndex]);
+  const startIndex = Math.max(0, Math.min(initialIndex, files.length - 1))
+  const [selected, setSelected] = useState(startIndex)
+  const [api, setApi] = useState<CarouselApi>()
+  const options = useMemo(() => ({ startIndex, loop: false }), [startIndex])
 
   useEffect(() => {
-    if (!api) return;
-    const syncSelection = () => setSelected(api.selectedScrollSnap());
-    syncSelection();
-    api.on("select", syncSelection);
-    api.on("reInit", syncSelection);
+    if (!api) return
+    const syncSelection = () => setSelected(api.selectedScrollSnap())
+    syncSelection()
+    api.on('select', syncSelection)
+    api.on('reInit', syncSelection)
     return () => {
-      api.off("select", syncSelection);
-      api.off("reInit", syncSelection);
-    };
-  }, [api]);
+      api.off('select', syncSelection)
+      api.off('reInit', syncSelection)
+    }
+  }, [api])
 
-  const current = files[selected] ?? files[0];
-  if (!current) return null;
-  const Icon = getFileIcon(current.contentType, current.name);
-  const uploaded = new Intl.DateTimeFormat("es-PE", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(current.createdAt));
+  const current = files[selected] ?? files[0]
+  if (!current) return null
+  const Icon = getFileIcon(current.contentType, current.name)
+  const uploaded = new Intl.DateTimeFormat('es-PE', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(current.createdAt))
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -124,5 +124,5 @@ export function AttachmentPreviewDialog({ files, initialIndex = 0, onClose }: At
         </Carousel>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

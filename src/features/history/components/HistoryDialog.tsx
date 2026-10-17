@@ -1,12 +1,12 @@
-import { History } from "lucide-react";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { RecordHistoryPanel } from "./RecordHistoryPanel";
+import { History } from 'lucide-react'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { RecordHistoryPanel } from './RecordHistoryPanel'
 
 export interface HistoryDialogProps {
-  title: string;
-  entity: string;
-  id: string;
-  onClose: () => void;
+  title: string
+  entity: string
+  id: string
+  onClose: () => void
 }
 
 export function HistoryDialog({ title, entity, id, onClose }: HistoryDialogProps) {
@@ -21,5 +21,5 @@ export function HistoryDialog({ title, entity, id, onClose }: HistoryDialogProps
     >
       <RecordHistoryPanel key={id} entity={entity} id={id} />
     </ResponsiveDialog>
-  );
+  )
 }

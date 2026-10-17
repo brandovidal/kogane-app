@@ -8,5 +8,5 @@ export {
   useCreateInstallments,
   useSaveContribution,
   useDeleteContribution,
-} from "./commitments";
-export type { CommitmentBody, CommitmentPatch, ContributionBody } from "./commitments";
+} from './commitments'
+export type { CommitmentBody, CommitmentPatch, ContributionBody } from './commitments'

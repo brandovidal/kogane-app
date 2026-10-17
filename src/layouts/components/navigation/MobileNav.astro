@@ -1,14 +1,14 @@
 ---
 // The same menu (D41) in a drawer on the phone: a native <dialog>, no JavaScript framework (D102)
-import { Menu } from "lucide-react";
+import { Menu } from 'lucide-react'
 
-import NavMenu from "@/layouts/components/navigation/NavMenu.astro";
+import NavMenu from '@/layouts/components/navigation/NavMenu.astro'
 
 interface Props {
-  currentPath: string;
+  currentPath: string
 }
 
-const { currentPath } = Astro.props;
+const { currentPath } = Astro.props
 ---
 
 <button
@@ -33,11 +33,11 @@ const { currentPath } = Astro.props;
 </dialog>
 
 <script>
-  const dialog = document.querySelector<HTMLDialogElement>("[data-nav-drawer]");
-  document.querySelector("[data-nav-open]")?.addEventListener("click", () => dialog?.showModal());
+  const dialog = document.querySelector<HTMLDialogElement>('[data-nav-drawer]')
+  document.querySelector('[data-nav-open]')?.addEventListener('click', () => dialog?.showModal())
   // a tap on the dark side or on a link closes it
-  dialog?.addEventListener("click", (event) => {
-    const target = event.target as HTMLElement;
-    if (target === dialog || target.closest("a")) dialog.close();
-  });
+  dialog?.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement
+    if (target === dialog || target.closest('a')) dialog.close()
+  })
 </script>

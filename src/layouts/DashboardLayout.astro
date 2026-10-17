@@ -1,25 +1,25 @@
 ---
-import Layout from "./Layout.astro";
-import Sidebar from "@/layouts/components/navigation/Sidebar.astro";
-import MobileNav from "@/layouts/components/navigation/MobileNav.astro";
-import { CommandPalette } from "@/layouts/components/navigation/CommandPalette";
-import { MonthNavigator } from "@/shared/components/navigation/MonthNavigator";
-import { DailyPeriodHeader } from "@/features/daily/components/DailyPeriodHeader";
-import { NewExpenseDialog } from "@/features/new-expense/components/NewExpenseDialog";
-import { UserMenu } from "@/features/auth/components/UserMenu";
-import { NotificationBell } from "@/features/notifications/components/NotificationBell";
-import { Toaster } from "@/ui/sonner";
-import NavTooltipLayer from "@/layouts/components/navigation/NavTooltipLayer.astro";
+import Layout from './Layout.astro'
+import Sidebar from '@/layouts/components/navigation/Sidebar.astro'
+import MobileNav from '@/layouts/components/navigation/MobileNav.astro'
+import { CommandPalette } from '@/layouts/components/navigation/CommandPalette'
+import { MonthNavigator } from '@/shared/components/navigation/MonthNavigator'
+import { DailyPeriodHeader } from '@/features/daily/components/DailyPeriodHeader'
+import { NewExpenseDialog } from '@/features/new-expense/components/NewExpenseDialog'
+import { UserMenu } from '@/features/auth/components/UserMenu'
+import { NotificationBell } from '@/features/notifications/components/NotificationBell'
+import { Toaster } from '@/ui/sonner'
+import NavTooltipLayer from '@/layouts/components/navigation/NavTooltipLayer.astro'
 
 interface Props {
-  title?: string;
-  section?: string;
-  mainClass?: string;
+  title?: string
+  section?: string
+  mainClass?: string
 }
 
-const { title = "Kogane", section, mainClass } = Astro.props;
-const currentPath = Astro.url.pathname;
-const hasLocalPeriodControl = ["/resumen", "/calendario", "/recurrentes"].some((path) => currentPath === path);
+const { title = 'Kogane', section, mainClass } = Astro.props
+const currentPath = Astro.url.pathname
+const hasLocalPeriodControl = ['/resumen', '/calendario', '/recurrentes'].some((path) => currentPath === path)
 ---
 
 <Layout title={title}>
@@ -46,13 +46,13 @@ const hasLocalPeriodControl = ["/resumen", "/calendario", "/recurrentes"].some((
         </div>
         <div class="flex shrink-0 items-center gap-1 sm:gap-3">
           <slot name="header-actions" />
-          {currentPath === "/dia-a-dia" && <DailyPeriodHeader client:load />}
+          {currentPath === '/dia-a-dia' && <DailyPeriodHeader client:load />}
           <NotificationBell client:idle currentPath={currentPath} />
           <UserMenu client:load />
         </div>
       </header>
 
-      <main class:list={["flex-1 overflow-y-auto p-4 md:p-6", mainClass]}>
+      <main class:list={['flex-1 overflow-y-auto p-4 md:p-6', mainClass]}>
         {hasLocalPeriodControl && (
           <div class="mb-4 flex justify-end">
             <MonthNavigator client:idle />

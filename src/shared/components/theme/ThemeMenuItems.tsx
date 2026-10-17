@@ -1,19 +1,19 @@
-import { useEffect } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
-import { useThemeStore } from "@/shared/hooks/useTheme";
-import { THEME_OPTIONS, THEME_PREFERENCE } from "@/shared/constants/theme";
-import { DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/ui/dropdown-menu";
+import { useEffect } from 'react'
+import { Monitor, Moon, Sun } from 'lucide-react'
+import { useThemeStore } from '@/shared/hooks/useTheme'
+import { THEME_OPTIONS, THEME_PREFERENCE } from '@/shared/constants/theme'
+import { DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@/ui/dropdown-menu'
 
-const ICONS = { light: Sun, dark: Moon, system: Monitor };
+const ICONS = { light: Sun, dark: Moon, system: Monitor }
 
 export function ThemeMenuItems() {
-  const preference = useThemeStore((state) => state.preference);
-  const setTheme = useThemeStore((state) => state.setTheme);
-  const initTheme = useThemeStore((state) => state.initTheme);
+  const preference = useThemeStore((state) => state.preference)
+  const setTheme = useThemeStore((state) => state.setTheme)
+  const initTheme = useThemeStore((state) => state.initTheme)
 
   useEffect(() => {
-    initTheme();
-  }, [initTheme]);
+    initTheme()
+  }, [initTheme])
 
   return (
     <>
@@ -25,11 +25,11 @@ export function ThemeMenuItems() {
         className="mx-1 mb-1 grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
         value={preference}
         onValueChange={(value) => {
-          if (value === THEME_PREFERENCE.LIGHT || value === THEME_PREFERENCE.DARK || value === THEME_PREFERENCE.SYSTEM) setTheme(value);
+          if (value === THEME_PREFERENCE.LIGHT || value === THEME_PREFERENCE.DARK || value === THEME_PREFERENCE.SYSTEM) setTheme(value)
         }}
       >
         {THEME_OPTIONS.map((option) => {
-          const Icon = ICONS[option.value];
+          const Icon = ICONS[option.value]
           return (
             <DropdownMenuRadioItem
               key={option.value}
@@ -39,9 +39,9 @@ export function ThemeMenuItems() {
               <Icon aria-hidden="true" className="size-4" />
               {option.label}
             </DropdownMenuRadioItem>
-          );
+          )
         })}
       </DropdownMenuRadioGroup>
     </>
-  );
+  )
 }

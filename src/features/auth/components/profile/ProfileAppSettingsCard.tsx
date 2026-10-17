@@ -1,6 +1,6 @@
-import { ArrowRight, Settings2 } from "lucide-react";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+import { ArrowRight, Settings2 } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
 
 export function ProfileAppSettingsCard() {
   return (
@@ -20,5 +20,5 @@ export function ProfileAppSettingsCard() {
         </Button>
       </CardContent>
     </Card>
-  );
+  )
 }

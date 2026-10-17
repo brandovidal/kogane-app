@@ -1,11 +1,11 @@
-import { formatCurrency } from "@/shared/lib/currency";
-import { formatDate, getMonthName } from "@/shared/lib/dates";
-import type { CreditCardExpense, Statement } from "@/shared/api/types";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { latestMovements, topCategories } from "../lib/card-summary";
+import { formatCurrency } from '@/shared/lib/currency'
+import { formatDate, getMonthName } from '@/shared/lib/dates'
+import type { CreditCardExpense, Statement } from '@/shared/api/types'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { latestMovements, topCategories } from '../lib/card-summary'
 
-const amountOf = (expense: CreditCardExpense) => expense.amountInPen ?? expense.amount;
+const amountOf = (expense: CreditCardExpense) => expense.amountInPen ?? expense.amount
 
 /** Per-card summary (Resumen tab): latest movements, next payment and top categories. */
 export function CardSummaryPanel({
@@ -21,22 +21,22 @@ export function CardSummaryPanel({
   onSeeCategories,
   onRegisterPayment,
 }: {
-  expenses: CreditCardExpense[];
-  statement?: Statement;
-  month: number;
-  year: number;
-  payDay: number | null;
-  closeDay: number | null;
-  categoryName: (id: string | null) => string;
-  personName: (id: string | null | undefined) => string;
-  onSeeAll: () => void;
-  onSeeCategories: () => void;
-  onRegisterPayment: () => void;
+  expenses: CreditCardExpense[]
+  statement?: Statement
+  month: number
+  year: number
+  payDay: number | null
+  closeDay: number | null
+  categoryName: (id: string | null) => string
+  personName: (id: string | null | undefined) => string
+  onSeeAll: () => void
+  onSeeCategories: () => void
+  onRegisterPayment: () => void
 }) {
-  const recent = latestMovements(expenses);
-  const top = topCategories(expenses, categoryName);
-  const balance = statement?.balances.find((item) => item.currency === "PEN") ?? statement?.balances[0];
-  const money = (value: number | null | undefined) => (value == null ? "—" : formatCurrency(value, balance?.currency ?? "PEN"));
+  const recent = latestMovements(expenses)
+  const top = topCategories(expenses, categoryName)
+  const balance = statement?.balances.find((item) => item.currency === 'PEN') ?? statement?.balances[0]
+  const money = (value: number | null | undefined) => (value == null ? '—' : formatCurrency(value, balance?.currency ?? 'PEN'))
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
@@ -58,7 +58,7 @@ export function CardSummaryPanel({
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium">{expense.description}</p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {expense.processDate ? formatDate(expense.processDate) : "—"} · {categoryName(expense.categoryId ?? null)} ·{" "}
+                      {expense.processDate ? formatDate(expense.processDate) : '—'} · {categoryName(expense.categoryId ?? null)} ·{' '}
                       {personName(expense.personId)}
                     </p>
                   </div>
@@ -78,7 +78,7 @@ export function CardSummaryPanel({
             <CardTitle className="text-base">Próximo pago</CardTitle>
             <p className="text-xs text-muted-foreground">
               {getMonthName(month)} {year}
-              {payDay ? ` · vence día ${payDay}` : ""}
+              {payDay ? ` · vence día ${payDay}` : ''}
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -93,7 +93,7 @@ export function CardSummaryPanel({
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Cierre del ciclo</dt>
-                <dd>{closeDay ? `día ${closeDay}` : "—"}</dd>
+                <dd>{closeDay ? `día ${closeDay}` : '—'}</dd>
               </div>
             </dl>
             <Button size="sm" className="w-full" onClick={onRegisterPayment}>
@@ -129,5 +129,5 @@ export function CardSummaryPanel({
         </Card>
       </div>
     </div>
-  );
+  )
 }

@@ -1,34 +1,34 @@
-import { useState } from "react";
-import { useRowColorRules } from "@/shared/hooks/useRowColorRules";
-import { withQuery } from "@/shared/api/query";
+import { useState } from 'react'
+import { useRowColorRules } from '@/shared/hooks/useRowColorRules'
+import { withQuery } from '@/shared/api/query'
 
-import { useFixedCostActions } from "../hooks/useFixedCostActions";
-import { useFixedCostList } from "../hooks/useFixedCostList";
-import { useFixedCostTable } from "../hooks/useFixedCostTable";
-import { useFixedCostBulkActions } from "../hooks/useFixedCostBulkActions";
-import { useFixedCostViewGroup } from "../hooks/useFixedCostViewGroup";
+import { useFixedCostActions } from '../hooks/useFixedCostActions'
+import { useFixedCostList } from '../hooks/useFixedCostList'
+import { useFixedCostTable } from '../hooks/useFixedCostTable'
+import { useFixedCostBulkActions } from '../hooks/useFixedCostBulkActions'
+import { useFixedCostViewGroup } from '../hooks/useFixedCostViewGroup'
 
-import { FixedCostDetailPage } from "./FixedCostDetailPage";
+import { FixedCostDetailPage } from './FixedCostDetailPage'
 
-import { FixedCostResultsSection } from "../sections/list/FixedCostResultsSection";
-import { FixedCostBulkActionsSection } from "../sections/list/FixedCostBulkActionsSection";
-import { FixedCostMonthOverview } from "../sections/list/FixedCostMonthOverview";
-import { FixedCostToolbar } from "../sections/list/FixedCostToolbar";
-import { FixedCostViewBar } from "../sections/list/FixedCostViewBar";
-import { FixedCostInstallmentsView } from "../views/FixedCostInstallmentsView";
-import { FixedCostStatusBoard } from "../views/FixedCostStatusBoard";
-import { FixedCostEmptyMonthView } from "../views/FixedCostEmptyMonthView";
+import { FixedCostResultsSection } from '../sections/list/FixedCostResultsSection'
+import { FixedCostBulkActionsSection } from '../sections/list/FixedCostBulkActionsSection'
+import { FixedCostMonthOverview } from '../sections/list/FixedCostMonthOverview'
+import { FixedCostToolbar } from '../sections/list/FixedCostToolbar'
+import { FixedCostViewBar } from '../sections/list/FixedCostViewBar'
+import { FixedCostInstallmentsView } from '../views/FixedCostInstallmentsView'
+import { FixedCostStatusBoard } from '../views/FixedCostStatusBoard'
+import { FixedCostEmptyMonthView } from '../views/FixedCostEmptyMonthView'
 
-import { MoveSeriesDialog } from "@/features/expenses/components/dialogs/MoveSeriesDialog";
-import { FixedCostDialog } from "../components/dialogs/FixedCostDialog";
-import { FixedCostPeriodSelector } from "../components/header/FixedCostPeriodSelector";
+import { MoveSeriesDialog } from '@/features/expenses/components/dialogs/MoveSeriesDialog'
+import { FixedCostDialog } from '../components/dialogs/FixedCostDialog'
+import { FixedCostPeriodSelector } from '../components/header/FixedCostPeriodSelector'
 
 function FixedCostListPageContent() {
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const list = useFixedCostList();
-  const rowColors = useRowColorRules("fixed-costs");
-  const interaction = useFixedCostActions();
-  const bulk = useFixedCostBulkActions(list.filtered, list.scopeKey);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false)
+  const list = useFixedCostList()
+  const rowColors = useRowColorRules('fixed-costs')
+  const interaction = useFixedCostActions()
+  const bulk = useFixedCostBulkActions(list.filtered, list.scopeKey)
   const dataTable = useFixedCostTable({
     items: list.filtered,
     categories: list.categories,
@@ -40,25 +40,23 @@ function FixedCostListPageContent() {
     onSelectionChange: bulk.setSelection,
     pending: bulk.pending,
     sorting: list.sort ? { column: list.sort.column, desc: list.sort.desc } : undefined,
-  });
+  })
 
-  const openedItem = list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ?? interaction.openedItem;
-  const openedCategory = list.categories.find((category) => category.id === openedItem?.categoryId);
-  const page = list.page;
-  const viewGroup = useFixedCostViewGroup(page);
+  const openedItem = list.fixedCosts.find((cost) => cost.id === interaction.openedItem?.id) ?? interaction.openedItem
+  const openedCategory = list.categories.find((category) => category.id === openedItem?.categoryId)
+  const page = list.page
+  const viewGroup = useFixedCostViewGroup(page)
   const periodLabel =
-    list.periodScope === "year"
-      ? "del año"
-      : list.periodScope === "all"
-        ? "de cualquier mes"
+    list.periodScope === 'year'
+      ? 'del año'
+      : list.periodScope === 'all'
+        ? 'de cualquier mes'
         : list.filters.month && list.filters.year
-          ? "del mes"
-          : "del período";
-  const emptyPeriodLabel = page === "todos" ? `el año ${list.filters.year || new Date().getFullYear()}` : "este período";
-  const hasNonPeriodCriteria = Object.entries(list.filters).some(
-    ([key, value]) => key !== "month" && key !== "year" && value != null && value !== "",
-  );
-  const hasEmptyCriteria = hasNonPeriodCriteria || list.scope !== "all";
+          ? 'del mes'
+          : 'del período'
+  const emptyPeriodLabel = page === 'todos' ? `el año ${list.filters.year || new Date().getFullYear()}` : 'este período'
+  const hasNonPeriodCriteria = Object.entries(list.filters).some(([key, value]) => key !== 'month' && key !== 'year' && value != null && value !== '')
+  const hasEmptyCriteria = hasNonPeriodCriteria || list.scope !== 'all'
 
   const toolbar = (
     <FixedCostToolbar
@@ -71,17 +69,17 @@ function FixedCostListPageContent() {
       sort={list.sort?.value}
       onSortChange={list.setSort}
       onResetView={() => {
-        list.setFilters({ month: list.filters.month, year: list.filters.year });
-        list.setSort(undefined);
-        list.setGroupBy([]);
-        list.setScope("all");
+        list.setFilters({ month: list.filters.month, year: list.filters.year })
+        list.setSort(undefined)
+        list.setGroupBy([])
+        list.setScope('all')
       }}
       view={list.view}
       onViewChange={list.setView}
       table={dataTable.table}
-      canGroup={page !== "cuotas"}
+      canGroup={page !== 'cuotas'}
       canSort
-      canChangeLayout={page !== "cuotas" && page !== "estado"}
+      canChangeLayout={page !== 'cuotas' && page !== 'estado'}
       showPeriodInFilters
       filterSheetOpen={filterSheetOpen}
       onFilterSheetOpenChange={setFilterSheetOpen}
@@ -94,10 +92,10 @@ function FixedCostListPageContent() {
         onReset: rowColors.reset,
       }}
     />
-  );
+  )
 
-  let body;
-  if (page === "cuotas")
+  let body
+  if (page === 'cuotas')
     body = (
       <FixedCostInstallmentsView
         series={list.installments}
@@ -108,8 +106,8 @@ function FixedCostListPageContent() {
         toolbar={toolbar}
         sort={list.sort?.value}
       />
-    );
-  else if (page === "estado")
+    )
+  else if (page === 'estado')
     body = (
       <FixedCostStatusBoard
         items={dataTable.table.getSortedRowModel().rows.map((row) => row.original)}
@@ -120,9 +118,9 @@ function FixedCostListPageContent() {
         onOpen={interaction.actions.onOpen}
         onStatusChange={interaction.actions.onStatusChange}
       />
-    );
+    )
   else if (
-    page === "mes" &&
+    page === 'mes' &&
     !list.loading &&
     !list.error &&
     list.fixedCosts.length === 0 &&
@@ -130,7 +128,7 @@ function FixedCostListPageContent() {
     list.filters.year &&
     list.periodRecords.length === 0 &&
     !hasNonPeriodCriteria &&
-    list.scope === "all"
+    list.scope === 'all'
   )
     body = (
       <FixedCostEmptyMonthView
@@ -150,7 +148,7 @@ function FixedCostListPageContent() {
           })
         }
       />
-    );
+    )
   else
     body = (
       <>
@@ -167,29 +165,29 @@ function FixedCostListPageContent() {
           loading={list.loading}
           error={list.error}
           pending={bulk.pending}
-          emptyDescription={page === "por-pagar" && !hasEmptyCriteria ? "No tienes costos fijos pendientes. Todo está al día." : undefined}
-          emptyTitle={page === "por-pagar" && !hasEmptyCriteria ? "Todo al día" : undefined}
+          emptyDescription={page === 'por-pagar' && !hasEmptyCriteria ? 'No tienes costos fijos pendientes. Todo está al día.' : undefined}
+          emptyTitle={page === 'por-pagar' && !hasEmptyCriteria ? 'Todo al día' : undefined}
           filters={list.filters}
           onFiltersChange={list.setFilters}
           me={list.me}
           periodLabel={emptyPeriodLabel}
           periodCount={list.periodRecords.length}
-          hasScopeFilter={list.scope !== "all"}
+          hasScopeFilter={list.scope !== 'all'}
           onOpenFilters={() => setFilterSheetOpen(true)}
           onClearFilters={() => {
             list.setFilters({
               month: list.filters.month,
               year: list.filters.year,
-            });
-            list.setScope("all");
+            })
+            list.setScope('all')
           }}
           onClearSearch={() => list.setFilters({ ...list.filters, q: undefined })}
-          onSearchAllMonths={() => list.setPage("todos")}
+          onSearchAllMonths={() => list.setPage('todos')}
           onCreate={interaction.onCreate}
           viewGroup={viewGroup}
         />
       </>
-    );
+    )
 
   return (
     <div className="space-y-4">
@@ -204,22 +202,22 @@ function FixedCostListPageContent() {
         payableHorizon={list.payableHorizon}
         onPayableHorizonChange={list.setPayableHorizon}
       />
-      {page !== "cuotas" && (
+      {page !== 'cuotas' && (
         <FixedCostMonthOverview
-          items={page === "por-pagar" ? list.payable : list.baseFiltered}
-          scope={page === "por-pagar" ? "payable" : list.scope}
-          onScopeChange={page === "por-pagar" ? () => undefined : list.setScope}
+          items={page === 'por-pagar' ? list.payable : list.baseFiltered}
+          scope={page === 'por-pagar' ? 'payable' : list.scope}
+          onScopeChange={page === 'por-pagar' ? () => undefined : list.setScope}
           periodLabel={periodLabel}
           loading={list.loading}
-          variant={page === "por-pagar" ? "payable" : page === "todos" ? "year" : "period"}
+          variant={page === 'por-pagar' ? 'payable' : page === 'todos' ? 'year' : 'period'}
         />
       )}
-      {page !== "cuotas" && toolbar}
+      {page !== 'cuotas' && toolbar}
       {body}
       <FixedCostDialog open={interaction.dialogOpen} onOpenChange={interaction.setDialogOpen} fixedCost={interaction.editingItem} />
       <FixedCostDetailPage
         fixedCost={openedItem}
-        categoryName={openedCategory?.name ?? "Sin categoría"}
+        categoryName={openedCategory?.name ?? 'Sin categoría'}
         categoryIcon={openedCategory?.icon}
         categoryColor={openedCategory?.color}
         personName={list.personName(openedItem?.personId)}
@@ -228,12 +226,12 @@ function FixedCostListPageContent() {
         onEdit={interaction.onEditDetail}
         onDelete={(cost) => interaction.actions.onDelete(cost)}
         items={list.filtered}
-        onNavigate={(cost) => interaction.actions.onOpen(cost, "detail")}
+        onNavigate={(cost) => interaction.actions.onOpen(cost, 'detail')}
         initialTab={interaction.openedTab}
       />
       {interaction.moving && <MoveSeriesDialog key={interaction.moving.id} source={interaction.moving} onClose={interaction.onCloseMove} />}
     </div>
-  );
+  )
 }
 
-export const FixedCostListPage = withQuery(FixedCostListPageContent);
+export const FixedCostListPage = withQuery(FixedCostListPageContent)

@@ -1,26 +1,26 @@
-import type { ReactNode } from "react";
-import { ChevronDown, Ellipsis } from "lucide-react";
+import type { ReactNode } from 'react'
+import { ChevronDown, Ellipsis } from 'lucide-react'
 
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
 
 export interface ExportMenuItem {
-  label: string;
-  icon?: ReactNode;
-  href?: string;
-  download?: boolean;
-  onSelect?: () => void;
+  label: string
+  icon?: ReactNode
+  href?: string
+  download?: boolean
+  onSelect?: () => void
 }
 
-export function ExportMenu({ items, label = "Exportar", iconOnly = false }: { items: ExportMenuItem[]; label?: string; iconOnly?: boolean }) {
+export function ExportMenu({ items, label = 'Exportar', iconOnly = false }: { items: ExportMenuItem[]; label?: string; iconOnly?: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
           variant="outline"
-          size={iconOnly ? "icon" : "sm"}
-          className={iconOnly ? "size-9 rounded-xl bg-background/50" : "h-9"}
+          size={iconOnly ? 'icon' : 'sm'}
+          className={iconOnly ? 'size-9 rounded-xl bg-background/50' : 'h-9'}
           aria-label={iconOnly ? label : undefined}
           title={iconOnly ? label : undefined}
         >
@@ -51,5 +51,5 @@ export function ExportMenu({ items, label = "Exportar", iconOnly = false }: { it
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

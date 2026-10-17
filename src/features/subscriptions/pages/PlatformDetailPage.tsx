@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 import {
   ArrowRightLeft,
   CalendarDays,
@@ -16,30 +16,30 @@ import {
   Trash2,
   UserRound,
   Wallet,
-} from "lucide-react";
-import type { Subscription } from "@/shared/api/types";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
-import { useAttachments } from "@/features/attachments/hooks/attachments";
-import { RecordHistoryPanel } from "@/features/history/components/RecordHistoryPanel";
-import { useRecordHistory } from "@/features/history/hooks/history";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import { LinkifiedText } from "@/shared/components/data-display/LinkifiedText";
-import { EXPENSE_TYPE_LABELS } from "@/shared/constants/finance";
-import { formatDate, getMonthName } from "@/shared/lib/dates";
-import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { PlatformDetailRow } from "../components/detail/PlatformDetailRow";
-import { PlatformMark } from "../components/PlatformMark";
-import { SUBSCRIPTION_PERIOD_LABELS } from "../constants/subscriptions";
-import { formatPlatformCurrency, nextPlatformChargeDate } from "../lib/platform-summary";
-import { RowActions } from "@/features/expenses/components/RowActions";
-import { SUBSCRIPTION_STATUSES } from "../constants/subscriptions";
-import { MonthYearPicker } from "@/shared/components/navigation/MonthYearPicker";
+} from 'lucide-react'
+import type { Subscription } from '@/shared/api/types'
+import { StatusBadge } from '@/features/expenses/components/StatusBadge'
+import { AttachmentsPanel } from '@/features/attachments/components/AttachmentsPanel'
+import { useAttachments } from '@/features/attachments/hooks/attachments'
+import { RecordHistoryPanel } from '@/features/history/components/RecordHistoryPanel'
+import { useRecordHistory } from '@/features/history/hooks/history'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { LinkifiedText } from '@/shared/components/data-display/LinkifiedText'
+import { EXPENSE_TYPE_LABELS } from '@/shared/constants/finance'
+import { formatDate, getMonthName } from '@/shared/lib/dates'
+import { Button } from '@/ui/button'
+import { Badge } from '@/ui/badge'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
+import { PlatformDetailRow } from '../components/detail/PlatformDetailRow'
+import { PlatformMark } from '../components/PlatformMark'
+import { SUBSCRIPTION_PERIOD_LABELS } from '../constants/subscriptions'
+import { formatPlatformCurrency, nextPlatformChargeDate } from '../lib/platform-summary'
+import { RowActions } from '@/features/expenses/components/RowActions'
+import { SUBSCRIPTION_STATUSES } from '../constants/subscriptions'
+import { MonthYearPicker } from '@/shared/components/navigation/MonthYearPicker'
 
-type DetailTab = "detail" | "files" | "history";
+type DetailTab = 'detail' | 'files' | 'history'
 
 export function PlatformDetailPage({
   item,
@@ -57,47 +57,47 @@ export function PlatformDetailPage({
   onDelete,
   onNavigate,
 }: {
-  item?: Subscription;
-  items: Subscription[];
-  personName: string;
-  accountName: string;
-  todayKey: string;
-  initialTab: DetailTab;
-  onClose: () => void;
-  onEdit: () => void;
-  onMove: () => void;
-  onDuplicate: () => void;
-  onStatusChange: (status: string) => void;
-  onPaymentPeriodChange: (period: { month: number; year: number }) => void;
-  onDelete: (item: Subscription) => Promise<unknown>;
-  onNavigate: (item: Subscription) => void;
+  item?: Subscription
+  items: Subscription[]
+  personName: string
+  accountName: string
+  todayKey: string
+  initialTab: DetailTab
+  onClose: () => void
+  onEdit: () => void
+  onMove: () => void
+  onDuplicate: () => void
+  onStatusChange: (status: string) => void
+  onPaymentPeriodChange: (period: { month: number; year: number }) => void
+  onDelete: (item: Subscription) => Promise<unknown>
+  onNavigate: (item: Subscription) => void
 }) {
-  const [tab, setTab] = useState<DetailTab>(initialTab);
-  const [expanded, setExpanded] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const attachments = useAttachments("expense", item?.id ?? "", {
+  const [tab, setTab] = useState<DetailTab>(initialTab)
+  const [expanded, setExpanded] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const attachments = useAttachments('expense', item?.id ?? '', {
     enabled: !!item,
-  });
-  const history = useRecordHistory("exp_subscriptions", item?.id ?? "", {
+  })
+  const history = useRecordHistory('exp_subscriptions', item?.id ?? '', {
     enabled: !!item,
-  });
-  const files = attachments.data ?? [];
-  const latestChange = history.data?.items?.[0];
-  const currentIndex = item ? items.findIndex((candidate) => candidate.id === item.id) : -1;
-  const previous = currentIndex > 0 ? items[currentIndex - 1] : undefined;
-  const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : undefined;
-  const nextCharge = item ? nextPlatformChargeDate(item, todayKey) : null;
+  })
+  const files = attachments.data ?? []
+  const latestChange = history.data?.items?.[0]
+  const currentIndex = item ? items.findIndex((candidate) => candidate.id === item.id) : -1
+  const previous = currentIndex > 0 ? items[currentIndex - 1] : undefined
+  const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : undefined
+  const nextCharge = item ? nextPlatformChargeDate(item, todayKey) : null
 
   useEffect(() => {
-    setTab(initialTab);
-    setExpanded(false);
-  }, [item?.id, initialTab]);
+    setTab(initialTab)
+    setExpanded(false)
+  }, [item?.id, initialTab])
 
   return (
     <Sheet open={!!item} onOpenChange={(open) => !open && onClose()}>
       {item && (
-        <SheetContent side="right" className={`w-full gap-0 overflow-hidden ${expanded ? "sm:max-w-none" : "sm:max-w-xl"}`}>
+        <SheetContent side="right" className={`w-full gap-0 overflow-hidden ${expanded ? 'sm:max-w-none' : 'sm:max-w-xl'}`}>
           <SheetHeader className="min-w-0 shrink-0 gap-1.5 pb-0 pr-12 sm:pr-24">
             <SheetTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left text-lg tracking-tight">
               <PlatformMark name={item.description} className="size-7" />
@@ -105,7 +105,7 @@ export function PlatformDetailPage({
               <StatusBadge status={item.paymentStatus} />
             </SheetTitle>
             <SheetDescription className="wrap-anywhere">
-              {SUBSCRIPTION_PERIOD_LABELS[item.period] ?? item.period} · {getMonthName(item.paymentMonth)} {item.paymentYear} ·{" "}
+              {SUBSCRIPTION_PERIOD_LABELS[item.period] ?? item.period} · {getMonthName(item.paymentMonth)} {item.paymentYear} ·{' '}
               {formatPlatformCurrency(item.amount, item.currency)}
             </SheetDescription>
           </SheetHeader>
@@ -114,7 +114,7 @@ export function PlatformDetailPage({
             variant="ghost"
             size="icon-sm"
             className="absolute top-2.5 right-12 hidden sm:inline-flex"
-            aria-label={expanded ? "Reducir detalle" : "Ampliar detalle a pantalla completa"}
+            aria-label={expanded ? 'Reducir detalle' : 'Ampliar detalle a pantalla completa'}
             aria-pressed={expanded}
             onClick={() => setExpanded((value) => !value)}
           >
@@ -162,10 +162,10 @@ export function PlatformDetailPage({
                       onEdit={onEdit}
                       onDuplicate={onDuplicate}
                       onMove={onMove}
-                      files={{ refType: "expense", refId: item.id }}
-                      history={{ entity: "exp_subscriptions", id: item.id }}
-                      onOpenFiles={() => setTab("files")}
-                      onOpenHistory={() => setTab("history")}
+                      files={{ refType: 'expense', refId: item.id }}
+                      history={{ entity: 'exp_subscriptions', id: item.id }}
+                      onOpenFiles={() => setTab('files')}
+                      onOpenHistory={() => setTab('history')}
                       status={{
                         value: item.paymentStatus,
                         options: SUBSCRIPTION_STATUSES,
@@ -194,19 +194,19 @@ export function PlatformDetailPage({
                       />
                     }
                   />
-                  <PlatformDetailRow icon={CalendarDays} label="Próximo cobro" value={nextCharge ? formatDate(nextCharge) : "Sin fecha"} />
-                  <PlatformDetailRow icon={FileText} label="Observación" value={<LinkifiedText text={item.notes?.trim() || "Sin observación"} />} />
+                  <PlatformDetailRow icon={CalendarDays} label="Próximo cobro" value={nextCharge ? formatDate(nextCharge) : 'Sin fecha'} />
+                  <PlatformDetailRow icon={FileText} label="Observación" value={<LinkifiedText text={item.notes?.trim() || 'Sin observación'} />} />
                 </dl>
                 {(files.length > 0 || latestChange) && (
                   <div className="space-y-3">
                     {files.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setTab("files")}
+                        onClick={() => setTab('files')}
                         className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
                       >
                         <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                          {files[0].contentType.startsWith("image/") && files[0].url ? (
+                          {files[0].contentType.startsWith('image/') && files[0].url ? (
                             <img src={files[0].url} alt="" className="size-full object-cover" />
                           ) : (
                             <Paperclip className="size-4" />
@@ -214,7 +214,7 @@ export function PlatformDetailPage({
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block font-medium">
-                            {files.length} {files.length === 1 ? "archivo adjunto" : "archivos adjuntos"}
+                            {files.length} {files.length === 1 ? 'archivo adjunto' : 'archivos adjuntos'}
                           </span>
                           <span className="block truncate text-sm text-muted-foreground">{files[0].name}</span>
                         </span>
@@ -224,16 +224,16 @@ export function PlatformDetailPage({
                     {latestChange && (
                       <button
                         type="button"
-                        onClick={() => setTab("history")}
+                        onClick={() => setTab('history')}
                         className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/30"
                       >
                         <History className="size-5 shrink-0 text-muted-foreground" />
                         <span className="min-w-0 flex-1">
                           <span className="block font-medium">
-                            Último cambio ·{" "}
-                            {new Intl.DateTimeFormat("es-PE", {
-                              dateStyle: "medium",
-                              timeStyle: "short",
+                            Último cambio ·{' '}
+                            {new Intl.DateTimeFormat('es-PE', {
+                              dateStyle: 'medium',
+                              timeStyle: 'short',
                             }).format(new Date(latestChange.createdAt))}
                           </span>
                           <span className="block truncate text-sm text-muted-foreground">
@@ -295,18 +295,18 @@ export function PlatformDetailPage({
             description={<>Se eliminará «{item.description}». Esta acción no se puede deshacer.</>}
             pending={deleting}
             onConfirm={() => {
-              setDeleting(true);
+              setDeleting(true)
               Promise.resolve(onDelete(item))
                 .then(() => {
-                  setConfirmDelete(false);
-                  onClose();
+                  setConfirmDelete(false)
+                  onClose()
                 })
                 .catch(() => undefined)
-                .finally(() => setDeleting(false));
+                .finally(() => setDeleting(false))
             }}
           />
         </SheetContent>
       )}
     </Sheet>
-  );
+  )
 }

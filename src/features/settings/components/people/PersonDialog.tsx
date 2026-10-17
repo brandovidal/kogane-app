@@ -1,25 +1,25 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import type { Schemas } from "@/shared/api/client";
-import { useSavePerson } from "@/shared/api/hooks/catalogs";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { MultiSelect } from "@/shared/components/filters/MultiSelect";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { Switch } from "@/ui/switch";
-import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from "../../constants";
+import type { Schemas } from '@/shared/api/client'
+import { useSavePerson } from '@/shared/api/hooks/catalogs'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { MultiSelect } from '@/shared/components/filters/MultiSelect'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Switch } from '@/ui/switch'
+import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from '../../constants'
 
-type Person = Schemas["PersonResponseDto"]["data"];
+type Person = Schemas['PersonResponseDto']['data']
 
 export function PersonDialog({ person, onClose }: { person: Person | null; onClose: () => void }) {
-  const savePerson = useSavePerson();
-  const [name, setName] = useState(person?.name ?? "");
-  const [aliases, setAliases] = useState(person?.aliases.join(", ") ?? "");
-  const [isDefault, setIsDefault] = useState(person?.isDefault ?? false);
-  const [appearsIn, setAppearsIn] = useState<PersonModule[]>(person?.appearsIn ?? []);
+  const savePerson = useSavePerson()
+  const [name, setName] = useState(person?.name ?? '')
+  const [aliases, setAliases] = useState(person?.aliases.join(', ') ?? '')
+  const [isDefault, setIsDefault] = useState(person?.isDefault ?? false)
+  const [appearsIn, setAppearsIn] = useState<PersonModule[]>(person?.appearsIn ?? [])
   // Never shown whole (D94): empty keeps the saved one, "Quitar" deletes it
-  const [documentNumber, setDocumentNumber] = useState("");
-  const [clearDocument, setClearDocument] = useState(false);
+  const [documentNumber, setDocumentNumber] = useState('')
+  const [clearDocument, setClearDocument] = useState(false)
 
   const save = () =>
     savePerson.mutate(
@@ -27,7 +27,7 @@ export function PersonDialog({ person, onClose }: { person: Person | null; onClo
         id: person?.id,
         name: name.trim(),
         aliases: aliases
-          .split(",")
+          .split(',')
           .map((alias) => alias.trim())
           .filter(Boolean),
         isDefault,
@@ -35,13 +35,13 @@ export function PersonDialog({ person, onClose }: { person: Person | null; onClo
         ...(documentNumber.trim() ? { documentNumber: documentNumber.trim() } : clearDocument ? { documentNumber: null } : {}),
       },
       { onSuccess: onClose },
-    );
+    )
 
   return (
     <ResponsiveDialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={person ? "Editar persona" : "Nueva persona"}
+      title={person ? 'Editar persona' : 'Nueva persona'}
       description="Los alias son cómo la nombras en el chat (ej: dany, mi hermana)."
       footer={
         <>
@@ -71,7 +71,7 @@ export function PersonDialog({ person, onClose }: { person: Person | null; onClo
         </label>
         <div className="space-y-1">
           <Input
-            placeholder={person?.documentNumber ? `N.º de documento (guardado ${person.documentNumber})` : "N.º de documento (DNI)"}
+            placeholder={person?.documentNumber ? `N.º de documento (guardado ${person.documentNumber})` : 'N.º de documento (DNI)'}
             value={documentNumber}
             inputMode="numeric"
             autoComplete="off"
@@ -81,12 +81,12 @@ export function PersonDialog({ person, onClose }: { person: Person | null; onClo
             Abre los PDF de tus estados de cuenta. Se guarda en el servidor y nunca se muestra completo.
             {person?.documentNumber && !documentNumber && (
               <button type="button" className="ml-1 underline" onClick={() => setClearDocument(!clearDocument)}>
-                {clearDocument ? "No quitar" : "Quitar"}
+                {clearDocument ? 'No quitar' : 'Quitar'}
               </button>
             )}
           </p>
         </div>
       </div>
     </ResponsiveDialog>
-  );
+  )
 }

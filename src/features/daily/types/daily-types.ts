@@ -1,1 +1,1 @@
-export type { DailyLayout } from "../constants/daily";
+export type { DailyLayout } from '../constants/daily'

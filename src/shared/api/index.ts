@@ -1,7 +1,7 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
-export { apiFetch, api, ApiError, unwrap } from "./client";
-export type { Schemas } from "./client";
-export { withQuery } from "./query";
+export { apiFetch, api, ApiError, unwrap } from './client'
+export type { Schemas } from './client'
+export { withQuery } from './query'
 export type {
   PaymentMethod,
   Category,
@@ -34,9 +34,9 @@ export type {
   AttachmentRefType,
   HistoryPage,
   HistoryEntry,
-} from "./types";
-export { EXPENSE_RESOURCES } from "./types";
-export { useApiMutation, errorMessage } from "./hooks/use-api-mutation";
+} from './types'
+export { EXPENSE_RESOURCES } from './types'
+export { useApiMutation, errorMessage } from './hooks/use-api-mutation'
 export {
   catalogKeys,
   usePeople,
@@ -54,5 +54,5 @@ export {
   useSaveBudgetGroup,
   useDeleteBudgetGroup,
   useSaveCardHolders,
-} from "./hooks/catalogs";
-export type { paths, components, operations } from "./schema";
+} from './hooks/catalogs'
+export type { paths, components, operations } from './schema'

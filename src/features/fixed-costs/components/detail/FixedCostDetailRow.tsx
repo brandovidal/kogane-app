@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from 'react'
+import type { LucideIcon } from 'lucide-react'
 
 export function FixedCostDetailRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: ReactNode }) {
   return (
@@ -10,5 +10,5 @@ export function FixedCostDetailRow({ icon: Icon, label, value }: { icon: LucideI
       </dt>
       <dd className="min-w-0 wrap-anywhere text-right text-sm font-medium">{value}</dd>
     </div>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 import {
   ArrowDownUp,
   CalendarDays,
@@ -16,22 +16,22 @@ import {
   UsersRound,
   X,
   type LucideIcon,
-} from "lucide-react";
+} from 'lucide-react'
 
-import { debtReportUrl } from "@/features/debts/lib/debt-report";
-import { type DebtReportFilter } from "@/features/debts/lib/debt-report";
-import type { Debt } from "@/shared/api/types";
-import { AppliedFilterChips, type AppliedFilterChip } from "@/shared/components/filters/AppliedFilterChips";
-import { CountedToolbarButton } from "@/shared/components/toolbar/CountedToolbarButton";
-import { ExportMenu } from "@/shared/components/toolbar/ExportMenu";
-import { FilterSelect } from "@/shared/components/filters/FilterSelect";
-import { FieldLabel } from "@/shared/components/forms/FieldLabel";
-import { SearchField } from "@/shared/components/filters/SearchField";
-import { getMonthName } from "@/shared/lib/dates";
-import { Button } from "@/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet";
-import { Switch } from "@/ui/switch";
-import { DEBT_STATE_LABELS, type DebtFilterValues } from "@/features/debts/lib/debt-filters";
+import { debtReportUrl } from '@/features/debts/lib/debt-report'
+import { type DebtReportFilter } from '@/features/debts/lib/debt-report'
+import type { Debt } from '@/shared/api/types'
+import { AppliedFilterChips, type AppliedFilterChip } from '@/shared/components/filters/AppliedFilterChips'
+import { CountedToolbarButton } from '@/shared/components/toolbar/CountedToolbarButton'
+import { ExportMenu } from '@/shared/components/toolbar/ExportMenu'
+import { FilterSelect } from '@/shared/components/filters/FilterSelect'
+import { FieldLabel } from '@/shared/components/forms/FieldLabel'
+import { SearchField } from '@/shared/components/filters/SearchField'
+import { getMonthName } from '@/shared/lib/dates'
+import { Button } from '@/ui/button'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/ui/sheet'
+import { Switch } from '@/ui/switch'
+import { DEBT_STATE_LABELS, type DebtFilterValues } from '@/features/debts/lib/debt-filters'
 
 const FILTER_ICONS: Partial<Record<keyof DebtFilterValues, LucideIcon>> = {
   person: UserRound,
@@ -41,7 +41,7 @@ const FILTER_ICONS: Partial<Record<keyof DebtFilterValues, LucideIcon>> = {
   year: CalendarRange,
   card: CreditCard,
   origin: HandCoins,
-};
+}
 
 function DebtFilters({
   value,
@@ -55,19 +55,19 @@ function DebtFilters({
   extraActive = false,
   onResetExtra,
 }: {
-  value: DebtFilterValues;
-  onChange: (value: DebtFilterValues) => void;
-  debts: Debt[];
-  cards: { id: string; name: string }[];
-  monthLabel: string;
-  year: number;
-  defaults: DebtFilterValues;
-  hideDirection?: boolean;
-  extraActive?: boolean;
-  onResetExtra?: () => void;
+  value: DebtFilterValues
+  onChange: (value: DebtFilterValues) => void
+  debts: Debt[]
+  cards: { id: string; name: string }[]
+  monthLabel: string
+  year: number
+  defaults: DebtFilterValues
+  hideDirection?: boolean
+  extraActive?: boolean
+  onResetExtra?: () => void
 }) {
-  const people = [...new Map(debts.map((debt) => [debt.personId, debt.person.name])).entries()];
-  const set = (key: keyof DebtFilterValues, next: string | undefined) => onChange({ ...value, [key]: next || undefined });
+  const people = [...new Map(debts.map((debt) => [debt.personId, debt.person.name])).entries()]
+  const set = (key: keyof DebtFilterValues, next: string | undefined) => onChange({ ...value, [key]: next || undefined })
   const select = (key: keyof DebtFilterValues, label: string, options: [string, string][]) => (
     <FilterSelect
       key={key}
@@ -82,10 +82,10 @@ function DebtFilters({
       width="w-full"
       searchable
     />
-  );
-  const active = extraActive || Object.entries(value).some(([key, current]) => current && current !== defaults[key as keyof DebtFilterValues]);
-  const months = Array.from({ length: 12 }, (_, index) => [String(index + 1), getMonthName(index + 1)] as [string, string]);
-  const years = [...new Set([year, ...debts.map((debt) => debt.paymentYear)])].sort((a, b) => b - a);
+  )
+  const active = extraActive || Object.entries(value).some(([key, current]) => current && current !== defaults[key as keyof DebtFilterValues])
+  const months = Array.from({ length: 12 }, (_, index) => [String(index + 1), getMonthName(index + 1)] as [string, string])
+  const years = [...new Set([year, ...debts.map((debt) => debt.paymentYear)])].sort((a, b) => b - a)
 
   return (
     <div className="space-y-4">
@@ -97,28 +97,28 @@ function DebtFilters({
           </span>
         </summary>
         <div className="space-y-3 pb-3">
-          <SearchField label="Buscar" placeholder="Concepto o persona" value={value.q ?? ""} onChange={(next) => set("q", next)} />
-          {select("person", "Persona", people)}
+          <SearchField label="Buscar" placeholder="Concepto o persona" value={value.q ?? ''} onChange={(next) => set('q', next)} />
+          {select('person', 'Persona', people)}
           {!hideDirection &&
-            select("direction", "Mostrar", [
-              ["owed_to_me", "Cobros (+)"],
-              ["i_owe", "Deudas (−)"],
+            select('direction', 'Mostrar', [
+              ['owed_to_me', 'Cobros (+)'],
+              ['i_owe', 'Deudas (−)'],
             ])}
-          {select("state", "Estado", Object.entries(DEBT_STATE_LABELS))}
-          {select("month", "Mes", [["until", `Hasta ${monthLabel}`], ...months])}
+          {select('state', 'Estado', Object.entries(DEBT_STATE_LABELS))}
+          {select('month', 'Mes', [['until', `Hasta ${monthLabel}`], ...months])}
           {select(
-            "year",
-            "Año",
+            'year',
+            'Año',
             years.map((item) => [String(item), String(item)] as [string, string]),
           )}
           {select(
-            "card",
-            "Tarjeta",
+            'card',
+            'Tarjeta',
             cards.map((item) => [item.id, item.name] as [string, string]),
           )}
-          {select("origin", "Origen", [
-            ["shared", "Compartido"],
-            ["loan", "Préstamo"],
+          {select('origin', 'Origen', [
+            ['shared', 'Compartido'],
+            ['loan', 'Préstamo'],
           ])}
         </div>
       </details>
@@ -128,15 +128,15 @@ function DebtFilters({
           size="sm"
           className="w-full justify-start"
           onClick={() => {
-            onChange(defaults);
-            onResetExtra?.();
+            onChange(defaults)
+            onResetExtra?.()
           }}
         >
           <X className="mr-1 h-3.5 w-3.5" /> Restablecer filtros
         </Button>
       )}
     </div>
-  );
+  )
 }
 
 function getActiveDebtFilterChips(
@@ -147,22 +147,22 @@ function getActiveDebtFilterChips(
   monthLabel: string,
   includeDirection = true,
 ) {
-  const people = new Map(debts.map((debt) => [debt.personId, debt.person.name]));
-  const cardNames = new Map(cards.map((card) => [card.id, card.name]));
-  const monthName = value.month === "until" ? `Hasta ${monthLabel}` : value.month ? getMonthName(Number(value.month)) : "";
+  const people = new Map(debts.map((debt) => [debt.personId, debt.person.name]))
+  const cardNames = new Map(cards.map((card) => [card.id, card.name]))
+  const monthName = value.month === 'until' ? `Hasta ${monthLabel}` : value.month ? getMonthName(Number(value.month)) : ''
   const labels: Partial<Record<keyof DebtFilterValues, string>> = {
     q: value.q ? `Buscar: ${value.q}` : undefined,
     person: value.person ? `Persona: ${people.get(value.person) ?? value.person}` : undefined,
-    direction: includeDirection && value.direction ? `Mostrar: ${value.direction === "owed_to_me" ? "Cobros (+)" : "Deudas (−)"}` : undefined,
+    direction: includeDirection && value.direction ? `Mostrar: ${value.direction === 'owed_to_me' ? 'Cobros (+)' : 'Deudas (−)'}` : undefined,
     state: value.state ? `Estado: ${DEBT_STATE_LABELS[value.state]}` : undefined,
     month: value.month ? `Mes: ${monthName}` : undefined,
     year: value.year ? `Año: ${value.year}` : undefined,
     card: value.card ? `Tarjeta: ${cardNames.get(value.card) ?? value.card}` : undefined,
-    origin: value.origin ? `Origen: ${value.origin === "shared" ? "Compartido" : "Préstamo"}` : undefined,
-  };
+    origin: value.origin ? `Origen: ${value.origin === 'shared' ? 'Compartido' : 'Préstamo'}` : undefined,
+  }
   return (Object.keys(labels) as (keyof DebtFilterValues)[])
-    .filter((key) => value[key] && (key === "month" || key === "year" || value[key] !== defaults[key]))
-    .map((key) => ({ key, label: labels[key]! }));
+    .filter((key) => value[key] && (key === 'month' || key === 'year' || value[key] !== defaults[key]))
+    .map((key) => ({ key, label: labels[key]! }))
 }
 
 export function DebtFilterSheet({
@@ -182,23 +182,23 @@ export function DebtFilterSheet({
   onResetExtra,
   children,
 }: {
-  value: DebtFilterValues;
-  onChange: (value: DebtFilterValues) => void;
-  debts: Debt[];
-  cards: { id: string; name: string }[];
-  monthLabel: string;
-  shown: number;
-  year: number;
-  defaults: DebtFilterValues;
-  description: string;
-  resultLabel?: string;
-  directionFilterEnabled?: boolean;
-  hideDirection?: boolean;
-  extraActive?: boolean;
-  onResetExtra?: () => void;
-  children?: ReactNode;
+  value: DebtFilterValues
+  onChange: (value: DebtFilterValues) => void
+  debts: Debt[]
+  cards: { id: string; name: string }[]
+  monthLabel: string
+  shown: number
+  year: number
+  defaults: DebtFilterValues
+  description: string
+  resultLabel?: string
+  directionFilterEnabled?: boolean
+  hideDirection?: boolean
+  extraActive?: boolean
+  onResetExtra?: () => void
+  children?: ReactNode
 }) {
-  const activeCount = getActiveDebtFilterChips(value, defaults, debts, cards, monthLabel, directionFilterEnabled).length + Number(extraActive);
+  const activeCount = getActiveDebtFilterChips(value, defaults, debts, cards, monthLabel, directionFilterEnabled).length + Number(extraActive)
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -209,7 +209,7 @@ export function DebtFilterSheet({
           <SheetTitle>Filtros</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
           <p className="text-xs text-muted-foreground">
-            {shown} de {debts.length} {resultLabel ?? "registros"}
+            {shown} de {debts.length} {resultLabel ?? 'registros'}
           </p>
         </SheetHeader>
         <div className="space-y-5 overflow-y-auto px-5 pb-6">
@@ -229,7 +229,7 @@ export function DebtFilterSheet({
         </div>
       </SheetContent>
     </Sheet>
-  );
+  )
 }
 
 export function DebtGroupingSheet({
@@ -238,12 +238,12 @@ export function DebtGroupingSheet({
   onPersonChange,
   onCardChange,
 }: {
-  groupedByPerson: boolean;
-  groupedByCard: boolean;
-  onPersonChange: (checked: boolean) => void;
-  onCardChange: (checked: boolean) => void;
+  groupedByPerson: boolean
+  groupedByCard: boolean
+  onPersonChange: (checked: boolean) => void
+  onCardChange: (checked: boolean) => void
 }) {
-  const activeCount = Number(groupedByPerson) + Number(groupedByCard);
+  const activeCount = Number(groupedByPerson) + Number(groupedByCard)
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -265,17 +265,17 @@ export function DebtGroupingSheet({
           </label>
           <p className="text-xs text-muted-foreground">
             {groupedByPerson && groupedByCard
-              ? "Una tabla por persona; las tarjetas y plataformas se muestran dentro de cada grupo."
+              ? 'Una tabla por persona; las tarjetas y plataformas se muestran dentro de cada grupo.'
               : groupedByPerson
-                ? "Los cobros se agrupan por persona."
+                ? 'Los cobros se agrupan por persona.'
                 : groupedByCard
-                  ? "Los cobros se agrupan por tarjeta."
-                  : "Activa una o ambas opciones para organizar los cobros."}
+                  ? 'Los cobros se agrupan por tarjeta.'
+                  : 'Activa una o ambas opciones para organizar los cobros.'}
           </p>
         </div>
       </SheetContent>
     </Sheet>
-  );
+  )
 }
 
 export function ActiveDebtFilterChips({
@@ -289,65 +289,65 @@ export function ActiveDebtFilterChips({
   onDirectionFilterClear,
   grouping,
 }: {
-  value: DebtFilterValues;
-  onChange: (value: DebtFilterValues) => void;
-  debts: Debt[];
-  cards: { id: string; name: string }[];
-  monthLabel: string;
-  defaults: DebtFilterValues;
-  directionFilterEnabled?: boolean;
-  onDirectionFilterClear?: () => void;
+  value: DebtFilterValues
+  onChange: (value: DebtFilterValues) => void
+  debts: Debt[]
+  cards: { id: string; name: string }[]
+  monthLabel: string
+  defaults: DebtFilterValues
+  directionFilterEnabled?: boolean
+  onDirectionFilterClear?: () => void
   grouping?: {
-    byPerson: boolean;
-    byCard: boolean;
-    onToggle: (key: "person" | "card") => void;
+    byPerson: boolean
+    byCard: boolean
+    onToggle: (key: 'person' | 'card') => void
     movement?: {
-      showCollections: boolean;
-      showDebts: boolean;
-      onReset: () => void;
-    };
-  };
+      showCollections: boolean
+      showDebts: boolean
+      onReset: () => void
+    }
+  }
 }) {
-  const chips = getActiveDebtFilterChips(value, defaults, debts, cards, monthLabel, directionFilterEnabled);
+  const chips = getActiveDebtFilterChips(value, defaults, debts, cards, monthLabel, directionFilterEnabled)
   const groupingChips = [
-    ...(grouping?.byPerson ? [{ key: "person" as const, label: "Agrupar: Persona" }] : []),
-    ...(grouping?.byCard ? [{ key: "card" as const, label: "Agrupar: Tarjeta" }] : []),
-  ];
+    ...(grouping?.byPerson ? [{ key: 'person' as const, label: 'Agrupar: Persona' }] : []),
+    ...(grouping?.byCard ? [{ key: 'card' as const, label: 'Agrupar: Tarjeta' }] : []),
+  ]
   const movementChip =
     grouping?.movement && !(grouping.movement.showCollections && grouping.movement.showDebts)
       ? [
           {
-            label: grouping.movement.showCollections ? "Tipo: Cobros (+)" : grouping.movement.showDebts ? "Tipo: Deudas (−)" : "Tipo: ninguno",
+            label: grouping.movement.showCollections ? 'Tipo: Cobros (+)' : grouping.movement.showDebts ? 'Tipo: Deudas (−)' : 'Tipo: ninguno',
           },
         ]
-      : [];
+      : []
   const items: AppliedFilterChip[] = [
     ...chips.map(({ key, label }) => ({
       key,
       label,
-      kind: "filter" as const,
+      kind: 'filter' as const,
       onRemove: () => {
         onChange({
           ...value,
-          [key]: key === "month" || key === "year" ? undefined : defaults[key],
-        });
-        if (key === "direction") onDirectionFilterClear?.();
+          [key]: key === 'month' || key === 'year' ? undefined : defaults[key],
+        })
+        if (key === 'direction') onDirectionFilterClear?.()
       },
     })),
     ...groupingChips.map(({ key, label }) => ({
       key: `group-${key}`,
       label,
-      kind: "group" as const,
+      kind: 'group' as const,
       onRemove: () => grouping?.onToggle(key),
     })),
     ...movementChip.map(({ label }, index) => ({
       key: `movement-${index}`,
       label,
-      kind: "group" as const,
+      kind: 'group' as const,
       onRemove: () => grouping?.movement?.onReset(),
     })),
-  ];
-  return <AppliedFilterChips items={items} ariaLabel="Filtros y agrupación activos" />;
+  ]
+  return <AppliedFilterChips items={items} ariaLabel="Filtros y agrupación activos" />
 }
 
 export function DebtReportLinks({ personId, filter = {} }: { personId?: string; filter?: DebtReportFilter }) {
@@ -355,18 +355,18 @@ export function DebtReportLinks({ personId, filter = {} }: { personId?: string; 
     <ExportMenu
       items={[
         {
-          label: "Exportar a Excel",
+          label: 'Exportar a Excel',
           icon: <FileSpreadsheet />,
-          href: debtReportUrl("xlsx", personId, filter),
+          href: debtReportUrl('xlsx', personId, filter),
           download: true,
         },
         {
-          label: "Exportar a PDF",
+          label: 'Exportar a PDF',
           icon: <FileText />,
-          href: debtReportUrl("pdf", personId, filter),
+          href: debtReportUrl('pdf', personId, filter),
           download: true,
         },
       ]}
     />
-  );
+  )
 }

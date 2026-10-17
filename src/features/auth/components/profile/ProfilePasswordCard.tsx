@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { KeyRound } from "lucide-react";
-import { useChangePassword, type useMe } from "@/features/auth/hooks/auth";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+import { useState } from 'react'
+import { KeyRound } from 'lucide-react'
+import { useChangePassword, type useMe } from '@/features/auth/hooks/auth'
+import { PasswordInput } from '@/shared/components/forms/PasswordInput'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card'
 
-export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typeof useMe>["data"]> }) {
-  const changePassword = useChangePassword();
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const valid = next.length >= 10 && (!user.hasPassword || !!current);
+export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typeof useMe>['data']> }) {
+  const changePassword = useChangePassword()
+  const [current, setCurrent] = useState('')
+  const [next, setNext] = useState('')
+  const valid = next.length >= 10 && (!user.hasPassword || !!current)
 
   return (
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="text-base">Contraseña</CardTitle>
         <CardDescription>
-          {user.hasPassword ? "Cámbiala cuando quieras." : "Define una para entrar sin Google."} Mínimo 10 caracteres.
+          {user.hasPassword ? 'Cámbiala cuando quieras.' : 'Define una para entrar sin Google.'} Mínimo 10 caracteres.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -42,10 +42,10 @@ export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typ
           variant="outline"
           className="w-full"
           disabled={!valid || changePassword.isPending}
-          onClick={() => changePassword.mutate({ current: current || undefined, next }, { onSuccess: () => (setCurrent(""), setNext("")) })}
+          onClick={() => changePassword.mutate({ current: current || undefined, next }, { onSuccess: () => (setCurrent(''), setNext('')) })}
         >
           <KeyRound aria-hidden="true" className="size-4" />
-          {changePassword.isPending ? "Guardando…" : "Guardar contraseña"}
+          {changePassword.isPending ? 'Guardando…' : 'Guardar contraseña'}
         </Button>
         {user.hasPassword && (
           <details className="rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
@@ -58,5 +58,5 @@ export function ProfilePasswordCard({ user }: { user: NonNullable<ReturnType<typ
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -1,15 +1,15 @@
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
 
 type DebtSummaryMonthRow = {
-  name: string;
-  month: number;
-  year: number;
-  owed: number;
-  owe: number;
-  concept: string;
-};
+  name: string
+  month: number
+  year: number
+  owed: number
+  owe: number
+  concept: string
+}
 
 export function DebtSummaryMonthlyTable({
   rows,
@@ -18,11 +18,11 @@ export function DebtSummaryMonthlyTable({
   totalToPay,
   netTotal,
 }: {
-  rows: DebtSummaryMonthRow[];
-  recordCount: number;
-  totalToCollect: number;
-  totalToPay: number;
-  netTotal: number;
+  rows: DebtSummaryMonthRow[]
+  recordCount: number
+  totalToCollect: number
+  totalToPay: number
+  netTotal: number
 }) {
   return (
     <div className="rounded-md border">
@@ -56,5 +56,5 @@ export function DebtSummaryMonthlyTable({
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

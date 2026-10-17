@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Download, LoaderCircle, Trash2 } from "lucide-react";
-import type { Attachment as AttachmentRecord } from "@/shared/api/types";
-import { getFileIcon } from "@/shared/lib/file-icons";
+import { useState } from 'react'
+import { Download, LoaderCircle, Trash2 } from 'lucide-react'
+import type { Attachment as AttachmentRecord } from '@/shared/api/types'
+import { getFileIcon } from '@/shared/lib/file-icons'
 import {
   Attachment,
   AttachmentAction,
@@ -11,32 +11,32 @@ import {
   AttachmentMedia,
   AttachmentTitle,
   AttachmentTrigger,
-} from "@/ui/attachment";
-import { ATTACHMENT_KIND_LABELS } from "../constants/attachments";
-import { formatAttachmentSize } from "../lib/attachment-size";
-import { uploadedLabel } from "../lib/attachment-view";
+} from '@/ui/attachment'
+import { ATTACHMENT_KIND_LABELS } from '../constants/attachments'
+import { formatAttachmentSize } from '../lib/attachment-size'
+import { uploadedLabel } from '../lib/attachment-view'
 
 export interface AttachmentFileCardProps {
-  file: Pick<AttachmentRecord, "name" | "contentType" | "kind" | "sizeBytes" | "url"> & Partial<Pick<AttachmentRecord, "createdAt">>;
-  uploading?: boolean;
-  onRemove?: () => void;
-  onPreview?: () => void;
-  removeDisabled?: boolean;
+  file: Pick<AttachmentRecord, 'name' | 'contentType' | 'kind' | 'sizeBytes' | 'url'> & Partial<Pick<AttachmentRecord, 'createdAt'>>
+  uploading?: boolean
+  onRemove?: () => void
+  onPreview?: () => void
+  removeDisabled?: boolean
 }
 
 export function AttachmentFileCard({ file, uploading, onRemove, onPreview, removeDisabled }: AttachmentFileCardProps) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const isImage = !!file.url && file.contentType.toLowerCase().startsWith("image/") && !imageFailed;
-  const Icon = getFileIcon(file.contentType, file.name);
+  const [imageFailed, setImageFailed] = useState(false)
+  const isImage = !!file.url && file.contentType.toLowerCase().startsWith('image/') && !imageFailed
+  const Icon = getFileIcon(file.contentType, file.name)
 
   return (
     <>
-      <Attachment state={uploading ? "uploading" : "done"} className="w-full flex-nowrap rounded-lg">
-        <AttachmentMedia variant={isImage ? "image" : "icon"}>
+      <Attachment state={uploading ? 'uploading' : 'done'} className="w-full flex-nowrap rounded-lg">
+        <AttachmentMedia variant={isImage ? 'image' : 'icon'}>
           {uploading ? (
             <LoaderCircle aria-hidden="true" className="animate-spin" />
           ) : isImage ? (
-            <img src={file.url ?? ""} alt="" loading="lazy" onError={() => setImageFailed(true)} />
+            <img src={file.url ?? ''} alt="" loading="lazy" onError={() => setImageFailed(true)} />
           ) : (
             <Icon aria-hidden="true" />
           )}
@@ -52,8 +52,8 @@ export function AttachmentFileCard({ file, uploading, onRemove, onPreview, remov
         <AttachmentContent>
           <AttachmentTitle title={file.name}>{file.name}</AttachmentTitle>
           <AttachmentDescription>
-            {uploading ? "Subiendo…" : (ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind)} · {formatAttachmentSize(file.sizeBytes)}
-            {!uploading && file.createdAt ? ` · ${uploadedLabel(file.createdAt)}` : ""}
+            {uploading ? 'Subiendo…' : (ATTACHMENT_KIND_LABELS[file.kind] ?? file.kind)} · {formatAttachmentSize(file.sizeBytes)}
+            {!uploading && file.createdAt ? ` · ${uploadedLabel(file.createdAt)}` : ''}
           </AttachmentDescription>
           {uploading && (
             <div
@@ -94,5 +94,5 @@ export function AttachmentFileCard({ file, uploading, onRemove, onPreview, remov
         )}
       </Attachment>
     </>
-  );
+  )
 }

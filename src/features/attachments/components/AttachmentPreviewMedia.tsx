@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { AlertCircle, FileDown, LoaderCircle, RotateCcw, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
-import { getFileIcon } from "@/shared/lib/file-icons";
-import { Button } from "@/ui/button";
-import type { AttachmentPreview } from "../types/attachment-preview";
+import { useState } from 'react'
+import { AlertCircle, FileDown, LoaderCircle, RotateCcw, RotateCw, ZoomIn, ZoomOut } from 'lucide-react'
+import { getFileIcon } from '@/shared/lib/file-icons'
+import { Button } from '@/ui/button'
+import type { AttachmentPreview } from '../types/attachment-preview'
 
 export function AttachmentPreviewMedia({ file, active = true }: { file: AttachmentPreview; active?: boolean }) {
-  const [failed, setFailed] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [attempt, setAttempt] = useState(0);
-  const [scale, setScale] = useState(1);
-  const [rotation, setRotation] = useState(0);
-  const isImage = file.contentType.toLowerCase().startsWith("image/");
-  const isPdf = file.contentType.toLowerCase().startsWith("application/pdf");
-  const Icon = getFileIcon(file.contentType, file.name);
+  const [failed, setFailed] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [attempt, setAttempt] = useState(0)
+  const [scale, setScale] = useState(1)
+  const [rotation, setRotation] = useState(0)
+  const isImage = file.contentType.toLowerCase().startsWith('image/')
+  const isPdf = file.contentType.toLowerCase().startsWith('application/pdf')
+  const Icon = getFileIcon(file.contentType, file.name)
 
   const retry = () => {
-    setFailed(false);
-    setLoading(true);
-    setAttempt((value) => value + 1);
-  };
+    setFailed(false)
+    setLoading(true)
+    setAttempt((value) => value + 1)
+  }
 
   if (!file.url || (!isImage && !isPdf)) {
     return (
@@ -29,7 +29,7 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
         <div className="space-y-1.5">
           <h3 className="font-semibold">No hay vista previa para este tipo de archivo</h3>
           <p className="max-w-md text-sm text-muted-foreground">
-            Los archivos {file.name.split(".").pop()?.toLowerCase()} no se pueden mostrar aquí. Descárgalo para abrirlo en tu equipo.
+            Los archivos {file.name.split('.').pop()?.toLowerCase()} no se pueden mostrar aquí. Descárgalo para abrirlo en tu equipo.
           </p>
         </div>
         {file.url && (
@@ -41,7 +41,7 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
           </Button>
         )}
       </div>
-    );
+    )
   }
 
   if (failed) {
@@ -69,7 +69,7 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -89,8 +89,8 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
           style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
           onLoad={() => setLoading(false)}
           onError={() => {
-            setLoading(false);
-            setFailed(true);
+            setLoading(false)
+            setFailed(true)
           }}
         />
       ) : active ? (
@@ -101,8 +101,8 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
           className="h-full w-full bg-white"
           onLoad={() => setLoading(false)}
           onError={() => {
-            setLoading(false);
-            setFailed(true);
+            setLoading(false)
+            setFailed(true)
           }}
         />
       ) : null}
@@ -148,8 +148,8 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
             aria-label="Ajustar imagen"
             title="Ajustar"
             onClick={() => {
-              setScale(1);
-              setRotation(0);
+              setScale(1)
+              setRotation(0)
             }}
           >
             <RotateCcw aria-hidden="true" />
@@ -157,11 +157,11 @@ export function AttachmentPreviewMedia({ file, active = true }: { file: Attachme
         </div>
       )}
     </div>
-  );
+  )
 }
 
 function formatBytes(size: number | null) {
-  if (size == null || size <= 0) return "tamaño desconocido";
-  if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`;
-  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  if (size == null || size <= 0) return 'tamaño desconocido'
+  if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`
 }

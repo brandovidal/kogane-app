@@ -1,8 +1,8 @@
-import type { ReactElement } from "react";
-import { ArrowDownUp, Eye, Filter, Layers, LayoutGrid, Link2, RotateCcw, Table2 } from "lucide-react";
-import { toast } from "sonner";
-import { ColumnVisibilityOptions, ViewSettingsMenu, type ColumnVisibilityOption } from "@/shared/components/toolbar";
-import type { ViewMode } from "@/shared/types/data-view";
+import type { ReactElement } from 'react'
+import { ArrowDownUp, Eye, Filter, Layers, LayoutGrid, Link2, RotateCcw, Table2 } from 'lucide-react'
+import { toast } from 'sonner'
+import { ColumnVisibilityOptions, ViewSettingsMenu, type ColumnVisibilityOption } from '@/shared/components/toolbar'
+import type { ViewMode } from '@/shared/types/data-view'
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuItem,
@@ -13,8 +13,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/ui/dropdown-menu";
-import { DAILY_SORT_OPTIONS, type DailySort } from "../../constants/daily";
+} from '@/ui/dropdown-menu'
+import { DAILY_SORT_OPTIONS, type DailySort } from '../../constants/daily'
 
 export function DailyViewSettings({
   trigger,
@@ -34,22 +34,22 @@ export function DailyViewSettings({
   onReset,
   hasCustomSettings,
 }: {
-  trigger: ReactElement;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  view: ViewMode;
-  onViewChange: (view: ViewMode) => void;
-  columns: ColumnVisibilityOption[];
-  visibleColumnCount: number;
-  filterCount: number;
-  groupBy: string;
-  groupOptions?: { value: string; label: string }[];
-  onGroupByChange: (groupBy: string) => void;
-  sort: DailySort;
-  onSortChange: (sort: DailySort) => void;
-  onOpenFilters: () => void;
-  onReset: () => void;
-  hasCustomSettings: boolean;
+  trigger: ReactElement
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  view: ViewMode
+  onViewChange: (view: ViewMode) => void
+  columns: ColumnVisibilityOption[]
+  visibleColumnCount: number
+  filterCount: number
+  groupBy: string
+  groupOptions?: { value: string; label: string }[]
+  onGroupByChange: (groupBy: string) => void
+  sort: DailySort
+  onSortChange: (sort: DailySort) => void
+  onOpenFilters: () => void
+  onReset: () => void
+  hasCustomSettings: boolean
 }) {
   return (
     <ViewSettingsMenu
@@ -107,15 +107,15 @@ export function DailyViewSettings({
           <DropdownMenuSubTrigger className="rounded-md py-2">
             <Layers className="size-4" /> Agrupar
             <span className="ml-auto max-w-32 truncate text-xs text-muted-foreground">
-              {groupOptions.find((option) => option.value === groupBy)?.label ?? "Sin agrupar"}
+              {groupOptions.find((option) => option.value === groupBy)?.label ?? 'Sin agrupar'}
             </span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="w-60 rounded-xl border-border/80 bg-popover p-1.5 shadow-xl">
             <DropdownMenuLabel className="px-2.5 text-[10px] uppercase tracking-wider text-muted-foreground">Agrupar por</DropdownMenuLabel>
             <DropdownMenuCheckboxItem
-              checked={groupBy === "none"}
+              checked={groupBy === 'none'}
               onSelect={(event) => event.preventDefault()}
-              onCheckedChange={() => onGroupByChange("none")}
+              onCheckedChange={() => onGroupByChange('none')}
               className="rounded-md py-2"
             >
               Sin agrupar
@@ -125,7 +125,7 @@ export function DailyViewSettings({
                 key={option.value}
                 checked={groupBy === option.value}
                 onSelect={(event) => event.preventDefault()}
-                onCheckedChange={(checked) => onGroupByChange(checked ? option.value : "none")}
+                onCheckedChange={(checked) => onGroupByChange(checked ? option.value : 'none')}
                 className="rounded-md py-2"
               >
                 {option.label}
@@ -139,14 +139,14 @@ export function DailyViewSettings({
         onSelect={() =>
           void navigator.clipboard
             .writeText(window.location.href)
-            .then(() => toast.success("Enlace copiado"))
-            .catch(() => toast.error("No se pudo copiar el enlace"))
+            .then(() => toast.success('Enlace copiado'))
+            .catch(() => toast.error('No se pudo copiar el enlace'))
         }
         className="rounded-md py-2"
       >
         <Link2 className="size-4" /> Copiar enlace a la vista
       </DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => toast.info("Guardar vistas personalizadas estará disponible próximamente.")} className="rounded-md py-2">
+      <DropdownMenuItem onSelect={() => toast.info('Guardar vistas personalizadas estará disponible próximamente.')} className="rounded-md py-2">
         <Layers className="size-4" /> Guardar como nueva vista
       </DropdownMenuItem>
       <DropdownMenuSeparator className="my-1.5" />
@@ -154,5 +154,5 @@ export function DailyViewSettings({
         <RotateCcw className="size-4" /> Restablecer vista
       </DropdownMenuItem>
     </ViewSettingsMenu>
-  );
+  )
 }

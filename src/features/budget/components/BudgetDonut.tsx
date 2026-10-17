@@ -1,32 +1,32 @@
-import { useState } from "react";
-import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { useState } from 'react'
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
-import type { Summary } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { BudgetCategoryDetail } from "./BudgetCategoryDetail";
+import type { Summary } from '@/shared/api/types'
+import { formatCurrency } from '@/shared/lib/currency'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { BudgetCategoryDetail } from './BudgetCategoryDetail'
 
-import { donutSlices, type DonutMode, type DonutSlice } from "@/features/budget/lib/budget-view";
+import { donutSlices, type DonutMode, type DonutSlice } from '@/features/budget/lib/budget-view'
 
 export function BudgetDonut({ summary, month, year }: { summary: Summary | undefined; month: number; year: number }) {
-  const [mode, setMode] = useState<DonutMode>("categories");
-  const [selected, setSelected] = useState<DonutSlice | null>(null);
-  const slices = donutSlices(summary, mode);
-  const surplus = summary?.surplus;
+  const [mode, setMode] = useState<DonutMode>('categories')
+  const [selected, setSelected] = useState<DonutSlice | null>(null)
+  const slices = donutSlices(summary, mode)
+  const surplus = summary?.surplus
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-base">¿En qué se fue?</CardTitle>
         <div className="flex rounded-md border p-0.5 text-xs">
-          {(["categories", "groups"] as const).map((option) => (
+          {(['categories', 'groups'] as const).map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setMode(option)}
-              className={`rounded px-2 py-1 ${mode === option ? "bg-muted font-medium" : "text-muted-foreground"}`}
+              className={`rounded px-2 py-1 ${mode === option ? 'bg-muted font-medium' : 'text-muted-foreground'}`}
             >
-              {option === "categories" ? "Categorías" : "Grupos"}
+              {option === 'categories' ? 'Categorías' : 'Grupos'}
             </button>
           ))}
         </div>
@@ -48,19 +48,19 @@ export function BudgetDonut({ summary, month, year }: { summary: Summary | undef
                     paddingAngle={1}
                     stroke="var(--card)"
                     strokeWidth={2}
-                    onClick={(_, index) => mode === "categories" && setSelected(slices[index])}
-                    className={mode === "categories" ? "cursor-pointer" : undefined}
+                    onClick={(_, index) => mode === 'categories' && setSelected(slices[index])}
+                    className={mode === 'categories' ? 'cursor-pointer' : undefined}
                   />
                   <Tooltip
                     content={({ active, payload }) => {
-                      const slice = active ? (payload?.[0]?.payload as DonutSlice | undefined) : undefined;
-                      if (!slice) return null;
+                      const slice = active ? (payload?.[0]?.payload as DonutSlice | undefined) : undefined
+                      if (!slice) return null
                       return (
                         <div className="rounded-lg border bg-card px-3 py-2 text-xs shadow-sm">
                           <p className="font-medium text-foreground">{slice.name}</p>
                           <p className="tabular-nums text-muted-foreground">{formatCurrency(slice.value)}</p>
                         </div>
-                      );
+                      )
                     }}
                   />
                 </PieChart>
@@ -69,7 +69,7 @@ export function BudgetDonut({ summary, month, year }: { summary: Summary | undef
                 <span className="text-xs text-muted-foreground">Total gastado</span>
                 <span className="text-lg font-bold tabular-nums">{formatCurrency(summary?.spentPen ?? 0)}</span>
                 {surplus != null && (
-                  <span className={`text-xs tabular-nums ${surplus < 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                  <span className={`text-xs tabular-nums ${surplus < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
                     Excedente {formatCurrency(surplus)}
                   </span>
                 )}
@@ -80,7 +80,7 @@ export function BudgetDonut({ summary, month, year }: { summary: Summary | undef
                 <li key={slice.key}>
                   <button
                     type="button"
-                    disabled={mode !== "categories"}
+                    disabled={mode !== 'categories'}
                     onClick={() => setSelected(slice)}
                     className="flex w-full items-center justify-between gap-1.5 rounded px-1 py-1 text-left hover:bg-muted/50 disabled:hover:bg-transparent"
                   >
@@ -100,5 +100,5 @@ export function BudgetDonut({ summary, month, year }: { summary: Summary | undef
       </CardContent>
       <BudgetCategoryDetail slice={selected} month={month} year={year} onClose={() => setSelected(null)} />
     </Card>
-  );
+  )
 }

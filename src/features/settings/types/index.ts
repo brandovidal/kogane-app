@@ -1,2 +1,2 @@
-export type { SettingsSection, CardsAccountsTab } from "./navigation";
-export type { SettingsCurrency, SettingsTimeZone, SettingsPreferences } from "./preferences";
+export type { SettingsSection, CardsAccountsTab } from './navigation'
+export type { SettingsCurrency, SettingsTimeZone, SettingsPreferences } from './preferences'

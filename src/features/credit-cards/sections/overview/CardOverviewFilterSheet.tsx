@@ -1,9 +1,9 @@
-import { Button } from "@/ui/button";
-import { FilterSheetShell } from "@/shared/components/filters/FilterSheetShell";
-import { SheetTitle } from "@/ui/sheet";
-import { ExpenseFilterFields } from "@/features/expenses/components/filters/ExpenseFilterFields";
-import type { ExpenseFilterValues, ExpenseFilterKey } from "@/features/expenses/types/expense-filters";
-import { CREDIT_CARD_STATUSES } from "../../constants/statuses";
+import { Button } from '@/ui/button'
+import { FilterSheetShell } from '@/shared/components/filters/FilterSheetShell'
+import { SheetTitle } from '@/ui/sheet'
+import { ExpenseFilterFields } from '@/features/expenses/components/filters/ExpenseFilterFields'
+import type { ExpenseFilterValues, ExpenseFilterKey } from '@/features/expenses/types/expense-filters'
+import { CREDIT_CARD_STATUSES } from '../../constants/statuses'
 
 export function CardOverviewFilterSheet({
   open,
@@ -13,12 +13,12 @@ export function CardOverviewFilterSheet({
   fields,
   paymentMethodCounts,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  filters: ExpenseFilterValues;
-  onFiltersChange: (filters: ExpenseFilterValues) => void;
-  fields: ExpenseFilterKey[];
-  paymentMethodCounts: Record<string, number>;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  filters: ExpenseFilterValues
+  onFiltersChange: (filters: ExpenseFilterValues) => void
+  fields: ExpenseFilterKey[]
+  paymentMethodCounts: Record<string, number>
 }) {
   return (
     <FilterSheetShell
@@ -50,5 +50,5 @@ export function CardOverviewFilterSheet({
         personInPanel
       />
     </FilterSheetShell>
-  );
+  )
 }

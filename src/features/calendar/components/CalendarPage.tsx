@@ -1,45 +1,45 @@
-import { useState } from "react";
-import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Check } from 'lucide-react'
 
-import { useCalendar, useCommittedInstallments, usePayCalendarEvent, useReminders } from "@/features/calendar/hooks/calendar";
-import type { Schemas } from "@/shared/api/client";
-import { withQuery } from "@/shared/api/query";
-import type { CalendarEvent } from "@/shared/api/types";
-import { EmptyState } from "@/shared/components/data-display/EmptyState";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { usePeriod } from "@/shared/stores/period.store";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import { useCalendar, useCommittedInstallments, usePayCalendarEvent, useReminders } from '@/features/calendar/hooks/calendar'
+import type { Schemas } from '@/shared/api/client'
+import { withQuery } from '@/shared/api/query'
+import type { CalendarEvent } from '@/shared/api/types'
+import { EmptyState } from '@/shared/components/data-display/EmptyState'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { usePeriod } from '@/shared/stores/period.store'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
 
-import { EVENT_KIND_DOTS, EVENT_KIND_LABELS, eventLabel, eventsByDay, gridRange, isPayable, monthGrid } from "@/features/calendar/lib/calendar-view";
+import { EVENT_KIND_DOTS, EVENT_KIND_LABELS, eventLabel, eventsByDay, gridRange, isPayable, monthGrid } from '@/features/calendar/lib/calendar-view'
 
-const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-const UPCOMING_DAYS = 14;
-const INSTALLMENT_MONTHS = 3;
+const WEEKDAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+const UPCOMING_DAYS = 14
+const INSTALLMENT_MONTHS = 3
 
 const shortDay = (isoDay: string) =>
-  new Date(`${isoDay}T00:00:00Z`).toLocaleDateString("es-PE", {
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-    timeZone: "UTC",
-  });
+  new Date(`${isoDay}T00:00:00Z`).toLocaleDateString('es-PE', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'UTC',
+  })
 
 function EventRow({ event }: { event: CalendarEvent }) {
-  const pay = usePayCalendarEvent();
+  const pay = usePayCalendarEvent()
   return (
     <div className="flex items-center gap-2 py-1.5 text-sm">
       <span className={`h-2 w-2 shrink-0 rounded-full ${EVENT_KIND_DOTS[event.kind]}`} aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className={`truncate ${event.status === "paid" ? "text-muted-foreground line-through" : ""}`}>{eventLabel(event)}</p>
+        <p className={`truncate ${event.status === 'paid' ? 'text-muted-foreground line-through' : ''}`}>{eventLabel(event)}</p>
         <p className="text-xs text-muted-foreground">
           {EVENT_KIND_LABELS[event.kind]}
-          {event.status === "late" && <span className="text-destructive"> · atrasado</span>}
+          {event.status === 'late' && <span className="text-destructive"> · atrasado</span>}
         </p>
       </div>
       {event.amount != null && <span className="shrink-0 tabular-nums">{formatCurrency(event.amount, event.currency)}</span>}
@@ -52,7 +52,7 @@ function EventRow({ event }: { event: CalendarEvent }) {
           onClick={() =>
             pay.mutate(
               {
-                refType: event.refType as Schemas["PayEventDto"]["refType"],
+                refType: event.refType as Schemas['PayEventDto']['refType'],
                 refId: event.refId!,
               },
               { onSuccess: (text) => toast.success(text) },
@@ -63,20 +63,20 @@ function EventRow({ event }: { event: CalendarEvent }) {
         </Button>
       )}
     </div>
-  );
+  )
 }
 
 function MonthCalendar() {
-  const month = usePeriod((s) => s.month);
-  const year = usePeriod((s) => s.year);
-  const { from, to } = gridRange(month, year);
-  const events = useCalendar(from, to).data ?? [];
-  const byDay = eventsByDay(events);
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Lima",
-  });
-  const [selected, setSelected] = useState<string | null>(null);
-  const shown = selected ? (byDay.get(selected) ?? []) : [];
+  const month = usePeriod((s) => s.month)
+  const year = usePeriod((s) => s.year)
+  const { from, to } = gridRange(month, year)
+  const events = useCalendar(from, to).data ?? []
+  const byDay = eventsByDay(events)
+  const today = new Date().toLocaleDateString('en-CA', {
+    timeZone: 'America/Lima',
+  })
+  const [selected, setSelected] = useState<string | null>(null)
+  const shown = selected ? (byDay.get(selected) ?? []) : []
 
   return (
     <Card>
@@ -94,15 +94,15 @@ function MonthCalendar() {
         {monthGrid(month, year).map((week) => (
           <div key={week[0].date} className="grid grid-cols-7 gap-1">
             {week.map((day) => {
-              const dayEvents = byDay.get(day.date) ?? [];
+              const dayEvents = byDay.get(day.date) ?? []
               return (
                 <button
                   key={day.date}
                   type="button"
                   onClick={() => setSelected(day.date === selected ? null : day.date)}
                   className={`flex min-h-14 flex-col items-center gap-1 rounded-md border p-1 text-xs transition-colors hover:bg-muted ${
-                    day.inMonth ? "" : "opacity-40"
-                  } ${day.date === selected ? "border-primary" : ""} ${day.date === today ? "bg-muted font-semibold" : ""}`}
+                    day.inMonth ? '' : 'opacity-40'
+                  } ${day.date === selected ? 'border-primary' : ''} ${day.date === today ? 'bg-muted font-semibold' : ''}`}
                   aria-label={`${day.day}: ${dayEvents.length} pagos`}
                 >
                   <span>{day.day}</span>
@@ -112,14 +112,14 @@ function MonthCalendar() {
                     ))}
                   </span>
                 </button>
-              );
+              )
             })}
           </div>
         ))}
         <div className="flex flex-wrap gap-3 pt-1 text-xs text-muted-foreground">
           {Object.entries(EVENT_KIND_LABELS).map(([kind, label]) => (
             <span key={kind} className="flex items-center gap-1">
-              <span className={`h-2 w-2 rounded-full ${EVENT_KIND_DOTS[kind as CalendarEvent["kind"]]}`} /> {label}
+              <span className={`h-2 w-2 rounded-full ${EVENT_KIND_DOTS[kind as CalendarEvent['kind']]}`} /> {label}
             </span>
           ))}
         </div>
@@ -135,12 +135,12 @@ function MonthCalendar() {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 function UpcomingList() {
-  const events = (useReminders(UPCOMING_DAYS).data ?? []).filter((event) => event.status !== "paid");
-  const byDay = [...eventsByDay(events)];
+  const events = (useReminders(UPCOMING_DAYS).data ?? []).filter((event) => event.status !== 'paid')
+  const byDay = [...eventsByDay(events)]
 
   return (
     <Card>
@@ -159,14 +159,14 @@ function UpcomingList() {
         ))}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 function CommittedInstallments() {
-  const { data, isLoading } = useCommittedInstallments(INSTALLMENT_MONTHS);
-  if (isLoading) return null;
-  if (!data?.cards.length) return <EmptyState title="Sin cuotas" description="No hay cuotas de tarjeta en los próximos meses." />;
-  const label = (month: number, year: number) => `${getMonthName(month).slice(0, 3)} ${year}`;
+  const { data, isLoading } = useCommittedInstallments(INSTALLMENT_MONTHS)
+  if (isLoading) return null
+  if (!data?.cards.length) return <EmptyState title="Sin cuotas" description="No hay cuotas de tarjeta en los próximos meses." />
+  const label = (month: number, year: number) => `${getMonthName(month).slice(0, 3)} ${year}`
 
   return (
     <div className="space-y-4">
@@ -191,14 +191,14 @@ function CommittedInstallments() {
                     <span
                       className="mr-2 inline-block h-2 w-2 rounded-full"
                       style={{
-                        backgroundColor: card.color ?? "var(--muted-foreground)",
+                        backgroundColor: card.color ?? 'var(--muted-foreground)',
                       }}
                     />
                     {card.name}
                   </TableCell>
                   {card.months.map((item) => (
                     <TableCell key={`${item.year}-${item.month}`} className="text-right tabular-nums">
-                      {item.count ? formatCurrency(item.amount) : "—"}
+                      {item.count ? formatCurrency(item.amount) : '—'}
                       {item.estimated > 0 && (
                         <Badge variant="outline" className="ml-1 text-[10px]" title="Cuotas por generar, con el monto de la última">
                           {item.estimated} por generar
@@ -246,7 +246,7 @@ function CommittedInstallments() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Calendario (P20, D89): the month on screen, what is due in the next 14 days and the committed card installments
@@ -267,7 +267,7 @@ function CalendarPageView() {
         <CommittedInstallments />
       </TabsContent>
     </Tabs>
-  );
+  )
 }
 
-export const CalendarPage = withQuery(CalendarPageView);
+export const CalendarPage = withQuery(CalendarPageView)

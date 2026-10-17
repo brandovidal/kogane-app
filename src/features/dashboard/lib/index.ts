@@ -1,1 +1,1 @@
-export { nextMonthForecast } from "./next-month-forecast";
+export { nextMonthForecast } from './next-month-forecast'

@@ -1,7 +1,7 @@
-import { AppearanceSection } from "../sections/general/AppearanceSection";
-import { BudgetSection } from "../sections/general/BudgetSection";
-import { RegionSection } from "../sections/general/RegionSection";
-import "../styles/settings.css";
+import { AppearanceSection } from '../sections/general/AppearanceSection'
+import { BudgetSection } from '../sections/general/BudgetSection'
+import { RegionSection } from '../sections/general/RegionSection'
+import '../styles/settings.css'
 
 export function GeneralSettingsView() {
   return (
@@ -16,5 +16,5 @@ export function GeneralSettingsView() {
       <RegionSection />
       <BudgetSection />
     </div>
-  );
+  )
 }

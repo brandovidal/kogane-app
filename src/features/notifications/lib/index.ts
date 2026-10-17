@@ -9,4 +9,4 @@ export {
   notificationLink,
   noticeTime,
   timeAgo,
-} from "./notification-view";
+} from './notification-view'

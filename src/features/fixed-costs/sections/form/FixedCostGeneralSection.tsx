@@ -1,16 +1,16 @@
-import { useFormContext } from "react-hook-form";
-import { ArrowLeftRight, Banknote, ChevronDown, CircleCheck, FileText, ListFilter, Tags, UserRound, WalletCards } from "lucide-react";
-import { CategoryFilterFields } from "@/shared/components/filters/CategoryFilterFields";
-import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
-import { StatusFilterFields } from "@/shared/components/filters/StatusFilterFields";
-import { FormField } from "@/shared/components/forms/FormField";
-import { FIXED_COST_STATUSES } from "@/features/fixed-costs/constants/statuses";
-import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from "@/shared/constants/finance";
-import { Input } from "@/ui/input";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@/ui/input-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
-import type { FixedCostForm, FixedCostValues } from "@/features/fixed-costs/lib/fixed-cost-form";
+import { useFormContext } from 'react-hook-form'
+import { ArrowLeftRight, Banknote, ChevronDown, CircleCheck, FileText, ListFilter, Tags, UserRound, WalletCards } from 'lucide-react'
+import { CategoryFilterFields } from '@/shared/components/filters/CategoryFilterFields'
+import { PaymentMethodFilterFields } from '@/shared/components/filters/PaymentMethodFilterFields'
+import { PersonPicker } from '@/features/settings/components/people/PersonPicker'
+import { StatusFilterFields } from '@/shared/components/filters/StatusFilterFields'
+import { FormField } from '@/shared/components/forms/FormField'
+import { FIXED_COST_STATUSES } from '@/features/fixed-costs/constants/statuses'
+import { CURRENCIES, EXPENSE_TYPE_LABELS, EXPENSE_TYPES } from '@/shared/constants/finance'
+import { Input } from '@/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from '@/ui/input-group'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
+import type { FixedCostForm, FixedCostValues } from '@/features/fixed-costs/lib/fixed-cost-form'
 
 export function FixedCostGeneralSection() {
   const {
@@ -18,14 +18,14 @@ export function FixedCostGeneralSection() {
     watch,
     setValue,
     formState: { errors },
-  } = useFormContext<FixedCostForm, unknown, FixedCostValues>();
-  const currency = watch("currency");
+  } = useFormContext<FixedCostForm, unknown, FixedCostValues>()
+  const currency = watch('currency')
 
   return (
     <div className="space-y-3">
       <section className="space-y-4 rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5">
         <FormField label="Descripción *" icon={FileText} htmlFor="fixed-cost-description" error={errors.description?.message}>
-          <Input id="fixed-cost-description" {...register("description")} placeholder="Ej: Luz, Agua, Gas..." />
+          <Input id="fixed-cost-description" {...register('description')} placeholder="Ej: Luz, Agua, Gas..." />
         </FormField>
         <div>
           <FormField label="Monto *" icon={Banknote} htmlFor="fixed-cost-amount" error={errors.amount?.message}>
@@ -35,13 +35,13 @@ export function FixedCostGeneralSection() {
                 type="number"
                 step="0.01"
                 aria-invalid={!!errors.amount}
-                {...register("amount", { valueAsNumber: true })}
+                {...register('amount', { valueAsNumber: true })}
               />
               <InputGroupAddon>
-                <InputGroupText>{currency === "USD" ? "$" : "S/"}</InputGroupText>
+                <InputGroupText>{currency === 'USD' ? '$' : 'S/'}</InputGroupText>
               </InputGroupAddon>
               <InputGroupAddon align="inline-end" className="h-full border-l px-1.5">
-                <Select value={currency} onValueChange={(value) => setValue("currency", value as FixedCostForm["currency"])}>
+                <Select value={currency} onValueChange={(value) => setValue('currency', value as FixedCostForm['currency'])}>
                   <SelectTrigger
                     asChild
                     aria-label="Moneda del monto"
@@ -64,14 +64,14 @@ export function FixedCostGeneralSection() {
             </InputGroup>
           </FormField>
         </div>
-        {currency !== "PEN" && (
+        {currency !== 'PEN' && (
           <FormField label="Tipo de cambio" icon={ArrowLeftRight} htmlFor="fixed-cost-exchange-rate" error={errors.exchangeRate?.message}>
             <Input
               id="fixed-cost-exchange-rate"
               type="number"
               step="0.001"
-              {...register("exchangeRate", {
-                setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
+              {...register('exchangeRate', {
+                setValueAs: (value) => (value === '' || value == null ? null : Number(value)),
               })}
               placeholder="Ej: 3.75"
             />
@@ -86,19 +86,19 @@ export function FixedCostGeneralSection() {
               presentation="popover"
               labelClassName="sr-only"
               emptySelectionLabel="Selecciona categoría"
-              value={watch("categoryId")}
-              onChange={(id) => setValue("categoryId", id ?? "", { shouldValidate: true })}
+              value={watch('categoryId')}
+              onChange={(id) => setValue('categoryId', id ?? '', { shouldValidate: true })}
             />
           </FormField>
           <FormField label="Persona *" icon={UserRound} error={errors.personId?.message}>
             <PersonPicker
               module="fixed_costs"
-              value={watch("personId")}
-              onChange={(id) => setValue("personId", id ?? "", { shouldValidate: true })}
+              value={watch('personId')}
+              onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })}
             />
           </FormField>
           <FormField label="Tipo de gasto" icon={ListFilter} htmlFor="fixed-cost-type">
-            <Select value={watch("expenseType")} onValueChange={(value) => setValue("expenseType", value)}>
+            <Select value={watch('expenseType')} onValueChange={(value) => setValue('expenseType', value)}>
               <SelectTrigger id="fixed-cost-type" className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -119,8 +119,8 @@ export function FixedCostGeneralSection() {
               emptySelectionLabel="—"
               allowEmptySelection
               label="Cuenta"
-              value={watch("paymentMethodId")}
-              onChange={(id) => setValue("paymentMethodId", id ?? null)}
+              value={watch('paymentMethodId')}
+              onChange={(id) => setValue('paymentMethodId', id ?? null)}
             />
           </FormField>
           <div className="sm:col-span-2">
@@ -130,9 +130,9 @@ export function FixedCostGeneralSection() {
                 width="w-full"
                 labelClassName="sr-only"
                 emptySelectionLabel="Selecciona estado"
-                value={watch("paymentStatus")}
+                value={watch('paymentStatus')}
                 onChange={(status) => {
-                  if (status) setValue("paymentStatus", status);
+                  if (status) setValue('paymentStatus', status)
                 }}
                 statuses={FIXED_COST_STATUSES}
               />
@@ -141,5 +141,5 @@ export function FixedCostGeneralSection() {
         </div>
       </section>
     </div>
-  );
+  )
 }

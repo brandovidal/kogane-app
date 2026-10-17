@@ -1,15 +1,15 @@
-import type { Table } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DATA_TABLE_PAGE_SIZES } from "@/shared/constants/data-table";
-import { Button } from "@/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import type { Table } from '@tanstack/react-table'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { DATA_TABLE_PAGE_SIZES } from '@/shared/constants/data-table'
+import { Button } from '@/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
 
 export function DataTablePagination<T>({ table, disabled = false }: { table: Table<T>; disabled?: boolean }) {
-  const { pageIndex, pageSize } = table.getState().pagination;
-  const rowCount = table.getRowCount();
-  const pageCount = Math.max(1, table.getPageCount());
-  const from = rowCount ? pageIndex * pageSize + 1 : 0;
-  const to = Math.min((pageIndex + 1) * pageSize, rowCount);
+  const { pageIndex, pageSize } = table.getState().pagination
+  const rowCount = table.getRowCount()
+  const pageCount = Math.max(1, table.getPageCount())
+  const from = rowCount ? pageIndex * pageSize + 1 : 0
+  const to = Math.min((pageIndex + 1) * pageSize, rowCount)
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
       <span aria-live="polite">
@@ -60,5 +60,5 @@ export function DataTablePagination<T>({ table, disabled = false }: { table: Tab
         </div>
       </div>
     </div>
-  );
+  )
 }

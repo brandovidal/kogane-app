@@ -1,8 +1,8 @@
-import { CheckCircle2, CircleHelp, XCircle } from "lucide-react";
-import type { Statement } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
-import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
-import { totalsMatch } from "../lib/statement-view";
+import { CheckCircle2, CircleHelp, XCircle } from 'lucide-react'
+import type { Statement } from '@/shared/api/types'
+import { formatCurrency } from '@/shared/lib/currency'
+import { CURRENCY_OPTIONS } from '@/shared/constants/currency'
+import { totalsMatch } from '../lib/statement-view'
 
 export function StatementBalanceSummary({ statement }: { statement: Statement }) {
   return (
@@ -25,29 +25,29 @@ export function StatementBalanceSummary({ statement }: { statement: Statement })
           </thead>
           <tbody>
             {statement.balances.map((balance) => {
-              const matches = totalsMatch(balance);
-              const Icon = balance.difference == null ? CircleHelp : matches ? CheckCircle2 : XCircle;
+              const matches = totalsMatch(balance)
+              const Icon = balance.difference == null ? CircleHelp : matches ? CheckCircle2 : XCircle
               return (
                 <tr key={balance.currency} className="border-t">
                   <td className="px-3 py-2">{CURRENCY_OPTIONS.find((item) => item.value === balance.currency)?.label ?? balance.currency}</td>
                   <td className="px-3 py-2 text-right font-semibold tabular-nums">
-                    {balance.totalDue == null ? "No identificado" : formatCurrency(balance.totalDue, balance.currency)}
+                    {balance.totalDue == null ? 'No identificado' : formatCurrency(balance.totalDue, balance.currency)}
                   </td>
                   <td className="px-3 py-2 text-right font-semibold tabular-nums">{formatCurrency(balance.koganeTotal, balance.currency)}</td>
                   <td
-                    className={`px-3 py-2 text-right font-semibold tabular-nums ${balance.difference == null ? "text-muted-foreground" : matches ? "text-emerald-600" : "text-amber-600"}`}
+                    className={`px-3 py-2 text-right font-semibold tabular-nums ${balance.difference == null ? 'text-muted-foreground' : matches ? 'text-emerald-600' : 'text-amber-600'}`}
                   >
                     <span className="inline-flex items-center justify-end gap-1">
                       <Icon className="size-4 shrink-0" aria-hidden="true" />
-                      {balance.difference == null ? "—" : formatCurrency(balance.difference, balance.currency)}
+                      {balance.difference == null ? '—' : formatCurrency(balance.difference, balance.currency)}
                     </span>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
     </div>
-  );
+  )
 }

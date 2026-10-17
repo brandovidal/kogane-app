@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Check, History, Paperclip, Pencil, Plus, Trash2 } from "lucide-react";
+import { useState } from 'react'
+import { Check, History, Paperclip, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
   useCommitment,
@@ -8,48 +8,48 @@ import {
   useDeleteContribution,
   useSaveContribution,
   type ContributionBody,
-} from "@/features/commitments/hooks/commitments";
-import { useSaveExpense } from "@/features/expenses/hooks/expenses";
-import type { Commitment, CommitmentInstallment, Contribution } from "@/shared/api/types";
-import { HistoryDialog } from "@/features/history/components/HistoryDialog";
-import { AttachmentsDialog } from "@/features/attachments/components/dialogs/AttachmentsDialog";
-import { AttachmentsPanel } from "@/features/attachments/components/AttachmentsPanel";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { StatusBadge } from "@/features/expenses/components/StatusBadge";
-import { COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from "@/features/commitments/constants/commitments";
-import { CURRENCIES } from "@/shared/constants/finance";
-import { formatCurrency } from "@/shared/lib/currency";
-import { formatDate, getMonthName } from "@/shared/lib/dates";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+} from '@/features/commitments/hooks/commitments'
+import { useSaveExpense } from '@/features/expenses/hooks/expenses'
+import type { Commitment, CommitmentInstallment, Contribution } from '@/shared/api/types'
+import { HistoryDialog } from '@/features/history/components/HistoryDialog'
+import { AttachmentsDialog } from '@/features/attachments/components/dialogs/AttachmentsDialog'
+import { AttachmentsPanel } from '@/features/attachments/components/AttachmentsPanel'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { StatusBadge } from '@/features/expenses/components/StatusBadge'
+import { COMMITMENT_STATUS_LABELS, COMMITMENT_SUBTYPE_LABELS } from '@/features/commitments/constants/commitments'
+import { CURRENCIES } from '@/shared/constants/finance'
+import { formatCurrency } from '@/shared/lib/currency'
+import { formatDate, getMonthName } from '@/shared/lib/dates'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
 
-import { currentLabel } from "@/features/commitments/lib/commitment-view";
+import { currentLabel } from '@/features/commitments/lib/commitment-view'
 
 interface CommitmentDetailProps {
-  commitment: Commitment;
-  onClose: () => void;
-  onEdit: () => void;
+  commitment: Commitment
+  onClose: () => void
+  onEdit: () => void
 }
 
 // The installments (fixed costs), the contributions and the files of one commitment (P27)
 export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDetailProps) {
-  const { data: detail } = useCommitment(commitment.id);
-  const createInstallments = useCreateInstallments();
-  const deleteCommitment = useDeleteCommitment();
-  const money = (amount: number) => formatCurrency(amount, commitment.currency);
-  const progress = detail?.progress ?? commitment.progress;
-  const hasInstallments = !!commitment.installmentCount;
-  const [tab, setTab] = useState(hasInstallments ? "installments" : "contributions");
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const { data: detail } = useCommitment(commitment.id)
+  const createInstallments = useCreateInstallments()
+  const deleteCommitment = useDeleteCommitment()
+  const money = (amount: number) => formatCurrency(amount, commitment.currency)
+  const progress = detail?.progress ?? commitment.progress
+  const hasInstallments = !!commitment.installmentCount
+  const [tab, setTab] = useState(hasInstallments ? 'installments' : 'contributions')
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   const remove = () => {
-    if (!window.confirm(`¿Eliminar «${commitment.name}»? Sus cuotas siguen en Costos fijos; se borran sus aportes y archivos.`)) return;
-    deleteCommitment.mutate(commitment.id, { onSuccess: onClose });
-  };
+    if (!window.confirm(`¿Eliminar «${commitment.name}»? Sus cuotas siguen en Costos fijos; se borran sus aportes y archivos.`)) return
+    deleteCommitment.mutate(commitment.id, { onSuccess: onClose })
+  }
 
   return (
     <Sheet open onOpenChange={(open) => !open && onClose()}>
@@ -60,9 +60,9 @@ export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDeta
             <Badge variant="secondary">{COMMITMENT_STATUS_LABELS[detail?.status ?? commitment.status]}</Badge>
           </SheetTitle>
           <SheetDescription>
-            {commitment.entity ? `${commitment.entity} · ` : ""}
+            {commitment.entity ? `${commitment.entity} · ` : ''}
             {COMMITMENT_SUBTYPE_LABELS[commitment.subtype]}
-            {progress ? ` · ${currentLabel({ ...commitment, progress })}` : ""}
+            {progress ? ` · ${currentLabel({ ...commitment, progress })}` : ''}
           </SheetDescription>
         </SheetHeader>
 
@@ -95,7 +95,7 @@ export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDeta
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
               {hasInstallments && <TabsTrigger value="installments">Cuotas</TabsTrigger>}
-              {(commitment.kind === "investment" || (detail?.contributions.length ?? 0) > 0) && (
+              {(commitment.kind === 'investment' || (detail?.contributions.length ?? 0) > 0) && (
                 <TabsTrigger value="contributions">Aportes</TabsTrigger>
               )}
               <TabsTrigger value="files">Archivos</TabsTrigger>
@@ -117,14 +117,14 @@ export function CommitmentDetail({ commitment, onClose, onEdit }: CommitmentDeta
       </SheetContent>
       {historyOpen && <HistoryDialog title={commitment.name} entity="exp_commitments" id={commitment.id} onClose={() => setHistoryOpen(false)} />}
     </Sheet>
-  );
+  )
 }
 
 function Installments({ installments, current, currency }: { installments: CommitmentInstallment[]; current: number; currency: string }) {
-  const saveExpense = useSaveExpense("fixed-costs");
-  const [files, setFiles] = useState<CommitmentInstallment | null>(null);
+  const saveExpense = useSaveExpense('fixed-costs')
+  const [files, setFiles] = useState<CommitmentInstallment | null>(null)
 
-  if (installments.length === 0) return <p className="text-sm text-muted-foreground">Todavía no hay cuotas creadas.</p>;
+  if (installments.length === 0) return <p className="text-sm text-muted-foreground">Todavía no hay cuotas creadas.</p>
 
   return (
     <>
@@ -142,21 +142,21 @@ function Installments({ installments, current, currency }: { installments: Commi
           </thead>
           <tbody className="divide-y">
             {installments.map((row) => {
-              const number = Number(row.installment?.split("/")[0]);
+              const number = Number(row.installment?.split('/')[0])
               return (
-                <tr key={row.id} className={number === current ? "bg-primary/5" : undefined}>
-                  <td className="px-3 py-1.5 font-medium tabular-nums">{row.installment ?? "—"}</td>
+                <tr key={row.id} className={number === current ? 'bg-primary/5' : undefined}>
+                  <td className="px-3 py-1.5 font-medium tabular-nums">{row.installment ?? '—'}</td>
                   <td className="px-3 py-1.5">
                     {getMonthName(row.paymentMonth).slice(0, 3)} {row.paymentYear}
                   </td>
-                  <td className="px-3 py-1.5 text-muted-foreground">{row.dueDate ? formatDate(row.dueDate) : "—"}</td>
+                  <td className="px-3 py-1.5 text-muted-foreground">{row.dueDate ? formatDate(row.dueDate) : '—'}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{formatCurrency(row.amount, currency)}</td>
                   <td className="px-3 py-1.5">
                     <StatusBadge status={row.paymentStatus} />
                   </td>
                   <td className="px-3 py-1.5">
                     <div className="flex justify-end gap-0.5">
-                      {row.paymentStatus !== "paid" && (
+                      {row.paymentStatus !== 'paid' && (
                         <Button
                           variant="ghost"
                           size="icon"
@@ -166,7 +166,7 @@ function Installments({ installments, current, currency }: { installments: Commi
                           onClick={() =>
                             saveExpense.mutate({
                               id: row.id,
-                              body: { paymentStatus: "paid" },
+                              body: { paymentStatus: 'paid' },
                             })
                           }
                         >
@@ -190,29 +190,29 @@ function Installments({ installments, current, currency }: { installments: Commi
                     </div>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
       {files && <AttachmentsDialog title={`la cuota ${files.installment}`} refType="fixed_cost" refId={files.id} onClose={() => setFiles(null)} />}
     </>
-  );
+  )
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => new Date().toISOString().slice(0, 10)
 
 function Contributions({ commitment, contributions }: { commitment: Commitment; contributions: Contribution[] }) {
-  const remove = useDeleteContribution();
-  const [editing, setEditing] = useState<Contribution | null | undefined>(undefined); // null: new
-  const [files, setFiles] = useState<Contribution | null>(null);
-  const total = contributions.reduce((sum, row) => sum + row.amount, 0);
+  const remove = useDeleteContribution()
+  const [editing, setEditing] = useState<Contribution | null | undefined>(undefined) // null: new
+  const [files, setFiles] = useState<Contribution | null>(null)
+  const total = contributions.reduce((sum, row) => sum + row.amount, 0)
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm">
-          Total invertido: <span className="font-semibold tabular-nums">{formatCurrency(total, commitment.currency)}</span>{" "}
+          Total invertido: <span className="font-semibold tabular-nums">{formatCurrency(total, commitment.currency)}</span>{' '}
           <span className="text-muted-foreground">en {contributions.length} aporte(s)</span>
         </p>
         <Button size="sm" onClick={() => setEditing(null)}>
@@ -230,7 +230,7 @@ function Contributions({ commitment, contributions }: { commitment: Commitment; 
               <span className="font-medium tabular-nums">{formatCurrency(row.amount, row.currency)}</span>
               {row.quantity != null && (
                 <span className="text-xs text-muted-foreground">
-                  {row.quantity} {row.unit ?? ""}
+                  {row.quantity} {row.unit ?? ''}
                 </span>
               )}
               <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{row.notes}</span>
@@ -251,7 +251,7 @@ function Contributions({ commitment, contributions }: { commitment: Commitment; 
                 className="h-7 w-7 text-destructive"
                 aria-label="Eliminar aporte"
                 onClick={() =>
-                  window.confirm("¿Eliminar este aporte y sus archivos?") && remove.mutate({ id: commitment.id, contributionId: row.id })
+                  window.confirm('¿Eliminar este aporte y sus archivos?') && remove.mutate({ id: commitment.id, contributionId: row.id })
                 }
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -264,7 +264,7 @@ function Contributions({ commitment, contributions }: { commitment: Commitment; 
       {editing !== undefined && <ContributionDialog commitment={commitment} contribution={editing} onClose={() => setEditing(undefined)} />}
       {files && <AttachmentsDialog title="este aporte" refType="contribution" refId={files.id} onClose={() => setFiles(null)} />}
     </div>
-  );
+  )
 }
 
 function ContributionDialog({
@@ -272,38 +272,38 @@ function ContributionDialog({
   contribution,
   onClose,
 }: {
-  commitment: Commitment;
-  contribution: Contribution | null;
-  onClose: () => void;
+  commitment: Commitment
+  contribution: Contribution | null
+  onClose: () => void
 }) {
-  const save = useSaveContribution();
+  const save = useSaveContribution()
   const [form, setForm] = useState({
     date: contribution?.date.slice(0, 10) ?? today(),
-    amount: contribution?.amount.toString() ?? "",
+    amount: contribution?.amount.toString() ?? '',
     currency: contribution?.currency ?? commitment.currency,
-    quantity: contribution?.quantity?.toString() ?? "",
-    unit: contribution?.unit ?? "",
-    notes: contribution?.notes ?? "",
-  });
-  const valid = form.date && Number(form.amount) > 0;
+    quantity: contribution?.quantity?.toString() ?? '',
+    unit: contribution?.unit ?? '',
+    notes: contribution?.notes ?? '',
+  })
+  const valid = form.date && Number(form.amount) > 0
 
   const submit = () => {
     const body: ContributionBody = {
       date: form.date,
       amount: Number(form.amount),
-      currency: form.currency as ContributionBody["currency"],
+      currency: form.currency as ContributionBody['currency'],
       quantity: form.quantity.trim() ? Number(form.quantity) : null,
       unit: form.unit.trim() || null,
       notes: form.notes.trim() || null,
-    };
-    save.mutate({ id: commitment.id, contributionId: contribution?.id, body }, { onSuccess: onClose });
-  };
+    }
+    save.mutate({ id: commitment.id, contributionId: contribution?.id, body }, { onSuccess: onClose })
+  }
 
   return (
     <ResponsiveDialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={contribution ? "Editar aporte" : "Nuevo aporte"}
+      title={contribution ? 'Editar aporte' : 'Nuevo aporte'}
       description={`Lo que pusiste en ${commitment.name}.`}
       footer={
         <>
@@ -354,5 +354,5 @@ function ContributionDialog({
         <Input placeholder="Nota (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
       </div>
     </ResponsiveDialog>
-  );
+  )
 }

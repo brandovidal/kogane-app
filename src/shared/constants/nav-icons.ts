@@ -18,29 +18,29 @@ import {
   Tags,
   Tv,
   Wallet,
-} from "lucide-react";
+} from 'lucide-react'
 
-import { type NavIcon } from "@/shared/types/navigation";
+import { type NavIcon } from '@/shared/types/navigation'
 
 // The icons of the menu (D41). The menu is drawn by Astro at build time: these render to plain SVG, nothing hydrates
 export const NAV_ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
-  "message-circle": MessageCircle,
-  "scan-text": ScanText,
+  'message-circle': MessageCircle,
+  'scan-text': ScanText,
   inbox: Inbox,
-  "layout-dashboard": LayoutDashboard,
-  "plus-circle": PlusCircle,
+  'layout-dashboard': LayoutDashboard,
+  'plus-circle': PlusCircle,
   receipt: Receipt,
   coffee: Coffee,
   tv: Tv,
-  "credit-card": CreditCard,
+  'credit-card': CreditCard,
   repeat: Repeat,
-  "hand-coins": HandCoins,
-  "pie-chart": PieChart,
+  'hand-coins': HandCoins,
+  'pie-chart': PieChart,
   tags: Tags,
-  "bar-chart-3": BarChart3,
+  'bar-chart-3': BarChart3,
   settings: Settings,
   wallet: Wallet,
   calendar: CalendarDays,
-  "file-text": FileText,
+  'file-text': FileText,
   landmark: Landmark,
-};
+}

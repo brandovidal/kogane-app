@@ -1,32 +1,32 @@
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
-import { getCurrentMonth, getCurrentYear, getMonthName } from "@/shared/lib/dates";
-import { PERIOD_YEAR_MAX, PERIOD_YEAR_MIN } from "@/shared/constants/period";
-import type { MonthlyPeriod } from "@/shared/types/period";
-import { Button } from "@/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
-import { cn } from "@/shared/utils/cn";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
+import { getCurrentMonth, getCurrentYear, getMonthName } from '@/shared/lib/dates'
+import { PERIOD_YEAR_MAX, PERIOD_YEAR_MIN } from '@/shared/constants/period'
+import type { MonthlyPeriod } from '@/shared/types/period'
+import { Button } from '@/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
+import { cn } from '@/shared/utils/cn'
 
 export interface MonthYearPickerProps {
-  value: MonthlyPeriod;
-  onChange: (value: MonthlyPeriod) => void;
-  ariaLabel?: string;
-  disabled?: boolean;
-  className?: string;
+  value: MonthlyPeriod
+  onChange: (value: MonthlyPeriod) => void
+  ariaLabel?: string
+  disabled?: boolean
+  className?: string
 }
 
 /** Compact month picker for forms that need to select a record's period. */
-export function MonthYearPicker({ value, onChange, ariaLabel = "Período del registro", disabled, className }: MonthYearPickerProps) {
-  const [open, setOpen] = useState(false);
-  const [gridYear, setGridYear] = useState(value.year);
-  const isCurrent = value.month === getCurrentMonth() && value.year === getCurrentYear();
+export function MonthYearPicker({ value, onChange, ariaLabel = 'Período del registro', disabled, className }: MonthYearPickerProps) {
+  const [open, setOpen] = useState(false)
+  const [gridYear, setGridYear] = useState(value.year)
+  const isCurrent = value.month === getCurrentMonth() && value.year === getCurrentYear()
 
   return (
     <Popover
       open={open}
       onOpenChange={(next) => {
-        setOpen(next);
-        if (next) setGridYear(value.year);
+        setOpen(next)
+        if (next) setGridYear(value.year)
       }}
     >
       <PopoverTrigger
@@ -34,7 +34,7 @@ export function MonthYearPicker({ value, onChange, ariaLabel = "Período del reg
         disabled={disabled}
         aria-label={`${ariaLabel}: ${getMonthName(value.month)} ${value.year}`}
         className={cn(
-          "inline-flex h-9 w-full items-center gap-2 rounded-lg border border-border/70 bg-muted/40 px-3 text-left text-sm font-medium outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+          'inline-flex h-9 w-full items-center gap-2 rounded-lg border border-border/70 bg-muted/40 px-3 text-left text-sm font-medium outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           className,
         )}
       >
@@ -73,21 +73,21 @@ export function MonthYearPicker({ value, onChange, ariaLabel = "Período del reg
         </div>
         <div className="grid grid-cols-4 gap-1">
           {Array.from({ length: 12 }, (_, index) => {
-            const month = index + 1;
-            const selected = value.month === month && value.year === gridYear;
-            const current = month === getCurrentMonth() && gridYear === getCurrentYear();
+            const month = index + 1
+            const selected = value.month === month && value.year === gridYear
+            const current = month === getCurrentMonth() && gridYear === getCurrentYear()
             return (
               <button
                 key={month}
                 type="button"
                 aria-pressed={selected}
                 onClick={() => {
-                  onChange({ month, year: gridYear });
-                  setOpen(false);
+                  onChange({ month, year: gridYear })
+                  setOpen(false)
                 }}
                 className={cn(
-                  "relative h-9 rounded-md text-sm transition-colors hover:bg-accent",
-                  selected && "bg-brand font-semibold text-background hover:bg-brand",
+                  'relative h-9 rounded-md text-sm transition-colors hover:bg-accent',
+                  selected && 'bg-brand font-semibold text-background hover:bg-brand',
                 )}
               >
                 {getMonthName(month).slice(0, 3)}
@@ -95,7 +95,7 @@ export function MonthYearPicker({ value, onChange, ariaLabel = "Período del reg
                   <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-brand" />
                 )}
               </button>
-            );
+            )
           })}
         </div>
         <div className="border-t pt-3">
@@ -103,8 +103,8 @@ export function MonthYearPicker({ value, onChange, ariaLabel = "Período del reg
             type="button"
             className="h-7 rounded-full border px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             onClick={() => {
-              onChange({ month: getCurrentMonth(), year: getCurrentYear() });
-              setOpen(false);
+              onChange({ month: getCurrentMonth(), year: getCurrentYear() })
+              setOpen(false)
             }}
           >
             Este mes
@@ -112,5 +112,5 @@ export function MonthYearPicker({ value, onChange, ariaLabel = "Período del reg
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

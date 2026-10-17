@@ -1,6 +1,6 @@
-import { Archive, LoaderCircle } from "lucide-react";
-import { useDeactivatePaymentMethod } from "@/shared/api/hooks/catalogs";
-import type { PaymentMethod } from "@/shared/api/types";
+import { Archive, LoaderCircle } from 'lucide-react'
+import { useDeactivatePaymentMethod } from '@/shared/api/hooks/catalogs'
+import type { PaymentMethod } from '@/shared/api/types'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,8 +10,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/ui/alert-dialog";
-import { archiveSummary } from "../lib/card-archive";
+} from '@/ui/alert-dialog'
+import { archiveSummary } from '../lib/card-archive'
 
 /** Archiving deactivates the card: it leaves the lists, its movements stay. */
 export function CardArchiveDialog({
@@ -20,12 +20,12 @@ export function CardArchiveDialog({
   pending,
   onClose,
 }: {
-  card: PaymentMethod;
-  movements: number;
-  pending: number;
-  onClose: () => void;
+  card: PaymentMethod
+  movements: number
+  pending: number
+  onClose: () => void
 }) {
-  const deactivate = useDeactivatePaymentMethod();
+  const deactivate = useDeactivatePaymentMethod()
   return (
     <AlertDialog open onOpenChange={(open) => !open && !deactivate.isPending && onClose()}>
       <AlertDialogContent className="sm:max-w-md" aria-busy={deactivate.isPending}>
@@ -46,8 +46,8 @@ export function CardArchiveDialog({
             type="button"
             disabled={deactivate.isPending}
             onClick={(event) => {
-              event.preventDefault();
-              deactivate.mutate(card.id, { onSuccess: onClose });
+              event.preventDefault()
+              deactivate.mutate(card.id, { onSuccess: onClose })
             }}
           >
             {deactivate.isPending ? (
@@ -60,5 +60,5 @@ export function CardArchiveDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

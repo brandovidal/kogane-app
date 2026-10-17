@@ -1,11 +1,11 @@
-import { CurrencySelect } from "@/shared/components/forms/CurrencySelect";
-import type { CurrencyCode } from "@/shared/constants/currency";
-import { useEffect, useMemo, useState } from "react";
-import { useCardCheck } from "@/features/debts/hooks/debts";
-import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
-import { formatCurrency } from "@/shared/lib/currency";
-import { getMonthName } from "@/shared/lib/dates";
-import { Checkbox } from "@/ui/checkbox";
+import { CurrencySelect } from '@/shared/components/forms/CurrencySelect'
+import type { CurrencyCode } from '@/shared/constants/currency'
+import { useEffect, useMemo, useState } from 'react'
+import { useCardCheck } from '@/features/debts/hooks/debts'
+import { PersonPicker } from '@/features/settings/components/people/PersonPicker'
+import { formatCurrency } from '@/shared/lib/currency'
+import { getMonthName } from '@/shared/lib/dates'
+import { Checkbox } from '@/ui/checkbox'
 
 export function StatementTotalCard({
   paymentMethodId,
@@ -13,58 +13,58 @@ export function StatementTotalCard({
   month,
   year,
   compact = false,
-  initialCurrency = "PEN",
+  initialCurrency = 'PEN',
 }: {
-  paymentMethodId: string;
-  cardName: string;
-  month: number;
-  year: number;
-  compact?: boolean;
-  initialCurrency?: CurrencyCode;
+  paymentMethodId: string
+  cardName: string
+  month: number
+  year: number
+  compact?: boolean
+  initialCurrency?: CurrencyCode
 }) {
-  const [currency, setCurrency] = useState<CurrencyCode>(initialCurrency);
-  const money = (amount: number) => formatCurrency(amount, currency);
+  const [currency, setCurrency] = useState<CurrencyCode>(initialCurrency)
+  const money = (amount: number) => formatCurrency(amount, currency)
   const { data: check, isLoading } = useCardCheck({
     paymentMethodId,
     month,
     year,
     currency,
-  });
-  const [includedPeople, setIncludedPeople] = useState<Set<string>>(new Set());
-  const [visualAssigneeId, setVisualAssigneeId] = useState<string | null>(null);
+  })
+  const [includedPeople, setIncludedPeople] = useState<Set<string>>(new Set())
+  const [visualAssigneeId, setVisualAssigneeId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!check?.statementId) return;
-    setIncludedPeople(new Set(check.expensesByPerson.map((person) => person.personId)));
-    setVisualAssigneeId(check.statementPersonId);
-  }, [check?.statementId, check?.expensesByPerson, check?.statementPersonId, currency]);
+    if (!check?.statementId) return
+    setIncludedPeople(new Set(check.expensesByPerson.map((person) => person.personId)))
+    setVisualAssigneeId(check.statementPersonId)
+  }, [check?.statementId, check?.expensesByPerson, check?.statementPersonId, currency])
 
   const selectedCharges = useMemo(
     () => (check?.expensesByPerson ?? []).reduce((sum, person) => sum + (includedPeople.has(person.personId) ? person.amount : 0), 0),
     [check?.expensesByPerson, includedPeople],
-  );
+  )
 
-  if (isLoading) return <p className="text-sm text-muted-foreground">Cargando el estado de cuenta {cardName}…</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">Cargando el estado de cuenta {cardName}…</p>
   if (!check?.statementId) {
     return (
       <p className="text-sm text-muted-foreground">
-        No hay estado de cuenta {cardName} para {getMonthName(month)} {year}. Cárgalo desde{" "}
+        No hay estado de cuenta {cardName} para {getMonthName(month)} {year}. Cárgalo desde{' '}
         <a className="underline underline-offset-4" href="/importacion">
           Importación
         </a>
         .
       </p>
-    );
+    )
   }
 
-  const total = check.statementTotal;
-  const remaining = total == null ? null : Math.max(0, total - selectedCharges);
-  const progress = total == null || total <= 0 ? 0 : Math.min(100, (selectedCharges / total) * 100);
-  const complete = remaining != null && remaining <= 0;
+  const total = check.statementTotal
+  const remaining = total == null ? null : Math.max(0, total - selectedCharges)
+  const progress = total == null || total <= 0 ? 0 : Math.min(100, (selectedCharges / total) * 100)
+  const complete = remaining != null && remaining <= 0
 
   return (
-    <section className={`rounded-lg border bg-card ${compact ? "p-3" : "p-4"}`}>
-      <div className={compact ? "space-y-3" : "space-y-4"}>
+    <section className={`rounded-lg border bg-card ${compact ? 'p-3' : 'p-4'}`}>
+      <div className={compact ? 'space-y-3' : 'space-y-4'}>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
             <h3 className="font-semibold">
@@ -81,22 +81,22 @@ export function StatementTotalCard({
         <div className="grid grid-cols-2 gap-3 text-sm lg:grid-cols-3">
           <div className="rounded-md bg-muted/40 p-2">
             <p className="text-xs text-muted-foreground">Pago total</p>
-            <p className="font-semibold tabular-nums">{total == null ? "—" : money(total)}</p>
+            <p className="font-semibold tabular-nums">{total == null ? '—' : money(total)}</p>
           </div>
           <div className="rounded-md bg-sky-500/10 p-2">
             <p className="text-xs text-muted-foreground">Pago actual considerado</p>
             <p className="font-semibold tabular-nums text-sky-300">{money(selectedCharges)}</p>
           </div>
-          <div className={`col-span-2 rounded-md p-2 lg:col-span-1 ${complete ? "bg-emerald-500/10" : "bg-amber-500/10"}`}>
+          <div className={`col-span-2 rounded-md p-2 lg:col-span-1 ${complete ? 'bg-emerald-500/10' : 'bg-amber-500/10'}`}>
             <p className="text-xs text-muted-foreground">Pago restante</p>
-            <p className={`font-semibold tabular-nums ${complete ? "text-emerald-300" : "text-amber-300"}`}>
-              {remaining == null ? "—" : money(remaining)}
+            <p className={`font-semibold tabular-nums ${complete ? 'text-emerald-300' : 'text-amber-300'}`}>
+              {remaining == null ? '—' : money(remaining)}
             </p>
           </div>
         </div>
         {total != null && (
           <div className="h-2 overflow-hidden rounded-full bg-muted">
-            <div className={`h-full rounded-full ${complete ? "bg-emerald-500" : "bg-sky-500"}`} style={{ width: `${progress}%` }} />
+            <div className={`h-full rounded-full ${complete ? 'bg-emerald-500' : 'bg-sky-500'}`} style={{ width: `${progress}%` }} />
           </div>
         )}
         <section className="space-y-3 border-t pt-3">
@@ -116,10 +116,10 @@ export function StatementTotalCard({
                       checked={includedPeople.has(person.personId)}
                       onCheckedChange={(checked) =>
                         setIncludedPeople((current) => {
-                          const next = new Set(current);
-                          if (checked === true) next.add(person.personId);
-                          else next.delete(person.personId);
-                          return next;
+                          const next = new Set(current)
+                          if (checked === true) next.add(person.personId)
+                          else next.delete(person.personId)
+                          return next
                         })
                       }
                     />
@@ -154,5 +154,5 @@ export function StatementTotalCard({
         </section>
       </div>
     </section>
-  );
+  )
 }

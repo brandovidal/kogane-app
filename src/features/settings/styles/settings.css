@@ -20,7 +20,7 @@
   color: var(--muted-foreground);
 }
 
-.settings-theme-option[data-selected="true"] {
+.settings-theme-option[data-selected='true'] {
   background: var(--accent);
   color: var(--accent-foreground);
   font-weight: 500;

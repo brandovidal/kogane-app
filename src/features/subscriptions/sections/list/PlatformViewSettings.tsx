@@ -1,13 +1,13 @@
-import { CalendarRange, Columns3, Eye, Layers, Link2, ListFilter, RotateCcw, SlidersHorizontal } from "lucide-react";
-import { toast } from "sonner";
+import { CalendarRange, Columns3, Eye, Layers, Link2, ListFilter, RotateCcw, SlidersHorizontal } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   ColumnVisibilityOptions,
   RowColorRulesMenu,
   ViewSettingsMenu,
   type ColumnVisibilityOption,
   type RowColorRulesMenuProps,
-} from "@/shared/components/toolbar";
-import { Button } from "@/ui/button";
+} from '@/shared/components/toolbar'
+import { Button } from '@/ui/button'
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuItem,
@@ -16,12 +16,12 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/ui/dropdown-menu";
+} from '@/ui/dropdown-menu'
 
 const GROUP_OPTIONS = [
-  { value: "period", label: "Período" },
-  { value: "person", label: "Persona" },
-] as const;
+  { value: 'period', label: 'Período' },
+  { value: 'person', label: 'Persona' },
+] as const
 
 export function PlatformViewSettings({
   columns,
@@ -34,21 +34,21 @@ export function PlatformViewSettings({
   onReset,
   rowColors,
 }: {
-  columns: readonly ColumnVisibilityOption[];
-  visible: number;
-  filterCount: number;
-  onOpenFilters: () => void;
-  groupBy: Array<"person" | "period">;
-  onGroupByChange: (groupBy: Array<"person" | "period">) => void;
-  canReset: boolean;
-  onReset: () => void;
-  rowColors: RowColorRulesMenuProps;
+  columns: readonly ColumnVisibilityOption[]
+  visible: number
+  filterCount: number
+  onOpenFilters: () => void
+  groupBy: Array<'person' | 'period'>
+  onGroupByChange: (groupBy: Array<'person' | 'period'>) => void
+  canReset: boolean
+  onReset: () => void
+  rowColors: RowColorRulesMenuProps
 }) {
   const copyViewLink = () =>
     void navigator.clipboard
       .writeText(window.location.href)
-      .then(() => toast.success("Enlace copiado"))
-      .catch(() => toast.error("No se pudo copiar el enlace"));
+      .then(() => toast.success('Enlace copiado'))
+      .catch(() => toast.error('No se pudo copiar el enlace'))
 
   return (
     <ViewSettingsMenu
@@ -83,7 +83,7 @@ export function PlatformViewSettings({
           <Layers className="size-4" />
           Agrupar
           <span className="ml-auto max-w-32 truncate text-xs text-muted-foreground">
-            {groupBy.map((field) => GROUP_OPTIONS.find((option) => option.value === field)?.label).join(" › ") || "Sin agrupar"}
+            {groupBy.map((field) => GROUP_OPTIONS.find((option) => option.value === field)?.label).join(' › ') || 'Sin agrupar'}
           </span>
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
@@ -134,5 +134,5 @@ export function PlatformViewSettings({
         Restablecer vista
       </DropdownMenuItem>
     </ViewSettingsMenu>
-  );
+  )
 }

@@ -1,40 +1,40 @@
-import { useId } from "react";
-import { Banknote, LoaderCircle, Save } from "lucide-react";
-import { useMonthlySalary } from "../../hooks/useMonthlySalary";
-import { PeriodFields } from "@/shared/components/forms/PeriodFields";
-import type { MonthlyPeriod } from "@/shared/types/period";
-import { SalaryAmountSection } from "../../sections/SalaryAmountSection";
-import { getMonthName } from "@/shared/lib/dates";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
+import { useId } from 'react'
+import { Banknote, LoaderCircle, Save } from 'lucide-react'
+import { useMonthlySalary } from '../../hooks/useMonthlySalary'
+import { PeriodFields } from '@/shared/components/forms/PeriodFields'
+import type { MonthlyPeriod } from '@/shared/types/period'
+import { SalaryAmountSection } from '../../sections/SalaryAmountSection'
+import { getMonthName } from '@/shared/lib/dates'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { Button } from '@/ui/button'
+import { Badge } from '@/ui/badge'
 
 export interface SalaryDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialPeriod?: MonthlyPeriod;
-  onSaved?: (period: MonthlyPeriod) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  initialPeriod?: MonthlyPeriod
+  onSaved?: (period: MonthlyPeriod) => void
 }
 
 // Mounted on opening: values and writes belong to the selected month.
 export function SalaryDialog({ open, onOpenChange, initialPeriod, onSaved }: SalaryDialogProps) {
-  const formId = useId();
+  const formId = useId()
   const form = useMonthlySalary(
     open,
     (period) => {
-      onSaved?.(period);
-      onOpenChange(false);
+      onSaved?.(period)
+      onOpenChange(false)
     },
     initialPeriod,
-  );
-  const { month, year } = form.period;
-  const saved = !!form.summary?.budget && !form.summary.budget.isProposal;
+  )
+  const { month, year } = form.period
+  const saved = !!form.summary?.budget && !form.summary.budget.isProposal
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={(next) => {
-        if (!form.saving) onOpenChange(next);
+        if (!form.saving) onOpenChange(next)
       }}
       title={`Sueldo de ${getMonthName(month)} ${year}`}
       icon={<Banknote aria-hidden="true" className="size-4 text-primary" />}
@@ -47,7 +47,7 @@ export function SalaryDialog({ open, onOpenChange, initialPeriod, onSaved }: Sal
           </Button>
           <Button type="submit" form={formId} disabled={!form.canSave}>
             {form.saving ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
-            {form.saving ? "Guardando…" : "Guardar sueldo del mes"}
+            {form.saving ? 'Guardando…' : 'Guardar sueldo del mes'}
           </Button>
         </>
       }
@@ -56,8 +56,8 @@ export function SalaryDialog({ open, onOpenChange, initialPeriod, onSaved }: Sal
         id={formId}
         className="space-y-4"
         onSubmit={(event) => {
-          event.preventDefault();
-          form.save();
+          event.preventDefault()
+          form.save()
         }}
       >
         <PeriodFields ariaLabel="Período del sueldo" value={form.period} onChange={form.setPeriod} disabled={form.saving} />
@@ -77,7 +77,7 @@ export function SalaryDialog({ open, onOpenChange, initialPeriod, onSaved }: Sal
         )}
         {form.ready && (
           <div className="space-y-1 rounded-lg border bg-muted/20 p-3 text-sm">
-            <Badge variant="outline">{saved ? "Registrado para este mes" : "Sin registrar para este mes"}</Badge>
+            <Badge variant="outline">{saved ? 'Registrado para este mes' : 'Sin registrar para este mes'}</Badge>
             {form.summary?.budget?.isProposal && (
               <p className="text-xs text-muted-foreground">
                 El monto es una sugerencia del último sueldo registrado. Guárdalo para confirmarlo en este mes.
@@ -88,13 +88,13 @@ export function SalaryDialog({ open, onOpenChange, initialPeriod, onSaved }: Sal
         <SalaryAmountSection
           salary={form.salaryValue}
           limitPercent={form.percentValue}
-          onSalaryChange={(value) => form.updateField("salary", value)}
-          onPercentChange={(value) => form.updateField("limitPercent", value)}
+          onSalaryChange={(value) => form.updateField('salary', value)}
+          onPercentChange={(value) => form.updateField('limitPercent', value)}
           errors={form.errors}
           limit={form.ready ? form.limit : null}
           disabled={!form.ready || form.saving}
         />
       </form>
     </ResponsiveDialog>
-  );
+  )
 }

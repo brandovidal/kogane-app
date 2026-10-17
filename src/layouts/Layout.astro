@@ -1,11 +1,11 @@
 ---
-import "@/styles/app-gradient.css";
+import '@/styles/app-gradient.css'
 
 interface Props {
-  title?: string;
+  title?: string
 }
 
-const { title = "Kogane" } = Astro.props;
+const { title = 'Kogane' } = Astro.props
 ---
 
 <!doctype html>
@@ -20,12 +20,12 @@ const { title = "Kogane" } = Astro.props;
   <body class="min-h-screen antialiased">
     <slot />
     <script>
-      import { themeStore } from "@/shared/stores/theme.store";
-      themeStore.getState().initTheme();
+      import { themeStore } from '@/shared/stores/theme.store'
+      themeStore.getState().initTheme()
     </script>
   </body>
 </html>
 
 <style is:global>
-  @import "../styles/globals.css";
+  @import '../styles/globals.css';
 </style>

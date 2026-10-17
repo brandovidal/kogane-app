@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Badge } from "@/ui/badge";
-import { formatCurrency } from "@/shared/lib/currency";
-import { CreditCard } from "lucide-react";
-import type { CreditCardSummary } from "../types/dashboard";
-import { Button } from "@/ui/button";
+import { useEffect, useState } from 'react'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Badge } from '@/ui/badge'
+import { formatCurrency } from '@/shared/lib/currency'
+import { CreditCard } from 'lucide-react'
+import type { CreditCardSummary } from '../types/dashboard'
+import { Button } from '@/ui/button'
 
 interface BillingCycleCardProps {
-  cards: CreditCardSummary[];
-  onRegisterPayment?: () => void;
+  cards: CreditCardSummary[]
+  onRegisterPayment?: () => void
 }
 
 export function BillingCycleCard({ cards, onRegisterPayment }: BillingCycleCardProps) {
@@ -16,14 +16,14 @@ export function BillingCycleCard({ cards, onRegisterPayment }: BillingCycleCardP
   // browser QueryClient, so cards can already exist on the client's first
   // render even though the server rendered an empty array. Keep the same
   // initial markup on both sides, then reveal the data after hydration.
-  const [mounted, setMounted] = useState(false);
-  const [today, setToday] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false)
+  const [today, setToday] = useState<number | null>(null)
 
   useEffect(() => {
-    setToday(new Date().getDate());
-    setMounted(true);
-  }, []);
-  const visibleCards = mounted ? cards : [];
+    setToday(new Date().getDate())
+    setMounted(true)
+  }, [])
+  const visibleCards = mounted ? cards : []
 
   return (
     <Card className="h-full">
@@ -39,13 +39,13 @@ export function BillingCycleCard({ cards, onRegisterPayment }: BillingCycleCardP
       </CardHeader>
       <CardContent className="space-y-1.5 pt-0">
         {visibleCards.map((card) => {
-          const daysUntilDue = today == null ? null : card.paymentDueDay >= today ? card.paymentDueDay - today : 30 - today + card.paymentDueDay;
-          const isUrgent = daysUntilDue != null && daysUntilDue <= 5;
+          const daysUntilDue = today == null ? null : card.paymentDueDay >= today ? card.paymentDueDay - today : 30 - today + card.paymentDueDay
+          const isUrgent = daysUntilDue != null && daysUntilDue <= 5
 
           return (
             <div key={card.code} className="flex items-center justify-between py-1.5">
               <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: card.color ?? "#6B7280" }} />
+                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: card.color ?? '#6B7280' }} />
                 <span className="text-sm">{card.name}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function BillingCycleCard({ cards, onRegisterPayment }: BillingCycleCardP
                 )}
               </div>
             </div>
-          );
+          )
         })}
         <div className="flex justify-between border-t pt-2">
           <span className="text-xs font-medium text-muted-foreground">Total</span>
@@ -70,5 +70,5 @@ export function BillingCycleCard({ cards, onRegisterPayment }: BillingCycleCardP
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

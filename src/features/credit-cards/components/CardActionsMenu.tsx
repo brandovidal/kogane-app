@@ -1,12 +1,12 @@
-import { Archive, Eye, FileText, MoreHorizontal, Pencil, Plus, Wallet } from "lucide-react";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import type { CardOverviewRow } from "../types/card-overview";
+import { Archive, Eye, FileText, MoreHorizontal, Pencil, Plus, Wallet } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import type { CardOverviewRow } from '../types/card-overview'
 
 export interface CardActions {
-  onNewExpense: (row: CardOverviewRow) => void;
-  onEdit: (row: CardOverviewRow) => void;
-  onArchive: (row: CardOverviewRow) => void;
+  onNewExpense: (row: CardOverviewRow) => void
+  onEdit: (row: CardOverviewRow) => void
+  onArchive: (row: CardOverviewRow) => void
 }
 
 /** ⋯ menu of a card in the overview: detail, payment, expense, statements, edit, archive. */
@@ -47,5 +47,5 @@ export function CardActionsMenu({ row, actions }: { row: CardOverviewRow; action
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

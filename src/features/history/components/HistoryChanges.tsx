@@ -1,23 +1,23 @@
-import { ChevronDown } from "lucide-react";
-import type { HistoryEntry } from "@/shared/api/types";
-import { describeChanges, SUMMARY_FIELDS } from "../lib/history-view";
-import { HistoryValue } from "./HistoryValue";
+import { ChevronDown } from 'lucide-react'
+import type { HistoryEntry } from '@/shared/api/types'
+import { describeChanges, SUMMARY_FIELDS } from '../lib/history-view'
+import { HistoryValue } from './HistoryValue'
 
 interface HistoryChangesProps {
-  entry: HistoryEntry;
-  labels: Record<string, string>;
-  compact?: boolean;
+  entry: HistoryEntry
+  labels: Record<string, string>
+  compact?: boolean
 }
 
 export function HistoryChanges({ entry, labels, compact = false }: HistoryChangesProps) {
-  const lines = describeChanges(entry.action, entry.changes, labels);
-  const rawChanges = new Map(entry.changes.map((change) => [change.field, change]));
+  const lines = describeChanges(entry.action, entry.changes, labels)
+  const rawChanges = new Map(entry.changes.map((change) => [change.field, change]))
 
   if (lines.length === 0) {
-    return <p className="text-xs text-muted-foreground">No hay detalles de campos en este evento.</p>;
+    return <p className="text-xs text-muted-foreground">No hay detalles de campos en este evento.</p>
   }
 
-  if (entry.action === "update") {
+  if (entry.action === 'update') {
     if (compact) {
       return (
         <div className="space-y-2">
@@ -38,7 +38,7 @@ export function HistoryChanges({ entry, labels, compact = false }: HistoryChange
             </div>
           ))}
         </div>
-      );
+      )
     }
     return (
       <div className="overflow-hidden rounded-md border text-sm">
@@ -66,14 +66,14 @@ export function HistoryChanges({ entry, labels, compact = false }: HistoryChange
           ))}
         </dl>
       </div>
-    );
+    )
   }
 
-  const preferred = lines.filter((line) => SUMMARY_FIELDS.includes(line.field));
-  const summary = preferred.length > 0 ? preferred : lines.slice(0, 6);
-  const visibleFields = new Set(summary.map((line) => line.field));
-  const rest = lines.filter((line) => !visibleFields.has(line.field));
-  const side = entry.action === "delete" ? "before" : "after";
+  const preferred = lines.filter((line) => SUMMARY_FIELDS.includes(line.field))
+  const summary = preferred.length > 0 ? preferred : lines.slice(0, 6)
+  const visibleFields = new Set(summary.map((line) => line.field))
+  const rest = lines.filter((line) => !visibleFields.has(line.field))
+  const side = entry.action === 'delete' ? 'before' : 'after'
 
   return (
     <div className="space-y-3">
@@ -91,7 +91,7 @@ export function HistoryChanges({ entry, labels, compact = false }: HistoryChange
         <details className="group border-t pt-3">
           <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
             <ChevronDown aria-hidden="true" className="size-3.5 transition-transform group-open:rotate-180" />
-            Ver {rest.length} {rest.length === 1 ? "campo adicional" : "campos adicionales"}
+            Ver {rest.length} {rest.length === 1 ? 'campo adicional' : 'campos adicionales'}
           </summary>
           <dl className="mt-3 space-y-2">
             {rest.map((line) => (
@@ -106,5 +106,5 @@ export function HistoryChanges({ entry, labels, compact = false }: HistoryChange
         </details>
       )}
     </div>
-  );
+  )
 }

@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { KeyRound } from "lucide-react";
+import { useState } from 'react'
+import { KeyRound } from 'lucide-react'
 
-import { useForgotPassword, useResetPassword } from "@/features/auth/hooks/auth";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
+import { useForgotPassword, useResetPassword } from '@/features/auth/hooks/auth'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { PasswordInput } from '@/shared/components/forms/PasswordInput'
 
-const fieldClass = "h-12 border-white/10 bg-white/[0.04] text-white placeholder:text-white/35";
+const fieldClass = 'h-12 border-white/10 bg-white/[0.04] text-white placeholder:text-white/35'
 
 // "¿Olvidaste tu contraseña?": emails a one-use link (60 min) when the server can send mail; otherwise an admin re-invites
 export function ForgotPasswordPanel({ mailEnabled, initialEmail }: { mailEnabled: boolean; initialEmail: string }) {
-  const forgot = useForgotPassword();
-  const [email, setEmail] = useState(initialEmail.includes("@") ? initialEmail : "");
+  const forgot = useForgotPassword()
+  const [email, setEmail] = useState(initialEmail.includes('@') ? initialEmail : '')
 
   return (
     <details className="group rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2.5 text-sm">
@@ -28,8 +28,8 @@ export function ForgotPasswordPanel({ mailEnabled, initialEmail }: { mailEnabled
         <form
           className="mt-3 space-y-3"
           onSubmit={(event) => {
-            event.preventDefault();
-            forgot.mutate({ email: email.trim() });
+            event.preventDefault()
+            forgot.mutate({ email: email.trim() })
           }}
         >
           <p className="leading-5 text-white/50">Escribe el correo de tu cuenta y te enviamos un enlace para elegir otra contraseña.</p>
@@ -53,22 +53,22 @@ export function ForgotPasswordPanel({ mailEnabled, initialEmail }: { mailEnabled
         </form>
       )}
     </details>
-  );
+  )
 }
 
 // The page opened from the emailed link (?restablecer=…): choose a new password; other sessions are closed
 export function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => void }) {
-  const reset = useResetPassword();
-  const [password, setPassword] = useState("");
-  const [repeat, setRepeat] = useState("");
-  const mismatch = repeat.length > 0 && repeat !== password;
+  const reset = useResetPassword()
+  const [password, setPassword] = useState('')
+  const [repeat, setRepeat] = useState('')
+  const mismatch = repeat.length > 0 && repeat !== password
 
   return (
     <form
       className="space-y-3"
       onSubmit={(event) => {
-        event.preventDefault();
-        reset.mutate({ token, password }, { onSuccess: onDone });
+        event.preventDefault()
+        reset.mutate({ token, password }, { onSuccess: onDone })
       }}
     >
       <PasswordInput
@@ -97,5 +97,5 @@ export function ResetPasswordForm({ token, onDone }: { token: string; onDone: ()
         <KeyRound className="mr-2 h-4 w-4" /> Cambiar contraseña
       </Button>
     </form>
-  );
+  )
 }

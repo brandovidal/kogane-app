@@ -1,32 +1,32 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import type { StatementRow } from "@/shared/api/types";
-import { PersonPicker } from "@/features/settings/components/people/PersonPicker";
-import { Button } from "@/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/dialog";
-import { Input } from "@/ui/input";
+import type { StatementRow } from '@/shared/api/types'
+import { PersonPicker } from '@/features/settings/components/people/PersonPicker'
+import { Button } from '@/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/ui/dialog'
+import { Input } from '@/ui/input'
 
 interface RowChanges {
-  label: string | null;
-  personId?: string | null; // only when it changed
+  label: string | null
+  personId?: string | null // only when it changed
 }
 
 interface EditRowDialogProps {
-  row: StatementRow;
-  onClose: () => void;
-  onSave: (changes: RowChanges) => void;
-  saving?: boolean;
+  row: StatementRow
+  onClose: () => void
+  onSave: (changes: RowChanges) => void
+  saving?: boolean
 }
 
 // Mounted per row (keyed by id), so the fields start with that row's values.
 export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogProps) {
-  const [value, setValue] = useState(row.label ?? "");
-  const [personId, setPersonId] = useState<string | null>(row.personId);
+  const [value, setValue] = useState(row.label ?? '')
+  const [personId, setPersonId] = useState<string | null>(row.personId)
   const save = () =>
     onSave({
       label: value.trim() || null,
       ...(personId !== row.personId ? { personId } : {}),
-    });
+    })
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -48,7 +48,7 @@ export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogPro
               value={value}
               onChange={(event) => setValue(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === "Enter") save();
+                if (event.key === 'Enter') save()
               }}
             />
           </div>
@@ -73,5 +73,5 @@ export function EditRowDialog({ row, onClose, onSave, saving }: EditRowDialogPro
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

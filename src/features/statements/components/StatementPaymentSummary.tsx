@@ -1,35 +1,35 @@
-import { useState } from "react";
-import { Check, Pencil, X } from "lucide-react";
+import { useState } from 'react'
+import { Check, Pencil, X } from 'lucide-react'
 
-import type { Statement } from "@/shared/api/types";
-import { formatCurrency } from "@/shared/lib/currency";
-import { CURRENCY_OPTIONS } from "@/shared/constants/currency";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { useUpdateStatementBalances, type UpdateStatementBalanceInput } from "../hooks/statements";
+import type { Statement } from '@/shared/api/types'
+import { formatCurrency } from '@/shared/lib/currency'
+import { CURRENCY_OPTIONS } from '@/shared/constants/currency'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
+import { useUpdateStatementBalances, type UpdateStatementBalanceInput } from '../hooks/statements'
 
-type Currency = "PEN" | "USD";
-type EditableField = Exclude<keyof UpdateStatementBalanceInput, "currency">;
-type Draft = Record<Currency, Record<EditableField, string>>;
+type Currency = 'PEN' | 'USD'
+type EditableField = Exclude<keyof UpdateStatementBalanceInput, 'currency'>
+type Draft = Record<Currency, Record<EditableField, string>>
 
 const fields: { key: EditableField; label: string }[] = [
-  { key: "totalDue", label: "Total del banco" },
-  { key: "minimumDue", label: "Pago mínimo" },
-  { key: "previousBalance", label: "Saldo pendiente del mes anterior" },
-  { key: "previousPayments", label: "Abonos del mes actual" },
-  { key: "monthlyPayment", label: "Pago del mes" },
-];
+  { key: 'totalDue', label: 'Total del banco' },
+  { key: 'minimumDue', label: 'Pago mínimo' },
+  { key: 'previousBalance', label: 'Saldo pendiente del mes anterior' },
+  { key: 'previousPayments', label: 'Abonos del mes actual' },
+  { key: 'monthlyPayment', label: 'Pago del mes' },
+]
 
-const currencies: Currency[] = ["PEN", "USD"];
+const currencies: Currency[] = ['PEN', 'USD']
 
 function amountDraft(value: number | null | undefined) {
-  return value == null ? "" : String(value);
+  return value == null ? '' : String(value)
 }
 
 function createDraft(statement: Statement): Draft {
   return Object.fromEntries(
     currencies.map((currency) => {
-      const balance = statement.balances.find((item) => item.currency === currency);
+      const balance = statement.balances.find((item) => item.currency === currency)
       return [
         currency,
         {
@@ -39,23 +39,23 @@ function createDraft(statement: Statement): Draft {
           previousPayments: amountDraft(balance?.previousPayments),
           monthlyPayment: amountDraft(balance?.monthlyPayment),
         },
-      ];
+      ]
     }),
-  ) as Draft;
+  ) as Draft
 }
 
 function parseAmount(value: string): number | null {
-  if (value.trim() === "") return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
+  if (value.trim() === '') return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
 }
 
 // The itemized consumption rows are derived from the statement movements. Only bank-provided
 // summary figures are editable, and both currencies are saved in one operation.
 export function StatementPaymentSummary({ statement }: { statement: Statement }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<Draft>(() => createDraft(statement));
-  const updateBalances = useUpdateStatementBalances();
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState<Draft>(() => createDraft(statement))
+  const updateBalances = useUpdateStatementBalances()
   const rows = currencies.map(
     (currency) =>
       statement.balances.find((balance) => balance.currency === currency) ?? {
@@ -71,16 +71,16 @@ export function StatementPaymentSummary({ statement }: { statement: Statement })
         installmentConsumption: 0,
         itemizedCharges: 0,
       },
-  );
+  )
 
   const beginEditing = () => {
-    setDraft(createDraft(statement));
-    setEditing(true);
-  };
+    setDraft(createDraft(statement))
+    setEditing(true)
+  }
   const cancelEditing = () => {
-    setDraft(createDraft(statement));
-    setEditing(false);
-  };
+    setDraft(createDraft(statement))
+    setEditing(false)
+  }
   const save = () => {
     updateBalances.mutate(
       {
@@ -95,8 +95,8 @@ export function StatementPaymentSummary({ statement }: { statement: Statement })
         })),
       },
       { onSuccess: () => setEditing(false) },
-    );
-  };
+    )
+  }
 
   return (
     <section className="space-y-3 pt-2">
@@ -107,7 +107,7 @@ export function StatementPaymentSummary({ statement }: { statement: Statement })
               <X /> Cancelar
             </Button>
             <Button type="button" size="sm" onClick={save} disabled={updateBalances.isPending}>
-              <Check /> {updateBalances.isPending ? "Guardando…" : "Guardar ambos"}
+              <Check /> {updateBalances.isPending ? 'Guardando…' : 'Guardar ambos'}
             </Button>
           </>
         ) : (
@@ -118,15 +118,15 @@ export function StatementPaymentSummary({ statement }: { statement: Statement })
       </div>
       <div className="grid gap-3 xl:grid-cols-2">
         {rows.map((balance) => {
-          const money = (amount: number | null) => (amount == null ? "—" : formatCurrency(amount, balance.currency));
-          const name = CURRENCY_OPTIONS.find((item) => item.value === balance.currency)?.label ?? balance.currency;
-          const lines: [string, number | null, "add" | "subtract" | undefined][] = [
-            ["Saldo pendiente del mes anterior", balance.previousBalance, undefined],
-            ["Abonos del mes actual", balance.previousPayments, "subtract"],
-            ["Consumos directos (sin cuotas)", balance.directConsumption, "add"],
-            ["Consumos en cuotas", balance.installmentConsumption, "add"],
-            ["Intereses, seguro y comisiones", balance.itemizedCharges, "add"],
-          ];
+          const money = (amount: number | null) => (amount == null ? '—' : formatCurrency(amount, balance.currency))
+          const name = CURRENCY_OPTIONS.find((item) => item.value === balance.currency)?.label ?? balance.currency
+          const lines: [string, number | null, 'add' | 'subtract' | undefined][] = [
+            ['Saldo pendiente del mes anterior', balance.previousBalance, undefined],
+            ['Abonos del mes actual', balance.previousPayments, 'subtract'],
+            ['Consumos directos (sin cuotas)', balance.directConsumption, 'add'],
+            ['Consumos en cuotas', balance.installmentConsumption, 'add'],
+            ['Intereses, seguro y comisiones', balance.itemizedCharges, 'add'],
+          ]
 
           return (
             <section key={balance.currency} className="min-w-0 rounded-lg border bg-muted/10 p-3 text-sm">
@@ -159,7 +159,7 @@ export function StatementPaymentSummary({ statement }: { statement: Statement })
                   {lines.map(([label, amount, sign]) => (
                     <div key={label} className="flex items-center justify-between gap-3">
                       <dt className="text-muted-foreground">
-                        {sign === "subtract" ? "− " : sign === "add" ? "+ " : ""}
+                        {sign === 'subtract' ? '− ' : sign === 'add' ? '+ ' : ''}
                         {label}
                       </dt>
                       <dd className="tabular-nums">{money(amount)}</dd>
@@ -182,9 +182,9 @@ export function StatementPaymentSummary({ statement }: { statement: Statement })
                 </dl>
               )}
             </section>
-          );
+          )
         })}
       </div>
     </section>
-  );
+  )
 }

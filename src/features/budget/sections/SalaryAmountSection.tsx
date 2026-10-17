@@ -1,21 +1,21 @@
-import { useId } from "react";
-import { Banknote, Percent } from "lucide-react";
-import { FormField } from "@/shared/components/forms/FormField";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/ui/input-group";
-import { formatCurrency } from "@/shared/lib/currency";
+import { useId } from 'react'
+import { Banknote, Percent } from 'lucide-react'
+import { FormField } from '@/shared/components/forms/FormField'
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/ui/input-group'
+import { formatCurrency } from '@/shared/lib/currency'
 
 export interface SalaryAmountSectionProps {
-  salary: string;
-  limitPercent: string;
-  onSalaryChange: (value: string) => void;
-  onPercentChange: (value: string) => void;
-  errors: { salary?: string[]; limitPercent?: string[] };
-  limit: number | null;
-  disabled: boolean;
+  salary: string
+  limitPercent: string
+  onSalaryChange: (value: string) => void
+  onPercentChange: (value: string) => void
+  errors: { salary?: string[]; limitPercent?: string[] }
+  limit: number | null
+  disabled: boolean
 }
 
 export function SalaryAmountSection({ salary, limitPercent, onSalaryChange, onPercentChange, errors, limit, disabled }: SalaryAmountSectionProps) {
-  const id = useId();
+  const id = useId()
   return (
     <div className="space-y-4">
       <FormField label="Sueldo mensual" icon={Banknote} htmlFor={`${id}-salary`} error={errors.salary?.[0]}>
@@ -59,8 +59,8 @@ export function SalaryAmountSection({ salary, limitPercent, onSalaryChange, onPe
       </FormField>
       <div className="flex items-center justify-between rounded-lg border bg-muted/20 p-3 text-sm" aria-live="polite">
         <span className="text-muted-foreground">Límite del mes</span>
-        <span className="font-medium tabular-nums">{limit != null ? formatCurrency(limit) : "—"}</span>
+        <span className="font-medium tabular-nums">{limit != null ? formatCurrency(limit) : '—'}</span>
       </div>
     </div>
-  );
+  )
 }

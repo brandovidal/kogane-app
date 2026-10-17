@@ -1,12 +1,12 @@
-import { PaymentMethodFilterFields } from "@/shared/components/filters/PaymentMethodFilterFields";
-import type { CatalogSelectProps } from "@/shared/types/catalog-select";
+import { PaymentMethodFilterFields } from '@/shared/components/filters/PaymentMethodFilterFields'
+import type { CatalogSelectProps } from '@/shared/types/catalog-select'
 
 export function PaymentMethodSelect({
   type,
   groupByType: _groupByType,
   value,
   onChange,
-  placeholder = "Selecciona medio de pago",
+  placeholder = 'Selecciona medio de pago',
   allowEmpty = false,
   className,
 }: CatalogSelectProps & { type?: string; groupByType?: boolean }) {
@@ -23,5 +23,5 @@ export function PaymentMethodSelect({
       type={type}
       triggerClassName={className}
     />
-  );
+  )
 }

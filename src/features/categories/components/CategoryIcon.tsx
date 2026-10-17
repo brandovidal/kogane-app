@@ -1,1 +1,1 @@
-export { CategoryIcon } from "@/shared/components/data-display/CategoryIcon";
+export { CategoryIcon } from '@/shared/components/data-display/CategoryIcon'

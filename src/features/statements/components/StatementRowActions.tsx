@@ -1,27 +1,27 @@
-import { Check, Eye, MoreHorizontal, Pencil, RotateCcw, X } from "lucide-react";
+import { Check, Eye, MoreHorizontal, Pencil, RotateCcw, X } from 'lucide-react'
 
-import type { StatementRow } from "@/shared/api/types";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import type { StatementRow } from '@/shared/api/types'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/ui/dropdown-menu'
 
-import { rowName } from "@/features/statements/lib/statement-view";
+import { rowName } from '@/features/statements/lib/statement-view'
 
 interface StatementRowActionsProps {
-  row: StatementRow;
-  onEdit: () => void;
-  onSave: () => void;
-  onIgnore: () => void;
-  onRestore: () => void;
-  onReview?: () => void;
-  saving?: boolean;
+  row: StatementRow
+  onEdit: () => void
+  onSave: () => void
+  onIgnore: () => void
+  onRestore: () => void
+  onReview?: () => void
+  saving?: boolean
 }
 
 // ⋯ of a statement row (Nuevos and Coinciden): edit your description, save it as an expense, ignore or bring it back
 export function StatementRowActions({ row, onEdit, onSave, onIgnore, onRestore, onReview, saving }: StatementRowActionsProps) {
-  const created = row.result === "created";
+  const created = row.result === 'created'
 
-  if (row.locked) return <Badge variant="outline">Anulado · bloqueado</Badge>;
+  if (row.locked) return <Badge variant="outline">Anulado · bloqueado</Badge>
 
   return (
     <DropdownMenu>
@@ -42,7 +42,7 @@ export function StatementRowActions({ row, onEdit, onSave, onIgnore, onRestore, 
         <DropdownMenuItem onSelect={onSave} disabled={created || saving}>
           <Check /> Guardar
         </DropdownMenuItem>
-        {row.result === "ignored" ? (
+        {row.result === 'ignored' ? (
           <DropdownMenuItem onSelect={onRestore} disabled={saving}>
             <RotateCcw /> Volver
           </DropdownMenuItem>
@@ -53,5 +53,5 @@ export function StatementRowActions({ row, onEdit, onSave, onIgnore, onRestore, 
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

@@ -10,4 +10,4 @@ export {
   useUpdateNotificationSettings,
   useCollectNow,
   useRemindDebts,
-} from "./notifications";
+} from './notifications'

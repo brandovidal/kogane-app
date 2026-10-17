@@ -1,17 +1,17 @@
-import type { ImportDetailViewProps } from "../types/import-types";
-import { formatDate } from "@/shared/lib/dates";
-import { Badge } from "@/ui/badge";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-import { BATCH_STATUS, TAB_LABELS, TAB_ORDER } from "@/features/imports/constants/import-options";
-import { useNotionImportDetail } from "../hooks/useNotionImportDetail";
-import { ImportSummaryTab } from "../sections/ImportSummaryTab";
-import { ImportRowsTab } from "../sections/ImportRowsTab";
+import type { ImportDetailViewProps } from '../types/import-types'
+import { formatDate } from '@/shared/lib/dates'
+import { Badge } from '@/ui/badge'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
+import { BATCH_STATUS, TAB_LABELS, TAB_ORDER } from '@/features/imports/constants/import-options'
+import { useNotionImportDetail } from '../hooks/useNotionImportDetail'
+import { ImportSummaryTab } from '../sections/ImportSummaryTab'
+import { ImportRowsTab } from '../sections/ImportRowsTab'
 
 export function NotionImportDetailView({ id }: ImportDetailViewProps) {
-  const { batch, apply, discard, preview, confirmApply, confirmDiscard } = useNotionImportDetail(id);
-  if (!batch) return null;
+  const { batch, apply, discard, preview, confirmApply, confirmDiscard } = useNotionImportDetail(id)
+  if (!batch) return null
 
   return (
     <Card>
@@ -19,7 +19,7 @@ export function NotionImportDetailView({ id }: ImportDetailViewProps) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-base">
             Notion · {formatDate(batch.createdAt)}
-            <Badge variant={preview ? "default" : "secondary"}>{BATCH_STATUS[batch.status]}</Badge>
+            <Badge variant={preview ? 'default' : 'secondary'}>{BATCH_STATUS[batch.status]}</Badge>
           </CardTitle>
           {preview && (
             <div className="flex gap-2">
@@ -27,15 +27,15 @@ export function NotionImportDetailView({ id }: ImportDetailViewProps) {
                 Descartar
               </Button>
               <Button size="sm" onClick={confirmApply} disabled={apply.isPending || batch.created + batch.updated === 0}>
-                {apply.isPending ? "Importando…" : "Importar"}
+                {apply.isPending ? 'Importando…' : 'Importar'}
               </Button>
             </div>
           )}
         </div>
         <p className="text-sm text-muted-foreground">
           {preview
-            ? "Revisa dónde se guardará cada fila. Solo al importar se escriben tus gastos."
-            : `Importado el ${batch.appliedAt ? formatDate(batch.appliedAt) : "—"}.`}
+            ? 'Revisa dónde se guardará cada fila. Solo al importar se escriben tus gastos.'
+            : `Importado el ${batch.appliedAt ? formatDate(batch.appliedAt) : '—'}.`}
         </p>
       </CardHeader>
       <CardContent>
@@ -61,5 +61,5 @@ export function NotionImportDetailView({ id }: ImportDetailViewProps) {
         </Tabs>
       </CardContent>
     </Card>
-  );
+  )
 }

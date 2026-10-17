@@ -1,13 +1,13 @@
-import { Check, ImageIcon, MessageSquare, Mic, MoreHorizontal, Pencil, RotateCw, Trash2 } from "lucide-react";
-import { Button } from "@/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/ui/dropdown-menu";
-import type { DraftTab } from "@/features/drafts/hooks/drafts";
-import { draftMediaKind, useOpenDraftMedia } from "@/features/drafts/hooks/draft-media";
+import { Check, ImageIcon, MessageSquare, Mic, MoreHorizontal, Pencil, RotateCw, Trash2 } from 'lucide-react'
+import { Button } from '@/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/ui/dropdown-menu'
+import type { DraftTab } from '@/features/drafts/hooks/drafts'
+import { draftMediaKind, useOpenDraftMedia } from '@/features/drafts/hooks/draft-media'
 
 interface MenuDraft {
-  id: string;
-  inputType: string;
-  missingFields: string[];
+  id: string
+  inputType: string
+  missingFields: string[]
 }
 
 // ··· de cada fila (board B7): las acciones cambian según la pestaña y si el borrador está completo
@@ -20,17 +20,17 @@ export function DraftActionsMenu({
   onEdit,
   onDiscard,
 }: {
-  draft: MenuDraft;
-  tab: DraftTab;
-  label: string;
-  onSave: () => void;
-  onRetry: () => void;
-  onEdit: () => void;
-  onDiscard: () => void;
+  draft: MenuDraft
+  tab: DraftTab
+  label: string
+  onSave: () => void
+  onRetry: () => void
+  onEdit: () => void
+  onDiscard: () => void
 }) {
-  const openMedia = useOpenDraftMedia();
-  const mediaKind = draftMediaKind(draft.inputType);
-  const incomplete = draft.missingFields.length > 0;
+  const openMedia = useOpenDraftMedia()
+  const mediaKind = draftMediaKind(draft.inputType)
+  const incomplete = draft.missingFields.length > 0
 
   return (
     <DropdownMenu>
@@ -40,7 +40,7 @@ export function DraftActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {tab === "failed" ? (
+        {tab === 'failed' ? (
           <>
             <DropdownMenuItem onSelect={onRetry} className="font-medium text-primary">
               <RotateCw /> Reintentar
@@ -53,28 +53,28 @@ export function DraftActionsMenu({
           <>
             <DropdownMenuItem
               onSelect={onSave}
-              disabled={tab !== "discarded" && incomplete}
-              className={tab !== "discarded" && !incomplete ? "font-medium text-primary" : undefined}
+              disabled={tab !== 'discarded' && incomplete}
+              className={tab !== 'discarded' && !incomplete ? 'font-medium text-primary' : undefined}
             >
               <Check /> Guardar
-              {tab === "discarded" ? (
+              {tab === 'discarded' ? (
                 <span className="ml-auto text-xs text-muted-foreground">Lo restaura</span>
               ) : (
                 incomplete && <span className="ml-auto text-xs text-muted-foreground">Falta info</span>
               )}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={onEdit}>
-              <Pencil /> {tab === "review" && incomplete ? "Completar" : "Editar"}
+              <Pencil /> {tab === 'review' && incomplete ? 'Completar' : 'Editar'}
             </DropdownMenuItem>
           </>
         )}
         {mediaKind && (
           <DropdownMenuItem onSelect={() => void openMedia(draft.id)}>
-            {mediaKind === "audio" ? <Mic /> : <ImageIcon />}
-            {mediaKind === "audio" ? "Escuchar nota de voz" : "Ver captura"}
+            {mediaKind === 'audio' ? <Mic /> : <ImageIcon />}
+            {mediaKind === 'audio' ? 'Escuchar nota de voz' : 'Ver captura'}
           </DropdownMenuItem>
         )}
-        {tab !== "discarded" && (
+        {tab !== 'discarded' && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onSelect={onDiscard}>
@@ -84,5 +84,5 @@ export function DraftActionsMenu({
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

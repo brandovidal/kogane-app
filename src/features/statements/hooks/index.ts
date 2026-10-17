@@ -9,4 +9,4 @@ export {
   useAssignStatementPerson,
   useUpdateStatementMinimum,
   useDeleteStatement,
-} from "./statements";
+} from './statements'

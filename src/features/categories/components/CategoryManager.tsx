@@ -1,37 +1,37 @@
-import { useState } from "react";
-import { useCategories, useDeleteCategory } from "@/shared/api/hooks/catalogs";
-import type { Category } from "@/shared/api/types";
+import { useState } from 'react'
+import { useCategories, useDeleteCategory } from '@/shared/api/hooks/catalogs'
+import type { Category } from '@/shared/api/types'
 import {
   useCategoryBudgets,
   useDeleteCategoryBudget,
   useSaveCategoryBudget,
   type CategoryBudgetLine,
-} from "@/features/categories/hooks/category-budgets";
-import { ResponsiveDialog } from "@/shared/components/dialogs/ResponsiveDialog";
-import { DeleteConfirmationDialog } from "@/shared/components/dialogs/DeleteConfirmationDialog";
-import { Input } from "@/ui/input";
-import { Switch } from "@/ui/switch";
-import { withQuery } from "@/shared/api/query";
-import { usePeriod } from "@/shared/stores/period.store";
-import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { Badge } from "@/ui/badge";
-import { Progress } from "@/ui/progress";
-import { Plus, Trash2, Pencil, AlertTriangle, Tags } from "lucide-react";
-import { formatCurrency } from "@/shared/lib/currency";
-import { CategoryDialog } from "./CategoryDialog";
-import { CategoryIcon } from "@/features/categories/components/CategoryIcon";
+} from '@/features/categories/hooks/category-budgets'
+import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
+import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
+import { Input } from '@/ui/input'
+import { Switch } from '@/ui/switch'
+import { withQuery } from '@/shared/api/query'
+import { usePeriod } from '@/shared/stores/period.store'
+import { Button } from '@/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
+import { Badge } from '@/ui/badge'
+import { Progress } from '@/ui/progress'
+import { Plus, Trash2, Pencil, AlertTriangle, Tags } from 'lucide-react'
+import { formatCurrency } from '@/shared/lib/currency'
+import { CategoryDialog } from './CategoryDialog'
+import { CategoryIcon } from '@/features/categories/components/CategoryIcon'
 
 function CategoryManagerView() {
-  const selectedMonth = usePeriod((s) => s.month);
-  const selectedYear = usePeriod((s) => s.year);
-  const categories = useCategories().data ?? [];
-  const lines = useCategoryBudgets(selectedMonth, selectedYear).data ?? [];
-  const [limitOf, setLimitOf] = useState<{ category: Category; line?: CategoryBudgetLine } | undefined>();
-  const deleteCategory = useDeleteCategory();
-  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | undefined>();
+  const selectedMonth = usePeriod((s) => s.month)
+  const selectedYear = usePeriod((s) => s.year)
+  const categories = useCategories().data ?? []
+  const lines = useCategoryBudgets(selectedMonth, selectedYear).data ?? []
+  const [limitOf, setLimitOf] = useState<{ category: Category; line?: CategoryBudgetLine } | undefined>()
+  const deleteCategory = useDeleteCategory()
+  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<Category | undefined>()
 
   return (
     <div className="space-y-6">
@@ -42,8 +42,8 @@ function CategoryManagerView() {
         <Button
           size="sm"
           onClick={() => {
-            setEditingCategory(undefined);
-            setDialogOpen(true);
+            setEditingCategory(undefined)
+            setDialogOpen(true)
           }}
         >
           <Plus className="mr-1 h-4 w-4" /> Nueva categoría
@@ -52,12 +52,12 @@ function CategoryManagerView() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((cat) => {
-          const line = lines.find((item) => item.categoryId === cat.id);
-          const spent = line?.spent ?? 0;
-          const limit = line?.limit ?? null;
-          const percent = line?.percent ?? 0;
-          const isOverBudget = line?.status === "over";
-          const isNearLimit = line?.status === "warning";
+          const line = lines.find((item) => item.categoryId === cat.id)
+          const spent = line?.spent ?? 0
+          const limit = line?.limit ?? null
+          const percent = line?.percent ?? 0
+          const isOverBudget = line?.status === 'over'
+          const isNearLimit = line?.status === 'warning'
 
           return (
             <Card key={cat.id}>
@@ -73,10 +73,10 @@ function CategoryManagerView() {
                       size="icon"
                       className="h-7 w-7"
                       aria-label={cat.isDefault ? `Cambiar icono de ${cat.name}` : `Editar ${cat.name}`}
-                      title={cat.isDefault ? "Cambiar icono" : "Editar categoría"}
+                      title={cat.isDefault ? 'Cambiar icono' : 'Editar categoría'}
                       onClick={() => {
-                        setEditingCategory(cat);
-                        setDialogOpen(true);
+                        setEditingCategory(cat)
+                        setDialogOpen(true)
                       }}
                     >
                       <Pencil className="h-3.5 w-3.5" />
@@ -109,12 +109,12 @@ function CategoryManagerView() {
                     <div className="flex justify-between text-sm">
                       <span>Gastado: {formatCurrency(spent)}</span>
                       <span className="text-muted-foreground">
-                        de {formatCurrency(limit)} {line?.limitMonthOnly ? "(solo este mes)" : "/ mes"}
+                        de {formatCurrency(limit)} {line?.limitMonthOnly ? '(solo este mes)' : '/ mes'}
                       </span>
                     </div>
                     <Progress
                       value={Math.min(percent, 100)}
-                      className={`h-2 ${isOverBudget ? "[&>div]:bg-destructive" : isNearLimit ? "[&>div]:bg-amber-500" : ""}`}
+                      className={`h-2 ${isOverBudget ? '[&>div]:bg-destructive' : isNearLimit ? '[&>div]:bg-amber-500' : ''}`}
                     />
                     {isOverBudget && (
                       <div className="flex items-center gap-1 text-xs text-destructive">
@@ -132,11 +132,11 @@ function CategoryManagerView() {
                   <p className="text-xs text-muted-foreground">Gastado: {formatCurrency(spent)} · sin límite</p>
                 )}
                 <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setLimitOf({ category: cat, line })}>
-                  {limit != null ? "Editar límite" : "Poner límite"}
+                  {limit != null ? 'Editar límite' : 'Poner límite'}
                 </Button>
               </CardContent>
             </Card>
-          );
+          )
         })}
       </div>
 
@@ -144,7 +144,7 @@ function CategoryManagerView() {
       <DeleteConfirmationDialog
         open={!!deletingCategory}
         onOpenChange={(open) => {
-          if (!open && !deleteCategory.isPending) setDeletingCategory(null);
+          if (!open && !deleteCategory.isPending) setDeletingCategory(null)
         }}
         title="Eliminar categoría"
         description={<>Se eliminará «{deletingCategory?.name}». Esta acción no se puede deshacer.</>}
@@ -153,7 +153,7 @@ function CategoryManagerView() {
           if (deletingCategory) {
             deleteCategory.mutate(deletingCategory.id, {
               onSuccess: () => setDeletingCategory(null),
-            });
+            })
           }
         }}
       />
@@ -167,10 +167,10 @@ function CategoryManagerView() {
         />
       )}
     </div>
-  );
+  )
 }
 
-export const CategoryManager = withQuery(CategoryManagerView);
+export const CategoryManager = withQuery(CategoryManagerView)
 
 // The limit of one category: for every month, or only the month on screen (it replaces the general one then)
 function LimitDialog({
@@ -180,18 +180,18 @@ function LimitDialog({
   year,
   onClose,
 }: {
-  category: Category;
-  line?: CategoryBudgetLine;
-  month: number;
-  year: number;
-  onClose: () => void;
+  category: Category
+  line?: CategoryBudgetLine
+  month: number
+  year: number
+  onClose: () => void
 }) {
-  const save = useSaveCategoryBudget();
-  const remove = useDeleteCategoryBudget();
-  const [limit, setLimit] = useState(line?.limit != null ? String(line.limit) : "");
-  const [threshold, setThreshold] = useState(String(line?.alertThreshold ?? 80));
-  const [monthOnly, setMonthOnly] = useState(line?.limitMonthOnly ?? false);
-  const valid = Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100;
+  const save = useSaveCategoryBudget()
+  const remove = useDeleteCategoryBudget()
+  const [limit, setLimit] = useState(line?.limit != null ? String(line.limit) : '')
+  const [threshold, setThreshold] = useState(String(line?.alertThreshold ?? 80))
+  const [monthOnly, setMonthOnly] = useState(line?.limitMonthOnly ?? false)
+  const valid = Number(limit) > 0 && Number(threshold) >= 1 && Number(threshold) <= 100
 
   const submit = () =>
     save.mutate(
@@ -202,7 +202,7 @@ function LimitDialog({
         ...(monthOnly ? { month, year } : { month: null, year: null }),
       },
       { onSuccess: onClose },
-    );
+    )
 
   return (
     <ResponsiveDialog
@@ -244,5 +244,5 @@ function LimitDialog({
         </label>
       </div>
     </ResponsiveDialog>
-  );
+  )
 }
