@@ -45,7 +45,9 @@ export function DashboardQuickActions({ onRegisterPayment }: { onRegisterPayment
         <WalletCards className="size-4 text-primary" />
         Borrador
         {hasHydrated && draftCount > 0 && (
-          <Badge variant="secondary" className="absolute -top-3 -right-3 px-2 py-1">{draftCount}</Badge>
+          <Badge variant="secondary" className="absolute -top-3 -right-3 px-2 py-1">
+            {draftCount}
+          </Badge>
         )}
       </a>
       <a href="/calendario" className={actionClass}>
