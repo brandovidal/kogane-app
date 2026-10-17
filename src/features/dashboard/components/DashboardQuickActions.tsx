@@ -1,15 +1,22 @@
 import { CalendarDays, CreditCard, FileUp, MessageCircle, Plus, WalletCards } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useDraftCount } from '@/features/drafts/hooks/drafts'
 import { useNewExpense } from '@/features/new-expense/stores/new-expense.store'
 import { cn } from '@/shared/utils/cn'
 import type { DashboardPaymentTab } from '../types/dashboard'
+import { Badge } from '@/ui/badge'
 
 const actionClass =
   'inline-flex min-h-10 items-center gap-2 rounded-lg border bg-card px-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
 
 export function DashboardQuickActions({ onRegisterPayment }: { onRegisterPayment: (tab: DashboardPaymentTab) => void }) {
   const draftCount = useDraftCount().data ?? 0
+  const [hasHydrated, setHasHydrated] = useState(false)
   const openNewExpense = useNewExpense((state) => state.openWith)
+
+  useEffect(() => {
+    setHasHydrated(true)
+  }, [])
 
   return (
     <nav aria-label="Accesos rápidos" className="flex flex-wrap items-center gap-2 rounded-xl border bg-card/60 p-2.5">
@@ -37,8 +44,8 @@ export function DashboardQuickActions({ onRegisterPayment }: { onRegisterPayment
       <a href="/borrador" className={cn(actionClass, 'relative')}>
         <WalletCards className="size-4 text-primary" />
         Borrador
-        {draftCount > 0 && (
-          <span className="rounded-full bg-destructive px-1.5 text-[10px] font-semibold text-destructive-foreground">{draftCount}</span>
+        {hasHydrated && draftCount > 0 && (
+          <Badge variant="secondary" className="absolute -top-3 -right-3 px-2 py-1">{draftCount}</Badge>
         )}
       </a>
       <a href="/calendario" className={actionClass}>
