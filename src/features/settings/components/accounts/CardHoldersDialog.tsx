@@ -13,8 +13,6 @@ interface Holder {
   last4: string
 }
 
-// Titular y adicionales de una tarjeta (D116): the statement gives each purchase to them (CMR by the section of each
-// card, Sip by its TIT/ADIC column). The last 4 digits are how the statement prints each card
 export function CardHoldersDialog({ card, onClose }: { card: { id: string; name: string }; onClose: () => void }) {
   const { data } = useCardHolders(card.id)
   const me = useMe()

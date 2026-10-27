@@ -8,16 +8,13 @@ import { MultiSelect } from '@/shared/components/filters/MultiSelect'
 import type { CatalogSelectProps } from '@/shared/types/catalog-select'
 import { Button } from '@/ui/button'
 import { Input } from '@/ui/input'
-import { PERSON_MODULE_LABELS, type PersonModule } from '../../constants/people'
+import { PERSON_MODULE_LABELS } from './constants'
+import type { PersonModule } from './types'
 
 interface PersonPickerProps extends CatalogSelectProps {
-  /** The page of the record: people marked there come first and the others are marked when picked. */
   module?: PersonModule
 }
 
-// The person of a record (Costos fijos, Plataformas, Tarjetas, Recurrentes, Cobros…): the people marked for this page,
-// then the others, and "Nueva persona" without leaving the form. Picking someone who is not marked yet, or creating
-// one, marks them for this page so the next form already offers them (Configuración ▸ Personas)
 export function PersonPicker({ value, onChange, placeholder = 'Selecciona persona', className, disabled, module }: PersonPickerProps) {
   const people = usePeople().data ?? []
   const savePerson = useSavePerson()
@@ -35,7 +32,6 @@ export function PersonPicker({ value, onChange, placeholder = 'Selecciona person
       group: !module ? undefined : available ? `Disponibles en ${pageLabel}` : `Otras · se marcarán en ${pageLabel}`,
     }
   })
-  // The groups appear in this order: the page's people first
   options.sort((a, b) => (a.group ?? '').localeCompare(b.group ?? ''))
 
   const pick = (id: string | null) => {
@@ -101,7 +97,6 @@ export function PersonPicker({ value, onChange, placeholder = 'Selecciona person
   )
 }
 
-// The minimum to start using someone; the rest (document, other pages) is completed in Configuración ▸ Personas
 function QuickPersonDialog({ module, onClose, onCreated }: { module?: PersonModule; onClose: () => void; onCreated: (id: string) => void }) {
   const savePerson = useSavePerson()
   const [name, setName] = useState('')

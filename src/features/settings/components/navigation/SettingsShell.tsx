@@ -24,7 +24,7 @@ export function SettingsShell({
       <nav
         aria-label="Ajustes"
         className={cn(
-          'shrink-0 md:rounded-2xl md:bg-gradient-to-b md:from-indigo-500/[0.09] md:via-card/40 md:to-transparent md:p-4',
+          'shrink-0 md:rounded-2xl md:bg-linear-to-b md:from-indigo-500/9 md:via-card/40 md:to-transparent md:p-4',
           rail ? 'md:w-16' : 'md:w-64',
         )}
       >

@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Check, ExternalLink, Send } from 'lucide-react'
 
 import { useMe } from '@/features/auth/hooks/auth'
@@ -8,43 +8,18 @@ import { Badge } from '@/ui/badge'
 import { Button } from '@/ui/button'
 import { Switch } from '@/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { NOTIFICATION_GROUPS } from './constants'
 
 type Channel = 'telegram' | 'web'
 
-const NOTIFICATION_GROUPS: { label: string; items: { kind: NotificationKind; title: string; description: string }[] }[] = [
-  {
-    label: 'Pagos y vencimientos',
-    items: [
-      { kind: 'due', title: 'Vencimientos', description: 'Un día antes, 09:00. Lo que cierra o vence y sigue sin pagar.' },
-      { kind: 'card_close', title: 'Cierre de tarjetas', description: 'El día antes del cierre de cada tarjeta.' },
-      { kind: 'statement', title: 'Estados de cuenta conciliados', description: 'Cuando un estado de cuenta termina de leerse y cuadrar.' },
-    ],
-  },
-  {
-    label: 'Resúmenes',
-    items: [
-      { kind: 'daily_close', title: 'Cierre del día', description: 'Todos los días, 21:00. Gastos de hoy y lo que vence hoy.' },
-      { kind: 'weekly', title: 'Resumen del domingo', description: 'Domingos, 20:00.' },
-      { kind: 'recurring', title: 'Gastos recurrentes del mes', description: 'El día 1, 06:00, cuando se generan.' },
-      { kind: 'collect', title: 'Cobros del mes y atrasados', description: 'El día 1 (del mes) y el día 5 (atrasados), 09:00.' },
-    ],
-  },
-  {
-    label: 'Alertas',
-    items: [
-      { kind: 'budget', title: 'Presupuesto al 80 %', description: 'Al llegar al 80 % y al 100 % de una categoría.' },
-      { kind: 'anomaly', title: 'Cargos raros', description: 'Precio distinto, cobro repetido o suscripción sin cargo.' },
-    ],
-  },
-]
-
-// Preferencias de avisos por canal, organizadas por momento y tipo de aviso.
 export function NotificationSettingsCard() {
+  const [hasHydrated, setHasHydrated] = useState(false)
   const notificationQuery = useNotificationSettings()
   const settings = notificationQuery.data
   const update = useUpdateNotificationSettings()
   const { data: me } = useMe()
-  const telegramLinked = me?.telegramLinked ?? false
+  useEffect(() => setHasHydrated(true), [])
+  const telegramLinked = hasHydrated && (me?.telegramLinked ?? false)
 
   const toggle = (kind: NotificationKind, channel: Channel, value: boolean) => update.mutate({ [kind]: { [channel]: value } })
 

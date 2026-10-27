@@ -1,198 +1,227 @@
-import { useState } from 'react'
-import { LayoutGrid, Pencil, Plus, Rows3, Table2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Filter, LayoutGrid, Pencil, Plus, Rows3, Search, Table2 } from 'lucide-react'
 
 import { usePeople, useSavePerson } from '@/shared/api/hooks/catalogs'
 import { MultiSelect } from '@/shared/components/filters/MultiSelect'
+import { UnderlineTabList } from '@/shared/components/navigation/UnderlineTabList'
 import { Badge } from '@/ui/badge'
 import { Button } from '@/ui/button'
 import { Card, CardContent } from '@/ui/card'
 import { Checkbox } from '@/ui/checkbox'
 import { Input } from '@/ui/input'
-import { Switch } from '@/ui/switch'
-import { Tabs, TabsList, TabsTrigger } from '@/ui/tabs'
+import { Skeleton } from '@/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
-import { PERSON_MODULE_KEYS, PERSON_MODULES, type PersonModule } from '../../constants'
-import { PEOPLE_TABS, filterPeople, toggleModule, type PeopleTab, type Person } from '../../lib/people-filter'
+import { EMPTY_PEOPLE, PEOPLE_PAGE_SIZE, PEOPLE_TABS, PEOPLE_VIEWS, PERSON_DEBTS_LABEL, PERSON_MODULES, PERSON_MODULE_OPTIONS } from './constants'
+import { filterPeople, isPersonAssigned, togglePersonModule } from './lib'
+import type { PeopleTab, PeopleView, Person, PersonModule } from './types'
+import { PersonIdentity } from './components/PersonIdentity'
+import { PersonModules } from './components/PersonModules'
+import { PersonModuleAssignments } from './components/PersonModuleAssignments'
 import { PersonDialog } from './PersonDialog'
 
-type View = 'checks' | 'compact' | 'cards'
-const VIEWS: [View, string, typeof Table2][] = [
-  ['checks', 'Checks', Table2],
-  ['compact', 'Compacta', Rows3],
-  ['cards', 'Tarjetas', LayoutGrid],
-]
-
-const moduleOptions = PERSON_MODULES.map(([value, label]) => ({
-  value,
-  label,
-}))
-
-// Personas (D80): who expenses and debts belong to, and in which pages each one can be picked (appearsIn).
-// "Yo" is the default person and appears everywhere.
 export function PeoplePage() {
-  const people = usePeople().data ?? []
+  const peopleQuery = usePeople()
+  const people = peopleQuery.data ?? EMPTY_PEOPLE
   const savePerson = useSavePerson()
   const [tab, setTab] = useState<PeopleTab>('all')
   const [query, setQuery] = useState('')
-  const [module, setModule] = useState<PersonModule | null>(null)
-  const [view, setView] = useState<View>('checks')
-  const [editing, setEditing] = useState<Person | null | undefined>(undefined) // null: new
+  const [module, setModule] = useState<PersonModule | 'debts' | null>(null)
+  const [view, setView] = useState<PeopleView>('checks')
+  const [editing, setEditing] = useState<Person | null | undefined>(undefined)
+  const [pageSize, setPageSize] = useState(PEOPLE_PAGE_SIZE)
 
-  const visible = filterPeople(people, { tab, query, module })
+  const visible = useMemo(() => {
+    const filtered = filterPeople(people, { tab, query, module: module === 'debts' ? null : module })
+    return filtered.filter((person) => module !== 'debts' || person.isActive).sort((a, b) => a.name.localeCompare(b.name, 'es'))
+  }, [people, tab, query, module])
+  useEffect(() => setPageSize(PEOPLE_PAGE_SIZE), [tab, query, module, view])
+  const rows = visible.slice(0, pageSize)
+  const counts: Record<PeopleTab, number> = {
+    all: people.filter((person) => person.isActive).length,
+    assigned: people.filter((person) => person.isActive && isPersonAssigned(person)).length,
+    unassigned: people.filter((person) => person.isActive && !isPersonAssigned(person)).length,
+    archived: people.filter((person) => !person.isActive).length,
+  }
   const setModules = (person: Person, appearsIn: PersonModule[]) => savePerson.mutate({ id: person.id, name: person.name, appearsIn })
+  const editButton = (person: Person) => (
+    <Button variant="ghost" size="icon" className="size-8 shrink-0" aria-label={`Editar ${person.name}`} onClick={() => setEditing(person)}>
+      <Pencil className="size-4" />
+    </Button>
+  )
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as PeopleTab)}>
-          <TabsList className="h-auto flex-wrap">
-            {PEOPLE_TABS.map(([key, label]) => (
-              <TabsTrigger key={key} value={key}>
-                {label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <Button size="sm" onClick={() => setEditing(null)}>
-          <Plus className="mr-1 h-4 w-4" /> Nueva persona
-        </Button>
-      </div>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight">Personas</h1>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Quién puede asignarse en cada página. Día a día siempre eres tú; Cobros y deudas muestra a todas.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button onClick={() => setEditing(null)}>
+            <Plus className="mr-1.5 size-4" />
+            Nueva persona
+          </Button>
+        </div>
+      </header>
+
+      <UnderlineTabList
+        ariaLabel="Filtrar personas"
+        activeKey={tab}
+        items={PEOPLE_TABS.map(([key, label]) => ({ key, label, count: counts[key], onSelect: () => setTab(key) }))}
+      />
 
       <div className="flex flex-wrap items-center gap-2">
-        <Input
-          aria-label="Buscar persona"
-          placeholder="Buscar nombre o alias"
-          className="w-56"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+        <div className="relative min-w-48 flex-1 sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            aria-label="Buscar persona"
+            placeholder="Buscar persona"
+            className="pl-9"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+        <MultiSelect
+          label="Filtrar por página"
+          labelClassName="sr-only"
+          value={module ? [module] : []}
+          options={[...PERSON_MODULE_OPTIONS, { value: 'debts', label: PERSON_DEBTS_LABEL }]}
+          onChange={(next) => setModule((next?.[0] as PersonModule | 'debts' | undefined) ?? null)}
+          multiple={false}
+          activeMarker={false}
+          searchable={false}
+          summaryMode="field"
+          emptySelectionLabel="Aparece en: todas"
+          triggerClassName="h-9 w-[13rem] justify-between"
+          icon={Filter}
         />
-        <select
-          aria-label="Filtrar por página"
-          className="h-9 rounded-md border bg-background px-2 text-sm"
-          value={module ?? ''}
-          onChange={(e) => setModule((e.target.value || null) as PersonModule | null)}
-        >
-          <option value="">Todas las páginas</option>
-          {PERSON_MODULES.map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <div className="ml-auto flex gap-1" role="group" aria-label="Vista">
-          {VIEWS.map(([key, label, Icon]) => (
-            <Button key={key} size="sm" variant={view === key ? 'secondary' : 'ghost'} aria-pressed={view === key} onClick={() => setView(key)}>
-              <Icon className="mr-1 h-4 w-4" /> {label}
-            </Button>
-          ))}
+        <div className="ml-auto flex rounded-lg border p-1" role="group" aria-label="Modo de vista">
+          {PEOPLE_VIEWS.map(([key, label]) => {
+            const Icon = key === 'checks' ? Table2 : key === 'compact' ? Rows3 : LayoutGrid
+            return (
+              <Button
+                key={key}
+                type="button"
+                size="sm"
+                variant={view === key ? 'secondary' : 'ghost'}
+                className="h-8 px-2.5"
+                aria-pressed={view === key}
+                onClick={() => setView(key)}
+              >
+                <Icon className="mr-1.5 size-4" />
+                {label}
+              </Button>
+            )
+          })}
         </div>
       </div>
 
-      {visible.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">No hay personas con esos filtros.</p>}
+      <div className="rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 text-sm text-muted-foreground">
+        En <span className="font-medium text-foreground">Tarjetas</span>, el titular y los adicionales se eligen solo entre las personas marcadas; si
+        necesitas una que no está, la agregas desde ahí y se marca sola.
+      </div>
 
-      {visible.length > 0 && view === 'cards' && (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((person) => (
-            <Card key={person.id}>
-              <CardContent className="space-y-2 pt-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium">
-                      {person.name} {person.isDefault && <Badge variant="secondary">Yo</Badge>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{person.aliases.join(', ') || 'Sin alias'}</p>
+      {peopleQuery.isLoading && (
+        <div className="space-y-2 rounded-xl border p-4" aria-label="Cargando personas">
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-11 w-full" />
+          ))}
+        </div>
+      )}
+      {peopleQuery.isError && (
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/30 p-4 text-sm">
+          <span>No se pudieron cargar las personas.</span>
+          <Button variant="outline" size="sm" onClick={() => void peopleQuery.refetch()}>
+            Reintentar
+          </Button>
+        </div>
+      )}
+      {!peopleQuery.isLoading && !peopleQuery.isError && rows.length === 0 && (
+        <p className="rounded-xl border py-10 text-center text-sm text-muted-foreground">No hay personas con esos filtros.</p>
+      )}
+
+      {rows.length > 0 && view === 'cards' && (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {rows.map((person) => (
+            <Card key={person.id} className={`min-h-40 ${!person.isActive ? 'opacity-70' : ''}`}>
+              <CardContent className="space-y-3 p-4">
+                <div className="flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <PersonIdentity person={person} showAlias showDocument />
                   </div>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Editar ${person.name}`} onClick={() => setEditing(person)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
+                  {editButton(person)}
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {(person.isDefault ? PERSON_MODULE_KEYS : person.appearsIn).map((key) => (
-                    <Badge key={key} variant="outline">
-                      {PERSON_MODULES.find(([k]) => k === key)?.[1]}
-                    </Badge>
-                  ))}
-                </div>
+                <PersonModules person={person} />
+                {!person.isActive && <Badge variant="outline">Archivada</Badge>}
               </CardContent>
             </Card>
           ))}
         </div>
       )}
 
-      {visible.length > 0 && view !== 'cards' && (
-        <div className="rounded-md border">
-          <Table>
+      {rows.length > 0 && view !== 'cards' && (
+        <div className="overflow-x-auto rounded-xl border">
+          <Table className={view === 'checks' ? 'min-w-[900px] table-fixed' : 'min-w-[760px] table-fixed'}>
             <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
+              <TableRow className="bg-muted/30">
+                <TableHead className="w-[19%]">Nombre</TableHead>
+                <TableHead className="w-[12%]">Alias (bot)</TableHead>
+                <TableHead className="w-[10%]">Documento</TableHead>
                 {view === 'checks' ? (
-                  PERSON_MODULES.map(([key, label]) => (
-                    <TableHead key={key} className="text-center">
-                      {label}
-                    </TableHead>
-                  ))
+                  <>
+                    {PERSON_MODULES.map(([key, label]) => (
+                      <TableHead key={key} className="w-[9%] text-center">
+                        {label}
+                      </TableHead>
+                    ))}
+                    <TableHead className="w-[11%] text-center">{PERSON_DEBTS_LABEL}</TableHead>
+                  </>
                 ) : (
-                  <TableHead>Aparece en</TableHead>
+                  <TableHead className="w-[39%]">Aparece en</TableHead>
                 )}
-                <TableHead>Activa</TableHead>
-                <TableHead className="w-[50px]" />
+                <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              {visible.map((person) => (
-                <TableRow key={person.id}>
-                  <TableCell className="font-medium">
-                    {person.name}{' '}
-                    {person.isDefault && (
-                      <Badge variant="secondary" className="ml-1">
-                        Yo
-                      </Badge>
-                    )}
-                    <span className="block text-xs font-normal text-muted-foreground">{person.aliases.join(', ')}</span>
+              {rows.map((person) => (
+                <TableRow key={person.id} className={`h-[58px] ${!person.isActive ? 'opacity-65' : ''}`}>
+                  <TableCell>
+                    <PersonIdentity person={person} />
                   </TableCell>
+                  <TableCell className="truncate text-sm text-muted-foreground">{person.aliases.join(', ') || '—'}</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{person.documentNumber || '—'}</TableCell>
                   {view === 'checks' ? (
-                    PERSON_MODULES.map(([key, label]) => (
-                      <TableCell key={key} className="text-center">
-                        <Checkbox
-                          checked={person.isDefault || person.appearsIn.includes(key)}
-                          disabled={person.isDefault || savePerson.isPending}
-                          aria-label={`${person.name} en ${label}`}
-                          onCheckedChange={() => setModules(person, toggleModule(person.appearsIn, key))}
-                        />
+                    <>
+                      {PERSON_MODULES.map(([key, label]) => (
+                        <TableCell key={key} className="px-2 text-center">
+                          <span className="mx-auto flex h-6 w-16 items-center justify-center bg-muted/50">
+                            <Checkbox
+                              checked={person.isDefault || person.appearsIn.includes(key)}
+                              disabled={person.isDefault || !person.isActive || savePerson.isPending}
+                              aria-label={`${person.name} en ${label}`}
+                              onCheckedChange={() => setModules(person, togglePersonModule(person.appearsIn, key))}
+                            />
+                          </span>
+                        </TableCell>
+                      ))}
+                      <TableCell className="px-2 text-center">
+                        <span className="mx-auto flex h-6 w-16 items-center justify-center bg-muted/50">
+                          <Checkbox checked disabled aria-label={`${person.name} en ${PERSON_DEBTS_LABEL}`} />
+                        </span>
                       </TableCell>
-                    ))
+                    </>
                   ) : (
                     <TableCell>
-                      <MultiSelect
-                        label={`Aparece en · ${person.name}`}
-                        value={person.isDefault ? [...PERSON_MODULE_KEYS] : person.appearsIn}
-                        options={moduleOptions}
-                        allLabel="Ninguna"
-                        emptyValueMeansAll={false}
-                        searchable={false}
-                        onChange={(next) => !person.isDefault && setModules(person, (next ?? []) as PersonModule[])}
+                      <PersonModuleAssignments
+                        person={person}
+                        disabled={!person.isActive || savePerson.isPending}
+                        onChange={(next) => setModules(person, next)}
                       />
                     </TableCell>
                   )}
-                  <TableCell>
-                    <Switch
-                      checked={person.isActive}
-                      disabled={person.isDefault}
-                      aria-label={`${person.name} activa`}
-                      onCheckedChange={(isActive) =>
-                        savePerson.mutate({
-                          id: person.id,
-                          name: person.name,
-                          isActive,
-                        })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Editar ${person.name}`} onClick={() => setEditing(person)}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                  </TableCell>
+                  <TableCell>{editButton(person)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -200,6 +229,18 @@ export function PeoplePage() {
         </div>
       )}
 
+      {visible.length > 0 && (
+        <footer className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+          <span>
+            {Math.min(pageSize, visible.length)} de {visible.length} personas
+          </span>
+          {pageSize < visible.length && (
+            <Button variant="outline" size="sm" onClick={() => setPageSize((size) => size + PEOPLE_PAGE_SIZE)}>
+              Cargar más
+            </Button>
+          )}
+        </footer>
+      )}
       {editing !== undefined && <PersonDialog person={editing} onClose={() => setEditing(undefined)} />}
     </div>
   )

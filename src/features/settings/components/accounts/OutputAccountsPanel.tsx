@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Landmark, Pencil, Plus } from 'lucide-react'
+import { Landmark, Pencil, Plus, Search } from 'lucide-react'
 
 import { useAccounts, useSaveAccount } from '@/shared/api/hooks/catalogs'
 import { ResponsiveDialog } from '@/shared/components/dialogs/ResponsiveDialog'
@@ -10,18 +10,29 @@ import { Input } from '@/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select'
 import { Switch } from '@/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table'
+import { ViewToggle } from '@/shared/components/data-display/ViewToggle'
+import { useViewMode } from '@/shared/hooks/useViewMode'
 import { ACCOUNT_TYPE_LABELS, accountBody, accountErrors, emptyAccountForm, type AccountForm, type AccountType } from '../../lib/account-form'
 
 type Account = NonNullable<ReturnType<typeof useAccounts>['data']>[number]
 
-// Cuentas de salida: where a payment left from ("Registrar pago"). They carry no balance; one with payments is
-// archived, never deleted
 export function OutputAccountsPanel() {
   const accounts = useAccounts().data ?? []
   const save = useSaveAccount()
-  const [onlyActive, setOnlyActive] = useState(true)
+  const [view, setView] = useViewMode('settings-output-accounts', 'cards')
+  const [status, setStatus] = useState<'all' | 'active' | 'inactive'>('all')
+  const [search, setSearch] = useState('')
   const [editing, setEditing] = useState<Account | null | undefined>(undefined) // null: new
-  const visible = accounts.filter((account) => !onlyActive || account.isActive)
+  const visible = accounts.filter((account) => {
+    const matchesStatus = status === 'all' || account.isActive === (status === 'active')
+    const matchesSearch =
+      !search.trim() ||
+      [account.name, account.bank, ACCOUNT_TYPE_LABELS[account.type]].some((part) =>
+        part?.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
+      )
+    return matchesStatus && matchesSearch
+  })
+  const activeCount = accounts.filter((account) => account.isActive).length
 
   return (
     <Card>
@@ -29,26 +40,44 @@ export function OutputAccountsPanel() {
         <CardTitle className="flex items-center gap-2 text-base">
           <Landmark className="h-4 w-4" /> Cuentas de salida
         </CardTitle>
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Switch checked={onlyActive} onCheckedChange={setOnlyActive} aria-label="Solo activas" />
-            Solo activas
-          </label>
-          <Button size="sm" onClick={() => setEditing(null)}>
-            <Plus className="mr-1 h-4 w-4" /> Nueva cuenta
-          </Button>
-        </div>
+        <Button size="sm" onClick={() => setEditing(null)}>
+          <Plus className="mr-1 h-4 w-4" /> Nueva cuenta
+        </Button>
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-xs text-muted-foreground">
           Sirven para decir desde dónde pagaste una cuota, un recibo o un estado de cuenta. No llevan saldo. Si ya tienen pagos se archivan en vez de
           borrarse.
         </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewToggle view={view} onChange={setView} showLabels />
+          <div className="relative min-w-48 flex-1 sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Buscar cuenta"
+              aria-label="Buscar cuenta de salida"
+            />
+          </div>
+          <div className="flex rounded-lg border p-1">
+            <Button size="sm" variant={status === 'all' ? 'secondary' : 'ghost'} className="h-8" onClick={() => setStatus('all')}>
+              Todas · {accounts.length}
+            </Button>
+            <Button size="sm" variant={status === 'active' ? 'secondary' : 'ghost'} className="h-8" onClick={() => setStatus('active')}>
+              Activas · {activeCount}
+            </Button>
+            <Button size="sm" variant={status === 'inactive' ? 'secondary' : 'ghost'} className="h-8" onClick={() => setStatus('inactive')}>
+              Inactivas · {accounts.length - activeCount}
+            </Button>
+          </div>
+        </div>
         {visible.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">
-            {accounts.length === 0 ? 'Aún no tienes cuentas de salida.' : 'No hay cuentas activas.'}
+            {accounts.length === 0 ? 'Aún no tienes cuentas de salida.' : 'No hay resultados para estos filtros.'}
           </p>
-        ) : (
+        ) : view === 'table' ? (
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -107,6 +136,47 @@ export function OutputAccountsPanel() {
                 ))}
               </TableBody>
             </Table>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {visible.map((account) => (
+              <article key={account.id} className={`rounded-xl border bg-card p-4 ${account.isActive ? '' : 'opacity-65'}`}>
+                <div className="flex items-start gap-3">
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-lg border"
+                    style={account.color ? { color: account.color, borderColor: account.color } : undefined}
+                  >
+                    <Landmark className="size-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-semibold">{account.name}</h3>
+                    <p className="truncate text-sm text-muted-foreground">
+                      {ACCOUNT_TYPE_LABELS[account.type]}
+                      {account.bank ? ` · ${account.bank}` : ''}
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="icon" className="size-8" aria-label={`Editar ${account.name}`} onClick={() => setEditing(account)}>
+                    <Pencil className="size-4" />
+                  </Button>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t pt-3">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{account.currency}</Badge>
+                    <Badge variant={account.isActive ? 'secondary' : 'outline'}>{account.isActive ? 'Activa' : 'Inactiva'}</Badge>
+                  </div>
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Switch
+                      checked={account.isActive}
+                      aria-label={`${account.name} activa`}
+                      onCheckedChange={(isActive) =>
+                        save.mutate({ id: account.id, name: account.name, type: account.type, bank: account.bank, isActive })
+                      }
+                    />
+                    Activa
+                  </label>
+                </div>
+              </article>
+            ))}
           </div>
         )}
         {editing !== undefined && <AccountDialog account={editing} onClose={() => setEditing(undefined)} />}

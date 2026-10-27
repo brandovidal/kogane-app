@@ -5,6 +5,7 @@ import { googleLinkUrl } from '@/features/auth/services/google.service'
 import { useAuthConfig, useMe, useUpdateProfile } from '@/features/auth/hooks/auth'
 import { errorMessage } from '@/shared/api/hooks/use-api-mutation'
 import { Button } from '@/ui/button'
+import { Skeleton } from '@/ui/skeleton'
 import { ProfileAccountCard } from '../components/profile/ProfileAccountCard'
 import { ProfileAppSettingsCard } from '../components/profile/ProfileAppSettingsCard'
 import { ProfilePersonalDataCard, type ProfileDraft, validateProfileDraft } from '../components/profile/ProfilePersonalDataCard'
@@ -34,6 +35,7 @@ function ProfilePageView() {
   const { data: me } = useMe()
   const authConfig = useAuthConfig().data
   const update = useUpdateProfile()
+  const [hasHydrated, setHasHydrated] = useState(false)
   const [draft, setDraft] = useState<ProfileDraft>(() =>
     me
       ? makeDraft(me)
@@ -57,6 +59,8 @@ function ProfilePageView() {
   const userNickname = me?.nickname
   const userPhone = me?.phone
   const userDocumentMasked = me?.documentMasked
+
+  useEffect(() => setHasHydrated(true), [])
 
   useEffect(() => {
     if (!userId || !userName) return
@@ -95,6 +99,16 @@ function ProfilePageView() {
     if (result || failure) window.history.replaceState(null, '', window.location.pathname)
   }, [])
 
+  if (!hasHydrated) {
+    return (
+      <div className="w-full space-y-4" aria-busy="true" aria-label="Cargando perfil">
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.9fr)]">
+          <div className="space-y-4"><Skeleton className="h-72 w-full" /><Skeleton className="h-40 w-full" /></div>
+          <div className="space-y-4"><Skeleton className="h-44 w-full" /><Skeleton className="h-64 w-full" /><Skeleton className="h-40 w-full" /></div>
+        </div>
+      </div>
+    )
+  }
   if (!me) return null
 
   const errors = validateProfileDraft(draft)
