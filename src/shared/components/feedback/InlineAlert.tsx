@@ -9,10 +9,7 @@ export interface InlineAlertProps {
 
 export function InlineAlert({ children, className, variant = 'default' }: InlineAlertProps) {
   return (
-    <div
-      role={variant === 'destructive' ? 'alert' : 'status'}
-      className={cn('flex items-start gap-3 rounded-xl border p-4 text-sm', className)}
-    >
+    <div role={variant === 'destructive' ? 'alert' : 'status'} className={cn('flex items-start gap-3 rounded-xl border p-4 text-sm', className)}>
       {children}
     </div>
   )

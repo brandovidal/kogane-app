@@ -183,7 +183,7 @@ export function ChatInput({ ref, onSend, disabled, showSuggestions = false }: Ch
     'flex items-center gap-2 rounded-2xl border bg-foreground/[0.04] py-1.5 pl-2.5 pr-2 focus-within:ring-2 focus-within:ring-primary/30'
 
   return (
-    <div className="border-t p-3">
+    <div className="shrink-0 border-t p-3">
       <div className="mx-auto max-w-[820px]">
         {showSuggestions && !recording && !text && !image && (
           <div className="mb-2 flex flex-wrap justify-center gap-2">

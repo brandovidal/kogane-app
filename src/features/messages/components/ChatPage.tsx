@@ -92,14 +92,14 @@ function ChatPageView() {
   }
 
   return (
-    <div className="-m-4 flex h-[calc(100vh-4rem)] flex-col md:-m-6">
-      <div className="flex items-center justify-between border-b px-4 py-2 text-xs text-muted-foreground">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex shrink-0 items-center justify-between border-b px-4 py-2 text-xs text-muted-foreground">
         <span>El historial se guarda solo en este navegador</span>
         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={reset} disabled={!messages.length}>
           <Trash2 className="mr-1 h-3.5 w-3.5" /> Limpiar
         </Button>
       </div>
-      <div className="flex flex-1 flex-col overflow-y-auto p-4">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overscroll-contain p-4">
         {loaded && !messages.length ? (
           <ChatEmptyState onPick={startWith} disabled={busy} />
         ) : (

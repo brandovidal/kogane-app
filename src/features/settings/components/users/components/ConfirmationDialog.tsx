@@ -112,12 +112,16 @@ export function ConfirmationDialog({
         ) : confirmation.kind === 'role' && confirmation.role === 'admin' ? (
           <InlineAlert className="border-primary/30 bg-primary/5 text-primary">
             <Shield className="size-4" />
-            <InlineAlertDescription>Seguirá viendo solo sus propios datos. Puedes volver a dejarlo como miembro cuando quieras.</InlineAlertDescription>
+            <InlineAlertDescription>
+              Seguirá viendo solo sus propios datos. Puedes volver a dejarlo como miembro cuando quieras.
+            </InlineAlertDescription>
           </InlineAlert>
         ) : confirmation.kind === 'impersonate' ? (
           <InlineAlert className="border-amber-500/30 bg-amber-500/5 text-amber-300">
             <Eye className="size-4" />
-            <InlineAlertDescription>{confirmation.user.name} verá esta sesión en su lista de dispositivos como «Visita de un superadmin».</InlineAlertDescription>
+            <InlineAlertDescription>
+              {confirmation.user.name} verá esta sesión en su lista de dispositivos como «Visita de un superadmin».
+            </InlineAlertDescription>
           </InlineAlert>
         ) : null}
         <AlertDialogFooter>
