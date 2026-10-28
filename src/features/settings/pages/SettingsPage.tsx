@@ -30,7 +30,12 @@ function SettingsPageView({ section, tab = CARDS_ACCOUNTS_TAB.CREDITO }: Setting
     <SettingsShell
       section={section}
       isAdmin={isAdmin}
-      wide={section === SETTINGS_SECTION.PERFIL || section === SETTINGS_SECTION.NOTIFICACIONES || section === SETTINGS_SECTION.DISPOSITIVOS}
+      wide={
+        section === SETTINGS_SECTION.PERFIL ||
+        section === SETTINGS_SECTION.NOTIFICACIONES ||
+        section === SETTINGS_SECTION.DISPOSITIVOS ||
+        section === SETTINGS_SECTION.HISTORIAL
+      }
     >
       {section === SETTINGS_SECTION.PERFIL && <ProfilePage />}
       {section === SETTINGS_SECTION.GENERAL && <GeneralSettingsView />}

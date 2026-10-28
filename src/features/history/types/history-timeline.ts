@@ -11,4 +11,6 @@ export interface HistoryTimelineProps {
   labels: Record<string, string>
   showRecord?: boolean
   compact?: boolean
+  onSelect?: (entry: HistoryEntry) => void
+  selectedId?: string
 }

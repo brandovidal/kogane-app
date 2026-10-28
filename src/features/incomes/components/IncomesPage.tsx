@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LoaderCircle, Plus } from 'lucide-react'
+import { LayoutGrid, List, LoaderCircle, Plus } from 'lucide-react'
 import { useDeleteIncome, useIncomes, type Income } from '../hooks/budget'
 import { IncomeDialog } from './IncomeDialog'
 import { incomeColumns } from '../lib/income-columns'
@@ -10,23 +10,12 @@ import { SalaryDialog } from '@/features/budget/components/dialogs/SalaryDialog'
 import { withQuery } from '@/shared/api/query'
 import { EmptyState } from '@/shared/components/data-display/EmptyState'
 import { DataView } from '@/shared/components/data-display/DataView'
-import { ViewToggle } from '@/shared/components/data-display/ViewToggle'
-import { PeriodFields } from '@/shared/components/forms/PeriodFields'
 import { DeleteConfirmationDialog } from '@/shared/components/dialogs/DeleteConfirmationDialog'
-import { PERIOD_YEAR_MIN, PERIOD_YEAR_MAX } from '@/shared/constants/period'
-import { useViewMode } from '@/shared/hooks/useViewMode'
-import { useUrlPeriod } from '@/shared/hooks/useUrlPeriod'
-import { getMonthName } from '@/shared/lib/dates'
 import { usePeriod } from '@/shared/stores/period.store'
 import type { MonthlyPeriod } from '@/shared/types/period'
 import { Button } from '@/ui/button'
 
 function IncomesPageView() {
-  useUrlPeriod({
-    minYear: PERIOD_YEAR_MIN,
-    maxYear: PERIOD_YEAR_MAX,
-    defaultToCurrent: true,
-  })
   const month = usePeriod((state) => state.month)
   const year = usePeriod((state) => state.year)
   const setPeriod = usePeriod((state) => state.setPeriod)
@@ -38,7 +27,7 @@ function IncomesPageView() {
   const [editing, setEditing] = useState<Income | null | undefined>(undefined)
   const [deleting, setDeleting] = useState<Income | null>(null)
   const [salaryOpen, setSalaryOpen] = useState(false)
-  const [view, setView] = useViewMode('incomes', 'table')
+  const [view, setView] = useState<'list' | 'cards'>('list')
   const columns = incomeColumns({
     onEdit: setEditing,
     onDelete: setDeleting,
@@ -47,15 +36,32 @@ function IncomesPageView() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold">
-            Ingresos de {getMonthName(month)} {year}
-          </h2>
-          <p className="text-sm text-muted-foreground">Gestiona el sueldo y los ingresos extra de cada mes.</p>
-        </div>
-        <div className="w-full sm:w-72">
-          <PeriodFields value={{ month, year }} onChange={changePeriod} ariaLabel="Mes de ingresos" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 rounded-lg border bg-card p-1" role="group" aria-label="Vista de ingresos">
+            <button
+              type="button"
+              aria-pressed={view === 'list'}
+              onClick={() => setView('list')}
+              className={`flex h-7 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium ${view === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <List className="size-4" />
+              Lista
+            </button>
+            <button
+              type="button"
+              aria-pressed={view === 'cards'}
+              onClick={() => setView('cards')}
+              className={`flex h-7 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium ${view === 'cards' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <LayoutGrid className="size-4" />
+              Tarjetas
+            </button>
+          </div>
+          <Button size="sm" onClick={() => setEditing(null)}>
+            <Plus aria-hidden="true" />
+            Nuevo ingreso extra
+          </Button>
         </div>
       </div>
 
@@ -87,13 +93,6 @@ function IncomesPageView() {
             </h2>
             {query.data && !query.isError && <p className="text-xs text-muted-foreground">{incomes.length} registros en este mes</p>}
           </div>
-          <div className="flex items-center gap-2">
-            <ViewToggle value={view} onChange={setView} />
-            <Button size="sm" onClick={() => setEditing(null)}>
-              <Plus aria-hidden="true" />
-              Nuevo ingreso extra
-            </Button>
-          </div>
         </div>
         {query.isPending ? (
           <p role="status" className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
@@ -110,7 +109,7 @@ function IncomesPageView() {
         ) : incomes.length === 0 ? (
           <EmptyState description="No hay ingresos extra en este mes" />
         ) : (
-          <DataView items={incomes} columns={columns} rowKey={(income) => income.id} view={view} />
+          <DataView items={incomes} columns={columns} rowKey={(income) => income.id} view={view === 'list' ? 'table' : 'cards'} />
         )}
       </section>
 

@@ -1,10 +1,8 @@
-import { CalendarDays } from 'lucide-react'
-import { Marker, MarkerContent, MarkerIcon } from '@/ui/marker'
 import { groupHistoryByDay } from '../lib/history-timeline'
 import type { HistoryTimelineProps } from '../types/history-timeline'
 import { HistoryTimelineItem } from './HistoryTimelineItem'
 
-export function HistoryTimeline({ entries, labels, showRecord, compact = false }: HistoryTimelineProps) {
+export function HistoryTimeline({ entries, labels, showRecord, compact = false, onSelect, selectedId }: HistoryTimelineProps) {
   const groups = groupHistoryByDay(entries)
   const today = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Lima',
@@ -24,24 +22,24 @@ export function HistoryTimeline({ entries, labels, showRecord, compact = false }
               </time>
             </h3>
           ) : (
-            <Marker variant="separator" className="gap-1.5 text-xs">
-              <MarkerIcon>
-                <CalendarDays />
-              </MarkerIcon>
-              <MarkerContent>
-                <time dateTime={group.day === 'unknown' ? undefined : group.day}>{group.label}</time>
-              </MarkerContent>
-            </Marker>
+            <h3 className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              <time dateTime={group.day === 'unknown' ? undefined : group.day}>
+                {group.day === today ? `Hoy · ${compactDate(group.day)}` : group.label}
+              </time>
+              <span aria-hidden="true" className="h-px flex-1 bg-border" />
+            </h3>
           )}
-          <ol
-            className={
-              compact
-                ? 'relative before:absolute before:top-3 before:bottom-3 before:left-3 before:w-px before:bg-border'
-                : 'relative before:absolute before:top-6 before:bottom-6 before:left-3.5 before:w-px before:bg-border'
-            }
-          >
+          <ol className={compact ? 'relative before:absolute before:top-3 before:bottom-3 before:left-3 before:w-px before:bg-border' : 'space-y-3'}>
             {group.entries.map((entry) => (
-              <HistoryTimelineItem key={entry.id} entry={entry} labels={labels} showRecord={showRecord} compact={compact} />
+              <HistoryTimelineItem
+                key={entry.id}
+                entry={entry}
+                labels={labels}
+                showRecord={showRecord}
+                compact={compact}
+                onSelect={onSelect}
+                selected={selectedId === entry.id}
+              />
             ))}
           </ol>
         </section>

@@ -18,7 +18,12 @@ export interface UnderlineTabListProps {
 
 export function UnderlineTabList({ items, activeKey, ariaLabel, className }: UnderlineTabListProps) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className={cn('grid border-b', className)} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      className={cn('grid border-b', className)}
+      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+    >
       {items.map((item) => {
         const active = item.key === activeKey
         const classes = cn(
@@ -28,13 +33,19 @@ export function UnderlineTabList({ items, activeKey, ariaLabel, className }: Und
         const content = (
           <>
             <span>{item.label}</span>
-            {item.count !== undefined && <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] leading-none text-muted-foreground">{item.count}</span>}
+            {item.count !== undefined && (
+              <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] leading-none text-muted-foreground">{item.count}</span>
+            )}
           </>
         )
         return item.href ? (
-          <a key={item.key} role="tab" href={item.href} aria-selected={active} className={classes}>{content}</a>
+          <a key={item.key} role="tab" href={item.href} aria-selected={active} className={classes}>
+            {content}
+          </a>
         ) : (
-          <button key={item.key} type="button" role="tab" aria-selected={active} className={classes} onClick={item.onSelect}>{content}</button>
+          <button key={item.key} type="button" role="tab" aria-selected={active} className={classes} onClick={item.onSelect}>
+            {content}
+          </button>
         )
       })}
     </div>

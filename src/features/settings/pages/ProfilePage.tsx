@@ -103,8 +103,15 @@ function ProfilePageView() {
     return (
       <div className="w-full space-y-4" aria-busy="true" aria-label="Cargando perfil">
         <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.9fr)]">
-          <div className="space-y-4"><Skeleton className="h-72 w-full" /><Skeleton className="h-40 w-full" /></div>
-          <div className="space-y-4"><Skeleton className="h-44 w-full" /><Skeleton className="h-64 w-full" /><Skeleton className="h-40 w-full" /></div>
+          <div className="space-y-4">
+            <Skeleton className="h-72 w-full" />
+            <Skeleton className="h-40 w-full" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-44 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-40 w-full" />
+          </div>
         </div>
       </div>
     )

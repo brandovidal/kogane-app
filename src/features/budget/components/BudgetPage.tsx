@@ -28,9 +28,9 @@ function BudgetPageView() {
   return (
     <div className="space-y-6">
       <Tabs value={tab} onValueChange={(value) => change(value as BudgetTab)}>
-        <TabsList>
+        <TabsList variant="line" className="w-full justify-start gap-6 rounded-none border-b bg-transparent p-0">
           {TABS.map(([key, label]) => (
-            <TabsTrigger key={key} value={key}>
+            <TabsTrigger key={key} value={key} className="h-10 flex-none rounded-none px-3 after:bottom-[-1px] after:h-0.5">
               {label}
             </TabsTrigger>
           ))}
