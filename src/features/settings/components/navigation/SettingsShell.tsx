@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { ChevronDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { ChevronDown, ChevronRight, PanelLeftClose } from 'lucide-react'
 
 import { cn } from '@/shared/utils/cn'
 import { useSettingsNavigation } from '../../hooks/useSettingsNavigation'
@@ -18,6 +18,10 @@ export function SettingsShell({
   children: ReactNode
 }) {
   const { rail, folded: foldedGroups, update } = useSettingsNavigation()
+  const navigationGroups = SETTINGS_NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !item.adminOnly || isAdmin),
+  })).filter((group) => group.items.length > 0)
 
   return (
     <div className="flex flex-col gap-4 md:flex-row">
@@ -25,27 +29,35 @@ export function SettingsShell({
         aria-label="Ajustes"
         className={cn(
           'shrink-0 md:rounded-2xl md:bg-linear-to-b md:from-indigo-500/9 md:via-card/40 md:to-transparent md:p-4',
-          rail ? 'md:w-16' : 'md:w-64',
+          rail && 'md:w-16 md:rounded-none md:border-r md:border-border/70 md:bg-none md:p-0 md:pr-3',
+          !rail && 'md:w-64',
         )}
       >
-        <div className="mb-4 flex items-center justify-between px-1">
+        <div className={cn('mb-4 flex items-center justify-between px-1', rail && 'md:mb-3 md:justify-center md:px-0')}>
           {!rail && <h2 className="text-base font-semibold tracking-tight">Ajustes</h2>}
           <button
             type="button"
-            className="hidden size-10 items-center justify-center rounded-xl border border-border/80 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:flex"
+            className={cn(
+              'hidden size-10 items-center justify-center rounded-xl border border-border/80 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:flex',
+              rail && 'md:size-9',
+            )}
             aria-label={rail ? 'Expandir menú' : 'Contraer menú'}
             onClick={() => update({ rail: !rail, folded: foldedGroups })}
           >
-            {rail ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+            {rail ? <ChevronRight className="size-4" /> : <PanelLeftClose className="size-4" />}
           </button>
         </div>
         <div className="flex gap-3 overflow-x-auto md:block md:space-y-5 md:overflow-visible">
-          {SETTINGS_NAV_GROUPS.map((group) => {
-            const items = group.items.filter((i) => !i.adminOnly || isAdmin)
-            if (items.length === 0) return null
+          {navigationGroups.map((group, groupIndex) => {
             const folded = !rail && foldedGroups.includes(group.label)
             return (
-              <div key={group.label} className="flex gap-1 md:block">
+              <div
+                key={group.label}
+                className={cn(
+                  'flex gap-1 md:block',
+                  rail && groupIndex < navigationGroups.length - 1 && 'md:mb-3 md:border-b md:border-border/60 md:pb-3',
+                )}
+              >
                 {!rail && (
                   <button
                     type="button"
@@ -63,7 +75,7 @@ export function SettingsShell({
                   </button>
                 )}
                 {!folded &&
-                  items.map(({ key, label, icon: Icon, href, endIcon: EndIcon, badge }) => (
+                  group.items.map(({ key, label, icon: Icon, href, endIcon: EndIcon, badge }) => (
                     <a
                       key={key}
                       href={href ?? settingsHref(key)}
@@ -72,7 +84,7 @@ export function SettingsShell({
                       className={cn(
                         'flex min-h-10 items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2 text-sm transition-colors hover:bg-muted/70',
                         key === section && 'bg-muted font-semibold text-foreground shadow-sm',
-                        rail && 'md:justify-center md:px-0',
+                        rail && 'md:mx-auto md:size-10 md:min-h-10 md:justify-center md:gap-0 md:px-0 md:py-0',
                       )}
                     >
                       <Icon className="size-4 shrink-0" aria-hidden="true" />

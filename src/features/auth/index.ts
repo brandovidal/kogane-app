@@ -3,7 +3,6 @@ export { AUTH_ROLE, AUTH_ROLE_LABELS } from './constants/roles'
 export type { AuthDeviceKind, AuthDeviceSession, RevokedSessionsDto } from './types/auth.dto'
 export { LoginPage } from './components/LoginPage'
 export { UserMenu } from './components/UserMenu'
-export { UsersPanel } from './components/UsersPanel'
 export {
   useMe,
   useAuthConfig,

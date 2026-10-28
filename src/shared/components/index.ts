@@ -1,6 +1,8 @@
 // Public module API. Internal files import concrete modules to avoid cycles.
 export { PeriodFields, type PeriodFieldsProps } from './forms/PeriodFields'
 export { DataView } from './data-display/DataView'
+export type { InlineAlertProps } from './feedback/InlineAlert'
+export { InlineAlert, InlineAlertDescription } from './feedback/InlineAlert'
 export type { NameAvatarProps } from './data-display/NameAvatar'
 export { NameAvatar } from './data-display/NameAvatar'
 export { CategoryIcon } from './data-display/CategoryIcon'

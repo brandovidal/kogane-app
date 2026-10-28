@@ -11,7 +11,7 @@ import { ProfilePage } from './ProfilePage'
 import type { CardsAccountsTab, SettingsSection } from '../types/navigation'
 import { useMe } from '@/features/auth/hooks/auth'
 import { GeneralSettingsView } from '../views/GeneralSettingsView'
-import { UsersPanel } from '@/features/auth/components/UsersPanel'
+import { UsersPage } from '../components/users'
 import { HistoryPanel } from '@/features/history/components/HistoryPanel'
 import { CARDS_ACCOUNTS_TAB, SETTINGS_SECTION } from '../constants/sections'
 
@@ -34,7 +34,8 @@ function SettingsPageView({ section, tab = CARDS_ACCOUNTS_TAB.CREDITO }: Setting
         section === SETTINGS_SECTION.PERFIL ||
         section === SETTINGS_SECTION.NOTIFICACIONES ||
         section === SETTINGS_SECTION.DISPOSITIVOS ||
-        section === SETTINGS_SECTION.HISTORIAL
+        section === SETTINGS_SECTION.HISTORIAL ||
+        section === SETTINGS_SECTION.USUARIOS
       }
     >
       {section === SETTINGS_SECTION.PERFIL && <ProfilePage />}
@@ -51,7 +52,7 @@ function SettingsPageView({ section, tab = CARDS_ACCOUNTS_TAB.CREDITO }: Setting
       )}
       {section === SETTINGS_SECTION.PERSONAS && <PeoplePage />}
       {section === SETTINGS_SECTION.HISTORIAL && <HistoryPanel />}
-      {section === SETTINGS_SECTION.USUARIOS && isAdmin && <UsersPanel />}
+      {section === SETTINGS_SECTION.USUARIOS && isAdmin && <UsersPage />}
     </SettingsShell>
   )
 }

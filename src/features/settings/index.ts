@@ -12,6 +12,7 @@ export type { PaymentMethodIconProps } from './components/payment-methods/Paymen
 export { PaymentMethodLabel } from './components/payment-methods/PaymentMethodLabel'
 export type { PaymentMethodLabelProps } from './components/payment-methods/PaymentMethodLabel'
 export { PeoplePage } from './components/people/PeoplePage'
+export { UsersPage } from './components/users'
 export { PersonSelect } from './components/people/PersonSelect'
 export { PersonPicker } from './components/people/PersonPicker'
 export { SettingsMenuItems } from './components/navigation/SettingsMenuItems'
